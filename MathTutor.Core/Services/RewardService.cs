@@ -277,6 +277,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_circle_conic",
+                Title = "Guardián de la Circunferencia",
+                Description = "Calculaste el radio canónico r en círculos de proximidad con x² + y² = r².",
+                IconEmoji = "🎯",
+                AssociatedTopicId = "prep_circle_conic_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_sine_wave",
+                Title = "Maestro de las Ondas",
+                Description = "Modelaste señales acústicas y amplitud pico en funciones armónicas y = A · sen(x).",
+                IconEmoji = "〰️",
+                AssociatedTopicId = "prep_sine_wave_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_logarithm_binary",
+                Title = "Explorador Logarítmico",
+                Description = "Descifraste log₂(n) y la complejidad eficiente de la búsqueda binaria.",
+                IconEmoji = "🌲",
+                AssociatedTopicId = "prep_logarithm_binary_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -584,11 +611,38 @@ public class RewardService
             new()
             {
                 Id = "station_30",
+                Name = "La Cúpula del Radar Canónico",
+                Description = "El perímetro de vigilancia circular donde medimos radios de cobertura con x² + y² = r².",
+                LandmarkEmoji = "🎯",
+                TopicId = "prep_circle_conic_01",
+                OrderIndex = 30
+            },
+            new()
+            {
+                Id = "station_31",
+                Name = "El Laboratorio de Ondas Sonoras",
+                Description = "La sala de audio digital donde estudiamos la amplitud y cresta en y = A · sen(x).",
+                LandmarkEmoji = "〰️",
+                TopicId = "prep_sine_wave_01",
+                OrderIndex = 31
+            },
+            new()
+            {
+                Id = "station_32",
+                Name = "El Bosque de los Árboles Binarios",
+                Description = "La reserva algorítmica donde los logaritmos log₂(n) dividen y vencen en tiempo récord.",
+                LandmarkEmoji = "🌲",
+                TopicId = "prep_logarithm_binary_01",
+                OrderIndex = 32
+            },
+            new()
+            {
+                Id = "station_33",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 30
+                OrderIndex = 33
             }
         };
 

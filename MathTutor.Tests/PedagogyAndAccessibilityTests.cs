@@ -392,6 +392,45 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void ConicCircleTopic_CoversCanonicalCircleAndRadius()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var circleTopic = topics.FirstOrDefault(t => t.Id == "prep_circle_conic_01");
+
+        Assert.NotNull(circleTopic);
+        Assert.Equal(AcademicLevel.HighSchoolSecondGrade, circleTopic.Level);
+        Assert.Contains(circleTopic.PrinciplesAddressed, p => p.Contains("circunferencia"));
+        Assert.Contains(circleTopic.PrinciplesAddressed, p => p.Contains("radio"));
+        Assert.True(circleTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void SineWaveContinuousTopic_CoversHarmonicsAndAmplitude()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var waveTopic = topics.FirstOrDefault(t => t.Id == "prep_sine_wave_01");
+
+        Assert.NotNull(waveTopic);
+        Assert.Equal(AcademicLevel.HighSchoolSecondGrade, waveTopic.Level);
+        Assert.Contains(waveTopic.PrinciplesAddressed, p => p.Contains("senoidal"));
+        Assert.Contains(waveTopic.PrinciplesAddressed, p => p.Contains("amplitud"));
+        Assert.True(waveTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void LogarithmBinaryTopic_CoversBinaryLogarithmAndAlgorithms()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var logTopic = topics.FirstOrDefault(t => t.Id == "prep_logarithm_binary_01");
+
+        Assert.NotNull(logTopic);
+        Assert.Equal(AcademicLevel.HighSchoolSecondGrade, logTopic.Level);
+        Assert.Contains(logTopic.PrinciplesAddressed, p => p.Contains("logaritmo"));
+        Assert.Contains(logTopic.PrinciplesAddressed, p => p.Contains("base 2") || p.Contains("binarios"));
+        Assert.True(logTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

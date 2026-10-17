@@ -45,6 +45,9 @@ public class CurriculumService
             BuildAnalyticDistanceTopic(),
             BuildLineSlopeTopic(),
             BuildLinearEquationYMXBTopic(),
+            BuildConicCircleTopic(),
+            BuildSineWaveContinuousTopic(),
+            BuildLogarithmBinaryTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -1845,6 +1848,159 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "$24 pesos", Value = 24, IsCorrect = false, SpeechFeedback = "Revisa la suma: 16 + 10 es 26.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "$26 pesos en total", Value = 26, IsCorrect = true, SpeechFeedback = "¡Magnífico! 4 × 4 + 10 = 26 pesos.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "$30 pesos", Value = 30, IsCorrect = false, SpeechFeedback = "30 pesos es demasiado alto; 16 más 10 es 26.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 30 (2º Preparatoria): Circunferencia Canónica x² + y² = r²
+    /// </summary>
+    private PedagogicalTopic BuildConicCircleTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_circle_conic_01",
+            Title = "El Radar Perimetral: La Circunferencia x² + y² = r²",
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido a 2º de Preparatoria! En el mundo de los videojuegos y la robótica accesible, saber si un obstáculo o amigo está dentro de un radio de proximidad se calcula con la ecuación de la circunferencia: x² + y² = r². Todos los puntos cuya distancia al centro es exactamente r forman esta curva cónica perfecta.",
+            NarrativeIntroSimplified = "Un círculo perfecto tiene la regla x² + y² = r². La raíz del número de la derecha es el radio del círculo.",
+            CoreConceptExplanation = "La ecuación ordinaria de la circunferencia con centro en el origen C(0, 0) y radio r es x² + y² = r². Si un punto (x, y) cumple x² + y² < r², está en el interior; si es igual, está sobre el perímetro.",
+            CoreConceptSimplified = "Si x² + y² = 49, el radio es la raíz de 49, que es 7.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Ecuación canónica de la circunferencia con centro en el origen: x² + y² = r²",
+                "Cálculo del radio r a partir de la constante r²",
+                "Aplicación al campo de visión y zonas de interacción en robótica"
+            },
+            CongratulationMessage = "¡Gran Diseñador de Radares! Dominas la circunferencia cartesiana y el radio de cobertura en el plano."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "circle_ex_01",
+            Title = "El Perímetro del Sensor de Proximidad",
+            GameType = GamePlayType.ConicCircleRadius,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = 5,
+            StandardInstruction = "El radar de un vehículo accesible barre un área circular descrita por la ecuación x² + y² = 25. Sabiendo que x² + y² = r², ¿cuántos metros mide el radio de alcance r (√25)?",
+            SimplifiedInstruction = "Si x² + y² = 25, ¿cuánto vale el radio (la raíz de 25)?",
+            ScreenReaderDescription = "Ecuación de la circunferencia x cuadrada más y cuadrada igual a 25. Radio al cuadrado es 25. Raíz cuadrada de 25.",
+            FirstHint = "Compara la ecuación con x² + y² = r²: r² = 25. Calcula la raíz cuadrada de 25.",
+            SecondHintDetailed = "r = √25 = 5 metros.",
+            ExplanationOfSuccess = "¡Excelente! r² = 25 => r = √25 = 5 metros. El sensor tiene un alcance radial de 5 metros en todas las direcciones."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "radar_circle_item", Name = "Radar 5m", EmojiSymbol = "🎯", AccessibleDescription = "Radar circular de 5 metros de radio", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 metros de radio (r = √25)", Value = 5, IsCorrect = true, SpeechFeedback = "¡Correcto! r = 5 metros.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "12.5 metros (la mitad)", Value = 12, IsCorrect = false, SpeechFeedback = "No se divide entre 2; se extrae la raíz cuadrada.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "10 metros", Value = 10, IsCorrect = false, SpeechFeedback = "10 al cuadrado es 100, no 25.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 31 (2º Preparatoria): Ondas Senoidales y Armónicas y = A · sen(x)
+    /// </summary>
+    private PedagogicalTopic BuildSineWaveContinuousTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_sine_wave_01",
+            Title = "El Oscilador Armónico: La Onda y = A · sen(x)",
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "La música, la voz humana y la corriente eléctrica viajan por el aire en forma de ondas continuas. La función trigonométrica seno y = A · sen(Bx) describe cómo sube y baja un tono musical. La amplitud A nos dice qué tan fuerte suena una nota o cuál es su voltaje pico.",
+            NarrativeIntroSimplified = "Una onda musical sube y baja suavemente como una ola. La amplitud A es qué tan alto sube la ola.",
+            CoreConceptExplanation = "En la función periódica y = A · sen(Bx), A representa la amplitud (la distancia desde el eje central hasta la cresta máxima) y B modula la frecuencia angular.",
+            CoreConceptSimplified = "Si la función es y = 6 · sen(x), como el seno máximo vale 1, la cresta más alta es 6.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto y propiedades de la onda senoidal continua: y = A · sen(x)",
+                "Identificación de la amplitud, periodo y cresta máxima",
+                "Modelado de señales acústicas y procesamiento digital de sonido"
+            },
+            CongratulationMessage = "¡Maestro de las Ondas! Comprendes cómo la trigonometría genera audio y armonía musical continua."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "sine_wave_ex_01",
+            Title = "El Sintetizador de Audio: y = 5 · sen(x)",
+            GameType = GamePlayType.SineWaveContinuous,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = 5,
+            StandardInstruction = "En el ecualizador de audio, una nota de flauta genera la onda periódica y = 5 · sen(x). Dado que el valor máximo que alcanza la función sen(x) es 1, ¿cuál es la amplitud o cresta máxima alcanzada por la señal de audio (5 × 1)?",
+            SimplifiedInstruction = "Para y = 5 × sen(x), cuando el seno vale 1, ¿cuál es la altura máxima alcanzada?",
+            ScreenReaderDescription = "Función senoidal continua y = 5 por seno de x. Cresta máxima cuando seno de x es 1. Amplitud pico de 5 unidades.",
+            FirstHint = "El valor máximo de sen(x) es 1. Multiplica la amplitud 5 por 1.",
+            SecondHintDetailed = "Cresta máxima = 5 × 1 = 5 unidades.",
+            ExplanationOfSuccess = "¡Magnífico! La amplitud de la onda es A = 5. ¡Las funciones senoidales son el pilar matemático del procesamiento de audio!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "sine_wave_item", Name = "Onda Sonora", EmojiSymbol = "〰️", AccessibleDescription = "Onda senoidal con amplitud pico de 5", OrderIndex = 1, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "3 unidades", Value = 3, IsCorrect = false, SpeechFeedback = "La amplitud indicada en la fórmula es 5.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "5 unidades de amplitud (cresta máxima)", Value = 5, IsCorrect = true, SpeechFeedback = "¡Exacto! Amplitud A = 5.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "10 unidades", Value = 10, IsCorrect = false, SpeechFeedback = "10 sería el rango pico a pico (de -5 a +5), pero la amplitud respecto al centro es 5.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 32 (2º Preparatoria): Logaritmos en Base 2 y Complejidad Binaria
+    /// </summary>
+    private PedagogicalTopic BuildLogarithmBinaryTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_logarithm_binary_01",
+            Title = "El Código Binario: Logaritmos log₂(n)",
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "El logaritmo es la operación inversa de la exponenciación: responde a la pregunta '¿a qué exponente debo elevar la base para obtener este número?'. En la computación, la base por excelencia es el 2. El logaritmo binario log₂(n) determina cuántas veces podemos partir a la mitad un conjunto de datos, siendo el secreto de los algoritmos ultra veloces de búsqueda.",
+            NarrativeIntroSimplified = "El logaritmo log₂(n) cuenta cuántas veces multiplicas el 2 por sí mismo para llegar a un número.",
+            CoreConceptExplanation = "Por definición: log_b(a) = c <=> b^c = a. En base 2: log₂(8) = 3 porque 2³ = 8. En ciencias computacionales, una búsqueda binaria en n elementos toma en el peor caso O(log₂ n) pasos.",
+            CoreConceptSimplified = "Si tienes 16 cosas y divides a la mitad: 16 -> 8 -> 4 -> 2 -> 1 (4 pasos). Por eso log₂(16) = 4.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Definición formal del logaritmo como inversa de la función exponencial: log_b(x) = y <=> b^y = x",
+                "Propiedades y cálculo del logaritmo en base 2: log₂(2^k) = k",
+                "Aplicación fundamental al análisis de algoritmos y árboles binarios"
+            },
+            CongratulationMessage = "¡Cerebro Computacional! Dominas los logaritmos binarios y comprendes por qué las computadoras resuelven problemas inmensos en microsegundos."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "log2_ex_01",
+            Title = "Búsqueda en un Catálogo de 64 Elementos",
+            GameType = GamePlayType.LogarithmBinary,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = 6,
+            StandardInstruction = "En una biblioteca digital accesible de 64 libros ordenados alfabéticamente, un algoritmo de búsqueda binaria descarta la mitad de opciones en cada intento. Sabiendo que 2⁶ = 64, ¿cuántos pasos comparativos como máximo se necesitan (log₂(64))?",
+            SimplifiedInstruction = "¿A qué potencia elevas el 2 para que dé 64? (2 × 2 × 2 × 2 × 2 × 2). ¿Cuántas veces multiplicas el 2?",
+            ScreenReaderDescription = "Logaritmo en base 2 de 64. Potencia de 2 que da 64. 2 elevado a la 6 es 64. Respuesta: 6 pasos.",
+            FirstHint = "Multiplica el 2 sucesivamente: 2¹=2, 2²=4, 2³=8, 2⁴=16, 2⁵=32, 2⁶=64.",
+            SecondHintDetailed = "Como 2⁶ = 64, entonces log₂(64) = 6 pasos.",
+            ExplanationOfSuccess = "¡Brillante! log₂(64) = 6. ¡Con solo 6 preguntas puedes encontrar cualquier libro entre 64! El logaritmo convierte listas enormes en búsquedas instantáneas."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "tree_log2_item", Name = "Árbol de 64 Nodos", EmojiSymbol = "🌲", AccessibleDescription = "Estructura binaria con 64 elementos", OrderIndex = 1, MusicalPitchHz = Frequencies[4] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 pasos (2⁵ = 32)", Value = 5, IsCorrect = false, SpeechFeedback = "2 a la 5 es 32; para 64 se requiere un paso más.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "6 pasos (log₂ 64 = 6)", Value = 6, IsCorrect = true, SpeechFeedback = "¡Magnífico! 2⁶ = 64. log₂(64) = 6.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "8 pasos", Value = 8, IsCorrect = false, SpeechFeedback = "8 × 8 es 64, pero en base 2 buscamos la potencia 2^k, que es 6.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

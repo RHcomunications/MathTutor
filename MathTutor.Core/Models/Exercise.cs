@@ -43,7 +43,10 @@ public enum GamePlayType
     QuadraticFunctionCurve,   // Funciones cuadráticas y parábolas (y = ax², vértice y trayectoria)
     AnalyticDistance2D,       // Distancia entre dos puntos en el plano cartesiano d = √((x2-x1)² + (y2-y1)²)
     LineSlopeM,               // Pendiente de la recta m = (y2 - y1) / (x2 - x1) e inclinación
-    LinearEquationYMXB        // Ecuación de la recta en forma pendiente-ordenada al origen: y = mx + b
+    LinearEquationYMXB,       // Ecuación de la recta en forma pendiente-ordenada al origen: y = mx + b
+    ConicCircleRadius,        // Ecuación de la circunferencia x² + y² = r² y radio de proximidad
+    SineWaveContinuous,       // Ondas senoidales y armónicas y = A · sen(x) aplicadas al sonido
+    LogarithmBinary           // Logaritmos en base 2 log₂(n) y complejidad de búsqueda binaria
 }
 
 /// <summary>

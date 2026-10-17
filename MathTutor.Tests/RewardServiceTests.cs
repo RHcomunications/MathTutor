@@ -37,7 +37,7 @@ public class RewardServiceTests
         profile.CompletedLessonIds.Add("kinder_counting_01");
 
         var stations = _rewards.GetRealmStations(profile);
-        Assert.Equal(30, stations.Count);
+        Assert.Equal(33, stations.Count);
         Assert.Equal("station_1", stations[0].Id);
         Assert.True(stations[0].IsCompleted);
         Assert.False(stations[0].IsCurrentStation);
@@ -109,8 +109,16 @@ public class RewardServiceTests
         Assert.Equal("station_29", stations[28].Id);
         Assert.Equal("prep_line_equation_ymxb_01", stations[28].TopicId);
 
-        // Estación final: Programación
+        // Estaciones añadidas para 2º de preparatoria
         Assert.Equal("station_30", stations[29].Id);
-        Assert.Equal("prog_seed_01", stations[29].TopicId);
+        Assert.Equal("prep_circle_conic_01", stations[29].TopicId);
+        Assert.Equal("station_31", stations[30].Id);
+        Assert.Equal("prep_sine_wave_01", stations[30].TopicId);
+        Assert.Equal("station_32", stations[31].Id);
+        Assert.Equal("prep_logarithm_binary_01", stations[31].TopicId);
+
+        // Estación final: Programación
+        Assert.Equal("station_33", stations[32].Id);
+        Assert.Equal("prog_seed_01", stations[32].TopicId);
     }
 }

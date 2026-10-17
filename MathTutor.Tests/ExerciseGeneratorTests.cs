@@ -664,4 +664,67 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, ymxbList.Count);
         Assert.All(ymxbList, ex => Assert.Equal(GamePlayType.LinearEquationYMXB, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateConicCircleExercise_SolvesExactRadius()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolSecondGrade, Age = 16 };
+        var rng = new Random(3100);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateConicCircleExercise(profile, rng);
+            Assert.Equal(GamePlayType.ConicCircleRadius, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 3 && ex.ExpectedResult <= 8);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateSineWaveContinuousExercise_ProducesAccuratePeakAmplitude()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolSecondGrade, Age = 16 };
+        var rng = new Random(3200);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateSineWaveContinuousExercise(profile, rng);
+            Assert.Equal(GamePlayType.SineWaveContinuous, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 3 && ex.ExpectedResult <= 7);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateLogarithmBinaryExercise_CalculatesBinaryStepsAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolSecondGrade, Age = 16 };
+        var rng = new Random(3300);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateLogarithmBinaryExercise(profile, rng);
+            Assert.Equal(GamePlayType.LogarithmBinary, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 3 && ex.ExpectedResult <= 6);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_HighSchoolSecondGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolSecondGrade, Age = 16 };
+
+        var circleList = _generator.GenerateExercisesForTopic("prep_circle_conic_01", profile, count: 3);
+        Assert.Equal(3, circleList.Count);
+        Assert.All(circleList, ex => Assert.Equal(GamePlayType.ConicCircleRadius, ex.GameType));
+
+        var waveList = _generator.GenerateExercisesForTopic("prep_sine_wave_01", profile, count: 3);
+        Assert.Equal(3, waveList.Count);
+        Assert.All(waveList, ex => Assert.Equal(GamePlayType.SineWaveContinuous, ex.GameType));
+
+        var logList = _generator.GenerateExercisesForTopic("prep_logarithm_binary_01", profile, count: 3);
+        Assert.Equal(3, logList.Count);
+        Assert.All(logList, ex => Assert.Equal(GamePlayType.LogarithmBinary, ex.GameType));
+    }
 }

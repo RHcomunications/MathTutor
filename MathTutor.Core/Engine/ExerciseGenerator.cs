@@ -1681,6 +1681,134 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de ecuación de la circunferencia x² + y² = r² y radio de proximidad (2º Preparatoria).
+    /// </summary>
+    public Exercise GenerateConicCircleExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int radius = isSimplified ? 5 : rng.Next(3, 9);
+        int rSquared = radius * radius;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_circle_{Guid.NewGuid():N}",
+            Title = $"El Radar Circular: x² + y² = {rSquared}",
+            GameType = GamePlayType.ConicCircleRadius,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = radius,
+            StandardInstruction = $"El sensor de un robot móvil detecta obstáculos en una zona circular modelada por la ecuación x² + y² = {rSquared}. Sabiendo que la ecuación canónica de la circunferencia con centro en el origen es x² + y² = r², ¿cuántos metros mide el radio de detección r = √{rSquared}?",
+            SimplifiedInstruction = $"Si un círculo cumple x² + y² = {rSquared}, ¿cuánto mide su radio? ¿Qué número por sí mismo da {rSquared}?",
+            ScreenReaderDescription = $"Ecuación canónica de la circunferencia: x al cuadrado más y al cuadrado igual a {rSquared}. Radio al cuadrado es {rSquared}. Raíz cuadrada de {rSquared}.",
+            FirstHint = $"Compara con la ecuación canónica: r² = {rSquared}. Para hallar r, calcula la raíz cuadrada de {rSquared}.",
+            SecondHintDetailed = $"r = √{rSquared} = {radius} metros.",
+            ExplanationOfSuccess = $"¡Brillante! El radio de detección es r = {radius} metros (r² = {rSquared}). Las ecuaciones circulares se usan en robótica y videojuegos para delimitar zonas de interacción."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "radar_circle_item",
+            Name = $"Círculo de Radio {radius}m",
+            EmojiSymbol = "🎯",
+            AccessibleDescription = $"Zona circular de radio {radius} metros",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        BuildOptions(ex, radius, min: Math.Max(2, radius - 3), max: radius + 3, unitLabel: "metros", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de ondas senoidales y armónicas continuas y = A · sen(x) (2º Preparatoria).
+    /// Evaluar la amplitud pico A de una onda sonora o de voltaje.
+    /// </summary>
+    public Exercise GenerateSineWaveContinuousExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int amplitude = isSimplified ? 4 : rng.Next(3, 8); // amplitud A
+        int peakValue = amplitude; // sen(90°) = 1 => y_max = A
+
+        var ex = new Exercise
+        {
+            Id = $"gen_sinewave_{Guid.NewGuid():N}",
+            Title = $"La Onda Sonora: y = {amplitude} · sen(x)",
+            GameType = GamePlayType.SineWaveContinuous,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = peakValue,
+            StandardInstruction = $"En un sintetizador musical accesible, una nota pura genera una onda senoidal de voltaje dada por la función y = {amplitude} · sen(x). Como el valor máximo de la función seno es 1 (sen 90° = 1), ¿cuál es la amplitud máxima o cresta alcanzada por la onda sonora ({amplitude} × 1)?",
+            SimplifiedInstruction = $"En la onda y = {amplitude} × sen(x), el seno máximo vale 1. ¿Cuál es la altura máxima alcanzada ({amplitude} × 1)?",
+            ScreenReaderDescription = $"Función trigonométrica continua y = {amplitude} por seno de x. Amplitud máxima en el pico donde sen(x) es 1. Altura máxima {amplitude}.",
+            FirstHint = $"El valor máximo que puede tener la función sen(x) es 1. Multiplica {amplitude} por 1.",
+            SecondHintDetailed = $"Altura máxima = {amplitude} × 1 = {amplitude} voltios / unidades.",
+            ExplanationOfSuccess = $"¡Espectacular! La amplitud de la onda es A = {amplitude}. Las funciones senoidales son el alma del audio digital, la síntesis de voz y las señales de radio."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "wave_oscillator",
+            Name = "Onda Sonora",
+            EmojiSymbol = "〰️",
+            AccessibleDescription = $"Onda armónica continua con amplitud {amplitude}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, peakValue, min: Math.Max(2, peakValue - 3), max: peakValue + 3, unitLabel: "unidades", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de logaritmos en base 2 log₂(n) y complejidad computacional (2º Preparatoria).
+    /// </summary>
+    public Exercise GenerateLogarithmBinaryExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        // Potencias de 2: 2^3=8, 2^4=16, 2^5=32, 2^6=64, 2^7=128
+        int exponent = isSimplified ? 4 : rng.Next(3, 7);
+        int numberN = 1 << exponent; // 2^exponent
+
+        var ex = new Exercise
+        {
+            Id = $"gen_log2_{Guid.NewGuid():N}",
+            Title = $"Búsqueda Binaria: log₂({numberN})",
+            GameType = GamePlayType.LogarithmBinary,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = exponent,
+            StandardInstruction = $"En un diccionario digital de {numberN} palabras ordenadas alfabéticamente, un algoritmo de búsqueda binaria divide la lista a la mitad en cada paso. El número máximo de comparaciones requeridas es log₂({numberN}). Sabiendo que 2 raised to what power equals {numberN} (2^k = {numberN}), ¿cuántos pasos k toma encontrar cualquier palabra?",
+            SimplifiedInstruction = $"Si vas partiendo a la mitad {numberN} cosas, ¿cuántas veces tienes que doblar el 2 (2 × 2 × 2...) para llegar a {numberN}?",
+            ScreenReaderDescription = $"Logaritmo en base 2 de {numberN}. Exponente k tal que 2 a la k es igual a {numberN}. Resultado es {exponent} pasos.",
+            FirstHint = $"Calcula las potencias de 2: 2¹=2, 2²=4, 2³=8, 2⁴=16, etc. ¿A qué exponente corresponde {numberN}?",
+            SecondHintDetailed = $"2^{exponent} = {numberN}, por lo tanto log₂({numberN}) = {exponent}.",
+            ExplanationOfSuccess = $"¡Extraordinario! log₂({numberN}) = {exponent}. ¡Un algoritmo binario solo necesita {exponent} comparaciones entre {numberN} elementos! Es el fundamento de la eficiencia en programación."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "binary_tree_item",
+            Name = $"Árbol Binario ({numberN} nodos)",
+            EmojiSymbol = "🌲",
+            AccessibleDescription = $"Estructura binaria de {numberN} elementos",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[4]
+        });
+
+        BuildOptions(ex, exponent, min: Math.Max(2, exponent - 2), max: exponent + 3, unitLabel: "pasos", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -1758,6 +1886,12 @@ public class ExerciseGenerator
                 "prep_line_slope_01" => GenerateLineSlopeExercise(profile, rng),
 
                 "prep_line_equation_ymxb_01" => GenerateLinearEquationYMXBExercise(profile, rng),
+
+                "prep_circle_conic_01" => GenerateConicCircleExercise(profile, rng),
+
+                "prep_sine_wave_01" => GenerateSineWaveContinuousExercise(profile, rng),
+
+                "prep_logarithm_binary_01" => GenerateLogarithmBinaryExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };
