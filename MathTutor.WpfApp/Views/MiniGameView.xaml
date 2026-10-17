@@ -1,0 +1,222 @@
+<UserControl x:Class="MathTutor.WpfApp.Views.MiniGameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="950"
+             Focusable="True">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24" MaxWidth="900" HorizontalAlignment="Center">
+            <!-- Barra Superior del Ejercicio -->
+            <Border Style="{StaticResource AccessibleCard}" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="BtnBackToLesson"
+                            Content="⬅ Volver"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{DynamicResource AppSurfaceBrush}"
+                            Foreground="{DynamicResource AppTextPrimaryBrush}"
+                            Height="44"
+                            MinWidth="100"
+                            Margin="0,0,14,0"
+                            AutomationProperties.Name="Volver a la explicación de la lección"
+                            Click="BtnBackToLesson_Click"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtExerciseTitle"
+                                   Text="Título del Desafío"
+                                   FontSize="{DynamicResource AppSubHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock x:Name="TxtProgressCounter"
+                                   Text="Reto 1 de 3"
+                                   FontSize="{DynamicResource AppBaseFontSize}"
+                                   Foreground="{DynamicResource AppAccentBrush}"/>
+                    </StackPanel>
+
+                    <!-- Pistas y Audio -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="BtnHint"
+                                Content="💡 Pista"
+                                Style="{StaticResource AccessibleActionButton}"
+                                Background="{DynamicResource AppSurfaceBrush}"
+                                Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                Height="44"
+                                MinWidth="100"
+                                Margin="0,0,8,0"
+                                AutomationProperties.Name="Pedir una pista a Cosmo"
+                                Click="BtnHint_Click"/>
+
+                        <Button x:Name="BtnRepeatInstruction"
+                                Content="🔊 Repetir (F1)"
+                                Style="{StaticResource AccessibleActionButton}"
+                                Background="{DynamicResource AppSurfaceBrush}"
+                                Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                Height="44"
+                                MinWidth="130"
+                                AutomationProperties.Name="Repetir la pregunta en voz alta"
+                                Click="BtnRepeatInstruction_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Tarjeta de Instrucción Principal -->
+            <Border Background="{DynamicResource AppSurfaceBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="🦉" FontSize="44" Margin="0,0,16,0" VerticalAlignment="Top"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Reto de Cosmo:"
+                                   FontSize="{DynamicResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource AppAccentBrush}"
+                                   Margin="0,0,0,4"/>
+                        <TextBlock x:Name="TxtInstruction"
+                                   Text="Enunciado de la instrucción adaptada..."
+                                   FontSize="{DynamicResource AppHeaderFontSize}"
+                                   Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                   LineHeight="34"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Zona de Objetos Manipulables Interactivos (Conteo Sensorial) -->
+            <Border x:Name="BorderManipulables"
+                    Background="{DynamicResource AppCardBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="2"
+                    CornerRadius="16"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock x:Name="TxtManipulablesPrompt"
+                               Text="Toca o selecciona cada objeto para contarlo y escuchar su nota mágica:"
+                               FontSize="{DynamicResource AppBaseFontSize}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource AppTextSecondaryBrush}"
+                               Margin="0,0,0,12"/>
+
+                    <!-- Elementos Grupo A -->
+                    <WrapPanel x:Name="PanelItemsGroupA" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <!-- Elementos Grupo B (para sumas o comparaciones) -->
+                    <StackPanel x:Name="PanelGroupBSeparator" Visibility="Collapsed" Margin="0,4,0,8">
+                        <TextBlock Text="➕ Agregamos este grupo:"
+                                   FontSize="{DynamicResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource AppAccentBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,6"/>
+                        <WrapPanel x:Name="PanelItemsGroupB" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Banner de Pista o Retroalimentación en Proceso -->
+            <Border x:Name="BorderHintBanner"
+                    Background="{DynamicResource AppSurfaceBrush}"
+                    BorderBrush="{DynamicResource AppAccentBrush}"
+                    BorderThickness="2"
+                    CornerRadius="12"
+                    Padding="16"
+                    Margin="0,0,0,16"
+                    Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="💡" FontSize="32" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1"
+                               x:Name="TxtHintMessage"
+                               Text="Pista adaptada..."
+                               FontSize="{DynamicResource AppBaseFontSize}"
+                               Foreground="{DynamicResource AppTextPrimaryBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"/>
+                </Grid>
+            </Border>
+
+            <!-- Zona de Opciones de Respuesta Adaptativas -->
+            <Border Background="{DynamicResource AppSurfaceBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="2"
+                    CornerRadius="16"
+                    Padding="20"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Selecciona tu respuesta (o presiona la tecla de número correspondiente en el teclado):"
+                               FontSize="{DynamicResource AppBaseFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AppTextSecondaryBrush}"
+                               Margin="0,0,0,14"
+                               HorizontalAlignment="Center"/>
+
+                    <!-- Contenedor dinámico de botones de opciones -->
+                    <WrapPanel x:Name="PanelOptions" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Banner de Éxito y Felicitación -->
+            <Border x:Name="BorderSuccessBanner"
+                    Background="{DynamicResource AppSuccessBrush}"
+                    BorderBrush="{DynamicResource AppFocusBorderBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="20"
+                    Margin="0,0,0,20"
+                    Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <TextBlock Text="⭐" FontSize="36" Margin="0,0,8,0"/>
+                        <TextBlock Text="¡EXTRAORDINARIO! ¡LO LOGRASTE!"
+                                   FontSize="{DynamicResource AppHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="#FFFFFF"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="⭐" FontSize="36" Margin="8,0,0,0"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="TxtSuccessExplanation"
+                               Text="Explicación del éxito..."
+                               FontSize="{DynamicResource AppSubHeaderFontSize}"
+                               Foreground="#FFFFFF"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,16"/>
+
+                    <Button x:Name="BtnNextExercise"
+                            Content="🌟 Siguiente Reto Mágico (Enter)"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="#FFFFFF"
+                            Foreground="#000000"
+                            BorderBrush="#FFD700"
+                            BorderThickness="3"
+                            Height="60"
+                            MinWidth="240"
+                            FontSize="{DynamicResource AppSubHeaderFontSize}"
+                            AutomationProperties.Name="Avanzar al siguiente ejercicio"
+                            Click="BtnNextExercise_Click"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

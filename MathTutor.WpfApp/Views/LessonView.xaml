@@ -1,0 +1,161 @@
+<UserControl x:Class="MathTutor.WpfApp.Views.LessonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="950">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24" MaxWidth="850" HorizontalAlignment="Center">
+            <!-- Título de la Lección -->
+            <Border Style="{StaticResource AccessibleCard}" Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="BtnBackToMenu"
+                            Content="⬅ Volver"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{DynamicResource AppSurfaceBrush}"
+                            Foreground="{DynamicResource AppTextPrimaryBrush}"
+                            Height="48"
+                            MinWidth="110"
+                            Margin="0,0,16,0"
+                            AutomationProperties.Name="Volver al menú de aventuras"
+                            Click="BtnBackToMenu_Click"/>
+
+                    <TextBlock Grid.Column="1"
+                               x:Name="TxtLessonTitle"
+                               Text="Título de la Lección"
+                               FontSize="{DynamicResource AppHeaderFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AppTextPrimaryBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"/>
+                </Grid>
+            </Border>
+
+            <!-- Sección de Narrativa con Cosmo el Búho -->
+            <Border Background="{DynamicResource AppSurfaceBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="24"
+                    Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Avatar del Tutor -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource AppCardBrush}"
+                            BorderBrush="{DynamicResource AppAccentBrush}"
+                            BorderThickness="2"
+                            CornerRadius="20"
+                            Width="110"
+                            Height="110"
+                            Margin="0,0,20,0"
+                            VerticalAlignment="Top">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="🦉" FontSize="50" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Cosmo" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppAccentBrush}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Globo de Diálogo de la Narrativa -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Historia de la Misión:"
+                                   FontSize="{DynamicResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource AppAccentBrush}"
+                                   Margin="0,0,0,6"/>
+                        <TextBlock x:Name="TxtNarrativeStory"
+                                   Text="Historia introductoria de Cosmo..."
+                                   FontSize="{DynamicResource AppSubHeaderFontSize}"
+                                   Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                   LineHeight="32"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Explicación del Principio Matemático -->
+            <Border Background="{DynamicResource AppCardBrush}"
+                    BorderBrush="{DynamicResource AppAccentBrush}"
+                    BorderThickness="2"
+                    CornerRadius="16"
+                    Padding="24"
+                    Margin="0,0,0,24">
+                <StackPanel>
+                    <TextBlock Text="✨ El Secreto Matemático que Aprenderemos:"
+                               FontSize="{DynamicResource AppSubHeaderFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AppAccentBrush}"
+                               Margin="0,0,0,8"/>
+                    <TextBlock x:Name="TxtCoreConcept"
+                               Text="Explicación del concepto..."
+                               FontSize="{DynamicResource AppBaseFontSize}"
+                               Foreground="{DynamicResource AppTextPrimaryBrush}"
+                               LineHeight="28"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Principios que dominarás en este juego:"
+                               FontSize="{DynamicResource AppBaseFontSize}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource AppTextSecondaryBrush}"
+                               Margin="0,0,0,6"/>
+                    <ItemsControl x:Name="ItemsPrinciples">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource AppSurfaceBrush}"
+                                        BorderBrush="{DynamicResource AppBorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="10,6"
+                                        Margin="0,3">
+                                    <TextBlock Text="{Binding}"
+                                               FontSize="{DynamicResource AppBaseFontSize}"
+                                               Foreground="{DynamicResource AppTextPrimaryBrush}"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Botones de Acción Accesibles -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        x:Name="BtnRepeatVoice"
+                        Content="🔊 Escuchar Explicación (F1)"
+                        Style="{StaticResource AccessibleActionButton}"
+                        Background="{DynamicResource AppSurfaceBrush}"
+                        Foreground="{DynamicResource AppTextPrimaryBrush}"
+                        Height="64"
+                        FontSize="{DynamicResource AppSubHeaderFontSize}"
+                        AutomationProperties.Name="Escuchar la explicación de nuevo"
+                        Click="BtnRepeatVoice_Click"/>
+
+                <Button Grid.Column="2"
+                        x:Name="BtnStartGame"
+                        Content="🎮 ¡Comenzar el Reto Lúdico! (Enter)"
+                        Style="{StaticResource AccessibleActionButton}"
+                        Height="64"
+                        FontSize="{DynamicResource AppSubHeaderFontSize}"
+                        AutomationProperties.Name="Comenzar el juego y los ejercicios"
+                        Click="BtnStartGame_Click"/>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="MathTutor.Core/MathTutor.Core.csproj" />
+  <Project Path="MathTutor.Tests/MathTutor.Tests.csproj" />
+  <Project Path="MathTutor.WpfApp/MathTutor.WpfApp.csproj" />
+</Solution>
