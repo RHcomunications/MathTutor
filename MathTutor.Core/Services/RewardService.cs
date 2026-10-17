@@ -214,6 +214,42 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_quadratic",
+                Title = "Mago del Segundo Grado",
+                Description = "Despejaste ecuaciones cuadráticas y calculaste raíces exactas en áreas.",
+                IconEmoji = "🪞",
+                AssociatedTopicId = "sec_quadratic_equations_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_thales",
+                Title = "Explorador Solar de Tales",
+                Description = "Mediste alturas monumentales utilizando sombras y semejanza de triángulos.",
+                IconEmoji = "☀️",
+                AssociatedTopicId = "sec_thales_similarity_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_trigonometry",
+                Title = "Navegante del Seno y Coseno",
+                Description = "Descubriste las razones trigonométricas y orientaste señales espaciales.",
+                IconEmoji = "📡",
+                AssociatedTopicId = "sec_trigonometry_ratios_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_parabola",
+                Title = "Arquitecto de Parábolas",
+                Description = "Modelaste curvas parabólicas y trayectorias con funciones cuadráticas y = ax².",
+                IconEmoji = "⛲",
+                AssociatedTopicId = "sec_quadratic_functions_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -458,11 +494,47 @@ public class RewardService
             new()
             {
                 Id = "station_23",
+                Name = "El Laberinto de las Cuadráticas",
+                Description = "El jardín de áreas cuadradas donde descubrimos raíces x² = k.",
+                LandmarkEmoji = "🪞",
+                TopicId = "sec_quadratic_equations_01",
+                OrderIndex = 23
+            },
+            new()
+            {
+                Id = "station_24",
+                Name = "El Obelisco del Sol de Tales",
+                Description = "El monumento donde las sombras y triángulos semejantes revelan alturas colosales.",
+                LandmarkEmoji = "☀️",
+                TopicId = "sec_thales_similarity_01",
+                OrderIndex = 24
+            },
+            new()
+            {
+                Id = "station_25",
+                Name = "La Cúpula Trigonométrica",
+                Description = "El observatorio donde el seno, coseno y tangente orientan las estrellas.",
+                LandmarkEmoji = "📡",
+                TopicId = "sec_trigonometry_ratios_01",
+                OrderIndex = 25
+            },
+            new()
+            {
+                Id = "station_26",
+                Name = "La Gran Fuente Parabólica",
+                Description = "El parque acuático donde los chorros de agua dibujan funciones cuadráticas y = ax².",
+                LandmarkEmoji = "⛲",
+                TopicId = "sec_quadratic_functions_01",
+                OrderIndex = 26
+            },
+            new()
+            {
+                Id = "station_27",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 23
+                OrderIndex = 27
             }
         };
 

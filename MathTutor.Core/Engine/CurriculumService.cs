@@ -38,6 +38,10 @@ public class CurriculumService
             BuildPolynomialLikeTermsTopic(),
             BuildLinearSystems2x2Topic(),
             BuildPythagoreanTheoremTopic(),
+            BuildQuadraticEquationsTopic(),
+            BuildThalesSimilarityTopic(),
+            BuildTrigonometricRatiosTopic(),
+            BuildQuadraticFunctionsTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -1480,6 +1484,210 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 metros de rampa (c = √25)", Value = 5, IsCorrect = true, SpeechFeedback = "¡Exacto! c = 5 metros. 3² + 4² = 5².", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "7 metros (sumando lados)", Value = 7, IsCorrect = false, SpeechFeedback = "¡Cuidado! No se suman directamente 3 + 4; se suman sus cuadrados y se saca raíz.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "12 metros", Value = 12, IsCorrect = false, SpeechFeedback = "12 sería 3 × 4, pero buscamos la hipotenusa que es 5.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 23 (3º Secundaria): Ecuaciones Cuadráticas
+    /// </summary>
+    private PedagogicalTopic BuildQuadraticEquationsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_quadratic_equations_01",
+            Title = "El Misterio de la Incógnita al Cuadrado: Ecuaciones Cuadráticas",
+            Level = AcademicLevel.SecondaryThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido a 3º de Secundaria! Nos adentramos en el reino de las áreas y las curvas parabólicas. Cuando la incógnita está elevada al cuadrado (x²), la ecuación puede tener hasta dos soluciones reales. Resolver ecuaciones cuadráticas puras (ax² + c = 0) o completas (ax² + bx + c = 0) nos permite calcular dimensiones de terrenos, trayectorias espaciales y estructuras.",
+            NarrativeIntroSimplified = "En una ecuación cuadrática, la letra x está multiplicada por sí misma (x²). Despejamos sacando la raíz cuadrada.",
+            CoreConceptExplanation = "Una ecuación de segundo grado tiene la forma general ax² + bx + c = 0 (con a ≠ 0). En las formas puras x² - k = 0, despejamos directamente x² = k, por lo que x = ±√k. En problemas de áreas y medidas físicas, la longitud del lado es la raíz positiva.",
+            CoreConceptSimplified = "Si x² = 25, entonces x es el número que multiplicado por sí mismo da 25, es decir, 5.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Estructura general de la ecuación de segundo grado: ax² + bx + c = 0",
+                "Resolución por despeje directo y extracción de raíz cuadrada: x = ±√k",
+                "Interpretación geométrica de las raíces en problemas de áreas"
+            },
+            CongratulationMessage = "¡Gran Maestro del Segundo Grado! Dominas las ecuaciones cuadráticas y descubres las raíces exactas de cualquier problema."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "quad_ex_01",
+            Title = "El Huerto Comunitario: x² - 36 = 0",
+            GameType = GamePlayType.QuadraticEquations,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = 6,
+            StandardInstruction = "En el ejido escolar se delimita un huerto cuadrado de área total x² metros cuadrados. La ecuación que describe el terreno es x² - 36 = 0. Despejando x² = 36, ¿cuántos metros mide cada lado x del huerto (√36)?",
+            SimplifiedInstruction = "Si x² = 36, ¿cuánto vale x? ¿Qué número por sí mismo da 36?",
+            ScreenReaderDescription = "Ecuación cuadrática x cuadrada menos 36 igual a cero. Se despeja x al cuadrado igual a 36. Raíz cuadrada de 36.",
+            FirstHint = "Despeja x²: x² = 36. Luego calcula la raíz cuadrada de 36.",
+            SecondHintDetailed = "6 × 6 = 36, por lo tanto el lado positivo es x = 6 metros.",
+            ExplanationOfSuccess = "¡Extraordinario! x² - 36 = 0 => x² = 36 => x = √36 = 6 metros. El huerto mide 6 metros por lado."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "garden_quad_item", Name = "Huerto 36m²", EmojiSymbol = "🟩", AccessibleDescription = "Huerto cuadrado de 36 metros cuadrados", OrderIndex = 1, MusicalPitchHz = Frequencies[1] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 metros (x = √36)", Value = 6, IsCorrect = true, SpeechFeedback = "¡Magnífico! 6 × 6 = 36. El lado mide 6 metros.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "18 metros (la mitad)", Value = 18, IsCorrect = false, SpeechFeedback = "No se divide entre 2; se busca la raíz cuadrada.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "12 metros", Value = 12, IsCorrect = false, SpeechFeedback = "12 × 12 sería 144, no 36. La respuesta correcta es 6.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 24 (3º Secundaria): Teorema de Tales y Semejanza de Triángulos
+    /// </summary>
+    private PedagogicalTopic BuildThalesSimilarityTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_thales_similarity_01",
+            Title = "La Geometría del Sol: Teorema de Tales y Semejanza",
+            Level = AcademicLevel.SecondaryThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Cuentan las crónicas que Tales de Mileto midió la altura de las pirámides de Egipto comparando la sombra de su bastón con la de la pirámide a la misma hora del día. Dos figuras son semejantes cuando tienen la misma forma, ángulos idénticos y lados proporcionales.",
+            NarrativeIntroSimplified = "El sol crea sombras con la misma inclinación. Usando sombras podemos medir cosas gigantescas sin escalarlas.",
+            CoreConceptExplanation = "El Teorema de Tales establece que si en un triángulo se traza una línea paralela a cualquiera de sus lados, se obtiene un triángulo semejante. La razón de semejanza r entre lados homólogos es constante: Altura₁ / Sombra₁ = Altura₂ / Sombra₂.",
+            CoreConceptSimplified = "Si un poste mide 2m y da 1m de sombra, un árbol que da 5m de sombra mide 10m de altura.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Criterios de semejanza de triángulos (Ángulo-Ángulo, Lado-Lado-Lado)",
+                "Teorema de Tales sobre rectas paralelas y segmentos proporcionales",
+                "Resolución de problemas de medición indirecta de alturas mediante sombras"
+            },
+            CongratulationMessage = "¡Fabuloso Geómetra! Mides monumentos y árboles gigantes con la elegancia matemática de Tales de Mileto."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "thales_ex_01",
+            Title = "La Sombra del Pirul del Parque",
+            GameType = GamePlayType.TriangleSimilarityThales,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = 8,
+            StandardInstruction = "Al atardecer en el parque, un estudiante de 2 metros de estatura proyecta una sombra de 3 metros. A su lado, el gran árbol pirul proyecta una sombra de 12 metros. Como 12 ÷ 3 = 4 (el árbol es 4 veces más grande que la sombra de referencia), ¿cuántos metros de altura mide el árbol pirul (2 × 4)?",
+            SimplifiedInstruction = "La sombra del árbol (12m) es 4 veces la sombra del estudiante (3m). Multiplica la altura del estudiante (2m) por 4.",
+            ScreenReaderDescription = "Teorema de Tales: sombra de 12 metros entre sombra de 3 metros da factor 4. Altura del estudiante 2 metros por 4.",
+            FirstHint = "Calcula la proporción: 12 / 3 = 4 veces más grande. Multiplica 2 × 4.",
+            SecondHintDetailed = "Altura = 2 × 4 = 8 metros.",
+            ExplanationOfSuccess = "¡Excelente! Por semejanza de triángulos: Altura / 12 = 2 / 3 => Altura = (2 × 12) / 3 = 24 / 3 = 8 metros."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "tree_thales_item", Name = "Árbol Pirul", EmojiSymbol = "🌳", AccessibleDescription = "Árbol pirul proyectando 12 metros de sombra", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 metros", Value = 6, IsCorrect = false, SpeechFeedback = "Revisa la proporción: 12 entre 3 es 4, y 2 por 4 es 8.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "8 metros de altura", Value = 8, IsCorrect = true, SpeechFeedback = "¡Correcto! 2 × 4 = 8 metros de altura.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "10 metros", Value = 10, IsCorrect = false, SpeechFeedback = "10 no coincide con la razón de semejanza de 4.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 25 (3º Secundaria): Razones Trigonométricas Básicas
+    /// </summary>
+    private PedagogicalTopic BuildTrigonometricRatiosTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_trigonometry_ratios_01",
+            Title = "La Brújula de los Ángulos: Razones Trigonométricas",
+            Level = AcademicLevel.SecondaryThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "La trigonometría une los lados rectos de un triángulo con sus ángulos internos. En todo triángulo rectángulo, las razones entre sus lados reciben nombres universales: seno (sen), coseno (cos) y tangente (tan). Con ellas navegamos mares, medimos distancias estelares y orientamos satélites.",
+            NarrativeIntroSimplified = "La trigonometría compara los lados de un triángulo para calcular ángulos y alturas inaccesibles.",
+            CoreConceptExplanation = "Para un ángulo agudo θ en un triángulo rectángulo: sen(θ) = Cateto Opuesto / Hipotenusa, cos(θ) = Cateto Adyacente / Hipotenusa, y tan(θ) = Cateto Opuesto / Cateto Adyacente.",
+            CoreConceptSimplified = "SOH-CAH-TOA: Seno = Opuesto/Hipotenusa, Coseno = Adyacente/Hipotenusa, Tangente = Opuesto/Adyacente.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Definición de las razones trigonométricas directas: seno, coseno y tangente",
+                "Identificación del cateto opuesto, cateto adyacente e hipotenusa según el ángulo de referencia",
+                "Aplicación al cálculo de distancias y orientaciones espaciales"
+            },
+            CongratulationMessage = "¡Navegante Trigonométrico! Dominas el seno, coseno y la tangente para orientar cualquier trayecto en el plano."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "trig_ex_01",
+            Title = "La Antena y el Cateto Opuesto",
+            GameType = GamePlayType.TrigonometricRatios,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = 3,
+            StandardInstruction = "En un soporte triangular con hipotenusa de 5 metros y cateto adyacente de 4 metros, la razón seno del ángulo es sen(θ) = cateto opuesto / 5. Con la terna pitagórica op² + 4² = 5² (op² + 16 = 25 => op² = 9), ¿cuántos metros mide el cateto opuesto (√9)?",
+            SimplifiedInstruction = "Si la hipotenusa mide 5 y la base mide 4, el lado opuesto cumple: op² = 25 - 16 = 9. ¿Cuánto es la raíz de 9?",
+            ScreenReaderDescription = "Triángulo rectángulo: hipotenusa 5 metros, base 4 metros. Cateto opuesto al cuadrado es 9. Raíz de 9.",
+            FirstHint = "Calcula la raíz cuadrada de 9: ¿qué número multiplicado por sí mismo da 9?",
+            SecondHintDetailed = "3 × 3 = 9, por lo tanto el cateto opuesto mide 3 metros.",
+            ExplanationOfSuccess = "¡Perfecto! El cateto opuesto mide 3 metros. Así: sen(θ) = 3/5 = 0.6, cos(θ) = 4/5 = 0.8, tan(θ) = 3/4 = 0.75."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "trig_antenna_item", Name = "Antena Soporte", EmojiSymbol = "📡", AccessibleDescription = "Soporte de antena con cateto opuesto de 3 metros", OrderIndex = 1, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "3 metros (sen θ = 3/5)", Value = 3, IsCorrect = true, SpeechFeedback = "¡Excelente! El cateto opuesto mide 3 metros.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "2 metros", Value = 2, IsCorrect = false, SpeechFeedback = "2 al cuadrado es 4, pero necesitamos 9.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4 metros", Value = 4, IsCorrect = false, SpeechFeedback = "4 es el cateto adyacente, no el opuesto.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 26 (3º Secundaria): Funciones Cuadráticas y Parábolas
+    /// </summary>
+    private PedagogicalTopic BuildQuadraticFunctionsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_quadratic_functions_01",
+            Title = "El Vuelo de la Parábola: Funciones Cuadráticas",
+            Level = AcademicLevel.SecondaryThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Cuando lanzas un balón de básquetbol o miras el arco de un puente colgante, la curva que se dibuja no es una línea recta: ¡es una parábola perfecta! Las funciones cuadráticas de la forma y = ax² modelan la aceleración por gravedad, la acústica de los teatros y las trayectorias de cohetes.",
+            NarrativeIntroSimplified = "Una función cuadrática dibuja una curva suave llamada parábola. A medida que x crece, y crece mucho más rápido.",
+            CoreConceptExplanation = "La función cuadrática básica es y = ax². A diferencia de la variación lineal donde la razón de cambio es constante, en la función cuadrática las segundas diferencias son constantes, produciendo una curva simétrica con vértice en el origen.",
+            CoreConceptSimplified = "Si y = 2x² y x vale 3, calculas 3² = 9, y luego 2 × 9 = 18.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto y gráfica de la función cuadrática: y = ax²",
+                "Identificación del vértice, eje de simetría y concavidad",
+                "Modelado de trayectorias físicas y parábolas en el entorno"
+            },
+            CongratulationMessage = "¡Asombroso Modelador Matemático! Comprendes las funciones cuadráticas y la belleza geométrica de las parábolas."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "quad_func_ex_01",
+            Title = "La Fuente de Agua Danzante: y = 2x²",
+            GameType = GamePlayType.QuadraticFunctionCurve,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = 18,
+            StandardInstruction = "En la fuente del zócalo, la parábola del agua sigue la función cuadrática y = 2x². Si avanzamos a una distancia horizontal de x = 3 metros, ¿cuál es la altura y del chorro de agua? (Calcula 3² = 9 y luego multiplica por 2).",
+            SimplifiedInstruction = "Para x = 3, haz: 3 × 3 = 9. Luego multiplica 9 × 2. ¿Cuánto vale y?",
+            ScreenReaderDescription = "Función cuadrática y igual a 2x al cuadrado. Para x igual a 3 metros, 3 al cuadrado es 9, por 2 da 18 metros.",
+            FirstHint = "Primero eleva 3 al cuadrado: 3 × 3 = 9. Luego multiplica: 2 × 9.",
+            SecondHintDetailed = "y = 2 × (3²) = 2 × 9 = 18 metros de altura.",
+            ExplanationOfSuccess = "¡Brillante! Para x = 3, y = 2 × (3²) = 2 × 9 = 18 metros. ¡La parábola se eleva con gracia y precisión matemática!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "fountain_parabola_item", Name = "Chorro de Agua", EmojiSymbol = "⛲", AccessibleDescription = "Chorro parabólico que alcanza 18 metros", OrderIndex = 1, MusicalPitchHz = Frequencies[4] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "12 metros (2 × 6)", Value = 12, IsCorrect = false, SpeechFeedback = "Recuerda elevar 3 al cuadrado primero (3² = 9), no 3 × 2.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "18 metros (y = 2 × 9)", Value = 18, IsCorrect = true, SpeechFeedback = "¡Magnífico! 3² = 9, y 2 × 9 = 18 metros.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "36 metros", Value = 36, IsCorrect = false, SpeechFeedback = "36 es demasiado alto; 2 × 9 = 18.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

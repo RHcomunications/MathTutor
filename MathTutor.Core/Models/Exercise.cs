@@ -36,7 +36,11 @@ public enum GamePlayType
     ExponentLaws,             // Leyes de los exponentes (producto de potencias, potencia de potencia, a^0=1)
     PolynomialLikeTerms,      // Reducción de términos semejantes y polinomios
     LinearSystem2x2,          // Sistemas de dos ecuaciones lineales con dos incógnitas (2x2)
-    PythagoreanTheorem        // Teorema de Pitágoras (a^2 + b^2 = c^2 en triángulos rectángulos y rampas)
+    PythagoreanTheorem,       // Teorema de Pitágoras (a^2 + b^2 = c^2 en triángulos rectángulos y rampas)
+    QuadraticEquations,       // Ecuaciones cuadráticas (ax² + c = 0 y ax² + bx + c = 0, fórmula general)
+    TriangleSimilarityThales, // Semejanza de triángulos y Teorema de Tales (sombras y proporciones)
+    TrigonometricRatios,      // Razones trigonométricas básicas (seno, coseno, tangente en triángulo rectángulo)
+    QuadraticFunctionCurve    // Funciones cuadráticas y parábolas (y = ax², vértice y trayectoria)
 }
 
 /// <summary>

@@ -301,6 +301,58 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void QuadraticEquationsTopic_CoversSecondDegreeAndRoots()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var quadTopic = topics.FirstOrDefault(t => t.Id == "sec_quadratic_equations_01");
+
+        Assert.NotNull(quadTopic);
+        Assert.Equal(AcademicLevel.SecondaryThirdGrade, quadTopic.Level);
+        Assert.Contains(quadTopic.PrinciplesAddressed, p => p.Contains("segundo grado"));
+        Assert.Contains(quadTopic.PrinciplesAddressed, p => p.Contains("raíz cuadrada"));
+        Assert.True(quadTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void ThalesSimilarityTopic_CoversShadowsAndSimilarityCriteria()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var thalesTopic = topics.FirstOrDefault(t => t.Id == "sec_thales_similarity_01");
+
+        Assert.NotNull(thalesTopic);
+        Assert.Equal(AcademicLevel.SecondaryThirdGrade, thalesTopic.Level);
+        Assert.Contains(thalesTopic.PrinciplesAddressed, p => p.Contains("semejanza"));
+        Assert.Contains(thalesTopic.PrinciplesAddressed, p => p.Contains("Tales"));
+        Assert.True(thalesTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void TrigonometricRatiosTopic_CoversSineCosineTangent()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var trigTopic = topics.FirstOrDefault(t => t.Id == "sec_trigonometry_ratios_01");
+
+        Assert.NotNull(trigTopic);
+        Assert.Equal(AcademicLevel.SecondaryThirdGrade, trigTopic.Level);
+        Assert.Contains(trigTopic.PrinciplesAddressed, p => p.Contains("seno") || p.Contains("trigonométricas"));
+        Assert.Contains(trigTopic.PrinciplesAddressed, p => p.Contains("cateto"));
+        Assert.True(trigTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void QuadraticFunctionsTopic_CoversParabolaAndVertex()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var funcTopic = topics.FirstOrDefault(t => t.Id == "sec_quadratic_functions_01");
+
+        Assert.NotNull(funcTopic);
+        Assert.Equal(AcademicLevel.SecondaryThirdGrade, funcTopic.Level);
+        Assert.Contains(funcTopic.PrinciplesAddressed, p => p.Contains("cuadrática"));
+        Assert.Contains(funcTopic.PrinciplesAddressed, p => p.Contains("parábolas") || p.Contains("vértice"));
+        Assert.True(funcTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

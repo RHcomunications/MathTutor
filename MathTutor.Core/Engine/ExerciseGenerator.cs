@@ -1337,6 +1337,192 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de resolución de ecuaciones cuadráticas (3º Secundaria).
+    /// Forma pura x² - d = 0 (o x² = k) con raíces enteras positivas.
+    /// </summary>
+    public Exercise GenerateQuadraticEquationExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        // Raíz x elegida entre 3 y 9 (o 4 para simplificado)
+        int xRoot = isSimplified ? 4 : rng.Next(3, 10);
+        int constantD = xRoot * xRoot;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_quad_{Guid.NewGuid():N}",
+            Title = $"El Terreno Cuadrado: x² - {constantD} = 0",
+            GameType = GamePlayType.QuadraticEquations,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = xRoot,
+            StandardInstruction = $"En el ejido del pueblo se delimita un huerto cuadrado de área x² m². Si la ecuación del terreno es x² - {constantD} = 0 (es decir, x² = {constantD}), ¿cuántos metros mide cada lado positivo x del huerto (√{constantD})?",
+            SimplifiedInstruction = $"Si un huerto cuadrado tiene x² = {constantD}, ¿qué número multiplicado por sí mismo da {constantD}?",
+            ScreenReaderDescription = $"Ecuación cuadrática: x cuadrada menos {constantD} igual a cero. Se despeja x al cuadrado igual a {constantD}, luego raíz cuadrada de {constantD}.",
+            FirstHint = $"Despeja sumando {constantD} a ambos lados: x² = {constantD}. Luego calcula la raíz cuadrada de {constantD}.",
+            SecondHintDetailed = $"x = √{constantD} = {xRoot} metros de lado.",
+            ExplanationOfSuccess = $"¡Excelente resolución cuadrática! x² = {constantD} implica x = ±√{constantD}. Tomando la dimensión geométrica positiva, x = {xRoot} metros."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "garden_square",
+            Name = $"Huerto Cuadrado ({constantD} m²)",
+            EmojiSymbol = "🟩",
+            AccessibleDescription = $"Huerto de área {constantD} metros cuadrados",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[1]
+        });
+
+        BuildOptions(ex, xRoot, min: Math.Max(2, xRoot - 3), max: xRoot + 3, unitLabel: "metros", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio del Teorema de Tales y semejanza de triángulos con sombras (3º Secundaria).
+    /// Relación: h_arbol / s_arbol = h_persona / s_persona
+    /// </summary>
+    public Exercise GenerateTriangleSimilarityThalesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        // Estudiante de altura 1 o 2 metros, sombra proporcional
+        // ratio: factor de sombra (ej. sombra = altura * 2)
+        int personHeight = 2; // metros
+        int personShadow = isSimplified ? 3 : rng.Next(2, 5); // metros
+        int factorTree = isSimplified ? 3 : rng.Next(2, 5); // arbol es factorTree veces más alto
+        int treeHeight = personHeight * factorTree;
+        int treeShadow = personShadow * factorTree;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_thales_{Guid.NewGuid():N}",
+            Title = "La Sombra del Ahuehuete: Teorema de Tales",
+            GameType = GamePlayType.TriangleSimilarityThales,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = treeHeight,
+            StandardInstruction = $"En la plaza del pueblo, a las 3 de la tarde, una persona de {personHeight} metros proyecta una sombra de {personShadow} metros. Al mismo instante, un gran ahuehuete proyecta una sombra de {treeShadow} metros. Por semejanza de triángulos (Teorema de Tales), ¿cuántos metros de altura mide el árbol?",
+            SimplifiedInstruction = $"Si una persona de {personHeight}m da una sombra de {personShadow}m, y el árbol da {treeShadow}m de sombra ({factorTree} veces más), ¿cuánto mide el árbol?",
+            ScreenReaderDescription = $"Teorema de Tales: persona de {personHeight}m proyecta sombra de {personShadow}m; árbol proyecta sombra de {treeShadow}m. Razón de semejanza {factorTree}. Altura del árbol.",
+            FirstHint = $"Halla la razón de semejanza entre las sombras: {treeShadow} ÷ {personShadow} = {factorTree}. Multiplica la altura de la persona por esa razón.",
+            SecondHintDetailed = $"Altura del árbol = {personHeight} × {factorTree} = {treeHeight} metros.",
+            ExplanationOfSuccess = $"¡Magnífica aplicación de Tales! Los rayos solares forman triángulos semejantes: {treeHeight} / {treeShadow} = {personHeight} / {personShadow} = {personHeight.ToString()}/{personShadow.ToString()}. El ahuehuete mide {treeHeight} metros."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "tree_item",
+            Name = $"Ahuehuete ({treeHeight}m)",
+            EmojiSymbol = "🌳",
+            AccessibleDescription = $"Árbol ahuehuete de altura incógnita proyectando {treeShadow} metros de sombra",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        BuildOptions(ex, treeHeight, min: Math.Max(3, treeHeight - 4), max: treeHeight + 4, unitLabel: "metros", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de razones trigonométricas básicas (3º Secundaria).
+    /// Enfoque: Identificar el cateto opuesto, cateto adyacente o la razón exacta tan(θ) = op/ady.
+    /// Para mantener resultados enteros accesibles, se evalúa el numerador del cateto opuesto o la tangente entera/razón directa.
+    /// </summary>
+    public Exercise GenerateTrigonometricRatiosExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        // Triángulo rectángulo clásico: opuesto, adyacente, hipotenusa (3, 4, 5) o (6, 8, 10)
+        int multiplier = isSimplified ? 1 : rng.Next(1, 4);
+        int op = 3 * multiplier;
+        int ady = 4 * multiplier;
+        int hip = 5 * multiplier;
+
+        // Preguntar por el valor del cateto opuesto sabiendo que sen(θ) = op / hip o tan(θ) = op / ady
+        int expectedValue = op;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_trig_{Guid.NewGuid():N}",
+            Title = "El Radar y el Ángulo: Razones Trigonométricas",
+            GameType = GamePlayType.TrigonometricRatios,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = expectedValue,
+            StandardInstruction = $"En un triángulo rectángulo para orientar una antena parabólica, la hipotenusa mide {hip} metros y el cateto adyacente mide {ady} metros. Sabiendo que el seno del ángulo es cateto opuesto entre hipotenusa (sen θ = op/{hip}) y que la terna pitagórica cumple op² + {ady}² = {hip}², ¿cuántos metros mide el cateto opuesto?",
+            SimplifiedInstruction = $"En un triángulo de hipotenusa {hip} y lado adyacente {ady}, ¿cuánto mide el cateto opuesto (la altura)?",
+            ScreenReaderDescription = $"Razones trigonométricas en triángulo rectángulo: hipotenusa {hip} metros, cateto adyacente {ady} metros. Cateto opuesto.",
+            FirstHint = $"Usa la relación trigonométrica y pitagórica: op² = {hip}² - {ady}² = {hip * hip} - {ady * ady}.",
+            SecondHintDetailed = $"op² = {hip * hip - ady * ady}, entonces op = √{hip * hip - ady * ady} = {op} metros.",
+            ExplanationOfSuccess = $"¡Exacto! El cateto opuesto mide {op} metros. Así, sen(θ) = {op}/{hip} y tan(θ) = {op}/{ady}."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "antenna_trig",
+            Name = "Antena orientada",
+            EmojiSymbol = "📡",
+            AccessibleDescription = $"Triángulo trigonométrico con hipotenusa {hip}m",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, expectedValue, min: Math.Max(2, expectedValue - 3), max: expectedValue + 3, unitLabel: "metros", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de funciones cuadráticas y parábolas y = ax² (3º Secundaria).
+    /// Evaluar el valor de y para una abscisa x dada (ej. y = a · x²).
+    /// </summary>
+    public Exercise GenerateQuadraticFunctionCurveExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? 2 : rng.Next(2, 4);
+        int x = isSimplified ? 3 : rng.Next(2, 5);
+        int expectedY = a * (x * x);
+
+        var ex = new Exercise
+        {
+            Id = $"gen_quad_func_{Guid.NewGuid():N}",
+            Title = $"La Parábola del Chorro de Agua: y = {a}x²",
+            GameType = GamePlayType.QuadraticFunctionCurve,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = expectedY,
+            StandardInstruction = $"En la fuente del parque, el chorro de agua describe una curva parabólica que sigue la función cuadrática y = {a}x². Si avanzamos horizontalmente x = {x} metros desde el origen, ¿cuál es la altura y alcanzada por el agua en ese punto?",
+            SimplifiedInstruction = $"Calcula y = {a} × x² cuando x = {x}. Primero eleva {x} al cuadrado ({x} × {x}) y luego multiplica por {a}.",
+            ScreenReaderDescription = $"Función cuadrática y = {a}x al cuadrado. Evaluar en x = {x}. {x} al cuadrado es {x * x}, multiplicado por {a}.",
+            FirstHint = $"Primero calcula x²: {x} × {x} = {x * x}. Luego multiplica el resultado por {a}.",
+            SecondHintDetailed = $"y = {a} × ({x * x}) = {expectedY} metros.",
+            ExplanationOfSuccess = $"¡Brillante cálculo parabólico! Cuando x = {x}, x² = {x * x}, y multiplicando por {a} obtenemos y = {expectedY}. Las parábolas modelan trayectorias curvas en la física y la arquitectura."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "fountain_parabola",
+            Name = "Chorro Parabólico",
+            EmojiSymbol = "⛲",
+            AccessibleDescription = $"Fuente parabólica con trayectoria y = {a}x²",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[4]
+        });
+
+        BuildOptions(ex, expectedY, min: Math.Max(4, expectedY - 6), max: expectedY + 6, unitLabel: "metros", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -1400,6 +1586,14 @@ public class ExerciseGenerator
                 "sec_linear_systems_2x2_01" => GenerateLinearSystem2x2Exercise(profile, rng),
 
                 "sec_pythagorean_theorem_01" => GeneratePythagoreanTheoremExercise(profile, rng),
+
+                "sec_quadratic_equations_01" => GenerateQuadraticEquationExercise(profile, rng),
+
+                "sec_thales_similarity_01" => GenerateTriangleSimilarityThalesExercise(profile, rng),
+
+                "sec_trigonometry_ratios_01" => GenerateTrigonometricRatiosExercise(profile, rng),
+
+                "sec_quadratic_functions_01" => GenerateQuadraticFunctionCurveExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };

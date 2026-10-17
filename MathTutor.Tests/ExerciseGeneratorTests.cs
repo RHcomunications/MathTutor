@@ -519,4 +519,86 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, pythList.Count);
         Assert.All(pythList, ex => Assert.Equal(GamePlayType.PythagoreanTheorem, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateQuadraticEquationExercise_ProducesAccurateRoots()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryThirdGrade, Age = 14 };
+        var rng = new Random(2400);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateQuadraticEquationExercise(profile, rng);
+            Assert.Equal(GamePlayType.QuadraticEquations, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 3 && ex.ExpectedResult <= 9);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateTriangleSimilarityThalesExercise_ComputesProportionalHeight()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryThirdGrade, Age = 14 };
+        var rng = new Random(2500);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateTriangleSimilarityThalesExercise(profile, rng);
+            Assert.Equal(GamePlayType.TriangleSimilarityThales, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 4 && ex.ExpectedResult <= 10);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateTrigonometricRatiosExercise_SolvesOppositeSideAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryThirdGrade, Age = 14 };
+        var rng = new Random(2600);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateTrigonometricRatiosExercise(profile, rng);
+            Assert.Equal(GamePlayType.TrigonometricRatios, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 3);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateQuadraticFunctionCurveExercise_ComputesParabolicHeight()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryThirdGrade, Age = 14 };
+        var rng = new Random(2700);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateQuadraticFunctionCurveExercise(profile, rng);
+            Assert.Equal(GamePlayType.QuadraticFunctionCurve, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 8);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_SecondaryThirdGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryThirdGrade, Age = 14 };
+
+        var quadList = _generator.GenerateExercisesForTopic("sec_quadratic_equations_01", profile, count: 3);
+        Assert.Equal(3, quadList.Count);
+        Assert.All(quadList, ex => Assert.Equal(GamePlayType.QuadraticEquations, ex.GameType));
+
+        var thalesList = _generator.GenerateExercisesForTopic("sec_thales_similarity_01", profile, count: 3);
+        Assert.Equal(3, thalesList.Count);
+        Assert.All(thalesList, ex => Assert.Equal(GamePlayType.TriangleSimilarityThales, ex.GameType));
+
+        var trigList = _generator.GenerateExercisesForTopic("sec_trigonometry_ratios_01", profile, count: 3);
+        Assert.Equal(3, trigList.Count);
+        Assert.All(trigList, ex => Assert.Equal(GamePlayType.TrigonometricRatios, ex.GameType));
+
+        var funcList = _generator.GenerateExercisesForTopic("sec_quadratic_functions_01", profile, count: 3);
+        Assert.Equal(3, funcList.Count);
+        Assert.All(funcList, ex => Assert.Equal(GamePlayType.QuadraticFunctionCurve, ex.GameType));
+    }
 }
