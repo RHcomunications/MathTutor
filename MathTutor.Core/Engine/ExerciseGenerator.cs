@@ -933,22 +933,24 @@ public class ExerciseGenerator
         int debt = initialBalance + (isSimplified ? 2 : rng.Next(2, 6));
         int finalBalance = initialBalance - debt;
         string currency = profile.CurrencyName;
+        string symbol = profile.CurrencySymbol;
+        string store = profile.StoreName;
 
         var ex = new Exercise
         {
             Id = $"gen_signed_{Guid.NewGuid():N}",
-            Title = "La Libreta de la Tiendita: Saldo con Números Enteros",
+            Title = $"La Libreta en {store}: Saldo con Números Enteros",
             GameType = GamePlayType.SignedNumbersAddition,
             TargetAgeMin = 11,
             TargetAgeMax = 14,
             Level = AcademicLevel.SecondaryFirstGrade,
             ExpectedResult = finalBalance,
-            StandardInstruction = $"En la tiendita de la esquina tenías ${initialBalance} {currency} a favor (+{initialBalance}). Compraste mercancía por ${debt} {currency} que quedaste a deber (-{debt}). Al registrar (+{initialBalance}) + (-{debt}), ¿cuál es tu saldo final?",
+            StandardInstruction = $"En el/la {store} de la esquina tenías {symbol}{initialBalance} {currency} a favor (+{initialBalance}). Compraste mercancía por {symbol}{debt} {currency} que quedaste a deber (-{debt}). Al registrar (+{initialBalance}) + (-{debt}), ¿cuál es tu saldo final?",
             SimplifiedInstruction = $"Tenías {initialBalance} {currency} y gastaste {debt} {currency}. Quedaste debiendo. ¿Cuál es tu saldo final?",
             ScreenReaderDescription = $"Operación con números enteros con signo: positivo {initialBalance} más negativo {debt}. Resultado esperado: {finalBalance}.",
             FirstHint = $"Como la deuda ({debt}) es mayor que tu saldo inicial ({initialBalance}), tu resultado será un número negativo.",
             SecondHintDetailed = $"(+{initialBalance}) - {debt} = {finalBalance}. Tienes una deuda de {Math.Abs(finalBalance)} {currency}.",
-            ExplanationOfSuccess = $"¡Excelente! (+{initialBalance}) + (-{debt}) = {finalBalance}. Un saldo de {finalBalance} significa que debes {Math.Abs(finalBalance)} {currency} en la tiendita."
+            ExplanationOfSuccess = $"¡Excelente! (+{initialBalance}) + (-{debt}) = {finalBalance}. Un saldo de {finalBalance} significa que debes {Math.Abs(finalBalance)} {currency} en el/la {store}."
         };
 
         ex.ItemsGroupA.Add(new ManipulableItem
@@ -1037,6 +1039,8 @@ public class ExerciseGenerator
         int x = isSimplified ? 3 : rng.Next(2, 6);
         int b = isSimplified ? 4 : rng.Next(2, 8);
         int c = (a * x) + b;
+        string currency = profile.CurrencyName;
+        string symbol = profile.CurrencySymbol;
 
         var ex = new Exercise
         {
@@ -1047,12 +1051,12 @@ public class ExerciseGenerator
             TargetAgeMax = 14,
             Level = AcademicLevel.SecondaryFirstGrade,
             ExpectedResult = x,
-            StandardInstruction = $"En la papelería compraste {a} cuadernos iguales que costaron X pesos cada uno, más una goma de ${b} pesos. La cuenta total fue de ${c} pesos ({a}X + {b} = {c}). Despejando paso a paso, ¿cuánto costó cada cuaderno X?",
-            SimplifiedInstruction = $"{a} libretas valen {a}X. Más {b} pesos da {c} en total. ¿Cuánto vale cada libreta X?",
-            ScreenReaderDescription = $"Ecuación lineal: {a} por X más {b} igual a {c}. Encuentra el valor de X.",
+            StandardInstruction = $"En la papelería compraste {a} cuadernos iguales que costaron X {currency} cada uno, más una goma de {symbol}{b} {currency}. La cuenta total fue de {symbol}{c} {currency} ({a}X + {b} = {c}). Despejando paso a paso, ¿cuánto costó cada cuaderno X?",
+            SimplifiedInstruction = $"{a} libretas valen {a}X. Más {b} {currency} da {c} en total. ¿Cuánto vale cada libreta X?",
+            ScreenReaderDescription = $"Ecuación lineal: {a} por X más {b} igual a {c}. Encuentra el valor de X en {currency}.",
             FirstHint = $"Paso 1: Resta {b} de ambos lados: {a}X = {c} - {b} = {c - b}.",
-            SecondHintDetailed = $"Paso 2: Divide entre {a}: X = {c - b} ÷ {a} = {x}.",
-            ExplanationOfSuccess = $"¡Espectacular! {a}X = {c - b}, luego X = {c - b} ÷ {a} = {x}. Cada libreta costó ${x} pesos."
+            SecondHintDetailed = $"Paso 2: Divide entre {a}: X = {c - b} ÷ {a} = {x} {currency}.",
+            ExplanationOfSuccess = $"¡Espectacular! {a}X = {c - b}, luego X = {c - b} ÷ {a} = {x}. Cada libreta costó {symbol}{x} {currency}."
         };
 
         for (int i = 1; i <= a; i++)
@@ -1068,7 +1072,7 @@ public class ExerciseGenerator
             });
         }
 
-        BuildOptions(ex, x, min: Math.Max(1, x - 2), max: x + 3, unitLabel: "pesos", rng);
+        BuildOptions(ex, x, min: Math.Max(1, x - 2), max: x + 3, unitLabel: currency, rng);
         return ex;
     }
 
@@ -1087,6 +1091,7 @@ public class ExerciseGenerator
         int discountAmount = (basePrice * percent) / 100;
         int finalPrice = basePrice - discountAmount;
         string currency = profile.CurrencyName;
+        string symbol = profile.CurrencySymbol;
 
         var ex = new Exercise
         {
@@ -1097,20 +1102,20 @@ public class ExerciseGenerator
             TargetAgeMax = 14,
             Level = AcademicLevel.SecondaryFirstGrade,
             ExpectedResult = discountAmount,
-            StandardInstruction = $"En la tienda de ropa una mochila cuesta ${basePrice} {currency} y tiene un letrero de oferta con el {percent}% de descuento. ¿Cuánto dinero te van a descontar del precio original?",
-            SimplifiedInstruction = $"Una mochila de ${basePrice} {currency} tiene {percent}% de descuento. ¿Cuánto dinero te descuentan?",
-            ScreenReaderDescription = $"Cálculo de porcentaje: {percent} por ciento de {basePrice} pesos. Descuento en pesos.",
-            FirstHint = $"El {percent}% significa {percent} de cada 100 pesos. Multiplica {basePrice} × {percent} y divide entre 100.",
+            StandardInstruction = $"En la tienda de ropa una mochila cuesta {symbol}{basePrice} {currency} y tiene un letrero de oferta con el {percent}% de descuento. ¿Cuánto dinero te van a descontar del precio original?",
+            SimplifiedInstruction = $"Una mochila de {symbol}{basePrice} {currency} tiene {percent}% de descuento. ¿Cuánto dinero te descuentan?",
+            ScreenReaderDescription = $"Cálculo de porcentaje: {percent} por ciento de {basePrice} {currency}. Descuento en {currency}.",
+            FirstHint = $"El {percent}% significa {percent} de cada 100 {currency}. Multiplica {basePrice} × {percent} y divide entre 100.",
             SecondHintDetailed = $"({basePrice} × {percent}) ÷ 100 = {discountAmount} {currency}.",
-            ExplanationOfSuccess = $"¡Exacto! El {percent}% de ${basePrice} {currency} son ${discountAmount} {currency} de descuento. ¡Pagarás solo ${finalPrice} {currency}!"
+            ExplanationOfSuccess = $"¡Exacto! El {percent}% de {symbol}{basePrice} {currency} son {symbol}{discountAmount} {currency} de descuento. ¡Pagarás solo {symbol}{finalPrice} {currency}!"
         };
 
         ex.ItemsGroupA.Add(new ManipulableItem
         {
             Id = "item_backpack",
-            Name = $"Mochila de ${basePrice}",
+            Name = $"Mochila de {symbol}{basePrice}",
             EmojiSymbol = "🎒",
-            AccessibleDescription = $"Mochila de {basePrice} pesos con etiqueta de {percent}%",
+            AccessibleDescription = $"Mochila de {basePrice} {currency} con etiqueta de {percent}%",
             OrderIndex = 1,
             MusicalPitchHz = PentatonicScaleHz[0]
         });
@@ -1248,6 +1253,7 @@ public class ExerciseGenerator
         int p2 = tacoPrice + drinkPrice;
         int p1 = (2 * tacoPrice) + drinkPrice;
         string currency = profile.CurrencyName;
+        string symbol = profile.CurrencySymbol;
 
         var ex = new Exercise
         {
@@ -1258,12 +1264,12 @@ public class ExerciseGenerator
             TargetAgeMax = 15,
             Level = AcademicLevel.SecondarySecondGrade,
             ExpectedResult = tacoPrice,
-            StandardInstruction = $"En la taquería del barrio: por 2 tacos y 1 refresco pagas ${p1} {currency} (2x + y = {p1}). Por 1 taco y 1 refresco pagas ${p2} {currency} (x + y = {p2}). Comparando ambas cuentas, ¿cuánto cuesta exactamente 1 taco (x)?",
-            SimplifiedInstruction = $"2 tacos y 1 refresco cuestan ${p1}. 1 taco y 1 refresco cuestan ${p2}. La diferencia es el precio de 1 taco. ¿Cuánto cuesta?",
-            ScreenReaderDescription = $"Sistema 2x2: ecuación uno es 2x + y = {p1}. Ecuación dos es x + y = {p2}. Restando ambas ecuaciones se obtiene el precio de x.",
-            FirstHint = $"Observa que la única diferencia entre las dos órdenes es 1 taco adicional. Resta: ${p1} - ${p2}.",
-            SecondHintDetailed = $"{p1} - {p2} = {tacoPrice} {currency}. Por tanto, 1 taco cuesta ${tacoPrice} {currency}.",
-            ExplanationOfSuccess = $"¡Excelente deducción algebraica! Al restar las dos ecuaciones eliminamos el refresco (y - y = 0) y obtenemos: x = {p1} - {p2} = ${tacoPrice} {currency} por taco."
+            StandardInstruction = $"En la taquería del barrio: por 2 tacos y 1 refresco pagas {symbol}{p1} {currency} (2x + y = {p1}). Por 1 taco y 1 refresco pagas {symbol}{p2} {currency} (x + y = {p2}). Comparando ambas cuentas, ¿cuánto cuesta exactamente 1 taco (x)?",
+            SimplifiedInstruction = $"2 tacos y 1 refresco cuestan {symbol}{p1}. 1 taco y 1 refresco cuestan {symbol}{p2}. La diferencia es el precio de 1 taco. ¿Cuánto cuesta?",
+            ScreenReaderDescription = $"Sistema 2x2: ecuación uno es 2x + y = {p1}. Ecuación dos es x + y = {p2}. Restando ambas ecuaciones se obtiene el precio de x en {currency}.",
+            FirstHint = $"Observa que la única diferencia entre las dos órdenes es 1 taco adicional. Resta: {symbol}{p1} - {symbol}{p2}.",
+            SecondHintDetailed = $"{p1} - {p2} = {tacoPrice} {currency}. Por tanto, 1 taco cuesta {symbol}{tacoPrice} {currency}.",
+            ExplanationOfSuccess = $"¡Excelente deducción algebraica! Al restar las dos ecuaciones eliminamos el refresco (y - y = 0) y obtenemos: x = {p1} - {p2} = {symbol}{tacoPrice} {currency} por taco."
         };
 
         ex.ItemsGroupA.Add(new ManipulableItem
@@ -1953,6 +1959,54 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de suma repetida y bucles de código (Semilla de Programación: REPETIR N VECES).
+    /// </summary>
+    public Exercise GeneratePatternAndLoopSeedExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int iterations = isSimplified ? rng.Next(2, 4) : rng.Next(2, 6);
+        int stepsPerIteration = isSimplified ? rng.Next(2, 4) : rng.Next(2, 6);
+        int totalSteps = iterations * stepsPerIteration;
+
+        string sumExpression = string.Join(" + ", Enumerable.Repeat(stepsPerIteration.ToString(), iterations));
+
+        var ex = new Exercise
+        {
+            Id = $"gen_loop_seed_{Guid.NewGuid():N}",
+            Title = $"La Ranita Robot: REPETIR {iterations} VECES {{ +{stepsPerIteration} }}",
+            GameType = GamePlayType.PatternAndLoopSeed,
+            TargetAgeMin = 6,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = totalSteps,
+            StandardInstruction = $"Nuestra ranita robot ejecuta el bucle de código: 'REPETIR {iterations} VECES {{ AVANZAR {stepsPerIteration} PASOS }}'. Esto equivale a la suma repetida {sumExpression} (o {iterations} × {stepsPerIteration}). ¿Cuántos pasos avanza la ranita al terminar el bucle?",
+            SimplifiedInstruction = $"La ranita da {iterations} saltos de {stepsPerIteration} pasos cada uno ({sumExpression}). ¿Cuántos pasos avanza en total?",
+            ScreenReaderDescription = $"Bucle de programación: repetir {iterations} veces avanzar {stepsPerIteration} pasos. Suma repetida {sumExpression} igual a {totalSteps} pasos.",
+            FirstHint = $"Suma {stepsPerIteration} un total de {iterations} veces: {sumExpression}.",
+            SecondHintDetailed = $"{iterations} veces {stepsPerIteration} ({iterations} × {stepsPerIteration}) es igual a {totalSteps} pasos.",
+            ExplanationOfSuccess = $"¡Excelente pensamiento algorítmico! El bucle REPETIR {iterations} VECES {{ AVANZAR {stepsPerIteration} }} suma {sumExpression} = {totalSteps} pasos."
+        };
+
+        for (int i = 1; i <= iterations; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"loop_iter_{i}",
+                Name = $"Iteración #{i} (+{stepsPerIteration})",
+                EmojiSymbol = "🐸",
+                AccessibleDescription = $"Iteración {i} del bucle: avanza {stepsPerIteration} pasos, acumulado {i * stepsPerIteration}",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, totalSteps, min: Math.Max(2, totalSteps - 3), max: totalSteps + 4, unitLabel: "pasos", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -2042,6 +2096,8 @@ public class ExerciseGenerator
                 "prep_calculus_integral_01" => GenerateCalculusIntegralExercise(profile, rng),
 
                 "prep_probability_stats_01" => GenerateProbabilityAndStatsExercise(profile, rng),
+
+                "prog_seed_01" => GeneratePatternAndLoopSeedExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };

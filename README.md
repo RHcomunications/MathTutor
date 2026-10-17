@@ -1,7 +1,7 @@
 # Tutor de Matemáticas Accesible (MathTutor) 🦉✨
-**100% Accesible | Conforme a WCAG 2.2 / DUA | Basado en el Juego**
+**100% Accesible | Conforme a WCAG 2.2 / DUA | Basado en el Juego | Adaptado a México y Latinoamérica**
 
-Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significativo, inclusivo y sin barreras, abarcando desde **Jardín de Niños (3 a 5 años)** y **Primaria Baja (6 a 8 años)** hasta grados superiores y semillas de pensamiento computacional y programación.
+Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significativo, inclusivo y sin barreras, abarcando desde **Jardín de Niños (3 a 5 años)**, **Primaria Completa (1º a 6º grado)**, **Secundaria Completa (1º a 3º grado)** y **Educación Media Superior / Preparatoria (1º a 3º grado)** hasta **Pensamiento Computacional y Programación Inclusiva**.
 
 ---
 
@@ -20,41 +20,43 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
   - **Audio Procedural en Memoria**: Generador acústico PCM WAV en tiempo real con frecuencias musicales para el conteo armónico (Do, Re, Mi, Fa, Sol, La, Si, Do) y acordes de éxito, sin depender de archivos externos.
 
 - **Operable**:
-  - **100% Navegable por Teclado**: Todo el flujo (crear perfil, seleccionar misiones, jugar, responder retos y pedir pistas) se opera sin ratón.
+  - **100% Navegable por Teclado**: Todo el flujo (crear perfil, seleccionar misiones, explorar el mapa del reino, jugar, responder retos y pedir pistas) se opera sin ratón.
   - **Atajos Directos de Respuesta**: Las opciones se responden instantáneamente con las teclas numéricas `1`, `2`, `3` o `Enter`.
   - **Foco Visible Destacado**: Borde visual de 4px de alto contraste que indica en todo momento la posición activa en la pantalla.
   - **Sin Límites de Tiempo**: Aprendizaje respetuoso del ritmo de cada alumno (Pauta WCAG 2.2).
 
-- **Comprensible y Adaptable**:
+- **Comprensible, Adaptable y Culturalmente Cercano**:
   - **Caracterización Inicial del Usuario**: Se configura el tipo de discapacidad (**Visual, Auditiva, Motriz, Intelectual/Cognitiva, Neurodivergente, Sin discapacidad**) y su severidad (**Leve, Moderada, Severa**).
-  - **Adaptación Automática del Lenguaje**: Si se indica discapacidad intelectual o edad temprana, el motor adaptativo simplifica el vocabulario, acorta los enunciados y reduce la cantidad de distractores/opciones para evitar la sobrecarga cognitiva.
+  - **Adaptación Cultural Latinoamericana (`RegionalContext`)**: Configurable por país (**México, Colombia, Argentina, Perú, Chile**), adaptando dinámicamente monedas (`pesos` / `soles`, `centavos` / `céntimos`) y vocabulario cotidiano (`tiendita`, `tienda de barrio`, `kiosco`, `bodega`, `almacén`).
+  - **Adaptación Automática del Lenguaje**: Si se indica discapacidad intelectual o edad temprana, el motor adaptativo simplifica el vocabulario, acorta los enunciados y reduce la cantidad de distractores/opciones sin sesgo de posición para evitar la sobrecarga cognitiva.
 
 - **Robusto**:
-  - Arquitectura modular limpia en dos capas: `MathTutor.Core` (dominio, pedagogía, lógica adaptativa) y `MathTutor.WpfApp` (servicios de accesibilidad, interfaz XAML).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 36 estaciones, generador procedimental, motor adaptativo y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de pruebas unitarias xUnit).
 
 ---
 
-## 🎮 Enfoque Pedagógico y Curricular
+## 🎮 Enfoque Pedagógico y Curricular (36 Estaciones)
 
 ### 1. Jardín de Niños (3 a 5 años): Los 5 Principios del Conteo (Gelman y Gallistel)
-Guiado por **Cosmo el Búho Sabio**:
-1. **Correspondencia uno a uno (biunívoca)**: A cada objeto le corresponde una y sólo una palabra numérica. (Repartir manzanas a los conejitos hambrientos con notas musicales ascendentes).
-2. **Orden estable**: La serie numérica siempre tiene la misma secuencia fija e invariable ($1, 2, 3, 4, 5...$). (El camino de piedras musicales del río).
-3. **Cardinalidad**: El último número dicho al contar una colección representa el total absoluto de objetos.
-4. **Abstracción**: Cualquier grupo de objetos reales o imaginarios puede contarse (estrellas, campanas, juguetes).
-5. **Irrelevancia del orden**: El resultado del conteo es idéntico sin importar el orden o dirección en que se cuenten los elementos.
+1. **Correspondencia uno a uno, Orden estable, Cardinalidad, Abstracción e Irrelevancia del orden** guiados por **Cosmo el Búho Sabio**.
 
-### 2. Primaria Baja (6 a 8 años): Fundamentos y Propiedades de las Operaciones
-1. **Fundamentos de la Suma (Adición)**: Juntar colecciones, unir grupos y avanzar en la recta numérica.
-2. **Propiedad Conmutativa**: $a + b = b + a$ (*"El orden de los amigos no cambia la fiesta"*).
-3. **Propiedad Asociativa**: $(a + b) + c = a + (b + c)$ (*"Agrupar en diferentes vagones da el mismo tren"*).
-4. **Elemento Neutro de la Suma**: $a + 0 = a$ (*"El Cero es como una burbuja transparente: no cambia tu cantidad"*).
-5. **Fundamentos de la Resta (Sustracción)**: Quitar, separar y retroceder en el camino numérico.
-6. **Relación Inversa entre Suma y Resta**: Si $4 + 3 = 7$, entonces $7 - 3 = 4$ (*"La máquina del tiempo matemática"*).
+### 2. Primaria Baja, Media y Alta (1º a 6º Grado — 6 a 12 años)
+- **Primaria Baja (1º y 2º)**: Adición (propiedades conmutativa, asociativa y elemento neutro $0$), Sustracción y relación inversa, Multiplicación con arreglos rectangulares.
+- **Primaria Media (3º y 4º)**: División por reparto equitativo, Fracciones propias y equivalentes, Multiplicación distributiva por descomposición en bloques.
+- **Primaria Alta (5º y 6º)**: Fracciones mixtas, Decimales con moneda regional, Potencias (cuadrados y cubos), Proporcionalidad directa, Balanza de ecuaciones pre-álgebra, Raíz cuadrada exacta y Coordenadas cartesianas $(X, Y)$ en el primer cuadrante.
 
-### 3. Semilla hacia Niveles Superiores y Programación
-- **Suma Repetida y Producto**: $2 + 2 + 2 = 3 \times 2 = 6$.
-- **Pensamiento Computacional (Bucles / Loops)**: *"Repetir 3 veces: dar 2 pasos"*. Conecta la multiplicación con los bucles de código de las computadoras.
+### 3. Educación Secundaria (1º a 3º Grado — 12 a 15 años)
+- **1º de Secundaria**: Números enteros con signo (saldos y deudas en la tiendita), Jerarquía de operaciones y paréntesis (PEMDAS), Ecuaciones lineales $ax + b = c$, y Porcentajes y descuentos comerciales.
+- **2º de Secundaria**: Leyes de los exponentes, Polinomios y reducción de términos semejantes, Sistemas de ecuaciones lineales $2 \times 2$, y Teorema de Pitágoras ($a^2 + b^2 = c^2$).
+- **3º de Secundaria**: Ecuaciones cuadráticas ($ax^2 + c = d$), Semejanza de triángulos y Teorema de Tales, Razones trigonométricas ($\text{sen}, \cos, \tan$), y Funciones cuadráticas y parábolas ($y = ax^2 + c$).
+
+### 4. Educación Media Superior / Preparatoria (1º a 3º Grado — 15 a 18 años)
+- **1º de Preparatoria**: Distancia entre dos puntos en el plano analítico, Pendiente de la recta ($m = \frac{y_2 - y_1}{x_2 - x_1}$), y Ecuación pendiente-ordenada al origen ($y = mx + b$).
+- **2º de Preparatoria**: Secciones cónicas y ecuación de la circunferencia ($x^2 + y^2 = r^2$), Funciones periódicas y ondas senoidales ($y = A\operatorname{sen}(x)$), y Funciones exponenciales y logaritmo base 2 ($\log_2(n)$).
+- **3º de Preparatoria**: Cálculo diferencial y derivada como razón de cambio instantánea ($f'(t)$), Cálculo integral y área bajo la curva ($\int_a^b f(t)\,dt$), y Probabilidad y estadística descriptiva para ciencia de datos ($\bar{x}$).
+
+### 5. Pensamiento Computacional y Semilla de Programación
+- **Suma Repetida y Bucles de Código (`REPETIR N VECES`)**: Conecta la aritmética, el álgebra y las funciones con los algoritmos informáticos.
 
 ---
 
@@ -67,6 +69,7 @@ Guiado por **Cosmo el Búho Sabio**:
 | **F3** | Cambiar cíclicamente el esquema de contraste (Lúdico, Alto Contraste Oscuro, Claro, Baja Estimulación) |
 | **F4** | Cambiar cíclicamente el tamaño de letra (Estándar, Grande, Muy Grande, Gigante) |
 | **F5** | Abrir la pantalla de caracterización y perfil del alumno |
+| **F6** | Abrir el Mapa del Reino y Medallero de Insignias (36 estaciones) |
 | **Escape** | Volver al menú principal de aventuras |
 | **1, 2, 3** | Responder directamente la opción correspondiente en el minijuego |
 | **Enter / Espacio** | Activar botón seleccionado o avanzar al siguiente reto tras acertar |

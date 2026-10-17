@@ -94,12 +94,21 @@ public partial class MiniGameView : UserControl
 
         BorderManipulables.Visibility = (hasItemsA || hasItemsB) ? Visibility.Visible : Visibility.Collapsed;
 
+        int totalItems = _currentExercise.ItemsGroupA.Count + _currentExercise.ItemsGroupB.Count;
+        bool isSymbolicAdvanced = _currentExercise.Level >= AcademicLevel.SecondaryFirstGrade &&
+                                  _currentExercise.Level != AcademicLevel.ProgrammingFoundations &&
+                                  totalItems <= 2;
+
+        TxtManipulablesPrompt.Text = isSymbolicAdvanced
+            ? "Selecciona el elemento interactivo para explorar sus datos y escuchar su tono:"
+            : "Toca o selecciona cada objeto para contarlo y escuchar su nota mágica:";
+
         if (hasItemsA)
         {
             for (int i = 0; i < _currentExercise.ItemsGroupA.Count; i++)
             {
                 var item = _currentExercise.ItemsGroupA[i];
-                var btn = CreateItemButton(item, i + 1);
+                var btn = CreateItemButton(item, i + 1, isSymbolicAdvanced);
                 PanelItemsGroupA.Children.Add(btn);
             }
         }
@@ -110,7 +119,7 @@ public partial class MiniGameView : UserControl
             for (int i = 0; i < _currentExercise.ItemsGroupB.Count; i++)
             {
                 var item = _currentExercise.ItemsGroupB[i];
-                var btn = CreateItemButton(item, _currentExercise.ItemsGroupA.Count + i + 1);
+                var btn = CreateItemButton(item, _currentExercise.ItemsGroupA.Count + i + 1, isSymbolicAdvanced);
                 PanelItemsGroupB.Children.Add(btn);
             }
         }
@@ -120,7 +129,7 @@ public partial class MiniGameView : UserControl
         }
     }
 
-    private Button CreateItemButton(ManipulableItem item, int displayOrder)
+    private Button CreateItemButton(ManipulableItem item, int displayOrder, bool isSymbolicAdvanced)
     {
         var btn = new Button
         {
@@ -142,7 +151,7 @@ public partial class MiniGameView : UserControl
         };
         var label = new TextBlock
         {
-            Text = $"#{displayOrder}",
+            Text = isSymbolicAdvanced ? item.Name : $"#{displayOrder}",
             FontSize = 16,
             FontWeight = FontWeights.Bold,
             Foreground = (Brush)FindResource("AppTextSecondaryBrush"),
@@ -154,8 +163,16 @@ public partial class MiniGameView : UserControl
         stack.Children.Add(label);
         btn.Content = stack;
 
-        AutomationProperties.SetName(btn, $"{item.AccessibleDescription}. Número {displayOrder}. Toca para contar.");
-        AutomationProperties.SetHelpText(btn, "Presiona espacio o enter para contar este objeto y escuchar su nota musical");
+        if (isSymbolicAdvanced)
+        {
+            AutomationProperties.SetName(btn, $"{item.Name}: {item.AccessibleDescription}. Selecciona para explorar.");
+            AutomationProperties.SetHelpText(btn, "Presiona espacio o enter para escuchar la descripción detallada del elemento y su nota musical");
+        }
+        else
+        {
+            AutomationProperties.SetName(btn, $"{item.AccessibleDescription}. Número {displayOrder}. Toca para contar.");
+            AutomationProperties.SetHelpText(btn, "Presiona espacio o enter para contar este objeto y escuchar su nota musical");
+        }
 
         btn.Click += (s, e) =>
         {
@@ -165,12 +182,9 @@ public partial class MiniGameView : UserControl
             // Resaltar visualmente que ya fue explorado/contado
             btn.Background = (Brush)FindResource("AppCardBrush");
             label.Foreground = (Brush)FindResource("AppSuccessBrush");
-            label.Text = $"✓ #{displayOrder}";
+            label.Text = isSymbolicAdvanced ? $"✓ {item.Name}" : $"✓ #{displayOrder}";
 
             int totalItems = (_currentExercise?.ItemsGroupA.Count ?? 0) + (_currentExercise?.ItemsGroupB.Count ?? 0);
-            bool isSymbolicAdvanced = _currentExercise != null &&
-                                      _currentExercise.Level >= AcademicLevel.SecondaryFirstGrade &&
-                                      totalItems <= 2;
 
             string speechCount;
             if (isSymbolicAdvanced)

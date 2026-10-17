@@ -402,6 +402,19 @@ public class CurriculumService
             ExplanationOfSuccess = "¡Impresionante! 2 + 2 + 2 = 6, lo que es igual a 3 veces 2 (3 x 2 = 6). ¡Acabas de resolver tu primer algoritmo matemático con bucles!"
         };
 
+        for (int i = 1; i <= 3; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"frog_jump_{i}",
+                Name = $"Salto #{i} (+2 pasos)",
+                EmojiSymbol = "🐸",
+                AccessibleDescription = $"Salto número {i} del bucle: avanza 2 pasos (acumulado: {i * 2})",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 pasos", Value = 5, IsCorrect = false, SpeechFeedback = "Falta sumar el último paso del salto.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "6 pasos (3 veces 2)", Value = 6, IsCorrect = true, SpeechFeedback = "¡Sensacional! 2 + 2 + 2 = 6. ¡Pensamiento algorítmico al 100%!", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4 pasos", Value = 4, IsCorrect = false, SpeechFeedback = "Eso son solo 2 saltos. La ranita dio 3 saltos.", AccessibleKeyShortcut = "3" });

@@ -150,6 +150,7 @@
                 <Button Grid.Column="2"
                         x:Name="BtnStartGame"
                         Content="🎮 ¡Comenzar el Reto Lúdico! (Enter)"
+                        IsDefault="True"
                         Style="{StaticResource AccessibleActionButton}"
                         Height="64"
                         FontSize="{DynamicResource AppSubHeaderFontSize}"

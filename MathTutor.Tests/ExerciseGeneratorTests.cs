@@ -790,4 +790,73 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, statsList.Count);
         Assert.All(statsList, ex => Assert.Equal(GamePlayType.ProbabilityAndStats, ex.GameType));
     }
+
+    [Fact]
+    public void GeneratePatternAndLoopSeedExercise_ComputesRepeatedAdditionAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.ProgrammingFoundations, Age = 10 };
+        var rng = new Random(3700);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GeneratePatternAndLoopSeedExercise(profile, rng);
+            Assert.Equal(GamePlayType.PatternAndLoopSeed, ex.GameType);
+            Assert.Equal(AcademicLevel.ProgrammingFoundations, ex.Level);
+            Assert.True(ex.ExpectedResult >= 4 && ex.ExpectedResult <= 25);
+            Assert.NotEmpty(ex.ItemsGroupA);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void AllCurriculumTopics_GenerateAdaptiveExercisesWithoutFallbackToCounting()
+    {
+        var curriculum = new CurriculumService();
+        var allTopics = curriculum.GetAllTopics();
+        Assert.Equal(36, allTopics.Count);
+
+        foreach (var topic in allTopics)
+        {
+            var profile = new UserProfile { CurrentLevel = topic.Level, Age = 12 };
+            var exercises = curriculum.GenerateAdaptiveExercises(topic, profile);
+
+            Assert.Equal(3, exercises.Count);
+            Assert.All(exercises, ex =>
+            {
+                Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+                if (topic.Id != "kinder_counting_01")
+                {
+                    Assert.NotEqual(GamePlayType.InteractiveCounting, ex.GameType);
+                }
+            });
+        }
+    }
+
+    [Fact]
+    public void GetAdaptedOptions_PreservesRelativeOrderWithoutAlwaysPuttingCorrectFirst()
+    {
+        var adaptive = new AdaptiveEngine();
+        var profile = new UserProfile
+        {
+            Disability = DisabilityType.Intellectual,
+            Severity = DisabilitySeverity.Moderate
+        };
+        profile.ApplyRecommendedAccessibilityDefaults();
+
+        var ex = new Exercise
+        {
+            ExpectedResult = 10,
+            Options =
+            {
+                new ExerciseOption { Id = "o1", Label = "8", Value = 8, IsCorrect = false },
+                new ExerciseOption { Id = "o2", Label = "10", Value = 10, IsCorrect = true },
+                new ExerciseOption { Id = "o3", Label = "12", Value = 12, IsCorrect = false }
+            }
+        };
+
+        var reduced = adaptive.GetAdaptedOptions(ex, profile);
+        Assert.Equal(2, reduced.Count);
+        Assert.False(reduced[0].IsCorrect);
+        Assert.True(reduced[1].IsCorrect);
+    }
 }

@@ -76,8 +76,7 @@ public partial class MainWindow : Window
         _gameView.BackToLessonRequested += () =>
         {
             UpdateTopStatus();
-            NavigateTo(_menuView);
-            _menuView.RefreshData();
+            NavigateTo(_lessonView);
         };
 
         _gameView.MissionCompleted += (topic) =>

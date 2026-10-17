@@ -154,7 +154,17 @@ public partial class ProfileSetupView : UserControl
         if (CmbDisabilitySeverity.SelectedItem is ComboBoxItem item && item.Tag is DisabilitySeverity sev)
         {
             _acc.CurrentProfile.Severity = sev;
-            _acc.Announce($"Severidad: {item.Content}");
+            _acc.CurrentProfile.ApplyRecommendedAccessibilityDefaults();
+
+            _isInitializing = true;
+            ChkVoiceSynthesis.IsChecked = _acc.CurrentProfile.Preferences.EnableVoiceSynthesis;
+            ChkAudioCues.IsChecked = _acc.CurrentProfile.Preferences.PlayAudioCues;
+            ChkSimplifyLanguage.IsChecked = _acc.CurrentProfile.Preferences.SimplifyLanguage;
+            SelectComboByTag(CmbTheme, _acc.CurrentProfile.Preferences.Theme);
+            SelectComboByTag(CmbFontSize, _acc.CurrentProfile.Preferences.FontSize);
+            _isInitializing = false;
+
+            _acc.Announce($"Severidad: {item.Content}. Ajustes de accesibilidad actualizados.");
         }
     }
 

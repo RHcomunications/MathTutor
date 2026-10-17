@@ -66,11 +66,11 @@ public class AdaptiveEngine
         if (profile.Preferences.ReduceOptionsCount || profile.Disability == DisabilityType.Intellectual)
         {
             var correct = exercise.Options.FirstOrDefault(o => o.IsCorrect);
-            var incorrect = exercise.Options.Where(o => !o.IsCorrect).Take(1).ToList();
+            var distractor = exercise.Options.FirstOrDefault(o => !o.IsCorrect);
 
-            var reduced = new List<ExerciseOption>();
-            if (correct != null) reduced.Add(correct);
-            reduced.AddRange(incorrect);
+            var reduced = exercise.Options
+                .Where(o => ReferenceEquals(o, correct) || ReferenceEquals(o, distractor))
+                .ToList();
 
             // Reasignar atajos de teclado numéricos limpios (1 y 2)
             for (int i = 0; i < reduced.Count; i++)

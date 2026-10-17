@@ -99,6 +99,15 @@ public class UserProfile
         _ => "$"
     };
 
+    public string StoreName => Region switch
+    {
+        RegionalContext.Colombia => "tienda de barrio",
+        RegionalContext.Argentina => "kiosco",
+        RegionalContext.Peru => "bodega",
+        RegionalContext.Chile => "almacén",
+        _ => "tiendita"
+    };
+
     public AccessibilityPreferences Preferences { get; set; } = new();
 
     // Gamificación y logros acumulados
