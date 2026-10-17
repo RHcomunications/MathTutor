@@ -224,6 +224,7 @@ public partial class ProfileSetupView : UserControl
     private void BtnSaveAndStart_Click(object sender, RoutedEventArgs e)
     {
         _acc.CurrentProfile.Name = string.IsNullOrWhiteSpace(TxtName.Text) ? "Aventurero" : TxtName.Text.Trim();
+        _acc.SaveCurrentProfile();
         _acc.Audio.PlaySuccessChord();
         _acc.Announce($"¡Perfil guardado, {_acc.CurrentProfile.Name}! Entrando al Reino Matemágico...", speak: true);
         ProfileSavedAndReady?.Invoke();

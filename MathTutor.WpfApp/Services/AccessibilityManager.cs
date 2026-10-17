@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Media;
 using MathTutor.Core.Models;
+using MathTutor.Core.Services;
 
 namespace MathTutor.WpfApp.Services;
 
@@ -18,6 +19,7 @@ public class AccessibilityManager
     public UserProfile CurrentProfile { get; set; } = new();
     public SpeechService Speech { get; } = new();
     public AccessibleAudioCueService Audio { get; } = new();
+    public ProfileStorageService Storage { get; } = new();
 
     public event Action? ThemeChanged;
     public event Action? FontSizeChanged;
@@ -41,6 +43,28 @@ public class AccessibilityManager
 
         ApplyTheme(profile.Preferences.Theme);
         ApplyFontSize(profile.Preferences.FontSize);
+    }
+
+    /// <summary>
+    /// Guarda el perfil actual y sus preferencias en disco.
+    /// </summary>
+    public void SaveCurrentProfile()
+    {
+        Storage.Save(CurrentProfile);
+    }
+
+    /// <summary>
+    /// Intenta cargar un perfil previamente guardado. Retorna true si existía y se cargó exitosamente.
+    /// </summary>
+    public bool LoadSavedProfile()
+    {
+        var saved = Storage.Load();
+        if (saved != null)
+        {
+            ApplyProfile(saved);
+            return true;
+        }
+        return false;
     }
 
     /// <summary>

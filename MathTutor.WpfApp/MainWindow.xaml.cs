@@ -69,14 +69,23 @@ public partial class MainWindow : Window
 
         _gameView.MissionCompleted += (topic) =>
         {
+            _acc.SaveCurrentProfile();
             UpdateTopStatus();
             NavigateTo(_menuView);
             _menuView.RefreshData();
         };
 
         _acc.AnnouncementMade += Acc_AnnouncementMade;
-        _acc.ThemeChanged += () => UpdateTopStatus();
-        _acc.FontSizeChanged += () => UpdateTopStatus();
+        _acc.ThemeChanged += () =>
+        {
+            _acc.SaveCurrentProfile();
+            UpdateTopStatus();
+        };
+        _acc.FontSizeChanged += () =>
+        {
+            _acc.SaveCurrentProfile();
+            UpdateTopStatus();
+        };
 
         Loaded += MainWindow_Loaded;
         Closing += MainWindow_Closing;
@@ -85,12 +94,21 @@ public partial class MainWindow : Window
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        // Aplicar estado inicial de accesibilidad
-        _acc.ApplyProfile(_acc.CurrentProfile);
-        UpdateTopStatus();
-
-        // Iniciar en la pantalla de caracterización del alumno
-        NavigateTo(_profileView);
+        if (_acc.LoadSavedProfile())
+        {
+            // Ya existía un perfil previo guardado: restaurar y entrar al menú
+            UpdateTopStatus();
+            NavigateTo(_menuView);
+            _menuView.RefreshData();
+            _acc.Announce($"¡Bienvenido de nuevo, {_acc.CurrentProfile.Name}! Tienes {_acc.CurrentProfile.StarsTotal} estrellas acumuladas. Elige tu misión.", speak: true, playTone: true);
+        }
+        else
+        {
+            // Primera vez: aplicar estado inicial y caracterizar al alumno
+            _acc.ApplyProfile(_acc.CurrentProfile);
+            UpdateTopStatus();
+            NavigateTo(_profileView);
+        }
     }
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
