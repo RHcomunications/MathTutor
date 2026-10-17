@@ -29,34 +29,38 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
   - **Caracterización Inicial del Usuario**: Se configura el tipo de discapacidad (**Visual, Auditiva, Motriz, Intelectual/Cognitiva, Neurodivergente, Sin discapacidad**) y su severidad (**Leve, Moderada, Severa**).
   - **Adaptación Cultural Latinoamericana (`RegionalContext`)**: Configurable por país (**México, Colombia, Argentina, Perú, Chile**), adaptando dinámicamente monedas (`pesos` / `soles`, `centavos` / `céntimos`) y vocabulario cotidiano (`tiendita`, `tienda de barrio`, `kiosco`, `bodega`, `almacén`).
   - **Adaptación Automática del Lenguaje**: Si se indica discapacidad intelectual o edad temprana, el motor adaptativo simplifica el vocabulario, acorta los enunciados y reduce la cantidad de distractores/opciones sin sesgo de posición para evitar la sobrecarga cognitiva.
+  - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 36 estaciones, generador procedimental, motor adaptativo y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de 102 pruebas unitarias xUnit).
 
 ---
 
-## 🎮 Enfoque Pedagógico y Curricular (36 Estaciones)
+## 🎮 Enfoque Pedagógico y Curricular (45 Estaciones / 16 Objetivos)
 
-### 1. Jardín de Niños (3 a 5 años): Los 5 Principios del Conteo (Gelman y Gallistel)
+### 1. Jardín de Niños (3 a 5 años — Objetivo 1): Los 5 Principios del Conteo (Gelman y Gallistel)
 1. **Correspondencia uno a uno, Orden estable, Cardinalidad, Abstracción e Irrelevancia del orden** guiados por **Cosmo el Búho Sabio**.
 
-### 2. Primaria Baja, Media y Alta (1º a 6º Grado — 6 a 12 años)
+### 2. Primaria Baja, Media y Alta (1º a 6º Grado — 6 a 12 años — Objetivos 2 a 6)
 - **Primaria Baja (1º y 2º)**: Adición (propiedades conmutativa, asociativa y elemento neutro $0$), Sustracción y relación inversa, Multiplicación con arreglos rectangulares.
 - **Primaria Media (3º y 4º)**: División por reparto equitativo, Fracciones propias y equivalentes, Multiplicación distributiva por descomposición en bloques.
 - **Primaria Alta (5º y 6º)**: Fracciones mixtas, Decimales con moneda regional, Potencias (cuadrados y cubos), Proporcionalidad directa, Balanza de ecuaciones pre-álgebra, Raíz cuadrada exacta y Coordenadas cartesianas $(X, Y)$ en el primer cuadrante.
 
-### 3. Educación Secundaria (1º a 3º Grado — 12 a 15 años)
+### 3. Educación Secundaria (1º a 3º Grado — 12 a 15 años — Objetivos 7 a 9)
 - **1º de Secundaria**: Números enteros con signo (saldos y deudas en la tiendita), Jerarquía de operaciones y paréntesis (PEMDAS), Ecuaciones lineales $ax + b = c$, y Porcentajes y descuentos comerciales.
 - **2º de Secundaria**: Leyes de los exponentes, Polinomios y reducción de términos semejantes, Sistemas de ecuaciones lineales $2 \times 2$, y Teorema de Pitágoras ($a^2 + b^2 = c^2$).
 - **3º de Secundaria**: Ecuaciones cuadráticas ($ax^2 + c = d$), Semejanza de triángulos y Teorema de Tales, Razones trigonométricas ($\text{sen}, \cos, \tan$), y Funciones cuadráticas y parábolas ($y = ax^2 + c$).
 
-### 4. Educación Media Superior / Preparatoria (1º a 3º Grado — 15 a 18 años)
+### 4. Educación Media Superior / Preparatoria (1º a 3º Grado — 15 a 18 años — Objetivos 10 a 12)
 - **1º de Preparatoria**: Distancia entre dos puntos en el plano analítico, Pendiente de la recta ($m = \frac{y_2 - y_1}{x_2 - x_1}$), y Ecuación pendiente-ordenada al origen ($y = mx + b$).
 - **2º de Preparatoria**: Secciones cónicas y ecuación de la circunferencia ($x^2 + y^2 = r^2$), Funciones periódicas y ondas senoidales ($y = A\operatorname{sen}(x)$), y Funciones exponenciales y logaritmo base 2 ($\log_2(n)$).
 - **3º de Preparatoria**: Cálculo diferencial y derivada como razón de cambio instantánea ($f'(t)$), Cálculo integral y área bajo la curva ($\int_a^b f(t)\,dt$), y Probabilidad y estadística descriptiva para ciencia de datos ($\bar{x}$).
 
-### 5. Pensamiento Computacional y Semilla de Programación
-- **Suma Repetida y Bucles de Código (`REPETIR N VECES`)**: Conecta la aritmética, el álgebra y las funciones con los algoritmos informáticos.
+### 5. Pensamiento Computacional y Programación Inclusiva (Objetivos 13 a 16 — Estaciones 36 a 45)
+- **Semilla de Programación (Objetivo 13)**: Suma repetida y bucles de código (`REPETIR N VECES`).
+- **Módulo 1 de Programación (Objetivo 14)**: Variables, asignación y estado en memoria (`x = x + a`), Condicionales `SI / SI NO` (`if / else`), y Lógica Booleana con compuertas `Y (AND)`, `O (OR)` y `NO (NOT)`.
+- **Módulo 2 de Programación (Objetivo 15)**: Ciclos `PARA` (`for`) con variables acumuladoras, Arreglos (`Arrays`) e indexación basada en cero (`[0, 1, 2...]`), y Funciones modulares con parámetros y valor de retorno (`return`).
+- **Módulo 3 de Programación (Objetivo 16)**: Algoritmos paso a paso de búsqueda del máximo/mínimo, Física y coordenadas 2D en videojuegos accesibles ($x = x_0 + v \cdot t$), y Programación de Inteligencia Artificial Asistiva con filtrado estadístico de sensores.
 
 ---
 
@@ -69,24 +73,24 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
 | **F3** | Cambiar cíclicamente el esquema de contraste (Lúdico, Alto Contraste Oscuro, Claro, Baja Estimulación) |
 | **F4** | Cambiar cíclicamente el tamaño de letra (Estándar, Grande, Muy Grande, Gigante) |
 | **F5** | Abrir la pantalla de caracterización y perfil del alumno |
-| **F6** | Abrir el Mapa del Reino y Medallero de Insignias (36 estaciones) |
+| **F6** | Abrir el Mapa del Reino y Medallero de Insignias (45 estaciones) |
 | **Escape** | Volver al menú principal de aventuras |
 | **1, 2, 3** | Responder directamente la opción correspondiente en el minijuego |
 | **Enter / Espacio** | Activar botón seleccionado o avanzar al siguiente reto tras acertar |
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.0.0`)
 
 Desde la terminal en esta carpeta:
 
 ```bash
-# Compilar la solución
-dotnet build
+# Compilar la solución en modo Release
+dotnet build -c Release
 
-# Ejecutar las pruebas unitarias automatizadas
-dotnet test
+# Ejecutar las 102 pruebas unitarias automatizadas
+dotnet test -c Release
 
 # Iniciar la aplicación interactiva
-dotnet run --project MathTutor.WpfApp/MathTutor.WpfApp.csproj
+dotnet run --project MathTutor.WpfApp/MathTutor.WpfApp.csproj -c Release
 ```
