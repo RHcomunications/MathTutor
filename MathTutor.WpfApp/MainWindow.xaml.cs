@@ -77,6 +77,7 @@ public partial class MainWindow : Window
         {
             UpdateTopStatus();
             NavigateTo(_lessonView);
+            _lessonView.RestoreFocusAndAnnounce();
         };
 
         _gameView.MissionCompleted += (topic) =>
@@ -166,13 +167,29 @@ public partial class MainWindow : Window
         TxtTopStars.Text = _acc.CurrentProfile.StarsTotal.ToString();
     }
 
+    private void RepeatActiveViewVoice()
+    {
+        if (ReferenceEquals(MainContentHost.Content, _lessonView))
+        {
+            _lessonView.RepeatLessonVoice();
+        }
+        else if (ReferenceEquals(MainContentHost.Content, _gameView))
+        {
+            _gameView.RepeatExerciseInstruction();
+        }
+        else
+        {
+            _acc.Announce(_lastSpokenMessage, speak: true);
+        }
+    }
+
     private void MainWindow_KeyDown(object sender, KeyEventArgs e)
     {
         switch (e.Key)
         {
             case Key.F1:
                 e.Handled = true;
-                _acc.Announce(_lastSpokenMessage, speak: true);
+                RepeatActiveViewVoice();
                 break;
 
             case Key.F2:
@@ -248,6 +265,6 @@ public partial class MainWindow : Window
 
     private void BtnHelpVoice_Click(object sender, RoutedEventArgs e)
     {
-        _acc.Announce(_lastSpokenMessage, speak: true);
+        RepeatActiveViewVoice();
     }
 }

@@ -56,11 +56,41 @@ public class CurriculumService
     }
 
     /// <summary>
-    /// Genera una serie fresca de ejercicios adaptados dinámicamente según la edad y condición del alumno.
+    /// Genera una serie de ejercicios que conecta el reto base de la lección con ejercicios procedimentales adaptados.
     /// </summary>
     public List<Exercise> GenerateAdaptiveExercises(PedagogicalTopic topic, UserProfile profile, int count = 3)
     {
-        return _generator.GenerateExercisesForTopic(topic.Id, profile, count);
+        if (count <= 0) return new List<Exercise>();
+
+        bool isMonetaryTopic = topic.Id is "elem_decimals_01"
+            or "sec_signed_numbers_01"
+            or "sec_linear_equations_01"
+            or "sec_percentages_01"
+            or "sec_linear_systems_2x2_01";
+
+        // Si el perfil requiere rango reducido por discapacidad intelectual o moneda de otro país en temas monetarios,
+        // generamos todos procedimentalmente para garantizar rango numérico y vocabulario regional exactos.
+        if (profile.Disability == DisabilityType.Intellectual || (isMonetaryTopic && profile.Region != RegionalContext.Mexico))
+        {
+            return _generator.GenerateExercisesForTopic(topic.Id, profile, count);
+        }
+
+        var templateTopic = GetAllTopics().Find(t => t.Id == topic.Id);
+        var result = new List<Exercise>();
+
+        if (templateTopic != null && templateTopic.Exercises.Count > 0)
+        {
+            // Reto 1: Ejercicio base curado que ejemplifica directamente la explicación de la lección
+            result.Add(templateTopic.Exercises[0]);
+        }
+
+        int remaining = count - result.Count;
+        if (remaining > 0)
+        {
+            result.AddRange(_generator.GenerateExercisesForTopic(topic.Id, profile, remaining));
+        }
+
+        return result;
     }
 
     /// <summary>

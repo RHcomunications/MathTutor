@@ -16,6 +16,8 @@ public class TopicDisplayItem
     public string LevelDescription { get; set; } = string.Empty;
     public string ConceptSnippet { get; set; } = string.Empty;
     public string PrinciplesSnippet { get; set; } = string.Empty;
+    public string StatusBadgeText { get; set; } = string.Empty;
+    public string ActionButtonLabel { get; set; } = "🚀 Entrar a Jugar";
     public string AccessibleButtonName { get; set; } = string.Empty;
 }
 
@@ -49,14 +51,29 @@ public partial class CurriculumMenuView : UserControl
         TxtStreakCount.Text = profile.CurrentStreak.ToString();
 
         var allTopics = _curriculum.GetAllTopics();
+        // Priorizar las misiones del nivel actual del alumno arriba, manteniendo el orden pedagógico en el resto
+        var orderedTopics = allTopics
+            .OrderByDescending(t => t.Level == profile.CurrentLevel)
+            .ToList();
+
         var displayList = new List<TopicDisplayItem>();
 
-        foreach (var t in allTopics)
+        foreach (var t in orderedTopics)
         {
             string concept = _adaptive.GetAdaptedConceptExplanation(t, profile);
-            if (concept.Length > 120) concept = concept.Substring(0, 117) + "...";
+            if (concept.Length > 140) concept = concept.Substring(0, 137) + "...";
 
             string principles = "Enseña: " + string.Join(" • ", t.PrinciplesAddressed.Take(3));
+            bool isCompleted = profile.CompletedLessonIds.Contains(t.Id);
+            bool isCurrentLevel = t.Level == profile.CurrentLevel;
+
+            string statusBadge = isCompleted
+                ? "✅ ¡Misión Completada con Éxito! (⭐)"
+                : isCurrentLevel
+                    ? "🎯 Recomendada para tu Grado Actual"
+                    : "🧭 Misión Disponible para Explorar";
+
+            string btnLabel = isCompleted ? "🔄 Volver a Jugar" : "🚀 Entrar a Jugar";
 
             displayList.Add(new TopicDisplayItem
             {
@@ -65,13 +82,16 @@ public partial class CurriculumMenuView : UserControl
                 LevelDescription = GetAcademicLevelName(t.Level),
                 ConceptSnippet = concept,
                 PrinciplesSnippet = principles,
-                AccessibleButtonName = $"Entrar a la aventura: {t.Title}"
+                StatusBadgeText = statusBadge,
+                ActionButtonLabel = btnLabel,
+                AccessibleButtonName = $"{btnLabel}: {t.Title}. {statusBadge}"
             });
         }
 
         ItemsTopics.ItemsSource = displayList;
 
-        _acc.Announce($"Menú principal de aventuras. Tienes {profile.StarsTotal} estrellas acumuladas y {allTopics.Count} misiones disponibles para explorar.", speak: true, playTone: true);
+        int completedCount = profile.CompletedLessonIds.Count;
+        _acc.Announce($"Menú principal de aventuras. Nivel {GetAcademicLevelName(profile.CurrentLevel)}. Tienes {profile.StarsTotal} estrellas, {completedCount} de {allTopics.Count} misiones completadas. Las misiones de tu grado aparecen primero.", speak: true, playTone: true);
     }
 
     private void BtnEnterTopic_Click(object sender, RoutedEventArgs e)

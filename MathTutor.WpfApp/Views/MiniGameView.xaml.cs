@@ -20,6 +20,7 @@ public partial class MiniGameView : UserControl
     private int _exerciseIndex = 0;
     private Exercise? _currentExercise;
     private int _attemptsCount = 0;
+    private int _hintStep = 0;
     private int _countedItemsCount = 0;
     private List<ExerciseOption> _currentOptions = new();
 
@@ -49,10 +50,12 @@ public partial class MiniGameView : UserControl
 
         _currentExercise = _topic.Exercises[_exerciseIndex];
         _attemptsCount = 0;
+        _hintStep = 0;
         _countedItemsCount = 0;
 
         BorderSuccessBanner.Visibility = Visibility.Collapsed;
         BorderHintBanner.Visibility = Visibility.Collapsed;
+        TxtHintMessage.Text = string.Empty;
 
         var profile = _acc.CurrentProfile;
 
@@ -278,12 +281,30 @@ public partial class MiniGameView : UserControl
             _adaptive.RecordAttempt(profile, _currentExercise, isCorrect: false, _attemptsCount);
             _acc.Audio.PlayHintTone();
 
+            // Marcar visualmente la opción incorrecta probada para evitar que el alumno repita el mismo error por accidente
+            foreach (var child in PanelOptions.Children)
+            {
+                if (child is Button optBtn && ReferenceEquals(optBtn.Tag, option))
+                {
+                    string currentText = optBtn.Content?.ToString() ?? string.Empty;
+                    if (!currentText.StartsWith("✗ "))
+                    {
+                        optBtn.Content = $"✗ {currentText}";
+                    }
+                    optBtn.Opacity = 0.72;
+                }
+            }
+
             BorderHintBanner.Visibility = Visibility.Visible;
+            _hintStep = Math.Max(_hintStep, _attemptsCount);
 
-            string hint = _attemptsCount == 1 ? _currentExercise.FirstHint : _currentExercise.SecondHintDetailed;
-            TxtHintMessage.Text = $"Cosmo te ayuda: {option.SpeechFeedback} {hint}";
+            bool showDetailed = _hintStep >= 2;
+            string hintLabel = showDetailed ? "Pista Paso a Paso" : "Pista Orientadora";
+            string hint = showDetailed ? _currentExercise.SecondHintDetailed : _currentExercise.FirstHint;
 
-            string speechFeedback = $"{option.SpeechFeedback}. Cosmo te da una pista: {hint}";
+            TxtHintMessage.Text = $"Cosmo te explica por qué no es {option.Label}:\n• {option.SpeechFeedback}\n• {hintLabel}: {hint}";
+
+            string speechFeedback = $"{option.SpeechFeedback} {hintLabel} de Cosmo: {hint}";
             _acc.Announce(speechFeedback, speak: true);
         }
     }
@@ -304,7 +325,7 @@ public partial class MiniGameView : UserControl
         if (e.Key == Key.F1)
         {
             e.Handled = true;
-            BtnRepeatInstruction_Click(this, new RoutedEventArgs());
+            RepeatExerciseInstruction();
             return;
         }
 
@@ -322,22 +343,36 @@ public partial class MiniGameView : UserControl
         }
     }
 
-    private void BtnRepeatInstruction_Click(object sender, RoutedEventArgs e)
+    public void RepeatExerciseInstruction()
     {
         if (_currentExercise == null) return;
         var profile = _acc.CurrentProfile;
         string msg = $"{_currentExercise.Title}. {_adaptive.GetAdaptedInstruction(_currentExercise, profile)}";
+        if (BorderHintBanner.Visibility == Visibility.Visible && !string.IsNullOrWhiteSpace(TxtHintMessage.Text))
+        {
+            msg += $" {TxtHintMessage.Text}";
+        }
         _acc.Announce(msg, speak: true);
+    }
+
+    private void BtnRepeatInstruction_Click(object sender, RoutedEventArgs e)
+    {
+        RepeatExerciseInstruction();
     }
 
     private void BtnHint_Click(object sender, RoutedEventArgs e)
     {
         if (_currentExercise == null) return;
+        _hintStep++;
         BorderHintBanner.Visibility = Visibility.Visible;
-        string hint = string.IsNullOrWhiteSpace(TxtHintMessage.Text) ? _currentExercise.FirstHint : _currentExercise.SecondHintDetailed;
-        TxtHintMessage.Text = $"Pista de Cosmo: {hint}";
+
+        bool showDetailed = _hintStep >= 2;
+        string hintLabel = showDetailed ? "Pista 2 (Resolución Paso a Paso)" : "Pista 1 (Orientación)";
+        string hint = showDetailed ? _currentExercise.SecondHintDetailed : _currentExercise.FirstHint;
+
+        TxtHintMessage.Text = $"💡 {hintLabel} de Cosmo: {hint}";
         _acc.Audio.PlayHintTone();
-        _acc.Announce($"Pista de Cosmo: {hint}", speak: true);
+        _acc.Announce($"{hintLabel} de Cosmo: {hint}", speak: true);
     }
 
     private void BtnNextExercise_Click(object sender, RoutedEventArgs e)

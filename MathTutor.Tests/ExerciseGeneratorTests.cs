@@ -859,4 +859,60 @@ public class ExerciseGeneratorTests
         Assert.False(reduced[0].IsCorrect);
         Assert.True(reduced[1].IsCorrect);
     }
+
+    [Fact]
+    public void AllCurriculumTopics_AreConnectedToRewardsAndHaveCompleteExplanationsAndErrorFeedback()
+    {
+        var curriculum = new CurriculumService();
+        var rewards = new MathTutor.Core.Services.RewardService();
+        var profile = new UserProfile { Age = 12 };
+
+        var allTopics = curriculum.GetAllTopics();
+        var stations = rewards.GetRealmStations(profile);
+        var badges = rewards.GetAllBadges(profile);
+
+        Assert.Equal(36, allTopics.Count);
+        Assert.Equal(36, stations.Count);
+
+        var topicIds = allTopics.Select(t => t.Id).ToHashSet();
+        var stationTopicIds = stations.Select(s => s.TopicId).ToHashSet();
+        var badgeTopicIds = badges.Where(b => !string.IsNullOrEmpty(b.AssociatedTopicId)).Select(b => b.AssociatedTopicId).ToHashSet();
+
+        // Verificar que ninguna estación, medalla o tema quede suelto
+        Assert.Equal(topicIds, stationTopicIds);
+        Assert.Equal(topicIds, badgeTopicIds);
+
+        foreach (var topic in allTopics)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(topic.Title));
+            Assert.False(string.IsNullOrWhiteSpace(topic.NarrativeIntro));
+            Assert.False(string.IsNullOrWhiteSpace(topic.NarrativeIntroSimplified));
+            Assert.False(string.IsNullOrWhiteSpace(topic.CoreConceptExplanation));
+            Assert.False(string.IsNullOrWhiteSpace(topic.CoreConceptSimplified));
+            Assert.NotEmpty(topic.PrinciplesAddressed);
+            Assert.False(string.IsNullOrWhiteSpace(topic.CongratulationMessage));
+            Assert.NotEmpty(topic.Exercises);
+
+            var exercises = curriculum.GenerateAdaptiveExercises(topic, profile, count: 3);
+            Assert.Equal(3, exercises.Count);
+
+            foreach (var ex in exercises)
+            {
+                Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+                Assert.False(string.IsNullOrWhiteSpace(ex.SimplifiedInstruction));
+                Assert.False(string.IsNullOrWhiteSpace(ex.ScreenReaderDescription));
+                Assert.False(string.IsNullOrWhiteSpace(ex.FirstHint));
+                Assert.False(string.IsNullOrWhiteSpace(ex.SecondHintDetailed));
+                Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+
+                var wrongOptions = ex.Options.Where(o => !o.IsCorrect).ToList();
+                Assert.NotEmpty(wrongOptions);
+                foreach (var wrongOpt in wrongOptions)
+                {
+                    Assert.False(string.IsNullOrWhiteSpace(wrongOpt.SpeechFeedback));
+                    Assert.DoesNotContain("¡Escucha la pista e inténtalo de nuevo!", wrongOpt.SpeechFeedback);
+                }
+            }
+        }
+    }
 }

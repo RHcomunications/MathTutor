@@ -477,6 +477,8 @@ public class ExerciseGenerator
             (1, 3, 2, 6)
         };
         var eq = equivalences[rng.Next(equivalences.Length)];
+        int scaleFactor = eq.n2 / eq.n1;
+        string factorWord = scaleFactor == 2 ? "el doble" : "el triple";
 
         var ex = new Exercise
         {
@@ -490,10 +492,30 @@ public class ExerciseGenerator
             StandardInstruction = $"Ada comió {eq.n1}/{eq.d1} de su barra de chocolate. Tito comió {eq.n2}/{eq.d2} de una barra idéntica. ¿Ambos comieron la misma cantidad total de chocolate?",
             SimplifiedInstruction = $"¿La fracción {eq.n1}/{eq.d1} es igual en tamaño que {eq.n2}/{eq.d2}?",
             ScreenReaderDescription = $"Dos barras iguales. La primera dividida en {eq.d1} partes con {eq.n1} tomadas. La segunda dividida en {eq.d2} partes con {eq.n2} tomadas.",
-            FirstHint = $"Observa que {eq.n2} es el doble de {eq.n1}, y {eq.d2} es el doble de {eq.d1}. ¡Ocupan el mismo espacio!",
-            SecondHintDetailed = $"{eq.n1}/{eq.d1} y {eq.n2}/{eq.d2} son fracciones equivalentes: representan la misma porción.",
+            FirstHint = $"Observa que {eq.n2} es {factorWord} de {eq.n1}, y {eq.d2} es {factorWord} de {eq.d1}. ¡Ocupan el mismo espacio!",
+            SecondHintDetailed = $"{eq.n1}/{eq.d1} y {eq.n2}/{eq.d2} son fracciones equivalentes: al multiplicar numerador y denominador por {scaleFactor}, representan la misma porción.",
             ExplanationOfSuccess = $"¡Exacto! {eq.n1}/{eq.d1} es equivalente a {eq.n2}/{eq.d2}. Aunque usemos números distintos, ¡representan exactamente la misma cantidad!"
         };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "equiv_bar_a",
+            Name = $"Barra de Ada ({eq.n1}/{eq.d1})",
+            EmojiSymbol = "🍫",
+            AccessibleDescription = $"Barra de chocolate de Ada mostrando {eq.n1} de {eq.d1} partes iguales",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        ex.ItemsGroupB.Add(new ManipulableItem
+        {
+            Id = "equiv_bar_b",
+            Name = $"Barra de Tito ({eq.n2}/{eq.d2})",
+            EmojiSymbol = "🍫",
+            AccessibleDescription = $"Barra de chocolate de Tito mostrando {eq.n2} de {eq.d2} partes iguales (equivalente a {eq.n1}/{eq.d1})",
+            OrderIndex = 2,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
 
         ex.Options.Add(new ExerciseOption
         {
@@ -512,7 +534,7 @@ public class ExerciseGenerator
             Label = "No, uno comió más que el otro",
             IsCorrect = false,
             AccessibleKeyShortcut = "2",
-            SpeechFeedback = "Mmm, observa con cuidado: aunque las rebanadas son más pequeñas, son más en cantidad y suman lo mismo."
+            SpeechFeedback = $"Aunque {eq.d2} pedazos son más pequeños que {eq.d1}, tomar {eq.n2} de ellos cubre exactamente el mismo tamaño que {eq.n1}/{eq.d1}."
         });
 
         return ex;
@@ -2139,8 +2161,63 @@ public class ExerciseGenerator
                 AccessibleKeyShortcut = shortcut,
                 SpeechFeedback = isCorrect
                     ? $"¡Muy bien! {label} es la respuesta correcta."
-                    : $"Mmm, {label} no es. ¡Escucha la pista e inténtalo de nuevo!"
+                    : BuildDiagnosticWrongFeedback(ex, val, correctValue, label)
             });
         }
+    }
+
+    private static string BuildDiagnosticWrongFeedback(Exercise ex, int selectedValue, int correctValue, string label)
+    {
+        string directionHint = selectedValue < correctValue
+            ? $"Elegiste {label}, que es menor que el resultado correcto."
+            : $"Elegiste {label}, que es mayor que el resultado correcto.";
+
+        string conceptGuidance = ex.GameType switch
+        {
+            GamePlayType.InteractiveCounting => "Asegúrate de contar cada objeto una sola vez hasta llegar al último.",
+            GamePlayType.OrderSequence => "Recuerda seguir el orden fijo de la serie numérica paso a paso.",
+            GamePlayType.AdditionCombine => "Une los dos grupos y cuenta todos los elementos juntos.",
+            GamePlayType.CommutativePropertyDemo => "Por la propiedad conmutativa, cambiar el orden de los sumandos mantiene exactamente la misma suma.",
+            GamePlayType.AssociativePropertyDemo => "Agrupar los sumandos de distinta forma no altera el total de la suma.",
+            GamePlayType.ZeroNeutralProperty => "Sumar 0 no agrega ni quita nada: la cantidad original se conserva igual.",
+            GamePlayType.SubtractionTakeAway => "En la resta partimos del total inicial y descontamos los que se fueron.",
+            GamePlayType.InverseRelation => "Recuerda que la resta deshace la suma y te regresa al número inicial.",
+            GamePlayType.MultiplicationArray => "Suma los elementos de todas las filas iguales o multiplica filas por columnas.",
+            GamePlayType.DivisionFairSharing => "Reparte el total en partes iguales dividiendo entre el número de grupos.",
+            GamePlayType.FractionParts => "Cuenta únicamente las partes seleccionadas (numerador) del entero dividido.",
+            GamePlayType.MultiplicationDistributive => "Multiplica por separado las decenas y las unidades, y al final suma ambos productos.",
+            GamePlayType.MixedFractions => "Convierte el entero en partes iguales al denominador y súmale las partes adicionales.",
+            GamePlayType.DecimalsMoney => "Suma primero las monedas enteras y luego agrega el valor de las monedas fraccionarias.",
+            GamePlayType.PowersAndExponentGrowth => "En una potencia multiplicamos la base por sí misma tantas veces como indica el exponente (no multipliques base por exponente).",
+            GamePlayType.DirectProportion => "Halla primero el valor de 1 unidad y luego multiplícalo por la cantidad pedida.",
+            GamePlayType.AlgebraicBalance => "Para mantener la balanza en equilibrio, resta el peso conocido a ambos lados.",
+            GamePlayType.SquareRootPerfect => "Busca el número que multiplicado por sí mismo (al cuadrado) dé el área total.",
+            GamePlayType.CartesianCoordinates => "En el par ordenado (X, Y), el primer número siempre indica el avance horizontal X y el segundo el vertical Y.",
+            GamePlayType.SignedNumbersAddition => "Compara tu dinero a favor (+) con la deuda (-): resta los valores y conserva el signo del mayor.",
+            GamePlayType.OrderOfOperationsPEMDAS => "Por jerarquía de operaciones (PEMDAS), resuelve primero paréntesis y multiplicaciones antes de sumar.",
+            GamePlayType.LinearEquationAXB => "En ax + b = c, primero resta b de c y luego divide el resultado entre a.",
+            GamePlayType.PercentageCalculation => "Calcula el descuento multiplicando por el porcentaje y dividiendo entre 100.",
+            GamePlayType.ExponentLaws => "Con la misma base, al multiplicar se suman los exponentes y al dividir se restan.",
+            GamePlayType.PolynomialLikeTerms => "Suma o resta los coeficientes de los términos que tienen exactamente la misma letra y exponente.",
+            GamePlayType.LinearSystem2x2 => "Sustituye o suma las dos ecuaciones para despejar primero una incógnita.",
+            GamePlayType.PythagoreanTheorem => "Por el Teorema de Pitágoras, suma los cuadrados de los catetos (a² + b²) y saca la raíz cuadrada.",
+            GamePlayType.QuadraticEquations => "En ax² + c = d, despeja x² y finalmente aplica la raíz cuadrada.",
+            GamePlayType.TriangleSimilarityThales => "Por el Teorema de Tales, la razón entre altura y sombra se mantiene constante en ambos triángulos.",
+            GamePlayType.TrigonometricRatios => "Identifica bien el cateto opuesto, el cateto adyacente y la hipotenusa respecto al ángulo.",
+            GamePlayType.QuadraticFunctionCurve => "Evalúa primero x² (x por x), multiplícalo por el coeficiente a y al final suma c.",
+            GamePlayType.AnalyticDistance2D => "Calcula los incrementos Δx y Δy, elévalos al cuadrado, súmalos y obtén la raíz cuadrada.",
+            GamePlayType.LineSlopeM => "La pendiente m se obtiene dividiendo el cambio vertical (y₂ - y₁) entre el horizontal (x₂ - x₁).",
+            GamePlayType.LinearEquationYMXB => "En la recta y = mx + b, multiplica primero la pendiente m por x y luego suma la ordenada al origen b.",
+            GamePlayType.ConicCircleRadius => "En x² + y² = r², el número del lado derecho es r²; saca su raíz cuadrada para hallar el radio r.",
+            GamePlayType.SineWaveContinuous => "En y = A·sen(x), el valor máximo se alcanza cuando sen(x) = 1, dando la amplitud A.",
+            GamePlayType.LogarithmBinary => "El logaritmo base 2 cuenta cuántas veces debes multiplicar 2 por sí mismo para obtener ese número.",
+            GamePlayType.CalculusDerivativeRate => "Por la regla de la derivada d/dt(a·t²) = 2a·t, multiplica 2 por a y por el instante t.",
+            GamePlayType.CalculusIntegralArea => "La integral definida de una tasa constante es el área del rectángulo: multiplica la altura por el tiempo.",
+            GamePlayType.ProbabilityAndStats => "Para hallar la media aritmética x̄, suma todos los datos de la muestra y divide entre la cantidad de datos.",
+            GamePlayType.PatternAndLoopSeed => "En el bucle REPETIR, suma los pasos de cada salto tantas veces como indica el contador.",
+            _ => "Revisa paso a paso los datos del problema."
+        };
+
+        return $"{directionHint} {conceptGuidance}";
     }
 }

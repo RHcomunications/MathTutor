@@ -99,6 +99,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Text="{Binding StatusBadgeText}"
+                                               FontSize="{DynamicResource AppBaseFontSize}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource AppAccentBrush}"
+                                               Margin="0,0,0,4"/>
                                     <TextBlock Text="{Binding Title}"
                                                FontSize="{DynamicResource AppSubHeaderFontSize}"
                                                FontWeight="Bold"
@@ -123,7 +128,7 @@
                                 </StackPanel>
 
                                 <Button Grid.Column="1"
-                                        Content="🚀 Entrar a Jugar"
+                                        Content="{Binding ActionButtonLabel}"
                                         Style="{StaticResource AccessibleActionButton}"
                                         VerticalAlignment="Center"
                                         MinWidth="160"

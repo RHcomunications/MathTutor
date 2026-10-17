@@ -104,6 +104,28 @@
                                TextWrapping="Wrap"
                                Margin="0,0,0,16"/>
 
+                    <!-- Ejemplo Guiado Paso a Paso -->
+                    <Border Background="{DynamicResource AppSurfaceBrush}"
+                            BorderBrush="{DynamicResource AppAccentBrush}"
+                            BorderThickness="2"
+                            CornerRadius="12"
+                            Padding="16"
+                            Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="📝 Ejemplo Guiado Paso a Paso con Cosmo:"
+                                       FontSize="{DynamicResource AppBaseFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource AppAccentBrush}"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock x:Name="TxtGuidedExample"
+                                       Text="Ejemplo resuelto paso a paso..."
+                                       FontSize="{DynamicResource AppBaseFontSize}"
+                                       Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                       LineHeight="26"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
                     <TextBlock Text="Principios que dominarás en este juego:"
                                FontSize="{DynamicResource AppBaseFontSize}"
                                FontWeight="SemiBold"
