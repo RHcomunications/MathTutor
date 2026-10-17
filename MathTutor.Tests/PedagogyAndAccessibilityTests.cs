@@ -197,6 +197,58 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void SignedNumbersTopic_CoversIntegersAndSignedOperations()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var signTopic = topics.FirstOrDefault(t => t.Id == "sec_signed_numbers_01");
+
+        Assert.NotNull(signTopic);
+        Assert.Equal(AcademicLevel.SecondaryFirstGrade, signTopic.Level);
+        Assert.Contains(signTopic.PrinciplesAddressed, p => p.Contains("enteros"));
+        Assert.Contains(signTopic.PrinciplesAddressed, p => p.Contains("recta numérica"));
+        Assert.True(signTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void OrderOfOperationsTopic_CoversPEMDASAndParentheses()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var pemdasTopic = topics.FirstOrDefault(t => t.Id == "sec_order_operations_01");
+
+        Assert.NotNull(pemdasTopic);
+        Assert.Equal(AcademicLevel.SecondaryFirstGrade, pemdasTopic.Level);
+        Assert.Contains(pemdasTopic.PrinciplesAddressed, p => p.Contains("PEMDAS"));
+        Assert.Contains(pemdasTopic.PrinciplesAddressed, p => p.Contains("Prioridad"));
+        Assert.True(pemdasTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void LinearEquationsTopic_CoversModelAndInverseOperations()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var eqTopic = topics.FirstOrDefault(t => t.Id == "sec_linear_equations_01");
+
+        Assert.NotNull(eqTopic);
+        Assert.Equal(AcademicLevel.SecondaryFirstGrade, eqTopic.Level);
+        Assert.Contains(eqTopic.PrinciplesAddressed, p => p.Contains("algebraico"));
+        Assert.Contains(eqTopic.PrinciplesAddressed, p => p.Contains("Despeje"));
+        Assert.True(eqTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void PercentagesTopic_CoversBase100AndDiscounts()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var pctTopic = topics.FirstOrDefault(t => t.Id == "sec_percentages_01");
+
+        Assert.NotNull(pctTopic);
+        Assert.Equal(AcademicLevel.SecondaryFirstGrade, pctTopic.Level);
+        Assert.Contains(pctTopic.PrinciplesAddressed, p => p.Contains("tanto por ciento"));
+        Assert.Contains(pctTopic.PrinciplesAddressed, p => p.Contains("descuento"));
+        Assert.True(pctTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

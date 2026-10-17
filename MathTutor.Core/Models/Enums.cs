@@ -34,7 +34,22 @@ public enum AcademicLevel
     EarlyElementary = 2,    // Primaria baja (6 a 8 años - 1º y 2º grado): Suma, resta, propiedades, recta numérica
     MiddleElementary = 3,   // Primaria media (9 a 10 años - 3º y 4º): Multiplicación, división, fracciones
     UpperElementary = 4,    // Primaria alta (11 a 12 años - 5º y 6º): Proporciones, geometría, potencias
+    SecondaryFirstGrade = 6, // 1º de secundaria (12 a 13 años): Números con signo, jerarquía, ecuaciones ax+b=c, porcentajes
+    SecondarySecondGrade = 7, // 2º de secundaria (13 a 14 años): Leyes de exponentes, Pitágoras, sistemas 2x2
+    SecondaryThirdGrade = 8,  // 3º de secundaria (14 a 15 años): Ecuaciones cuadráticas, trigonometría básica, semejanza
     ProgrammingFoundations = 5 // Fundamentos lógicos y algoritmos matemáticos (pensamiento computacional)
+}
+
+/// <summary>
+/// Contexto regional y cultural del alumno en América Latina para adaptar vocabulario, monedas y metáforas cotidianas.
+/// </summary>
+public enum RegionalContext
+{
+    Mexico = 1,       // Pesos ($) y centavos; tiendita, mercado
+    Colombia = 2,     // Pesos ($); tienda de barrio
+    Argentina = 3,    // Pesos ($) y centavos; kiosco
+    Peru = 4,         // Soles (S/) y céntimos; bodega
+    Chile = 5         // Pesos ($); almacén
 }
 
 /// <summary>

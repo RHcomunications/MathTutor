@@ -28,7 +28,11 @@ public enum GamePlayType
     DirectProportion,         // Proporcionalidad directa y regla de tres (a/b = c/d)
     AlgebraicBalance,         // Balanza de incógnitas y ecuaciones lineales simples (x + a = b)
     SquareRootPerfect,        // Raíz cuadrada de cuadrados perfectos (lado de un área cuadrada)
-    CartesianCoordinates      // Coordenadas cartesianas en el plano (X, Y)
+    CartesianCoordinates,     // Coordenadas cartesianas en el plano (X, Y)
+    SignedNumbersAddition,    // Números enteros con signo (positivos y negativos, deudas y saldo)
+    OrderOfOperationsPEMDAS,  // Jerarquía de operaciones y signos de agrupación (PEMDAS)
+    LinearEquationAXB,        // Ecuaciones lineales de la forma ax + b = c
+    PercentageCalculation     // Cálculo de porcentajes y descuentos en la tiendita
 }
 
 /// <summary>

@@ -79,6 +79,25 @@ public class UserProfile
     public DisabilityType Disability { get; set; } = DisabilityType.None;
     public DisabilitySeverity Severity { get; set; } = DisabilitySeverity.Mild;
     public AcademicLevel CurrentLevel { get; set; } = AcademicLevel.Kindergarten;
+    public RegionalContext Region { get; set; } = RegionalContext.Mexico;
+
+    public string CurrencyName => Region switch
+    {
+        RegionalContext.Peru => "soles",
+        _ => "pesos"
+    };
+
+    public string CurrencyFractionName => Region switch
+    {
+        RegionalContext.Peru => "céntimos",
+        _ => "centavos"
+    };
+
+    public string CurrencySymbol => Region switch
+    {
+        RegionalContext.Peru => "S/",
+        _ => "$"
+    };
 
     public AccessibilityPreferences Preferences { get; set; } = new();
 

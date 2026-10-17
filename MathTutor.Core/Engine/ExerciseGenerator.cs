@@ -919,6 +919,204 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de números enteros con signo (1º Secundaria): deudas, saldo y recta numérica.
+    /// </summary>
+    public Exercise GenerateSignedNumbersExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int initialBalance = isSimplified ? 4 : rng.Next(3, 8);
+        int debt = initialBalance + (isSimplified ? 2 : rng.Next(2, 6));
+        int finalBalance = initialBalance - debt;
+        string currency = profile.CurrencyName;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_signed_{Guid.NewGuid():N}",
+            Title = "La Libreta de la Tiendita: Saldo con Números Enteros",
+            GameType = GamePlayType.SignedNumbersAddition,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = finalBalance,
+            StandardInstruction = $"En la tiendita de la esquina tenías ${initialBalance} {currency} a favor (+{initialBalance}). Compraste mercancía por ${debt} {currency} que quedaste a deber (-{debt}). Al registrar (+{initialBalance}) + (-{debt}), ¿cuál es tu saldo final?",
+            SimplifiedInstruction = $"Tenías {initialBalance} {currency} y gastaste {debt} {currency}. Quedaste debiendo. ¿Cuál es tu saldo final?",
+            ScreenReaderDescription = $"Operación con números enteros con signo: positivo {initialBalance} más negativo {debt}. Resultado esperado: {finalBalance}.",
+            FirstHint = $"Como la deuda ({debt}) es mayor que tu saldo inicial ({initialBalance}), tu resultado será un número negativo.",
+            SecondHintDetailed = $"(+{initialBalance}) - {debt} = {finalBalance}. Tienes una deuda de {Math.Abs(finalBalance)} {currency}.",
+            ExplanationOfSuccess = $"¡Excelente! (+{initialBalance}) + (-{debt}) = {finalBalance}. Un saldo de {finalBalance} significa que debes {Math.Abs(finalBalance)} {currency} en la tiendita."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_balance",
+            Name = $"Saldo inicial (+{initialBalance})",
+            EmojiSymbol = "🪙",
+            AccessibleDescription = $"Saldo a favor de {initialBalance} {currency}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        ex.ItemsGroupB.Add(new ManipulableItem
+        {
+            Id = "item_debt",
+            Name = $"Deuda fiada (-{debt})",
+            EmojiSymbol = "🧾",
+            AccessibleDescription = $"Nota de deuda de {debt} {currency}",
+            OrderIndex = 2,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, finalBalance, min: finalBalance - 3, max: finalBalance + 3, unitLabel: currency, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de jerarquía de operaciones y signos de agrupación (PEMDAS - 1º Secundaria).
+    /// </summary>
+    public Exercise GenerateOrderOfOperationsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? 2 : rng.Next(2, 6);
+        int b = isSimplified ? 3 : rng.Next(2, 5);
+        int c = isSimplified ? 2 : rng.Next(2, 4);
+
+        int multiplication = b * c;
+        int correctResult = a + multiplication;
+        int wrongPrecedence = (a + b) * c;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_pemdas_{Guid.NewGuid():N}",
+            Title = $"La Jerarquía de Operaciones: {a} + {b} × {c}",
+            GameType = GamePlayType.OrderOfOperationsPEMDAS,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = correctResult,
+            StandardInstruction = $"Calcula el resultado de la expresión: {a} + {b} × {c}. Recuerda la regla de oro de la jerarquía de operaciones: las multiplicaciones siempre se resuelven antes que las sumas.",
+            SimplifiedInstruction = $"En {a} + {b} × {c}, primero multiplica {b} × {c}. Luego suma {a}.",
+            ScreenReaderDescription = $"Expresión aritmética: {a} más {b} por {c}. La multiplicación tiene prioridad sobre la suma.",
+            FirstHint = $"Primero resuelve la multiplicación: {b} × {c} = {multiplication}. Luego suma {a}.",
+            SecondHintDetailed = $"{a} + {multiplication} = {correctResult}.",
+            ExplanationOfSuccess = $"¡Magnífico! Por jerarquía de operaciones, {b} × {c} = {multiplication}, y sumando {a} obtenemos {correctResult}. ¡Cuidado con sumar primero ({a}+{b}={a+b}) que daría {wrongPrecedence}!"
+        };
+
+        for (int i = 1; i <= c; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_pemdas_{i}",
+                Name = $"Grupo de multiplicación #{i}",
+                EmojiSymbol = "⭐",
+                AccessibleDescription = $"Grupo {i} de {b} elementos",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, correctResult, min: Math.Min(correctResult, wrongPrecedence) - 2, max: Math.Max(correctResult, wrongPrecedence) + 2, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de ecuación lineal de la forma ax + b = c (1º Secundaria).
+    /// </summary>
+    public Exercise GenerateLinearEquationAXBExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? 2 : rng.Next(2, 4);
+        int x = isSimplified ? 3 : rng.Next(2, 6);
+        int b = isSimplified ? 4 : rng.Next(2, 8);
+        int c = (a * x) + b;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_eq_axb_{Guid.NewGuid():N}",
+            Title = $"Ecuación Lineal: {a}X + {b} = {c}",
+            GameType = GamePlayType.LinearEquationAXB,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = x,
+            StandardInstruction = $"En la papelería compraste {a} cuadernos iguales que costaron X pesos cada uno, más una goma de ${b} pesos. La cuenta total fue de ${c} pesos ({a}X + {b} = {c}). Despejando paso a paso, ¿cuánto costó cada cuaderno X?",
+            SimplifiedInstruction = $"{a} libretas valen {a}X. Más {b} pesos da {c} en total. ¿Cuánto vale cada libreta X?",
+            ScreenReaderDescription = $"Ecuación lineal: {a} por X más {b} igual a {c}. Encuentra el valor de X.",
+            FirstHint = $"Paso 1: Resta {b} de ambos lados: {a}X = {c} - {b} = {c - b}.",
+            SecondHintDetailed = $"Paso 2: Divide entre {a}: X = {c - b} ÷ {a} = {x}.",
+            ExplanationOfSuccess = $"¡Espectacular! {a}X = {c - b}, luego X = {c - b} ÷ {a} = {x}. Cada libreta costó ${x} pesos."
+        };
+
+        for (int i = 1; i <= a; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_nb_{i}",
+                Name = $"Libreta #{i} (costo X)",
+                EmojiSymbol = "📓",
+                AccessibleDescription = $"Libreta {i} de costo incógnita X",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[1]
+            });
+        }
+
+        BuildOptions(ex, x, min: Math.Max(1, x - 2), max: x + 3, unitLabel: "pesos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de porcentajes aplicados a compras y descuentos (1º Secundaria).
+    /// </summary>
+    public Exercise GeneratePercentageExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int basePrice = isSimplified ? 100 : (rng.Next(1, 4) * 100);
+        int[] allowedPercents = isSimplified ? new[] { 10, 50 } : new[] { 10, 20, 25, 50 };
+        int percent = allowedPercents[rng.Next(allowedPercents.Length)];
+
+        int discountAmount = (basePrice * percent) / 100;
+        int finalPrice = basePrice - discountAmount;
+        string currency = profile.CurrencyName;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_pct_{Guid.NewGuid():N}",
+            Title = $"Oferta en la Tienda: {percent}% de Descuento",
+            GameType = GamePlayType.PercentageCalculation,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = discountAmount,
+            StandardInstruction = $"En la tienda de ropa una mochila cuesta ${basePrice} {currency} y tiene un letrero de oferta con el {percent}% de descuento. ¿Cuánto dinero te van a descontar del precio original?",
+            SimplifiedInstruction = $"Una mochila de ${basePrice} {currency} tiene {percent}% de descuento. ¿Cuánto dinero te descuentan?",
+            ScreenReaderDescription = $"Cálculo de porcentaje: {percent} por ciento de {basePrice} pesos. Descuento en pesos.",
+            FirstHint = $"El {percent}% significa {percent} de cada 100 pesos. Multiplica {basePrice} × {percent} y divide entre 100.",
+            SecondHintDetailed = $"({basePrice} × {percent}) ÷ 100 = {discountAmount} {currency}.",
+            ExplanationOfSuccess = $"¡Exacto! El {percent}% de ${basePrice} {currency} son ${discountAmount} {currency} de descuento. ¡Pagarás solo ${finalPrice} {currency}!"
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_backpack",
+            Name = $"Mochila de ${basePrice}",
+            EmojiSymbol = "🎒",
+            AccessibleDescription = $"Mochila de {basePrice} pesos con etiqueta de {percent}%",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        BuildOptions(ex, discountAmount, min: Math.Max(5, discountAmount - 15), max: discountAmount + 20, unitLabel: currency, rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -966,6 +1164,14 @@ public class ExerciseGenerator
                 "elem_square_root_01" => GenerateSquareRootExercise(profile, rng),
 
                 "elem_cartesian_coordinates_01" => GenerateCartesianCoordinatesExercise(profile, rng),
+
+                "sec_signed_numbers_01" => GenerateSignedNumbersExercise(profile, rng),
+
+                "sec_order_operations_01" => GenerateOrderOfOperationsExercise(profile, rng),
+
+                "sec_linear_equations_01" => GenerateLinearEquationAXBExercise(profile, rng),
+
+                "sec_percentages_01" => GeneratePercentageExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };

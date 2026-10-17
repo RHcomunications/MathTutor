@@ -355,4 +355,86 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, coordList.Count);
         Assert.All(coordList, ex => Assert.Equal(GamePlayType.CartesianCoordinates, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateSignedNumbersExercise_HandlesSignedBalanceAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryFirstGrade, Age = 12 };
+        var rng = new Random(1600);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateSignedNumbersExercise(profile, rng);
+            Assert.Equal(GamePlayType.SignedNumbersAddition, ex.GameType);
+            Assert.True(ex.ExpectedResult < 0); // Deuda neta en la tiendita
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateOrderOfOperationsExercise_RespectsMultiplicationPrecedence()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryFirstGrade, Age = 12 };
+        var rng = new Random(1700);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateOrderOfOperationsExercise(profile, rng);
+            Assert.Equal(GamePlayType.OrderOfOperationsPEMDAS, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 6);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateLinearEquationAXBExercise_CalculatesXAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryFirstGrade, Age = 12 };
+        var rng = new Random(1800);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateLinearEquationAXBExercise(profile, rng);
+            Assert.Equal(GamePlayType.LinearEquationAXB, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 2);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GeneratePercentageExercise_ComputesDiscountAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryFirstGrade, Age = 12 };
+        var rng = new Random(1900);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GeneratePercentageExercise(profile, rng);
+            Assert.Equal(GamePlayType.PercentageCalculation, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 10);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_SecondaryFirstGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondaryFirstGrade, Age = 12 };
+
+        var signList = _generator.GenerateExercisesForTopic("sec_signed_numbers_01", profile, count: 3);
+        Assert.Equal(3, signList.Count);
+        Assert.All(signList, ex => Assert.Equal(GamePlayType.SignedNumbersAddition, ex.GameType));
+
+        var pemdasList = _generator.GenerateExercisesForTopic("sec_order_operations_01", profile, count: 3);
+        Assert.Equal(3, pemdasList.Count);
+        Assert.All(pemdasList, ex => Assert.Equal(GamePlayType.OrderOfOperationsPEMDAS, ex.GameType));
+
+        var eqList = _generator.GenerateExercisesForTopic("sec_linear_equations_01", profile, count: 3);
+        Assert.Equal(3, eqList.Count);
+        Assert.All(eqList, ex => Assert.Equal(GamePlayType.LinearEquationAXB, ex.GameType));
+
+        var pctList = _generator.GenerateExercisesForTopic("sec_percentages_01", profile, count: 3);
+        Assert.Equal(3, pctList.Count);
+        Assert.All(pctList, ex => Assert.Equal(GamePlayType.PercentageCalculation, ex.GameType));
+    }
 }

@@ -30,6 +30,10 @@ public class CurriculumService
             BuildAlgebraicBalanceTopic(),
             BuildSquareRootTopic(),
             BuildCartesianCoordinatesTopic(),
+            BuildSignedNumbersTopic(),
+            BuildOrderOfOperationsTopic(),
+            BuildLinearEquationsTopic(),
+            BuildPercentagesTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -722,10 +726,10 @@ public class CurriculumService
         var topic = new PedagogicalTopic
         {
             Id = "elem_decimals_01",
-            Title = "El Mercado de los Céntimos: Números Decimales y Monedas",
+            Title = "El Mercado de los Centavos: Números Decimales y Monedas",
             Level = AcademicLevel.UpperElementary,
             CharacterName = "Cosmo el Búho Sabio",
-            NarrativeIntro = "¡Bienvenidos al Mercado de las Joyas y Céntimos! Cuando compramos cosas en la vida real, los precios no siempre son números enteros: usamos monedas de centavos para pagar partes de un peso. El punto decimal separa los pesos enteros de los centavos.",
+            NarrativeIntro = "¡Bienvenidos al Mercado de las Frutas y Monedas! Cuando compramos en la tiendita o en el mercado, los precios no siempre son números enteros: usamos monedas de centavos para pagar partes de un peso. El punto decimal separa los pesos enteros de los centavos.",
             NarrativeIntroSimplified = "Los números decimales nos sirven para contar dinero: pesos y monedas de centavos.",
             CoreConceptExplanation = "El sistema decimal extiende el valor posicional a partes más pequeñas que uno: décimos (0.1) y centésimos (0.01). Un peso entero tiene 100 centavos ($1.00), y media moneda son 50 centavos ($0.50). Juntos hacen $1.50.",
             CoreConceptSimplified = "El punto decimal separa los pesos enteros de los centavitos sueltos.",
@@ -1064,6 +1068,210 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 pasos (eje Y)", Value = 2, IsCorrect = false, SpeechFeedback = "2 es el segundo número (eje vertical Y). Buscamos el eje horizontal X.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "4 pasos (eje X)", Value = 4, IsCorrect = true, SpeechFeedback = "¡Correcto! El primer número es 4, correspondiente al eje horizontal X.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "6 pasos", Value = 6, IsCorrect = false, SpeechFeedback = "No sumamos los números; leemos el primer valor del par (4, 2).", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 15 (1º Secundaria): Números Enteros con Signo y Recta Numérica
+    /// </summary>
+    private PedagogicalTopic BuildSignedNumbersTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_signed_numbers_01",
+            Title = "La Tiendita y la Recta Numérica: Números con Signo",
+            Level = AcademicLevel.SecondaryFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido a 1º de Secundaria! En la vida cotidiana no todos los números son positivos: en la tiendita cuando pedimos fiado tenemos una deuda (saldo negativo), y en invierno la temperatura en la sierra baja a grados bajo cero. Los números enteros con signo (+ y -) nos permiten calcular ganancias, pérdidas y balances exactos.",
+            NarrativeIntroSimplified = "Los números con signo nos ayudan a contar deudas (-) y dinero que tenemos (+).",
+            CoreConceptExplanation = "El conjunto de los números enteros (Z) incluye los positivos, el cero y los negativos. En una suma (+a) + (-b), si el número negativo tiene mayor valor absoluto, el resultado final es negativo: representa una deuda o déficit.",
+            CoreConceptSimplified = "Si tienes 5 pesos pero debes 8 pesos, pagas tus 5 y todavía quedas debiendo 3 (-3).",
+            PrinciplesAddressed = new List<string>
+            {
+                "Comprensión intuitiva y formal de números enteros positivos y negativos",
+                "Modelado de saldo y deudas en situaciones cotidianas",
+                "Adición y sustracción de números con signo en la recta numérica"
+            },
+            CongratulationMessage = "¡Felicidades! Dominas los números positivos y negativos como un experto financiero."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "sign_ex_01",
+            Title = "El Saldo en la Tiendita: (+5) + (-8)",
+            GameType = GamePlayType.SignedNumbersAddition,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = -3,
+            StandardInstruction = "En la tiendita tenías $5 pesos a favor (+5). Compraste un jugo y unas papitas por $8 pesos fiados (-8). Al sumar (+5) + (-8), ¿cuál es tu saldo final?",
+            SimplifiedInstruction = "Tienes 5 pesos y debes 8. ¿Cuánto quedas debiendo?",
+            ScreenReaderDescription = "Suma de enteros: positivo 5 más negativo 8. Da negativo 3.",
+            FirstHint = "Como debes más de lo que tienes, el resultado es negativo.",
+            SecondHintDetailed = "5 - 8 = -3 pesos (debes 3 pesos).",
+            ExplanationOfSuccess = "¡Exacto! (+5) + (-8) = -3. Quedas a deber 3 pesos en la tiendita."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "bal_1", Name = "Dinero propio (+5)", EmojiSymbol = "🪙", AccessibleDescription = "Monedas a favor de 5 pesos", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex1.ItemsGroupB.Add(new ManipulableItem { Id = "debt_1", Name = "Cuenta fiada (-8)", EmojiSymbol = "🧾", AccessibleDescription = "Nota de deuda de 8 pesos", OrderIndex = 2, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "-3 pesos (debes 3)", Value = -3, IsCorrect = true, SpeechFeedback = "¡Correcto! 5 menos 8 es igual a -3 pesos.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "+3 pesos (te sobran 3)", Value = 3, IsCorrect = false, SpeechFeedback = "No te sobra dinero, gastaste más de lo que tenías.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "-13 pesos", Value = -13, IsCorrect = false, SpeechFeedback = "No se sumaron dos deudas; tus 5 pesos pagaron parte de los 8.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 16 (1º Secundaria): Jerarquía de Operaciones y Paréntesis (PEMDAS)
+    /// </summary>
+    private PedagogicalTopic BuildOrderOfOperationsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_order_operations_01",
+            Title = "El Código de la Jerarquía: Orden de Operaciones y Paréntesis (PEMDAS)",
+            Level = AcademicLevel.SecondaryFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Cuando los científicos y programadores escriben fórmulas matemáticas, todos deben entender el mismo resultado sin confusiones. Por eso existe una regla universal llamada Jerarquía de Operaciones (PEMDAS): primero se resuelven los paréntesis, luego potencias y raíces, después multiplicaciones y divisiones, y al final sumas y restas.",
+            NarrativeIntroSimplified = "En matemáticas hay reglas de turno: la multiplicación siempre se resuelve antes que la suma.",
+            CoreConceptExplanation = "La jerarquía de operaciones establece el orden estricto de resolución: 1º Paréntesis, 2º Exponentes y raíces, 3º Multiplicaciones y Divisiones (de izquierda a derecha), 4º Sumas y Restas (de izquierda a derecha).",
+            CoreConceptSimplified = "Primero multiplica. Después suma el resultado.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Convención universal de precedencia de operadores aritméticos (PEMDAS)",
+                "Prioridad de la multiplicación y división sobre la suma y resta",
+                "Uso de paréntesis como modificadores de la prioridad de cálculo"
+            },
+            CongratulationMessage = "¡Extraordinario estratega! Resuelves operaciones complejas respetando la jerarquía matemática."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "pemdas_ex_01",
+            Title = "La Regla de Oro: 4 + 3 × 2",
+            GameType = GamePlayType.OrderOfOperationsPEMDAS,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = 10,
+            StandardInstruction = "Calcula el valor de la expresión: 4 + 3 × 2. Recuerda que la multiplicación se resuelve antes que la suma. ¿Cuál es el resultado correcto?",
+            SimplifiedInstruction = "Primero haz 3 × 2 = 6. Luego suma 4 + 6. ¿Cuánto da?",
+            ScreenReaderDescription = "Expresión: 4 más 3 por 2. Por jerarquía de operaciones, 3 por 2 es 6, más 4 es igual a 10.",
+            FirstHint = "Resuelve primero 3 × 2. Luego suma 4.",
+            SecondHintDetailed = "3 × 2 = 6, y 4 + 6 = 10.",
+            ExplanationOfSuccess = "¡Magnífico! 3 × 2 = 6, y 4 + 6 = 10. Si sumaras primero 4 + 3 = 7 y luego multiplicaras daría 14, ¡lo cual es un error común que tú evitaste!"
+        };
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "10 (correcto por jerarquía)", Value = 10, IsCorrect = true, SpeechFeedback = "¡Exacto! 3 × 2 = 6, y 4 + 6 = 10.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "14 (sumando primero)", Value = 14, IsCorrect = false, SpeechFeedback = "¡Cuidado! No sumes primero. La multiplicación tiene prioridad.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "9", Value = 9, IsCorrect = false, SpeechFeedback = "Revisa los cálculos: primero 3 × 2 y luego suma 4.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 17 (1º Secundaria): Ecuaciones Lineales ax + b = c
+    /// </summary>
+    private PedagogicalTopic BuildLinearEquationsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_linear_equations_01",
+            Title = "El Misterio de la Papelería: Ecuaciones Lineales ax + b = c",
+            Level = AcademicLevel.SecondaryFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "En la papelería del barrio, compraste varios cuadernos del mismo precio X más un lápiz, y pagaste con un billete. ¿Cómo saber el precio de cada cuaderno sin adivinar? ¡Con una ecuación lineal de primer grado de la forma ax + b = c! Despejamos la incógnita con operaciones inversas ordenadas.",
+            NarrativeIntroSimplified = "Para saber el costo de cada libreta, primero resta lo que pagaste del lápiz y luego divide entre las libretas.",
+            CoreConceptExplanation = "En una ecuación ax + b = c, despejamos x en dos pasos: primero restamos b en ambos lados (ax = c - b), y luego dividimos ambos miembros entre el coeficiente a: x = (c - b) / a.",
+            CoreConceptSimplified = "Paso 1: Resta el lápiz. Paso 2: Divide entre el número de libretas.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Modelado algebraico de problemas de compra y costo unitario",
+                "Despeje en dos pasos: restar el término independiente y dividir entre el coeficiente",
+                "Comprobación formal de la solución"
+            },
+            CongratulationMessage = "¡Mente analítica! Despejas ecuaciones de primer grado con soltura y precisión."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "eq_axb_ex_01",
+            Title = "La Cuenta de la Papelería: 2X + 5 = 25",
+            GameType = GamePlayType.LinearEquationAXB,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = 10,
+            StandardInstruction = "Compraste 2 libretas iguales de precio X y un lápiz de $5 pesos. La cuenta total fue de $25 pesos (2X + 5 = 25). ¿Cuánto costó cada libreta X?",
+            SimplifiedInstruction = "2 libretas más 5 pesos da 25 pesos. ¿Cuánto costó cada libreta?",
+            ScreenReaderDescription = "Ecuación: 2 por X más 5 igual a 25. Resta 5 para obtener 2X = 20, luego divide entre 2.",
+            FirstHint = "Paso 1: 2X = 25 - 5 = 20 pesos.",
+            SecondHintDetailed = "Paso 2: X = 20 ÷ 2 = 10 pesos.",
+            ExplanationOfSuccess = "¡Espectacular! 2X = 20, por lo que X = 10 pesos. Comprobamos: 2(10) + 5 = 20 + 5 = 25 pesos."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "lib_1", Name = "Libreta 1", EmojiSymbol = "📓", AccessibleDescription = "Primera libreta de precio X", OrderIndex = 1, MusicalPitchHz = Frequencies[1] });
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "lib_2", Name = "Libreta 2", EmojiSymbol = "📓", AccessibleDescription = "Segunda libreta de precio X", OrderIndex = 2, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "X = $8 pesos", Value = 8, IsCorrect = false, SpeechFeedback = "2 por 8 es 16, más 5 daría 21 pesos, no 25.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "X = $10 pesos", Value = 10, IsCorrect = true, SpeechFeedback = "¡Magnífico! 2 × 10 = 20, más 5 = 25 pesos.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "X = $15 pesos", Value = 15, IsCorrect = false, SpeechFeedback = "2 por 15 daría 30 pesos, se pasaría del total.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 18 (1º Secundaria): Cálculo de Porcentajes y Descuentos
+    /// </summary>
+    private PedagogicalTopic BuildPercentagesTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_percentages_01",
+            Title = "Temporada de Ofertas: Cálculo de Porcentajes y Descuentos",
+            Level = AcademicLevel.SecondaryFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Llegaron las ofertas a la tienda departamental y al tianguis! Un descuento del 20% significa que por cada 100 pesos de precio, te rebajan 20 pesos. Saber calcular porcentajes te convierte en un comprador inteligente que nunca se deja engañar.",
+            NarrativeIntroSimplified = "El porcentaje (%) te dice cuánto te descuentan por cada 100 pesos de compra.",
+            CoreConceptExplanation = "El porcentaje es una razón que indica una fracción de 100 partes iguales. Para calcular el P% de una cantidad C: Descuento = (C × P) / 100. El precio final con descuento es C - Descuento.",
+            CoreConceptSimplified = "20% de 200 pesos: por los primeros 100 pesos son 20, por los segundos son otros 20 = 40 pesos de descuento.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de tanto por ciento como razón de base 100",
+                "Cálculo directo del monto de descuento y precio final",
+                "Estrategias de cálculo mental para 10%, 25% y 50%"
+            },
+            CongratulationMessage = "¡Comprador experto! Calculas descuentos y porcentajes con maestría en cualquier tienda."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "pct_ex_01",
+            Title = "Oferta en la Mochila: 20% de $200",
+            GameType = GamePlayType.PercentageCalculation,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = 40,
+            StandardInstruction = "En la tienda una mochila cuesta $200 pesos y tiene un descuento especial del 20%. ¿Cuántos pesos te descuentan del precio original?",
+            SimplifiedInstruction = "La mochila vale 200 pesos y tiene 20% de descuento. ¿Cuánto dinero te descuentan?",
+            ScreenReaderDescription = "Cálculo de 20% de 200 pesos. 20 por cada 100 pesos da 40 pesos de rebaja.",
+            FirstHint = "Por cada $100 pesos te descuentan $20. Como son $200 pesos, te descuentan el doble: 20 × 2.",
+            SecondHintDetailed = "(200 × 20) ÷ 100 = 40 pesos de descuento.",
+            ExplanationOfSuccess = "¡Exacto! El 20% de $200 pesos son $40 pesos de descuento. La mochila te costará solo $160 pesos."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "bag_1", Name = "Mochila de $200", EmojiSymbol = "🎒", AccessibleDescription = "Mochila de 200 pesos con etiqueta de 20%", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "$20 pesos de descuento", Value = 20, IsCorrect = false, SpeechFeedback = "$20 pesos sería el descuento si costara $100. Como cuesta $200 es el doble.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "$40 pesos de descuento", Value = 40, IsCorrect = true, SpeechFeedback = "¡Magnífico! 20 de cada 100 pesos: 20 × 2 = $40 pesos.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "$50 pesos de descuento", Value = 50, IsCorrect = false, SpeechFeedback = "$50 pesos sería el 25% de descuento.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

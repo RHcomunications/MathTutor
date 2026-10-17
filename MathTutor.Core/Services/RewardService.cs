@@ -142,6 +142,42 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_signed_numbers",
+                Title = "Financiero de la Recta",
+                Description = "Dominaste los saldos, deudas y números enteros con signo.",
+                IconEmoji = "🧾",
+                AssociatedTopicId = "sec_signed_numbers_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_order_operations",
+                Title = "Maestro de la Jerarquía",
+                Description = "Resolviste operaciones complejas respetando PEMDAS y paréntesis.",
+                IconEmoji = "🛡️",
+                AssociatedTopicId = "sec_order_operations_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_linear_equations",
+                Title = "Estratega Lineal",
+                Description = "Despejaste ecuaciones de la forma ax + b = c como todo un profesional.",
+                IconEmoji = "📐",
+                AssociatedTopicId = "sec_linear_equations_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_percentages",
+                Title = "Cazador de Ofertas",
+                Description = "Calculaste porcentajes, descuentos e IVA con agilidad.",
+                IconEmoji = "🏷️",
+                AssociatedTopicId = "sec_percentages_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -260,7 +296,7 @@ public class RewardService
             new()
             {
                 Id = "station_9",
-                Name = "El Mercado de los Céntimos",
+                Name = "El Mercado de los Centavos",
                 Description = "El bazar donde compramos con monedas y aprendemos el valor decimal.",
                 LandmarkEmoji = "🪙",
                 TopicId = "elem_decimals_01",
@@ -314,11 +350,47 @@ public class RewardService
             new()
             {
                 Id = "station_15",
+                Name = "La Tiendita de la Recta Numérica",
+                Description = "El negocio del barrio donde comprendemos saldos a favor y deudas.",
+                LandmarkEmoji = "🧾",
+                TopicId = "sec_signed_numbers_01",
+                OrderIndex = 15
+            },
+            new()
+            {
+                Id = "station_16",
+                Name = "El Templo de la Jerarquía PEMDAS",
+                Description = "El santuario donde los paréntesis y multiplicaciones definen la prioridad.",
+                LandmarkEmoji = "🛡️",
+                TopicId = "sec_order_operations_01",
+                OrderIndex = 16
+            },
+            new()
+            {
+                Id = "station_17",
+                Name = "La Papelería de las Ecuaciones",
+                Description = "El comercio donde calculamos precios unitarios con ax + b = c.",
+                LandmarkEmoji = "📐",
+                TopicId = "sec_linear_equations_01",
+                OrderIndex = 17
+            },
+            new()
+            {
+                Id = "station_18",
+                Name = "El Tianguis de las Ofertas",
+                Description = "El mercado de promociones donde calculamos el tanto por ciento y descuentos.",
+                LandmarkEmoji = "🏷️",
+                TopicId = "sec_percentages_01",
+                OrderIndex = 18
+            },
+            new()
+            {
+                Id = "station_19",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 15
+                OrderIndex = 19
             }
         };
 
