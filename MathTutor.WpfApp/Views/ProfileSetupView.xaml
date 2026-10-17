@@ -169,10 +169,10 @@
                                    Margin="0,8,0,6"/>
 
                         <CheckBox x:Name="ChkVoiceSynthesis"
-                                  Content="Habilitar Síntesis de Voz / Lectura de Pantalla Integrada"
+                                  Content="Habilitar Anuncios Automáticos para Lector de Pantalla (NVDA, JAWS o Narrador)"
                                   FontSize="{DynamicResource AppBaseFontSize}"
                                   Margin="0,4"
-                                  AutomationProperties.Name="Habilitar Síntesis de Voz propia para lectura de texto"
+                                  AutomationProperties.Name="Habilitar anuncios automáticos para el lector de pantalla del sistema"
                                   Checked="ChkVoiceSynthesis_Changed"
                                   Unchecked="ChkVoiceSynthesis_Changed"
                                   GotFocus="Control_GotFocus"/>

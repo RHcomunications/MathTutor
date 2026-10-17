@@ -121,5 +121,20 @@
             <Setter Property="CornerRadius" Value="14"/>
             <Setter Property="Padding" Value="20"/>
         </Style>
+
+        <!-- Estilo para Bloques de Texto Explorables con Cursor del Lector de Pantalla (NVDA / JAWS / Narrador) -->
+        <Style x:Key="AccessibleReadOnlyTextBox" TargetType="TextBox">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="IsReadOnlyCaretVisible" Value="True"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Cursor" Value="Arrow"/>
+        </Style>
     </Application.Resources>
 </Application>

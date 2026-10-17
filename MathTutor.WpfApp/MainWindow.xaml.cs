@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Input;
+using System.Windows.Threading;
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.WpfApp.Services;
@@ -20,6 +22,7 @@ public partial class MainWindow : Window
     private readonly RealmMapView _mapView;
 
     private string _lastSpokenMessage = string.Empty;
+    private bool _repeatToggleFlag;
 
     public MainWindow()
     {
@@ -30,6 +33,9 @@ public partial class MainWindow : Window
         _lessonView = new LessonView();
         _gameView = new MiniGameView();
         _mapView = new RealmMapView();
+
+        // Conectar el canal universal de región en vivo de UI Automation (NVDA, JAWS y Narrador)
+        _acc.Speech.UiAutomationLiveRegionAnnouncer = RaiseLiveRegionAnnouncement;
 
         // Conectar eventos de navegación
         _profileView.ProfileSavedAndReady += () =>
@@ -122,6 +128,10 @@ public partial class MainWindow : Window
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        // Inicializar el AutomationPeer de la región en vivo desde el arranque
+        _ = UIElementAutomationPeer.FromElement(TxtLiveAnnouncement)
+            ?? UIElementAutomationPeer.CreatePeerForElement(TxtLiveAnnouncement);
+
         if (_acc.LoadSavedProfile())
         {
             // Ya existía un perfil previo guardado: restaurar y entrar al menú
@@ -153,7 +163,33 @@ public partial class MainWindow : Window
     {
         _lastSpokenMessage = message;
         TxtLiveAnnouncement.Text = message;
-        System.Windows.Automation.AutomationProperties.SetName(TxtLiveAnnouncement, message);
+    }
+
+    private void RaiseLiveRegionAnnouncement(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        // Despachar en ApplicationIdle garantiza que cualquier cambio de foco (Focus())
+        // se procese primero en el árbol UIA y no interrumpa la lectura del anuncio en NVDA/JAWS/Narrador.
+        Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
+        {
+            _repeatToggleFlag = !_repeatToggleFlag;
+            string liveText = _repeatToggleFlag ? message : message + "\u200B";
+            string previousName = AutomationProperties.GetName(TxtLiveAnnouncement);
+
+            TxtLiveAnnouncement.Text = liveText;
+            AutomationProperties.SetName(TxtLiveAnnouncement, liveText);
+
+            var peer = UIElementAutomationPeer.FromElement(TxtLiveAnnouncement)
+                       ?? UIElementAutomationPeer.CreatePeerForElement(TxtLiveAnnouncement);
+
+            if (peer != null)
+            {
+                peer.RaisePropertyChangedEvent(AutomationElementIdentifiers.NameProperty, previousName, liveText);
+                peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
+            }
+        });
     }
 
     private void UpdateTopStatus()

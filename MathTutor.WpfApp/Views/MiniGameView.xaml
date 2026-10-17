@@ -88,12 +88,12 @@
                                    FontWeight="Bold"
                                    Foreground="{DynamicResource AppAccentBrush}"
                                    Margin="0,0,0,4"/>
-                        <TextBlock x:Name="TxtInstruction"
-                                   Text="Enunciado de la instrucción adaptada..."
-                                   FontSize="{DynamicResource AppHeaderFontSize}"
-                                   Foreground="{DynamicResource AppTextPrimaryBrush}"
-                                   LineHeight="34"
-                                   TextWrapping="Wrap"/>
+                        <TextBox x:Name="TxtInstruction"
+                                 Style="{StaticResource AccessibleReadOnlyTextBox}"
+                                 Text="Enunciado de la instrucción adaptada..."
+                                 FontSize="{DynamicResource AppHeaderFontSize}"
+                                 Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                 AutomationProperties.Name="Enunciado del Reto de Cosmo"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -145,13 +145,14 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="💡" FontSize="32" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1"
-                               x:Name="TxtHintMessage"
-                               Text="Pista adaptada..."
-                               FontSize="{DynamicResource AppBaseFontSize}"
-                               Foreground="{DynamicResource AppTextPrimaryBrush}"
-                               VerticalAlignment="Center"
-                               TextWrapping="Wrap"/>
+                    <TextBox Grid.Column="1"
+                             x:Name="TxtHintMessage"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Pista adaptada..."
+                             FontSize="{DynamicResource AppBaseFontSize}"
+                             Foreground="{DynamicResource AppTextPrimaryBrush}"
+                             VerticalAlignment="Center"
+                             AutomationProperties.Name="Pista y Retroalimentación de Cosmo"/>
                 </Grid>
             </Border>
 
@@ -195,13 +196,14 @@
                         <TextBlock Text="⭐" FontSize="36" Margin="8,0,0,0"/>
                     </StackPanel>
 
-                    <TextBlock x:Name="TxtSuccessExplanation"
-                               Text="Explicación del éxito..."
-                               FontSize="{DynamicResource AppSubHeaderFontSize}"
-                               Foreground="#FFFFFF"
-                               TextAlignment="Center"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,16"/>
+                    <TextBox x:Name="TxtSuccessExplanation"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Explicación del éxito..."
+                             FontSize="{DynamicResource AppSubHeaderFontSize}"
+                             Foreground="#FFFFFF"
+                             TextAlignment="Center"
+                             Margin="0,0,0,16"
+                             AutomationProperties.Name="Explicación de Respuesta Correcta"/>
 
                     <Button x:Name="BtnNextExercise"
                             Content="🌟 Siguiente Reto Mágico (Enter)"

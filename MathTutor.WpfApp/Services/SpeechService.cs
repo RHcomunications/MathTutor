@@ -1,18 +1,42 @@
 using System;
-using System.Linq;
-using System.Speech.Synthesis;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace MathTutor.WpfApp.Services;
 
 /// <summary>
-/// Servicio de síntesis de voz (TTS) para lectura de pantalla integrada.
-/// Permite reproducir voz en tiempo real con control de interrupciones, velocidad y volumen.
+/// Puente de comunicación nativa con el lector de pantalla instalado en el sistema
+/// (NVDA, JAWS o Narrador de Windows). Elimina por completo el uso de SAPI5 para respetar
+/// la voz, el sintetizador y la velocidad configurados por el usuario en su lector de pantalla.
 /// </summary>
 public class SpeechService : IDisposable
 {
-    private SpeechSynthesizer? _synthesizer;
+    private const uint SPI_GETSCREENREADER = 0x0046;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref bool pvParam, uint fWinIni);
+
+    [DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+    private static extern int nvdaController_testIfRunning();
+
+    [DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+    private static extern int nvdaController_speakText(string text);
+
+    [DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+    private static extern int nvdaController_cancelSpeech();
+
     private bool _enabled = true;
-    private readonly object _lock = new();
+    private object? _jawsComObject;
+    private bool _jawsInitialized;
+    private bool _nvdaClientDllAvailable = true;
+
+    /// <summary>
+    /// Acción delegada conectada por la ventana principal para disparar la región en vivo
+    /// de Microsoft UI Automation (UIA LiveRegionChanged), compatible de forma nativa con
+    /// NVDA, JAWS y el Narrador de Windows a la velocidad exacta del usuario.
+    /// </summary>
+    public Action<string>? UiAutomationLiveRegionAnnouncer { get; set; }
 
     public bool Enabled
     {
@@ -27,73 +51,81 @@ public class SpeechService : IDisposable
         }
     }
 
-    public SpeechService()
-    {
-        InitializeSynthesizer();
-    }
-
-    private void InitializeSynthesizer()
+    /// <summary>
+    /// Detecta cuál lector de pantalla se encuentra activo en el sistema operativo.
+    /// </summary>
+    public string GetActiveScreenReaderName()
     {
         try
         {
-            _synthesizer = new SpeechSynthesizer();
+            if (Process.GetProcessesByName("nvda").Length > 0)
+                return "NVDA";
+            if (Process.GetProcessesByName("jfw").Length > 0)
+                return "JAWS";
+            if (Process.GetProcessesByName("Narrator").Length > 0)
+                return "Narrador de Windows";
 
-            // Buscar voz en español instalada en Windows (ej. Sabina, Helena, Laura, Raul, etc.)
-            var spanishVoice = _synthesizer.GetInstalledVoices()
-                .FirstOrDefault(v => v.Enabled && (v.VoiceInfo.Culture.TwoLetterISOLanguageName.Equals("es", StringComparison.OrdinalIgnoreCase) ||
-                                                    v.VoiceInfo.Culture.Name.StartsWith("es-", StringComparison.OrdinalIgnoreCase)));
-
-            if (spanishVoice != null)
-            {
-                _synthesizer.SelectVoice(spanishVoice.VoiceInfo.Name);
-            }
-
-            _synthesizer.Rate = -1; // Tono y ritmo amigable para niños pequeños
-            _synthesizer.Volume = 100;
+            bool screenReaderFlag = false;
+            if (SystemParametersInfo(SPI_GETSCREENREADER, 0, ref screenReaderFlag, 0) && screenReaderFlag)
+                return "Lector de Pantalla del Sistema";
         }
         catch
         {
-            _synthesizer = null;
         }
+
+        return "UI Automation (NVDA / JAWS / Narrador)";
     }
 
     /// <summary>
-    /// Lee un texto en voz alta. Si interruptPrevious es true, cancela cualquier lectura previa.
+    /// Envía el texto directamente al lector de pantalla del sistema (NVDA, JAWS o Narrador)
+    /// respetando el sintetizador y la velocidad del usuario.
     /// </summary>
     public void Speak(string text, bool interruptPrevious = true)
     {
-        if (!_enabled || _synthesizer == null || string.IsNullOrWhiteSpace(text))
+        if (!_enabled || string.IsNullOrWhiteSpace(text))
             return;
 
-        lock (_lock)
-        {
-            try
-            {
-                if (interruptPrevious)
-                {
-                    _synthesizer.SpeakAsyncCancelAll();
-                }
+        // 1. Si NVDA Controller Client DLL está presente y NVDA responde por RPC directo:
+        if (TrySpeakViaNvdaController(text, interruptPrevious))
+            return;
 
-                _synthesizer.SpeakAsync(text);
-            }
-            catch
-            {
-                // Manejo de excepción silencioso para evitar fallos de UI
-            }
-        }
+        // 2. Si JAWS está en ejecución y responde por su API COM nativa (FreedomScientific.JawsApi):
+        if (TrySpeakViaJawsCom(text, interruptPrevious))
+            return;
+
+        // 3. Canal nativo universal de Windows (Microsoft UI Automation LiveRegionChanged):
+        // Soportado nativamente por NVDA, JAWS y Narrador de Windows en WPF sin requerir DLLs externas.
+        UiAutomationLiveRegionAnnouncer?.Invoke(text);
     }
 
     /// <summary>
-    /// Cancela de inmediato cualquier locución en curso.
+    /// Detiene la locución activa si el lector de pantalla lo permite por API directa.
     /// </summary>
     public void Stop()
     {
-        if (_synthesizer == null) return;
-        lock (_lock)
+        if (_nvdaClientDllAvailable)
         {
             try
             {
-                _synthesizer.SpeakAsyncCancelAll();
+                if (nvdaController_testIfRunning() == 0)
+                {
+                    nvdaController_cancelSpeech();
+                }
+            }
+            catch (DllNotFoundException)
+            {
+                _nvdaClientDllAvailable = false;
+            }
+            catch
+            {
+            }
+        }
+
+        if (_jawsComObject != null)
+        {
+            try
+            {
+                _jawsComObject.GetType().InvokeMember("StopSpeech", BindingFlags.InvokeMethod, null, _jawsComObject, null);
             }
             catch
             {
@@ -101,45 +133,85 @@ public class SpeechService : IDisposable
         }
     }
 
-    /// <summary>
-    /// Ajusta la velocidad de habla (-10 a 10).
-    /// </summary>
-    public void SetRate(int rate)
+    private bool TrySpeakViaNvdaController(string text, bool interrupt)
     {
-        if (_synthesizer == null) return;
+        if (!_nvdaClientDllAvailable)
+            return false;
+
         try
         {
-            _synthesizer.Rate = Math.Clamp(rate, -10, 10);
+            if (nvdaController_testIfRunning() == 0)
+            {
+                if (interrupt)
+                {
+                    nvdaController_cancelSpeech();
+                }
+                return nvdaController_speakText(text) == 0;
+            }
+        }
+        catch (DllNotFoundException)
+        {
+            _nvdaClientDllAvailable = false;
+        }
+        catch (EntryPointNotFoundException)
+        {
+            _nvdaClientDllAvailable = false;
         }
         catch
         {
         }
+
+        return false;
     }
 
-    /// <summary>
-    /// Ajusta el volumen de habla (0 a 100).
-    /// </summary>
-    public void SetVolume(int volume)
+    private bool TrySpeakViaJawsCom(string text, bool interrupt)
     {
-        if (_synthesizer == null) return;
         try
         {
-            _synthesizer.Volume = Math.Clamp(volume, 0, 100);
+            if (Process.GetProcessesByName("jfw").Length == 0)
+                return false;
+
+            if (!_jawsInitialized)
+            {
+                _jawsInitialized = true;
+                var jawsType = Type.GetTypeFromProgID("FreedomScientific.JawsApi");
+                if (jawsType != null)
+                {
+                    _jawsComObject = Activator.CreateInstance(jawsType);
+                }
+            }
+
+            if (_jawsComObject != null)
+            {
+                object? result = _jawsComObject.GetType().InvokeMember(
+                    "SayString",
+                    BindingFlags.InvokeMethod,
+                    null,
+                    _jawsComObject,
+                    new object[] { text, interrupt });
+
+                return result is true;
+            }
         }
         catch
         {
         }
+
+        return false;
+    }
+
+    public void SetRate(int rate)
+    {
+        // El lector de pantalla del sistema (NVDA, JAWS o Narrador) controla directamente la velocidad del usuario.
+    }
+
+    public void SetVolume(int volume)
+    {
+        // El lector de pantalla del sistema controla directamente el volumen del usuario.
     }
 
     public void Dispose()
     {
-        try
-        {
-            _synthesizer?.Dispose();
-        }
-        catch
-        {
-        }
-        _synthesizer = null;
+        _jawsComObject = null;
     }
 }

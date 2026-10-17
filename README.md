@@ -9,8 +9,8 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
 
 ### 1. ♿ 100% Accesible y Conforme a WCAG 2.2 (Nivel AA y AAA)
 - **Perceptible**:
-  - **Síntesis de Voz Integrada (`System.Speech`)**: Lee automáticamente instrucciones, preguntas, opciones, diálogos y retroalimentación sin requerir configuraciones adicionales.
-  - **Compatibilidad con Lectores Externos de Pantalla**: Diseñado con **Microsoft UI Automation (`AutomationProperties.Name`, `HelpText`, `LiveSetting = "Polite" / "Assertive"`)**, compatible con **NVDA, JAWS y el Narrador de Windows**.
+  - **Integración Nativa con el Lector de Pantalla del Sistema (NVDA, JAWS y Narrador de Windows)**: Sin voces robóticas SAPI5 que interfieran o hablen lento; el tutor envía todos los anuncios directamente al lector de pantalla activo del usuario mediante **NVDA Controller Client**, **JAWS COM API (`FreedomScientific.JawsApi`)** y **Regiones en Vivo Asertivas de Microsoft UI Automation (`LiveRegionChanged`)**, respetando al 100% el sintetizador, la velocidad de lectura y el teclado del usuario.
+  - **Exploración Línea por Línea y Carácter por Carácter**: Las tarjetas de lección, fórmulas algebraicas, ejemplos guiados y bloques de código son navegables directamente con las flechas del teclado para una inspección detallada con el cursor del lector de pantalla.
   - **Paletas de Alto Contraste**:
     - *Colorido Lúdico* (estándar infantil verificado > 4.5:1).
     - *Alto Contraste Oscuro* (Fondo negro con texto en amarillo y blanco brillante > 15:1).

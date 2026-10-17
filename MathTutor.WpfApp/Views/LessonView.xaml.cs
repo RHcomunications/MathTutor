@@ -49,10 +49,10 @@ public partial class LessonView : UserControl
         string narrative = _adaptive.GetAdaptedTopicIntro(_topic, profile);
         string concept = _adaptive.GetAdaptedConceptExplanation(_topic, profile);
 
-        string speechMessage = $"{_topic.Title}. Cosmo dice: {narrative}. {concept}. {TxtGuidedExample.Text} Presiona Enter para jugar el reto lúdico o F1 para escuchar de nuevo.";
-        _acc.Announce(speechMessage, speak: true, playTone: true);
-
         BtnStartGame.Focus();
+
+        string speechMessage = $"{_topic.Title}. Cosmo dice: {narrative}. {concept}. {TxtGuidedExample.Text} Presiona Enter para jugar el reto lúdico, Tab para explorar el texto línea por línea, o F1 para escuchar de nuevo.";
+        _acc.Announce(speechMessage, speak: true, playTone: true);
     }
 
     public void RepeatLessonVoice()

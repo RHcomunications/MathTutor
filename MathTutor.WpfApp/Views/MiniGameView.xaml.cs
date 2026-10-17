@@ -30,7 +30,7 @@ public partial class MiniGameView : UserControl
     public MiniGameView()
     {
         InitializeComponent();
-        KeyDown += MiniGameView_KeyDown;
+        PreviewKeyDown += MiniGameView_KeyDown;
     }
 
     public void StartTopicGame(PedagogicalTopic topic)
@@ -71,7 +71,10 @@ public partial class MiniGameView : UserControl
         // Renderizar opciones adaptativas
         RenderOptions();
 
-        // Anuncio inicial accesible
+        // Poner el foco en el contenedor antes del anuncio para que el evento de foco no corte al lector de pantalla
+        Focus();
+
+        // Anuncio inicial accesible al lector de pantalla del sistema (NVDA, JAWS o Narrador)
         string fullSpeech = $"{_currentExercise.Title}. {adaptedInstruction}.";
         if (profile.Disability == DisabilityType.Visual && !string.IsNullOrWhiteSpace(_currentExercise.ScreenReaderDescription))
         {
@@ -80,9 +83,6 @@ public partial class MiniGameView : UserControl
         fullSpeech += " Elige tu respuesta usando el teclado con los números 1, 2 o 3.";
 
         _acc.Announce(fullSpeech, speak: true, playTone: true);
-
-        // Foco al contenedor para recibir atajos de teclado de inmediato
-        Focus();
     }
 
     private void RenderManipulableItems()
@@ -271,10 +271,10 @@ public partial class MiniGameView : UserControl
                 ? _currentExercise.ExplanationOfSuccess
                 : option.SpeechFeedback;
 
+            BtnNextExercise.Focus();
+
             string announceMsg = $"¡Extraordinario! Respuesta correcta. {TxtSuccessExplanation.Text}. Presiona Enter para avanzar.";
             _acc.Announce(announceMsg, speak: true);
-
-            BtnNextExercise.Focus();
         }
         else
         {

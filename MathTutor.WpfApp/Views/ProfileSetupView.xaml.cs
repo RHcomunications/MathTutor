@@ -25,11 +25,11 @@ public partial class ProfileSetupView : UserControl
         LoadCurrentProfileData();
         _isInitializing = false;
 
-        // Anunciar por voz la pantalla actual
-        _acc.Announce("Pantalla de caracterización del alumno. Configura tu nombre, edad, nivel y condición para personalizar tu experiencia de aprendizaje.", speak: true, playTone: true);
-
-        // Poner el foco en el campo de nombre
+        // Poner el foco en el campo de nombre antes de anunciar para no interrumpir al lector de pantalla
         TxtName.Focus();
+
+        // Anunciar la pantalla actual al lector de pantalla del sistema (NVDA, JAWS o Narrador)
+        _acc.Announce("Pantalla de caracterización del alumno. Configura tu nombre, edad, nivel y condición para personalizar tu experiencia de aprendizaje.", speak: true, playTone: true);
     }
 
     private void PopulateDropdowns()

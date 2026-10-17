@@ -73,12 +73,12 @@
                                    FontWeight="Bold"
                                    Foreground="{DynamicResource AppAccentBrush}"
                                    Margin="0,0,0,6"/>
-                        <TextBlock x:Name="TxtNarrativeStory"
-                                   Text="Historia introductoria de Cosmo..."
-                                   FontSize="{DynamicResource AppSubHeaderFontSize}"
-                                   Foreground="{DynamicResource AppTextPrimaryBrush}"
-                                   LineHeight="32"
-                                   TextWrapping="Wrap"/>
+                        <TextBox x:Name="TxtNarrativeStory"
+                                 Style="{StaticResource AccessibleReadOnlyTextBox}"
+                                 Text="Historia introductoria de Cosmo..."
+                                 FontSize="{DynamicResource AppSubHeaderFontSize}"
+                                 Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                 AutomationProperties.Name="Historia de la Misión"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -96,13 +96,13 @@
                                FontWeight="Bold"
                                Foreground="{DynamicResource AppAccentBrush}"
                                Margin="0,0,0,8"/>
-                    <TextBlock x:Name="TxtCoreConcept"
-                               Text="Explicación del concepto..."
-                               FontSize="{DynamicResource AppBaseFontSize}"
-                               Foreground="{DynamicResource AppTextPrimaryBrush}"
-                               LineHeight="28"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,16"/>
+                    <TextBox x:Name="TxtCoreConcept"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Explicación del concepto..."
+                             FontSize="{DynamicResource AppBaseFontSize}"
+                             Foreground="{DynamicResource AppTextPrimaryBrush}"
+                             Margin="0,0,0,16"
+                             AutomationProperties.Name="Explicación del Secreto Matemático"/>
 
                     <!-- Ejemplo Guiado Paso a Paso -->
                     <Border Background="{DynamicResource AppSurfaceBrush}"
@@ -117,12 +117,12 @@
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource AppAccentBrush}"
                                        Margin="0,0,0,6"/>
-                            <TextBlock x:Name="TxtGuidedExample"
-                                       Text="Ejemplo resuelto paso a paso..."
-                                       FontSize="{DynamicResource AppBaseFontSize}"
-                                       Foreground="{DynamicResource AppTextPrimaryBrush}"
-                                       LineHeight="26"
-                                       TextWrapping="Wrap"/>
+                            <TextBox x:Name="TxtGuidedExample"
+                                     Style="{StaticResource AccessibleReadOnlyTextBox}"
+                                     Text="Ejemplo resuelto paso a paso..."
+                                     FontSize="{DynamicResource AppBaseFontSize}"
+                                     Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                     AutomationProperties.Name="Ejemplo Guiado Paso a Paso con Cosmo"/>
                         </StackPanel>
                     </Border>
 

@@ -98,14 +98,14 @@
                             Click="BtnToggleFont_Click"/>
 
                     <Button x:Name="BtnToggleSpeech"
-                            Content="🔊 Voz (F2)"
+                            Content="🔊 Lector (F2)"
                             Style="{StaticResource AccessibleActionButton}"
                             Background="{DynamicResource AppSurfaceBrush}"
                             Foreground="{DynamicResource AppTextPrimaryBrush}"
                             Height="44"
                             Padding="12,6"
                             Margin="4,0"
-                            AutomationProperties.Name="Activar o desactivar síntesis de voz. Tecla F2"
+                            AutomationProperties.Name="Activar o desactivar anuncios automáticos al lector de pantalla. Tecla F2"
                             Click="BtnToggleSpeech_Click"/>
 
                     <Button x:Name="BtnHelpVoice"
@@ -116,7 +116,7 @@
                             Height="44"
                             Padding="12,6"
                             Margin="4,0"
-                            AutomationProperties.Name="Repetir última instrucción en voz alta. Tecla F1"
+                            AutomationProperties.Name="Repetir última instrucción en el lector de pantalla. Tecla F1"
                             Click="BtnHelpVoice_Click"/>
                 </StackPanel>
 
@@ -143,7 +143,7 @@
         <!-- Anfitrión de Contenido de Pantallas -->
         <ContentControl Grid.Row="1" x:Name="MainContentHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
 
-        <!-- Barra Inferior de Anuncios Accesibles (Equivalente WPF a aria-live="polite") -->
+        <!-- Barra Inferior de Anuncios Accesibles (Región en Vivo Nativa UIA para NVDA, JAWS y Narrador) -->
         <Border Grid.Row="2"
                 Background="{DynamicResource AppCardBrush}"
                 BorderBrush="{DynamicResource AppBorderBrush}"
@@ -163,7 +163,7 @@
                            Foreground="{DynamicResource AppTextSecondaryBrush}"
                            TextTrimming="CharacterEllipsis"
                            VerticalAlignment="Center"
-                           AutomationProperties.LiveSetting="Polite"/>
+                           AutomationProperties.LiveSetting="Assertive"/>
             </Grid>
         </Border>
     </Grid>

@@ -68,7 +68,8 @@ public class AccessibilityManager
     }
 
     /// <summary>
-    /// Anuncia un mensaje tanto a la síntesis de voz propia como a lectores de pantalla externos (NVDA/JAWS/Narrador).
+    /// Envía un anuncio directamente al lector de pantalla del sistema (NVDA, JAWS o Narrador de Windows)
+    /// respetando la velocidad y el sintetizador del usuario.
     /// </summary>
     public void Announce(string message, bool speak = true, bool playTone = false)
     {
@@ -125,10 +126,16 @@ public class AccessibilityManager
 
     public void ToggleSpeech()
     {
-        CurrentProfile.Preferences.EnableVoiceSynthesis = !CurrentProfile.Preferences.EnableVoiceSynthesis;
-        Speech.Enabled = CurrentProfile.Preferences.EnableVoiceSynthesis;
-        string status = Speech.Enabled ? "activada" : "desactivada";
-        Announce($"Lectura por voz {status}", speak: Speech.Enabled);
+        bool newState = !CurrentProfile.Preferences.EnableVoiceSynthesis;
+        CurrentProfile.Preferences.EnableVoiceSynthesis = newState;
+
+        string status = newState ? "activados" : "desactivados";
+        string msg = $"Anuncios automáticos para lector de pantalla {status}";
+
+        // Si se acaba de desactivar, anunciamos este último aviso antes de silenciar los anuncios automáticos
+        Speech.Enabled = true;
+        Announce(msg, speak: true);
+        Speech.Enabled = newState;
     }
 
     public void ApplyTheme(HighContrastTheme theme)
