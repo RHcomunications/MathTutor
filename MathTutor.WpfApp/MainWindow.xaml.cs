@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private readonly CurriculumMenuView _menuView;
     private readonly LessonView _lessonView;
     private readonly MiniGameView _gameView;
+    private readonly RealmMapView _mapView;
 
     private string _lastSpokenMessage = string.Empty;
 
@@ -28,6 +29,7 @@ public partial class MainWindow : Window
         _menuView = new CurriculumMenuView();
         _lessonView = new LessonView();
         _gameView = new MiniGameView();
+        _mapView = new RealmMapView();
 
         // Conectar eventos de navegación
         _profileView.ProfileSavedAndReady += () =>
@@ -45,6 +47,12 @@ public partial class MainWindow : Window
                 NavigateTo(_lessonView);
                 _lessonView.LoadTopic(topic);
             }
+        };
+
+        _menuView.RealmMapRequested += () =>
+        {
+            NavigateTo(_mapView);
+            _mapView.RefreshMap();
         };
 
         _lessonView.StartGameRequested += (topic) =>
@@ -74,10 +82,31 @@ public partial class MainWindow : Window
 
         _gameView.MissionCompleted += (topic) =>
         {
+            if (!_acc.CurrentProfile.CompletedLessonIds.Contains(topic.Id))
+            {
+                _acc.CurrentProfile.CompletedLessonIds.Add(topic.Id);
+            }
             _acc.SaveCurrentProfile();
             UpdateTopStatus();
             NavigateTo(_menuView);
             _menuView.RefreshData();
+        };
+
+        _mapView.BackToMenuRequested += () =>
+        {
+            UpdateTopStatus();
+            NavigateTo(_menuView);
+            _menuView.RefreshData();
+        };
+
+        _mapView.StationSelected += (topicId) =>
+        {
+            var topic = _curriculum.GetAllTopics().Find(t => t.Id == topicId);
+            if (topic != null)
+            {
+                NavigateTo(_lessonView);
+                _lessonView.LoadTopic(topic);
+            }
         };
 
         _acc.AnnouncementMade += Acc_AnnouncementMade;
@@ -167,6 +196,12 @@ public partial class MainWindow : Window
                 NavigateTo(_profileView);
                 break;
 
+            case Key.F6:
+                e.Handled = true;
+                NavigateTo(_mapView);
+                _mapView.RefreshMap();
+                break;
+
             case Key.Escape:
                 if (MainContentHost.Content != _menuView)
                 {
@@ -184,6 +219,12 @@ public partial class MainWindow : Window
         UpdateTopStatus();
         NavigateTo(_menuView);
         _menuView.RefreshData();
+    }
+
+    private void BtnNavMap_Click(object sender, RoutedEventArgs e)
+    {
+        NavigateTo(_mapView);
+        _mapView.RefreshMap();
     }
 
     private void BtnNavProfile_Click(object sender, RoutedEventArgs e)

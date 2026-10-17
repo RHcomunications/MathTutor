@@ -52,7 +52,8 @@
                                 BorderBrush="{DynamicResource AppBorderBrush}"
                                 BorderThickness="2"
                                 CornerRadius="10"
-                                Padding="12,8">
+                                Padding="12,8"
+                                Margin="0,0,10,0">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="🔥" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0"/>
                                 <TextBlock x:Name="TxtStreakCount" Text="0"
@@ -62,6 +63,17 @@
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
+
+                        <!-- Botón Mapa Mágico -->
+                        <Button x:Name="BtnOpenRealmMap"
+                                Content="🗺️ Ver Mapa"
+                                Style="{StaticResource AccessibleActionButton}"
+                                Background="{DynamicResource AppSurfaceBrush}"
+                                Foreground="{DynamicResource AppTextPrimaryBrush}"
+                                Height="48"
+                                Padding="12,6"
+                                AutomationProperties.Name="Abrir el mapa del reino matemático y ver tus trofeos"
+                                Click="BtnOpenRealmMap_Click"/>
                     </StackPanel>
                 </Grid>
             </Border>

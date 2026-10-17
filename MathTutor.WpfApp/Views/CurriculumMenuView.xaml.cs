@@ -26,6 +26,7 @@ public partial class CurriculumMenuView : UserControl
     private readonly AdaptiveEngine _adaptive = new();
 
     public event Action<string>? TopicSelected;
+    public event Action? RealmMapRequested;
 
     public CurriculumMenuView()
     {
@@ -80,6 +81,12 @@ public partial class CurriculumMenuView : UserControl
             _acc.Audio.PlayNavigationClick();
             TopicSelected?.Invoke(topicId);
         }
+    }
+
+    private void BtnOpenRealmMap_Click(object sender, RoutedEventArgs e)
+    {
+        _acc.Audio.PlayNavigationClick();
+        RealmMapRequested?.Invoke();
     }
 
     private void Button_GotFocus(object sender, RoutedEventArgs e)

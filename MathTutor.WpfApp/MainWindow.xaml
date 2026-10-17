@@ -53,6 +53,17 @@
                             AutomationProperties.Name="Ir al menú principal de aventuras. Tecla Escape"
                             Click="BtnNavMenu_Click"/>
 
+                    <Button x:Name="BtnNavMap"
+                            Content="🗺️ Mapa (F6)"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{DynamicResource AppSurfaceBrush}"
+                            Foreground="{DynamicResource AppTextPrimaryBrush}"
+                            Height="44"
+                            Padding="12,6"
+                            Margin="4,0"
+                            AutomationProperties.Name="Ir al mapa del reino matemático. Tecla F6"
+                            Click="BtnNavMap_Click"/>
+
                     <Button x:Name="BtnNavProfile"
                             Content="👤 Perfil (F5)"
                             Style="{StaticResource AccessibleActionButton}"
