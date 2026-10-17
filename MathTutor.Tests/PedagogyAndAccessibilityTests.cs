@@ -145,6 +145,58 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void ProportionTopic_CoversDirectRatioAndRuleOfThree()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var propTopic = topics.FirstOrDefault(t => t.Id == "elem_proportion_01");
+
+        Assert.NotNull(propTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, propTopic.Level);
+        Assert.Contains(propTopic.PrinciplesAddressed, p => p.Contains("proporcionalidad"));
+        Assert.Contains(propTopic.PrinciplesAddressed, p => p.Contains("regla de tres"));
+        Assert.True(propTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void AlgebraicBalanceTopic_CoversEquationsAndUnknowns()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var algTopic = topics.FirstOrDefault(t => t.Id == "elem_algebra_balance_01");
+
+        Assert.NotNull(algTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, algTopic.Level);
+        Assert.Contains(algTopic.PrinciplesAddressed, p => p.Contains("ecuación"));
+        Assert.Contains(algTopic.PrinciplesAddressed, p => p.Contains("incógnita"));
+        Assert.True(algTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void SquareRootTopic_CoversInversePowerAndPerfectSquares()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var sqrtTopic = topics.FirstOrDefault(t => t.Id == "elem_square_root_01");
+
+        Assert.NotNull(sqrtTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, sqrtTopic.Level);
+        Assert.Contains(sqrtTopic.PrinciplesAddressed, p => p.Contains("raíz cuadrada"));
+        Assert.Contains(sqrtTopic.PrinciplesAddressed, p => p.Contains("inversa"));
+        Assert.True(sqrtTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void CartesianCoordinatesTopic_CoversOrderedPairsAndAxes()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var coordTopic = topics.FirstOrDefault(t => t.Id == "elem_cartesian_coordinates_01");
+
+        Assert.NotNull(coordTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, coordTopic.Level);
+        Assert.Contains(coordTopic.PrinciplesAddressed, p => p.Contains("pares ordenados"));
+        Assert.Contains(coordTopic.PrinciplesAddressed, p => p.Contains("eje"));
+        Assert.True(coordTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

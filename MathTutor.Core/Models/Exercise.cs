@@ -24,7 +24,11 @@ public enum GamePlayType
     MultiplicationDistributive, // Descomposición aditiva y propiedad distributiva: (20 + 4) x 3 = 60 + 12
     MixedFractions,           // Fracciones impropias y números mixtos (ej. 1 1/2 = 3/2)
     DecimalsMoney,            // Decimales cotidianos: décimos y centésimos con monedas
-    PowersAndExponentGrowth   // Potencias iniciales y crecimiento exponencial (2^1, 2^2, 2^3)
+    PowersAndExponentGrowth,  // Potencias iniciales y crecimiento exponencial (2^1, 2^2, 2^3)
+    DirectProportion,         // Proporcionalidad directa y regla de tres (a/b = c/d)
+    AlgebraicBalance,         // Balanza de incógnitas y ecuaciones lineales simples (x + a = b)
+    SquareRootPerfect,        // Raíz cuadrada de cuadrados perfectos (lado de un área cuadrada)
+    CartesianCoordinates      // Coordenadas cartesianas en el plano (X, Y)
 }
 
 /// <summary>

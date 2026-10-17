@@ -26,6 +26,10 @@ public class CurriculumService
             BuildMixedFractionsTopic(),
             BuildDecimalsAndMoneyTopic(),
             BuildPowersAndExponentsTopic(),
+            BuildDirectProportionTopic(),
+            BuildAlgebraicBalanceTopic(),
+            BuildSquareRootTopic(),
+            BuildCartesianCoordinatesTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -819,6 +823,247 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 cristales (como 2 × 3)", Value = 6, IsCorrect = false, SpeechFeedback = "¡Cuidado con la trampa! 2 × 3 es sumar 2 tres veces. En potencia multiplicas: 2 × 2 = 4, y 4 × 2 = 8.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "8 cristales (2³ = 2 × 2 × 2)", Value = 8, IsCorrect = true, SpeechFeedback = "¡Magnífico! 2 × 2 × 2 = 8. 2³ = 8.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "9 cristales", Value = 9, IsCorrect = false, SpeechFeedback = "9 es 3 × 3. Aquí multiplicamos doses: 2 × 2 × 2 = 8.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 11 (6º Grado): Proporcionalidad Directa y Regla de Tres
+    /// </summary>
+    private PedagogicalTopic BuildDirectProportionTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_proportion_01",
+            Title = "La Alquimia de las Pociones: Proporcionalidad Directa",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido al Laboratorio de Alquimia! Cuando duplicamos o triplicamos una receta mágica, todos los ingredientes deben crecer en la misma proporción para que la poción funcione a la perfección. ¡Eso es la proporcionalidad directa y la regla de tres!",
+            NarrativeIntroSimplified = "En la cocina mágica, si haces el doble de comida necesitas el doble de ingredientes.",
+            CoreConceptExplanation = "Dos magnitudes son directamente proporcionales cuando al multiplicar una por un número, la otra queda multiplicada por el mismo número: y = k · x. La constante de proporcionalidad k nos dice cuánto vale una sola unidad.",
+            CoreConceptSimplified = "Averigua cuánto da 1 flor. Luego multiplica por las flores que tengas.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de razón y proporcionalidad directa",
+                "Constante de proporcionalidad unitaria (k = y / x)",
+                "Resolución intuitiva de problemas de regla de tres simple"
+            },
+            CongratulationMessage = "¡Maestro Alquimista! Sabes mantener la proporción perfecta en cualquier receta o misión."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prop_ex_01",
+            Title = "Pociones de Curación: 2 Flores para 6 Frascos",
+            GameType = GamePlayType.DirectProportion,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 12,
+            StandardInstruction = "En el caldero, con 2 flores mágicas preparamos 6 frascos de poción. Si usamos 4 flores mágicas manteniendo la misma proporción, ¿cuántos frascos obtendremos?",
+            SimplifiedInstruction = "2 flores hacen 6 pociones. ¿Cuántas pociones harás con 4 flores (el doble)?",
+            ScreenReaderDescription = "Proporción directa: 2 flores dan 6 frascos. Razón: 3 frascos por flor. Con 4 flores, ¿cuántos frascos se obtienen?",
+            FirstHint = "Como 4 flores es el doble de 2 flores, obtendrás el doble de pociones: 6 × 2.",
+            SecondHintDetailed = "1 flor da 3 pociones (6 ÷ 2 = 3). Con 4 flores: 4 × 3 = 12 pociones.",
+            ExplanationOfSuccess = "¡Excelente! La razón es de 3 frascos por flor. Con 4 flores preparas exactamente 12 frascos."
+        };
+
+        for (int i = 1; i <= 4; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"prop_fl_{i}",
+                Name = $"Flor #{i}",
+                EmojiSymbol = "🌸",
+                AccessibleDescription = $"Flor mágica {i} en el caldero",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "8 frascos", Value = 8, IsCorrect = false, SpeechFeedback = "No se suma 2, se multiplica por la misma proporción.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "12 frascos", Value = 12, IsCorrect = true, SpeechFeedback = "¡Magnífico! 4 × 3 = 12 frascos de poción.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "18 frascos", Value = 18, IsCorrect = false, SpeechFeedback = "Eso sería con 6 flores. Con 4 son 12 frascos.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 12 (6º Grado): Pensamiento Algebraico y Balanza de Incógnitas
+    /// </summary>
+    private PedagogicalTopic BuildAlgebraicBalanceTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_algebra_balance_01",
+            Title = "La Balanza Dorada: Ecuaciones y la Incógnita Secreta",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Has descubierto la legendaria Balanza Dorada de los Sabios! Una ecuación matemática es exactamente como una balanza: el signo igual (=) significa equilibrio absoluto. Para descubrir el valor de la caja secreta X, debemos hacer lo mismo en ambos lados sin perder el balance.",
+            NarrativeIntroSimplified = "Una ecuación es como una balanza. Lo que quites de un lado, quítalo del otro para que no se caiga.",
+            CoreConceptExplanation = "En una ecuación lineal x + a = b, la incógnita x representa el valor desconocido que hace cierta la igualdad. Aplicando la propiedad uniforme de la igualdad, restamos 'a' en ambos miembros para despejar x: x = b - a.",
+            CoreConceptSimplified = "Quita las gemas visibles de ambos lados para saber cuánto pesa la caja misteriosa X.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de ecuación como igualdad y equilibrio algebraico",
+                "Despeje de la incógnita mediante operaciones inversas",
+                "Propiedad uniforme de la igualdad (balanza matemática)"
+            },
+            CongratulationMessage = "¡Mente brillante! Has dominado el arte del álgebra y el equilibrio de incógnitas."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "alg_ex_01",
+            Title = "El Misterio de la Caja X: X + 3 = 8",
+            GameType = GamePlayType.AlgebraicBalance,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 5,
+            StandardInstruction = "En la balanza de oro, el platillo izquierdo tiene una caja mágica X y 3 gemas. El platillo derecho tiene 8 gemas. Como la balanza está en equilibrio perfecto (X + 3 = 8), ¿cuántas gemas contiene la caja X?",
+            SimplifiedInstruction = "Caja X más 3 gemas pesa igual a 8 gemas. ¿Cuánto vale X?",
+            ScreenReaderDescription = "Balanza nivelada. Platillo izquierdo: caja misteriosa X y 3 gemas. Platillo derecho: 8 gemas. Ecuación: X + 3 = 8.",
+            FirstHint = "Para despejar X, quita 3 gemas de ambos platillos: 8 - 3.",
+            SecondHintDetailed = "X = 8 - 3 = 5 gemas.",
+            ExplanationOfSuccess = "¡Extraordinario! Despejaste la incógnita: X = 8 - 3 = 5. Comprobamos: 5 + 3 = 8."
+        };
+
+        for (int i = 1; i <= 3; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem { Id = $"g_left_{i}", Name = $"Gema izquierda #{i}", EmojiSymbol = "💎", AccessibleDescription = $"Gema visible {i} con la caja X", OrderIndex = i, MusicalPitchHz = Frequencies[0] });
+        }
+        for (int i = 1; i <= 8; i++)
+        {
+            ex1.ItemsGroupB.Add(new ManipulableItem { Id = $"g_right_{i}", Name = $"Gema derecha #{i}", EmojiSymbol = "✨", AccessibleDescription = $"Gema derecha {i}", OrderIndex = i, MusicalPitchHz = Frequencies[2] });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "X = 4 gemas", Value = 4, IsCorrect = false, SpeechFeedback = "4 + 3 daría 7 gemas, faltaría una para equilibrar.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "X = 5 gemas", Value = 5, IsCorrect = true, SpeechFeedback = "¡Magnífico! X = 8 - 3 = 5. 5 + 3 = 8.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "X = 11 gemas", Value = 11, IsCorrect = false, SpeechFeedback = "Sumaste en vez de restar. Para despejar restamos 3 de 8.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 13 (6º Grado): Raíz Cuadrada y Cuadrados Perfectos
+    /// </summary>
+    private PedagogicalTopic BuildSquareRootTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_square_root_01",
+            Title = "El Laberinto de los Cuadrados Perfectos: Raíz Cuadrada",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Adéntrate en el Laberinto Cuadrado! En este reino, todos los templos tienen pisos con el mismo número de baldosas a lo largo que a lo ancho (cuadrados perfectos). La raíz cuadrada es la llave mágica que deshace la potencia al cuadrado y nos revela la longitud exacta de cada lado.",
+            NarrativeIntroSimplified = "La raíz cuadrada te dice qué número multiplicado por sí mismo da el total.",
+            CoreConceptExplanation = "La raíz cuadrada de un número x es aquel valor no negativo 'r' que multiplicado por sí mismo produce x: √x = r <=> r² = x. Para cuadrados perfectos: √4 = 2, √9 = 3, √16 = 4, √25 = 5.",
+            CoreConceptSimplified = "Si un piso tiene 9 cuadros, cada lado tiene 3 cuadros porque 3 por 3 es 9.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de raíz cuadrada como operación inversa de la potenciación cuadrática",
+                "Identificación geométrica de cuadrados perfectos (lado de un área cuadrada)",
+                "Resolución exacta de raíces de números fundamentales (4, 9, 16, 25)"
+            },
+            CongratulationMessage = "¡Fabuloso Geómetra! Conoces la raíz cuadrada y el misterio de los cuadrados perfectos."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "sqrt_ex_01",
+            Title = "El Templo de las 9 Baldosas: √9",
+            GameType = GamePlayType.SquareRootPerfect,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 3,
+            StandardInstruction = "El piso de la sala de meditación es un cuadrado perfecto formado por 9 baldosas mágicas en total (3 filas de 3 columnas). ¿Cuántas baldosas mide cada lado de la sala? (Calcula la raíz cuadrada: √9)",
+            SimplifiedInstruction = "El piso cuadrado tiene 9 baldosas. ¿Cuántas baldosas hay en cada fila y columna?",
+            ScreenReaderDescription = "Cuadrado de 9 losas organizado en 3 filas por 3 columnas. Raíz cuadrada de 9.",
+            FirstHint = "Piensa: ¿qué número multiplicado por sí mismo es igual a 9?",
+            SecondHintDetailed = "3 × 3 = 9, por lo tanto √9 = 3.",
+            ExplanationOfSuccess = "¡Brillante! √9 = 3 porque 3² = 3 × 3 = 9. La raíz cuadrada nos devuelve la medida del lado."
+        };
+
+        for (int i = 1; i <= 9; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"sq_tile_{i}",
+                Name = $"Baldosa #{i}",
+                EmojiSymbol = "🟩",
+                AccessibleDescription = $"Baldosa número {i} del templo cuadrado",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 baldosas por lado", Value = 2, IsCorrect = false, SpeechFeedback = "2 × 2 es 4 baldosas, no 9.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "3 baldosas por lado (√9 = 3)", Value = 3, IsCorrect = true, SpeechFeedback = "¡Exacto! 3 × 3 = 9. √9 = 3.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4.5 baldosas", Value = 4, IsCorrect = false, SpeechFeedback = "No se divide entre 2. Buscamos un número que por sí mismo dé 9.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 14 (6º Grado): Coordenadas Cartesianas en el Primer Cuadrante
+    /// </summary>
+    private PedagogicalTopic BuildCartesianCoordinatesTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_cartesian_coordinates_01",
+            Title = "El Mapa Náutico: Coordenadas Cartesianas (X, Y)",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡A toda vela, navegante! En alta mar no existen calles con nombres: usamos una cuadrícula mágica inventada por los astrónomos. Primero contamos los pasos hacia el este en la recta horizontal (eje X) y luego hacia el norte en la recta vertical (eje Y). ¡Las coordenadas (X, Y) te guían al tesoro!",
+            NarrativeIntroSimplified = "El mapa tiene dos ejes: primero caminas a la derecha (X) y luego subes (Y).",
+            CoreConceptExplanation = "El plano cartesiano ubica puntos unívocos mediante un par ordenado (x, y). El primer valor (abscisa x) mide la distancia horizontal desde el origen (0,0), y el segundo valor (ordenada y) mide la distancia vertical.",
+            CoreConceptSimplified = "El par (X, Y) es como una dirección secreta: X es horizontal, Y es vertical.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Lectura e interpretación de pares ordenados (x, y) en el primer cuadrante",
+                "Diferenciación entre eje horizontal (abscisas X) y eje vertical (ordenadas Y)",
+                "Ubicación y localización espacial accesible"
+            },
+            CongratulationMessage = "¡Capitán de los Mares! Has descifrado las coordenadas cartesianas y la orientación en el plano."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "coord_ex_01",
+            Title = "La Isla de la Calavera: Coordenada (4, 2)",
+            GameType = GamePlayType.CartesianCoordinates,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 4,
+            StandardInstruction = "En el mapa náutico, la Isla de la Calavera está marcada con las coordenadas (4, 2). Si el primer valor siempre representa el eje horizontal X (este), ¿cuántos pasos al este marca la coordenada X?",
+            SimplifiedInstruction = "En el punto (4, 2), el primer número es X. ¿Cuánto vale X?",
+            ScreenReaderDescription = "Plano cartesiano con un punto en coordenadas X=4, Y=2. Pregunta por el valor del eje X horizontal.",
+            FirstHint = "En el par (X, Y), el primer número es X y el segundo es Y.",
+            SecondHintDetailed = "El punto es (4, 2). El eje X horizontal vale 4.",
+            ExplanationOfSuccess = "¡Extraordinario! En el par ordenado (4, 2), la coordenada horizontal X es 4 y la vertical Y es 2."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "point_island",
+            Name = "Isla en (4, 2)",
+            EmojiSymbol = "🏝️",
+            AccessibleDescription = "Isla marcada en X=4 horizontal, Y=2 vertical",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[3]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 pasos (eje Y)", Value = 2, IsCorrect = false, SpeechFeedback = "2 es el segundo número (eje vertical Y). Buscamos el eje horizontal X.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "4 pasos (eje X)", Value = 4, IsCorrect = true, SpeechFeedback = "¡Correcto! El primer número es 4, correspondiente al eje horizontal X.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "6 pasos", Value = 6, IsCorrect = false, SpeechFeedback = "No sumamos los números; leemos el primer valor del par (4, 2).", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

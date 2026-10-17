@@ -720,6 +720,205 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de proporcionalidad directa y regla de tres (6º Grado).
+    /// </summary>
+    public Exercise GenerateDirectProportionExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int ratio = isSimplified ? 2 : rng.Next(2, 5);
+        int knownUnits = isSimplified ? 1 : rng.Next(1, 3);
+        int knownResult = knownUnits * ratio;
+        int targetUnits = isSimplified ? 3 : rng.Next(3, 6);
+        int expected = targetUnits * ratio;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prop_{Guid.NewGuid():N}",
+            Title = "La Poción Mágica: Proporcionalidad Directa",
+            GameType = GamePlayType.DirectProportion,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = expected,
+            StandardInstruction = $"Para preparar pociones mágicas, sabemos que con {knownUnits} flor(es) se preparan {knownResult} frascos. Manteniendo la misma proporción, ¿cuántos frascos se pueden preparar con {targetUnits} flores?",
+            SimplifiedInstruction = $"Si {knownUnits} flor hace {knownResult} frascos, ¿cuántos frascos harás con {targetUnits} flores?",
+            ScreenReaderDescription = $"Proporción directa: {knownUnits} flores equivalen a {knownResult} frascos. Razón: {ratio} frascos por cada flor. Flores disponibles: {targetUnits}.",
+            FirstHint = $"Averigua cuántos frascos da 1 sola flor: {knownResult} ÷ {knownUnits} = {ratio}. Luego multiplica por {targetUnits}.",
+            SecondHintDetailed = $"{targetUnits} flores × {ratio} frascos por flor = {expected} frascos.",
+            ExplanationOfSuccess = $"¡Exacto! Hay una proporción constante de {ratio} a 1. Con {targetUnits} flores preparas exactamente {expected} frascos."
+        };
+
+        for (int i = 1; i <= targetUnits; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"prop_flower_{i}",
+                Name = $"Flor Mágica #{i}",
+                EmojiSymbol = "🌸",
+                AccessibleDescription = $"Flor mágica número {i}",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, expected, min: Math.Max(2, expected - 6), max: expected + 6, unitLabel: "frascos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de pensamiento algebraico y balanza de incógnitas: x + a = b (6º Grado).
+    /// </summary>
+    public Exercise GenerateAlgebraicBalanceExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? 2 : rng.Next(2, 6);
+        int x = isSimplified ? 3 : rng.Next(2, 7);
+        int b = x + a;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_alg_{Guid.NewGuid():N}",
+            Title = $"La Balanza Equilibrada: X + {a} = {b}",
+            GameType = GamePlayType.AlgebraicBalance,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = x,
+            StandardInstruction = $"En la balanza mágica, el platillo izquierdo tiene una caja secreta con valor X y {a} gemas. El platillo derecho tiene {b} gemas. Si ambos platillos están perfectamente equilibrados (X + {a} = {b}), ¿cuántas gemas hay dentro de la caja X?",
+            SimplifiedInstruction = $"Una caja con X más {a} gemas pesa igual a {b} gemas. ¿Cuánto vale X?",
+            ScreenReaderDescription = $"Balanza equilibrada. Lado izquierdo: caja X más {a} gemas. Lado derecho: {b} gemas. Ecuación: X + {a} = {b}.",
+            FirstHint = $"Para saber cuánto pesa solo la caja X, quita las {a} gemas de ambos platillos.",
+            SecondHintDetailed = $"X = {b} - {a} = {x}.",
+            ExplanationOfSuccess = $"¡Magnífico! Despejaste la incógnita con maestría: X = {b} - {a} = {x}. Si pones {x} dentro de la caja, ambos lados pesan {b}."
+        };
+
+        for (int i = 1; i <= a; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"gem_a_{i}",
+                Name = $"Gema en platillo izquierdo #{i}",
+                EmojiSymbol = "💎",
+                AccessibleDescription = $"Gema visible {i} junto a la caja X",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[0]
+            });
+        }
+
+        for (int i = 1; i <= b; i++)
+        {
+            ex.ItemsGroupB.Add(new ManipulableItem
+            {
+                Id = $"gem_b_{i}",
+                Name = $"Gema en platillo derecho #{i}",
+                EmojiSymbol = "✨",
+                AccessibleDescription = $"Gema del platillo derecho número {i}",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[2]
+            });
+        }
+
+        BuildOptions(ex, x, min: Math.Max(1, x - 3), max: x + 3, unitLabel: "gemas", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de raíz cuadrada de cuadrados perfectos (6º Grado).
+    /// </summary>
+    public Exercise GenerateSquareRootExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        var roots = isSimplified ? new[] { 2, 3 } : new[] { 2, 3, 4, 5 };
+        int root = roots[rng.Next(roots.Length)];
+        int squareArea = root * root;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_sqrt_{Guid.NewGuid():N}",
+            Title = $"El Jardín Cuadrado: √{squareArea}",
+            GameType = GamePlayType.SquareRootPerfect,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = root,
+            StandardInstruction = $"El jardín mágico de Cosmo tiene forma de cuadrado perfecto y está formado por {squareArea} baldosas en total. Como tiene el mismo número de filas que de columnas, ¿cuántas baldosas mide cada lado del jardín? (Calcula la raíz cuadrada: √{squareArea})",
+            SimplifiedInstruction = $"Un piso cuadrado tiene {squareArea} baldosas en total. ¿Cuántas baldosas tiene de ancho y de largo?",
+            ScreenReaderDescription = $"Cuadrado perfecto de {squareArea} losas en una cuadrícula de {root} por {root}. Raíz cuadrada de {squareArea}.",
+            FirstHint = $"Busca un número que multiplicado por sí mismo dé {squareArea}: ¿qué número por sí mismo da {squareArea}?",
+            SecondHintDetailed = $"{root} × {root} = {squareArea}, por lo tanto √{squareArea} = {root}.",
+            ExplanationOfSuccess = $"¡Espectacular! √{squareArea} = {root}, porque {root} × {root} = {squareArea}. La raíz cuadrada es la operación inversa de elevar al cuadrado."
+        };
+
+        for (int i = 1; i <= squareArea; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"tile_{i}",
+                Name = $"Baldosa #{i}",
+                EmojiSymbol = "🟩",
+                AccessibleDescription = $"Baldosa número {i} de la cuadrícula de {squareArea}",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, root, min: Math.Max(1, root - 2), max: root + 3, unitLabel: "baldosas por lado", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de coordenadas cartesianas en el primer cuadrante (6º Grado).
+    /// </summary>
+    public Exercise GenerateCartesianCoordinatesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int xCoord = isSimplified ? rng.Next(1, 4) : rng.Next(1, 6);
+        int yCoord = isSimplified ? rng.Next(1, 4) : rng.Next(1, 6);
+
+        bool askX = (rng.Next(2) == 0);
+        int expected = askX ? xCoord : yCoord;
+        string axisName = askX ? "X (horizontal, este)" : "Y (vertical, norte)";
+
+        var ex = new Exercise
+        {
+            Id = $"gen_coord_{Guid.NewGuid():N}",
+            Title = $"El Mapa Pirata: Coordenadas ({xCoord}, {yCoord})",
+            GameType = GamePlayType.CartesianCoordinates,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = expected,
+            StandardInstruction = $"El cofre del tesoro está marcado en el mapa en el punto ({xCoord}, {yCoord}). Recuerda que el primer número siempre indica el eje X horizontal (este) y el segundo el eje Y vertical (norte). ¿Cuál es la coordenada sobre el eje {axisName}?",
+            SimplifiedInstruction = $"El punto es ({xCoord}, {yCoord}). El primer número es X y el segundo es Y. ¿Cuánto vale {(askX ? "X" : "Y")}?",
+            ScreenReaderDescription = $"Plano cartesiano con un punto en coordenada X igual a {xCoord} e Y igual a {yCoord}. Pregunta por el eje {axisName}.",
+            FirstHint = "En el par ordenado (X, Y), el primer valor es X y el segundo es Y.",
+            SecondHintDetailed = $"Para ({xCoord}, {yCoord}), la coordenada en el eje {axisName} es {expected}.",
+            ExplanationOfSuccess = $"¡Navegante experto! En el punto ({xCoord}, {yCoord}), el valor sobre el eje {axisName} es {expected}."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "point_target",
+            Name = $"Tesoro en ({xCoord}, {yCoord})",
+            EmojiSymbol = "📍",
+            AccessibleDescription = $"Marcador en coordenada X={xCoord}, Y={yCoord}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        BuildOptions(ex, expected, min: 1, max: 5, unitLabel: "pasos", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -759,6 +958,14 @@ public class ExerciseGenerator
                 "elem_decimals_01" => GenerateDecimalsMoneyExercise(profile, rng),
 
                 "elem_powers_01" => GeneratePowersExercise(profile, rng),
+
+                "elem_proportion_01" => GenerateDirectProportionExercise(profile, rng),
+
+                "elem_algebra_balance_01" => GenerateAlgebraicBalanceExercise(profile, rng),
+
+                "elem_square_root_01" => GenerateSquareRootExercise(profile, rng),
+
+                "elem_cartesian_coordinates_01" => GenerateCartesianCoordinatesExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };

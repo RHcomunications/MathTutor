@@ -272,4 +272,87 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, powList.Count);
         Assert.All(powList, ex => Assert.Equal(GamePlayType.PowersAndExponentGrowth, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateDirectProportionExercise_CalculatesProportionalExpectedResult()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 11 };
+        var rng = new Random(1200);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateDirectProportionExercise(profile, rng);
+            Assert.Equal(GamePlayType.DirectProportion, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 4);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateAlgebraicBalanceExercise_SolvesForXCorrectly()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 11 };
+        var rng = new Random(1300);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateAlgebraicBalanceExercise(profile, rng);
+            Assert.Equal(GamePlayType.AlgebraicBalance, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateSquareRootExercise_ReturnsExactRootOfSquare()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 11 };
+        var rng = new Random(1400);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateSquareRootExercise(profile, rng);
+            Assert.Equal(GamePlayType.SquareRootPerfect, ex.GameType);
+            Assert.True(ex.ExpectedResult is 2 or 3 or 4 or 5);
+            Assert.Equal(ex.ExpectedResult * ex.ExpectedResult, ex.ItemsGroupA.Count);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateCartesianCoordinatesExercise_ReturnsCorrectCoordinate()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 11 };
+        var rng = new Random(1500);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateCartesianCoordinatesExercise(profile, rng);
+            Assert.Equal(GamePlayType.CartesianCoordinates, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 1 && ex.ExpectedResult <= 5);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_SixthGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 11 };
+
+        var propList = _generator.GenerateExercisesForTopic("elem_proportion_01", profile, count: 3);
+        Assert.Equal(3, propList.Count);
+        Assert.All(propList, ex => Assert.Equal(GamePlayType.DirectProportion, ex.GameType));
+
+        var algList = _generator.GenerateExercisesForTopic("elem_algebra_balance_01", profile, count: 3);
+        Assert.Equal(3, algList.Count);
+        Assert.All(algList, ex => Assert.Equal(GamePlayType.AlgebraicBalance, ex.GameType));
+
+        var sqrtList = _generator.GenerateExercisesForTopic("elem_square_root_01", profile, count: 3);
+        Assert.Equal(3, sqrtList.Count);
+        Assert.All(sqrtList, ex => Assert.Equal(GamePlayType.SquareRootPerfect, ex.GameType));
+
+        var coordList = _generator.GenerateExercisesForTopic("elem_cartesian_coordinates_01", profile, count: 3);
+        Assert.Equal(3, coordList.Count);
+        Assert.All(coordList, ex => Assert.Equal(GamePlayType.CartesianCoordinates, ex.GameType));
+    }
 }

@@ -106,6 +106,42 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_proportion",
+                Title = "Alquimista Proporcional",
+                Description = "Dominaste las razones constantes y la regla de tres en el laboratorio.",
+                IconEmoji = "🌸",
+                AssociatedTopicId = "elem_proportion_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_algebra",
+                Title = "Guardián del Equilibrio",
+                Description = "Despejaste incógnitas secretas manteniendo la balanza en balance.",
+                IconEmoji = "⚖️",
+                AssociatedTopicId = "elem_algebra_balance_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_square_root",
+                Title = "Maestro de la Raíz Cuadrada",
+                Description = "Descubriste el lado exacto de los templos de cuadrados perfectos.",
+                IconEmoji = "🟩",
+                AssociatedTopicId = "elem_square_root_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_coordinates",
+                Title = "Cartógrafo del Plano",
+                Description = "Ubicaste tesoros con pares ordenados en coordenadas (X, Y).",
+                IconEmoji = "🗺️",
+                AssociatedTopicId = "elem_cartesian_coordinates_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -242,11 +278,47 @@ public class RewardService
             new()
             {
                 Id = "station_11",
+                Name = "El Laboratorio de Alquimia",
+                Description = "El taller donde los ingredientes crecen en proporción perfecta.",
+                LandmarkEmoji = "🌸",
+                TopicId = "elem_proportion_01",
+                OrderIndex = 11
+            },
+            new()
+            {
+                Id = "station_12",
+                Name = "El Templo de la Balanza Dorada",
+                Description = "La balanza sagrada donde despejamos incógnitas y ecuaciones.",
+                LandmarkEmoji = "⚖️",
+                TopicId = "elem_algebra_balance_01",
+                OrderIndex = 12
+            },
+            new()
+            {
+                Id = "station_13",
+                Name = "El Laberinto de los Cuadrados Perfectos",
+                Description = "El laberinto donde la raíz cuadrada revela el lado del templo.",
+                LandmarkEmoji = "🟩",
+                TopicId = "elem_square_root_01",
+                OrderIndex = 13
+            },
+            new()
+            {
+                Id = "station_14",
+                Name = "El Puerto de las Coordenadas",
+                Description = "La carta de navegación que ubica tesoros mediante pares (X, Y).",
+                LandmarkEmoji = "🗺️",
+                TopicId = "elem_cartesian_coordinates_01",
+                OrderIndex = 14
+            },
+            new()
+            {
+                Id = "station_15",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 11
+                OrderIndex = 15
             }
         };
 
