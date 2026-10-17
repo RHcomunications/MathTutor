@@ -55,7 +55,10 @@ public enum GamePlayType
     ProgrammingBooleanLogic,  // Programación 1: Lógica booleana y compuertas lógicas (AND, OR, NOT)
     ProgrammingLoopsForWhile, // Programación 2: Ciclos PARA / MIENTRAS (for / while) y acumuladores
     ProgrammingArraysZeroIndex, // Programación 2: Arreglos (Arrays), listas e indexación desde cero [0, 1, 2...]
-    ProgrammingFunctionsReturn // Programación 2: Funciones modulares, parámetros de entrada y retorno (return)
+    ProgrammingFunctionsReturn, // Programación 2: Funciones modulares, parámetros de entrada y retorno (return)
+    ProgrammingAlgorithmsSearch, // Programación 3: Algoritmos paso a paso de búsqueda y valor máximo/mínimo
+    ProgrammingGameCoordinates2D, // Programación 3: Física y coordenadas 2D en videojuegos accesibles (x = x + v·t)
+    ProgrammingAssistiveAIData // Programación 3: IA asistiva, promedio de sensores y clasificación inteligente
 }
 
 /// <summary>

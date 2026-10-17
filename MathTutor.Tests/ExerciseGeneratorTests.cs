@@ -861,7 +861,7 @@ public class ExerciseGeneratorTests
     {
         var curriculum = new CurriculumService();
         var allTopics = curriculum.GetAllTopics();
-        Assert.Equal(42, allTopics.Count);
+        Assert.Equal(45, allTopics.Count);
 
         foreach (var topic in allTopics)
         {
@@ -919,8 +919,8 @@ public class ExerciseGeneratorTests
         var stations = rewards.GetRealmStations(profile);
         var badges = rewards.GetAllBadges(profile);
 
-        Assert.Equal(42, allTopics.Count);
-        Assert.Equal(42, stations.Count);
+        Assert.Equal(45, allTopics.Count);
+        Assert.Equal(45, stations.Count);
 
         var topicIds = allTopics.Select(t => t.Id).ToHashSet();
         var stationTopicIds = stations.Select(s => s.TopicId).ToHashSet();
@@ -990,5 +990,31 @@ public class ExerciseGeneratorTests
         Assert.Equal(GamePlayType.ProgrammingFunctionsReturn, funcEx.GameType);
         Assert.Contains("RETORNAR", funcEx.StandardInstruction);
         Assert.Contains(funcEx.Options, o => o.IsCorrect && o.Value == funcEx.ExpectedResult);
+    }
+
+    [Fact]
+    public void GenerateProgrammingModule3Exercises_CreatesValidAlgorithmsGameCoordsAndAssistiveAI()
+    {
+        var profile = new UserProfile
+        {
+            Age = 16,
+            CurrentLevel = AcademicLevel.ProgrammingFoundations
+        };
+        var rng = new Random(1603);
+
+        var algoEx = _generator.GenerateProgrammingAlgorithmsSearchExercise(profile, rng);
+        Assert.Equal(GamePlayType.ProgrammingAlgorithmsSearch, algoEx.GameType);
+        Assert.Contains(algoEx.Options, o => o.IsCorrect && o.Value == algoEx.ExpectedResult);
+        Assert.Single(algoEx.ItemsGroupA);
+
+        var gameEx = _generator.GenerateProgrammingGameCoordinatesExercise(profile, rng);
+        Assert.Equal(GamePlayType.ProgrammingGameCoordinates2D, gameEx.GameType);
+        Assert.Contains("velocidad_x", gameEx.StandardInstruction);
+        Assert.Contains(gameEx.Options, o => o.IsCorrect && o.Value == gameEx.ExpectedResult);
+
+        var aiEx = _generator.GenerateProgrammingAssistiveAIExercise(profile, rng);
+        Assert.Equal(GamePlayType.ProgrammingAssistiveAIData, aiEx.GameType);
+        Assert.Contains("promedio", aiEx.StandardInstruction);
+        Assert.Contains(aiEx.Options, o => o.IsCorrect && o.Value == aiEx.ExpectedResult);
     }
 }

@@ -394,6 +394,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_prog_algorithms",
+                Title = "Estratega de Algoritmos",
+                Description = "Programaste algoritmos de búsqueda paso a paso para hallar máximos y mínimos.",
+                IconEmoji = "🔍",
+                AssociatedTopicId = "prog_algorithms_search_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prog_game_coords",
+                Title = "Creador de Juegos Accesibles",
+                Description = "Programaste movimiento vectorial y coordenadas 2D (x = x + v·t) en videojuegos.",
+                IconEmoji = "🎮",
+                AssociatedTopicId = "prog_game_coordinates_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prog_assistive_ai",
+                Title = "Pionero de IA Inclusiva",
+                Description = "Integraste sensores, promedios estadísticos y código para crear tecnología asistiva.",
+                IconEmoji = "🤖",
+                AssociatedTopicId = "prog_assistive_ai_data_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_star_collector",
                 Title = "Coleccionista de Estrellas",
                 Description = "Acumulaste 15 o más estrellas doradas en tus misiones.",
@@ -805,6 +832,33 @@ public class RewardService
                 LandmarkEmoji = "⚙️",
                 TopicId = "prog_functions_params_01",
                 OrderIndex = 42
+            },
+            new()
+            {
+                Id = "station_43",
+                Name = "El Faro de los Algoritmos de Búsqueda",
+                Description = "La torre lógica donde los algoritmos recorren listas paso a paso para encontrar el valor óptimo.",
+                LandmarkEmoji = "🔍",
+                TopicId = "prog_algorithms_search_01",
+                OrderIndex = 43
+            },
+            new()
+            {
+                Id = "station_44",
+                Name = "El Estudio de Videojuegos Accesibles",
+                Description = "La arena interactiva donde los vectores cinemáticos (x = x + v·t) dan vida a mundos sonoros 2D.",
+                LandmarkEmoji = "🎮",
+                TopicId = "prog_game_coordinates_01",
+                OrderIndex = 44
+            },
+            new()
+            {
+                Id = "station_45",
+                Name = "La Ciudadela de la Inteligencia Artificial Inclusiva",
+                Description = "La cumbre tecnológica donde las matemáticas, los sensores y la programación crean tecnología asistiva.",
+                LandmarkEmoji = "🤖",
+                TopicId = "prog_assistive_ai_data_01",
+                OrderIndex = 45
             }
         };
 

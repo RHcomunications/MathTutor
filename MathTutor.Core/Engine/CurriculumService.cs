@@ -57,7 +57,10 @@ public class CurriculumService
             BuildProgrammingBooleanLogicTopic(),
             BuildProgrammingLoopsTopic(),
             BuildProgrammingArraysTopic(),
-            BuildProgrammingFunctionsTopic()
+            BuildProgrammingFunctionsTopic(),
+            BuildProgrammingAlgorithmsSearchTopic(),
+            BuildProgrammingGameCoordinatesTopic(),
+            BuildProgrammingAssistiveAITopic()
         };
     }
 
@@ -2563,6 +2566,183 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "9 decibeles (sumando 3 + 4 + 2 en vez de multiplicar)", Value = 9, IsCorrect = false, SpeechFeedback = "Recuerda que '3 * nivel' indica multiplicación (3 × 4 = 12), no suma.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "12 decibeles (olvidando sumar + 2 antes del return)", Value = 12, IsCorrect = false, SpeechFeedback = "12 es el resultado de 3 × 4, pero falta sumar + 2 como indica la expresión de retorno.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "14 decibeles (return 3 × 4 + 2 = 14)", Value = 14, IsCorrect = true, SpeechFeedback = "¡Exacto! (3 × 4) + 2 = 14 decibeles retornados.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 43 (Objetivo 16 - Programación Inclusiva 3): Algoritmos Paso a Paso de Búsqueda y Máximos/Mínimos
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingAlgorithmsSearchTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_algorithms_search_01",
+            Title = "Recetas Paso a Paso: Algoritmos de Búsqueda y Valor Máximo",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido al Módulo 3 de Programación Inclusiva! Un 'algoritmo' (palabra que viene del matemático Al-Juarismi) es una secuencia finita y ordenada de pasos sin ambigüedad para resolver un problema. Combinando un arreglo, un ciclo PARA y un condicional SI, podemos programar un algoritmo que recorra cualquier colección de datos y encuentre el valor máximo o mínimo.",
+            NarrativeIntroSimplified = "Un algoritmo es una receta paso a paso. Para hallar el número más grande de una lista, revisamos uno por uno y guardamos siempre el mayor.",
+            CoreConceptExplanation = "El algoritmo clásico de búsqueda del máximo funciona en dos pasos: 1) Inicializamos la variable 'maximo' con el primer elemento de la lista (maximo = lista[0]). 2) Recorremos la lista con un ciclo y, en cada elemento, preguntamos: 'SI (valor > maximo) ENTONCES { maximo = valor }'. Al finalizar el recorrido, 'maximo' contiene con certeza el mayor valor de toda la colección.",
+            CoreConceptSimplified = "En la lista [6, 14, 9, 11], empezamos con máximo = 6; al ver el 14 lo cambiamos a 14, y como 9 y 11 son menores, el máximo final es 14.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto formal de algoritmo: secuencia finita, definida y ordenada de instrucciones",
+                "Integración de arreglos, ciclos (for) y condicionales (if) en un algoritmo de búsqueda",
+                "Traza paso a paso del algoritmo de búsqueda del valor máximo / mínimo"
+            },
+            CongratulationMessage = "¡Estratega Algorítmico! Sabes diseñar y rastrear algoritmos de búsqueda combinando ciclos, arreglos y condicionales."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_algo_ex_01",
+            Title = "Buscando la Señal Más Clara: Algoritmo del Máximo",
+            GameType = GamePlayType.ProgrammingAlgorithmsSearch,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 14,
+            StandardInstruction = "Nuestro bastón electrónico inteligente analiza 4 lecturas de sensores = [6, 14, 9, 11] ejecutando este algoritmo:\n1) maximo = sensores[0] (inicia en 6)\n2) PARA CADA valor EN [6, 14, 9, 11]: SI (valor > maximo) ENTONCES { maximo = valor }\n¿Qué valor queda almacenado en la variable 'maximo' al terminar el algoritmo?",
+            SimplifiedInstruction = "El algoritmo revisa uno por uno los números de la lista [6, 14, 9, 11] y guarda siempre el más grande en 'maximo'. ¿Cuál es el valor final de 'maximo'?",
+            ScreenReaderDescription = "Algoritmo de búsqueda del máximo en la lista 6, 14, 9 y 11. Inicia máximo en 6 y actualiza cuando encuentra un valor mayor.",
+            FirstHint = "Empieza con maximo = 6. Al comparar con el segundo elemento (14), como 14 > 6, ahora maximo = 14.",
+            SecondHintDetailed = "Luego compara 14 con 9 y con 11. Como ninguno es mayor que 14, la variable 'maximo' termina con el valor 14.",
+            ExplanationOfSuccess = "¡Traza algorítmica perfecta! El algoritmo inició en 6, se actualizó a 14 en el segundo paso y conservó 14 hasta el final."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "algo_search_item",
+            Name = "sensores = [6, 14, 9, 11] → máx = 14",
+            EmojiSymbol = "🔍",
+            AccessibleDescription = "Algoritmo de búsqueda en la lista 6, 14, 9, 11 que identifica el valor máximo 14",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[5]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 puntos (el primer elemento sensores[0])", Value = 6, IsCorrect = false, SpeechFeedback = "6 es solo el valor inicial antes de comparar con el resto de la lista.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "11 puntos (el último elemento de la lista)", Value = 11, IsCorrect = false, SpeechFeedback = "11 es el último elemento, pero como 11 no es mayor que 14, no reemplaza al máximo.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "14 puntos (el valor máximo encontrado)", Value = 14, IsCorrect = true, SpeechFeedback = "¡Exacto! 14 es el mayor valor de la lista y queda guardado en la variable 'maximo'.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 44 (Objetivo 16 - Programación Inclusiva 3): Física y Coordenadas 2D en Videojuegos Accesibles (x = x + v·t)
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingGameCoordinatesTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_game_coordinates_01",
+            Title = "Física y Coordenadas en Videojuegos Accesibles: Vectores (x = x + v·t)",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¿Cómo se mueven los personajes en un videojuego accesible con sonido espacial 3D? ¡Uniendo el plano cartesiano y las ecuaciones lineales que aprendiste en Secundaria y Preparatoria con el bucle principal del juego (Game Loop)! En cada segundo, el programa calcula la nueva posición sumando a la coordenada inicial el producto de la velocidad por el tiempo.",
+            NarrativeIntroSimplified = "En un videojuego, para mover un personaje calculamos su nueva posición sumando dónde empezó más su velocidad multiplicada por el tiempo.",
+            CoreConceptExplanation = "En programación de videojuegos 2D, cada objeto tiene coordenadas (x, y). Cuando se mueve con velocidad constante v_x durante un tiempo t, el motor de física ejecuta la ecuación cinemática: 'x_final = x_inicial + (velocidad_x * tiempo)'. En juegos accesibles para personas con discapacidad visual, esta coordenada X controla además el balance estéreo (izquierda-centro-derecha) del sonido.",
+            CoreConceptSimplified = "Si la nave inicia en X = 5 y avanza a velocidad 4 durante 3 segundos, recorre 4 × 3 = 12 y llega a X = 5 + 12 = 17.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Representación de entidades mediante coordenadas (x, y) y vectores de velocidad en motores de juego",
+                "Actualización de estado físico en el Game Loop: x_final = x_inicial + (v_x · t)",
+                "Mapeo de coordenadas espaciales a audio binaural/estéreo en videojuegos accesibles"
+            },
+            CongratulationMessage = "¡Desarrollador de Videojuegos Accesibles! Sabes programar movimiento vectorial y coordenadas en el plano."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_game_ex_01",
+            Title = "La Nave Sonora de Cosmo: Movimiento en el Eje X",
+            GameType = GamePlayType.ProgrammingGameCoordinates2D,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 17,
+            StandardInstruction = "En nuestro videojuego espacial accesible, la nave de Cosmo actualiza su coordenada horizontal X con esta instrucción del motor de física:\n• x_inicial = 5\n• velocidad_x = 4 casillas por segundo, tiempo = 3 segundos\n• x_final = x_inicial + (velocidad_x * tiempo)\n¿En qué coordenada X se ubicará la nave tras los 3 segundos?",
+            SimplifiedInstruction = "La nave empieza en la posición X = 5 y avanza 4 casillas cada segundo durante 3 segundos (4 × 3 = 12). ¿A qué posición llega (5 + 12)?",
+            ScreenReaderDescription = "Motor de videojuego: x inicial igual a 5, velocidad 4 casillas por segundo durante 3 segundos. Calcular x final igual a 5 más 4 por 3.",
+            FirstHint = "Por jerarquía de operaciones, multiplica primero la velocidad por el tiempo: 4 × 3 = 12 casillas de avance.",
+            SecondHintDetailed = "Suma las 12 casillas de avance a la posición inicial X = 5: 5 + 12 = 17 en el eje X.",
+            ExplanationOfSuccess = "¡Física y código en perfecta armonía! La nave se desplazó 4 × 3 = 12 unidades desde X = 5 hasta llegar a X = 17."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "game_physics_item",
+            Name = "Nave X: 5 + (4 × 3) = 17",
+            EmojiSymbol = "🎮",
+            AccessibleDescription = "Coordenada de la nave en el videojuego: inicia en 5, avanza 4 por 3 igual a 12, llegando a 17",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[6]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "12 en X (olvidando sumar la posición inicial 5)", Value = 12, IsCorrect = false, SpeechFeedback = "12 es la distancia avanzada (4 × 3), pero falta sumarle la coordenada inicial x_inicial = 5.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "17 en X (5 + 4 × 3 = 17)", Value = 17, IsCorrect = true, SpeechFeedback = "¡Exacto! 5 iniciales + 12 de desplazamiento = coordenada 17 en X.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "27 en X (sumando 5 + 4 antes de multiplicar por 3)", Value = 27, IsCorrect = false, SpeechFeedback = "Recuerda resolver primero la multiplicación velocidad × tiempo (4 × 3 = 12) y al final sumar 5.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 45 (Objetivo 16 - Programación Inclusiva 3): Programando Tecnología Inclusiva e IA Asistiva con Sensores y Datos
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingAssistiveAITopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_assistive_ai_data_01",
+            Title = "Programando Tecnología Inclusiva: Sensores, Promedios e IA Asistiva",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Llegaste a la cumbre del Reino Matemágico y de la Programación Inclusiva! Desde contar tus primeros objetos en Preescolar hasta dominar el Cálculo, la Estadística y el Código, ahora tienes todas las herramientas para crear tecnología que cambie vidas: lectores de pantalla, guantes traductores de Lengua de Señas, sillas de ruedas autónomas e Inteligencia Artificial accesible.",
+            NarrativeIntroSimplified = "Combinando promedios estadísticos y funciones de código podemos programar Inteligencia Artificial que traduce señas y ayuda a las personas.",
+            CoreConceptExplanation = "Los sistemas de Inteligencia Artificial y tecnología asistiva leen datos del mundo real mediante sensores. Como los sensores tienen pequeñas variaciones, el software primero filtra la señal calculando la media aritmética de varias lecturas: 'promedio = (s1 + s2 + s3) / 3', y luego aplica un modelo o calibración ('senal_limpia = promedio + ajuste') para tomar decisiones precisas y confiables.",
+            CoreConceptSimplified = "Si 3 sensores miden [7, 9, 11], su promedio es (7 + 9 + 11) ÷ 3 = 9. Si sumamos +4 de calibración, la señal final limpia es 13.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Filtrado de ruido en sensores mediante la media aritmética muestral x̄ = (s₁ + s₂ + s₃) / 3",
+                "Pipeline de procesamiento de datos en IA asistiva: lectura → promedio → calibración → salida",
+                "Integración de matemáticas y programación para el diseño de tecnología inclusiva"
+            },
+            CongratulationMessage = "¡Graduado de Honor en Matemáticas y Programación Inclusiva! Has completado las 45 estaciones del Reino Matemágico y estás listo para programar un mundo más accesible para todas y todos."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_ai_ex_01",
+            Title = "Guante Traductor de Lengua de Señas con IA",
+            GameType = GamePlayType.ProgrammingAssistiveAIData,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 13,
+            StandardInstruction = "Programamos un guante inteligente que traduce Lengua de Señas a voz. Para filtrar el ruido del sensor de flexión, el código ejecuta estos 3 pasos:\n1) lecturas = [7, 9, 11]\n2) promedio = (7 + 9 + 11) / 3\n3) senal_limpia = promedio + 4\n¿Cuál es el valor final de 'senal_limpia' que recibe el sintetizador de voz?",
+            SimplifiedInstruction = "Primero saca el promedio de [7, 9, 11]: suma 7 + 9 + 11 = 27 y divide entre 3 (27 ÷ 3 = 9). Luego súmale 4 de calibración (9 + 4). ¿Cuánto da?",
+            ScreenReaderDescription = "IA asistiva: lecturas de sensores 7, 9 y 11. Promedio igual a la suma entre 3. Señal limpia igual a promedio más 4.",
+            FirstHint = "Calcula primero el promedio en la línea 2: (7 + 9 + 11) ÷ 3 = 27 ÷ 3 = 9.",
+            SecondHintDetailed = "En la línea 3 suma la calibración (+4) al promedio obtenido (9): 9 + 4 = 13 puntos de señal.",
+            ExplanationOfSuccess = "¡Extraordinario! El algoritmo promedió las 3 lecturas (27 ÷ 3 = 9) y sumó la calibración (+4) para entregar una señal limpia de 13. ¡Ya eres programador de tecnología inclusiva!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "ai_glove_item",
+            Name = "IA Guante: x̄(7,9,11)=9 + 4 = 13",
+            EmojiSymbol = "🤖",
+            AccessibleDescription = "Módulo de IA del guante traductor: promedio de 7, 9 y 11 es 9, más 4 de calibración igual a 13",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[7]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "9 señal (solo el promedio sin sumar la calibración +4)", Value = 9, IsCorrect = false, SpeechFeedback = "9 es el valor de 'promedio' en la línea 2; falta ejecutar la línea 3 sumando + 4.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "13 señal (promedio 9 + calibración 4 = 13)", Value = 13, IsCorrect = true, SpeechFeedback = "¡Magnífico! Promedio 9 + calibración 4 = 13 puntos de señal limpia.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "31 señal (sumando 27 + 4 sin dividir entre 3)", Value = 31, IsCorrect = false, SpeechFeedback = "27 es la suma de los 3 sensores; recuerda dividirla entre 3 para hallar el promedio antes de sumar 4.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

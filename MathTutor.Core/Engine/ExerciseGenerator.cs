@@ -2319,6 +2319,144 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de Algoritmos de Búsqueda y Valor Máximo/Mínimo (Objetivo 16 - Programación 3).
+    /// </summary>
+    public Exercise GenerateProgrammingAlgorithmsSearchExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? rng.Next(3, 6) : rng.Next(4, 9);
+        int b = a + rng.Next(4, 8); // valor máximo en medio
+        int c = a + rng.Next(1, 4);
+        int d = isSimplified ? a + 1 : c - 1;
+        int maxVal = Math.Max(Math.Max(a, b), Math.Max(c, d));
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_algo_{Guid.NewGuid():N}",
+            Title = "Algoritmo de Búsqueda: Encontrando el Valor Máximo",
+            GameType = GamePlayType.ProgrammingAlgorithmsSearch,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = maxVal,
+            StandardInstruction = $"Un algoritmo es una receta lógica paso a paso. Nuestro lector accesible busca la señal más clara recorriendo la lista sensores = [{a}, {b}, {c}, {d}] con este algoritmo:\n1) maximo = sensores[0] (inicia en {a})\n2) PARA CADA valor EN [{a}, {b}, {c}, {d}]: SI (valor > maximo) ENTONCES {{ maximo = valor }}\n¿Qué valor queda guardado en 'maximo' al terminar de recorrer toda la lista?",
+            SimplifiedInstruction = $"El algoritmo recorre la lista [{a}, {b}, {c}, {d}] comparando uno por uno para quedarse con el número más grande (el máximo). ¿Cuál es el número mayor de la lista?",
+            ScreenReaderDescription = $"Algoritmo de búsqueda del máximo en la lista {a}, {b}, {c} y {d}. Inicia máximo en {a} y actualiza si encuentra un número mayor.",
+            FirstHint = $"Sigue el algoritmo paso a paso: empieza con maximo = {a}. Al comparar con {b}, como {b} > {a}, actualiza maximo = {b}.",
+            SecondHintDetailed = $"Luego compara {b} con {c} y con {d}; como ninguno supera a {b}, la variable 'maximo' conserva el valor {maxVal}.",
+            ExplanationOfSuccess = $"¡Pensamiento algorítmico impecable! El algoritmo recorrió los 4 elementos, actualizó el máximo al encontrar {maxVal} y descartó los menores."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "algo_max_item",
+            Name = $"Búsqueda en [{a}, {b}, {c}, {d}] → máx = {maxVal}",
+            EmojiSymbol = "🔍",
+            AccessibleDescription = $"Algoritmo de búsqueda secuencial sobre {a}, {b}, {c}, {d} que identifica el máximo {maxVal}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[5]
+        });
+
+        BuildOptions(ex, maxVal, min: Math.Max(2, maxVal - 4), max: maxVal + 4, unitLabel: "puntos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Física y Coordenadas 2D en Videojuegos Accesibles (x = x + v·t) (Objetivo 16 - Programación 3).
+    /// </summary>
+    public Exercise GenerateProgrammingGameCoordinatesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int x0 = isSimplified ? rng.Next(2, 5) : rng.Next(3, 8);
+        int velocity = isSimplified ? rng.Next(2, 4) : rng.Next(3, 6);
+        int seconds = isSimplified ? rng.Next(2, 4) : rng.Next(3, 5);
+        int displacement = velocity * seconds;
+        int finalX = x0 + displacement;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_game_{Guid.NewGuid():N}",
+            Title = $"Motor de Videojuego Accesible: Coordenada x = {x0} + ({velocity} × {seconds})",
+            GameType = GamePlayType.ProgrammingGameCoordinates2D,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = finalX,
+            StandardInstruction = $"En un videojuego espacial con audio 3D accesible, la nave de Cosmo actualiza su coordenada horizontal X usando cinemática vectorial:\n• x_inicial = {x0}\n• velocidad_x = {velocity} casillas por segundo, tiempo = {seconds} segundos\n• x_final = x_inicial + (velocidad_x * tiempo)\n¿En qué coordenada X se escuchará la nave después de {seconds} segundos?",
+            SimplifiedInstruction = $"La nave empieza en la posición X = {x0} y avanza {velocity} casillas cada segundo durante {seconds} segundos ({velocity} × {seconds} = {displacement}). ¿A qué posición llega ({x0} + {displacement})?",
+            ScreenReaderDescription = $"Coordenadas de videojuego: x inicial igual a {x0}, velocidad {velocity} por tiempo {seconds}. Calcular x final igual a {x0} más {velocity} por {seconds}.",
+            FirstHint = $"Calcula primero el desplazamiento multiplicando velocidad por tiempo: {velocity} × {seconds} = {displacement} casillas.",
+            SecondHintDetailed = $"Suma el desplazamiento a la coordenada inicial: x_final = {x0} + {displacement} = {finalX}.",
+            ExplanationOfSuccess = $"¡Gran programador de videojuegos! La nave avanzó {velocity} × {seconds} = {displacement} casillas desde X = {x0}, llegando a la coordenada X = {finalX}."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "game_coord_item",
+            Name = $"Nave X: {x0} + ({velocity}×{seconds}) = {finalX}",
+            EmojiSymbol = "🎮",
+            AccessibleDescription = $"Motor de física 2D: posición inicial {x0} más velocidad {velocity} por {seconds} segundos igual a coordenada {finalX}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[6]
+        });
+
+        BuildOptions(ex, finalX, min: Math.Max(4, finalX - 4), max: finalX + 4, unitLabel: "en X", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de IA Asistiva, Promedio de Sensores y Clasificación con Datos (Objetivo 16 - Programación 3).
+    /// </summary>
+    public Exercise GenerateProgrammingAssistiveAIExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int mean = isSimplified ? rng.Next(4, 8) : rng.Next(6, 12);
+        int delta = isSimplified ? 1 : rng.Next(2, 4);
+        int s1 = mean - delta;
+        int s2 = mean;
+        int s3 = mean + delta;
+        int sum = s1 + s2 + s3;
+        int calibrationBoost = isSimplified ? 2 : rng.Next(3, 6);
+        int finalSignal = mean + calibrationBoost;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_ai_{Guid.NewGuid():N}",
+            Title = "IA Asistiva: Filtrado de Sensores por Promedio",
+            GameType = GamePlayType.ProgrammingAssistiveAIData,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = finalSignal,
+            StandardInstruction = $"Un guante traductor de Lengua de Señas con Inteligencia Artificial lee 3 sensores de movimiento y filtra el ruido calculando su media aritmética antes de sumar la calibración:\n1) lecturas = [{s1}, {s2}, {s3}]\n2) promedio = ({s1} + {s2} + {s3}) / 3\n3) senal_limpia = promedio + {calibrationBoost}\n¿Cuál es el valor final de 'senal_limpia'?",
+            SimplifiedInstruction = $"Primero calcula el promedio de los 3 sensores ({s1} + {s2} + {s3} = {sum}, dividido entre 3 da {mean}). Luego súmale {calibrationBoost} de calibración ({mean} + {calibrationBoost}). ¿Cuánto da?",
+            ScreenReaderDescription = $"IA asistiva: lecturas de sensores {s1}, {s2} y {s3}. Promedio igual a la suma entre 3. Señal limpia igual a promedio más {calibrationBoost}.",
+            FirstHint = $"Suma las 3 lecturas de los sensores y divide entre 3: ({s1} + {s2} + {s3}) ÷ 3 = {sum} ÷ 3 = {mean}.",
+            SecondHintDetailed = $"Ahora suma el ajuste de calibración ({calibrationBoost}) al promedio ({mean}): {mean} + {calibrationBoost} = {finalSignal} puntos de señal.",
+            ExplanationOfSuccess = $"¡Ingeniería inclusiva en acción! El filtro estadístico obtuvo el promedio {mean} y generó una señal limpia de {mean} + {calibrationBoost} = {finalSignal} para el traductor."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "assistive_ai_item",
+            Name = $"IA Sensores x̄={mean} + {calibrationBoost} = {finalSignal}",
+            EmojiSymbol = "🤖",
+            AccessibleDescription = $"Módulo de IA asistiva: promedia {s1}, {s2} y {s3} dando {mean} y suma calibración {calibrationBoost} para obtener {finalSignal}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[7]
+        });
+
+        BuildOptions(ex, finalSignal, min: Math.Max(4, finalSignal - 4), max: finalSignal + 4, unitLabel: "señal", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -2423,6 +2561,12 @@ public class ExerciseGenerator
 
                 "prog_functions_params_01" => GenerateProgrammingFunctionsExercise(profile, rng),
 
+                "prog_algorithms_search_01" => GenerateProgrammingAlgorithmsSearchExercise(profile, rng),
+
+                "prog_game_coordinates_01" => GenerateProgrammingGameCoordinatesExercise(profile, rng),
+
+                "prog_assistive_ai_data_01" => GenerateProgrammingAssistiveAIExercise(profile, rng),
+
                 _ => GenerateCountingExercise(profile, rng)
             };
 
@@ -2523,6 +2667,9 @@ public class ExerciseGenerator
             GamePlayType.ProgrammingLoopsForWhile => "Multiplica el incremento por el número de repeticiones del ciclo PARA y súmalo al valor inicial de la variable acumuladora.",
             GamePlayType.ProgrammingArraysZeroIndex => "Recuerda que en un arreglo el primer elemento siempre ocupa el índice [0], el segundo el [1], el tercero el [2] y el cuarto el [3].",
             GamePlayType.ProgrammingFunctionsReturn => "Sustituye el parámetro de entrada en la regla de la función: multiplica primero por el factor y luego suma la constante antes de retornar.",
+            GamePlayType.ProgrammingAlgorithmsSearch => "En el algoritmo de búsqueda del máximo, compara cada elemento de la lista y conserva únicamente el valor más grande encontrado.",
+            GamePlayType.ProgrammingGameCoordinates2D => "Multiplica primero la velocidad por el tiempo (v × t) y luego suma ese desplazamiento a la coordenada X inicial.",
+            GamePlayType.ProgrammingAssistiveAIData => "Suma las 3 lecturas de los sensores, divide entre 3 para hallar el promedio y finalmente suma el ajuste de calibración.",
             _ => "Revisa paso a paso los datos del problema."
         };
 
