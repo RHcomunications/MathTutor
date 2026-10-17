@@ -34,6 +34,10 @@ public class CurriculumService
             BuildOrderOfOperationsTopic(),
             BuildLinearEquationsTopic(),
             BuildPercentagesTopic(),
+            BuildExponentLawsTopic(),
+            BuildPolynomialLikeTermsTopic(),
+            BuildLinearSystems2x2Topic(),
+            BuildPythagoreanTheoremTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -1272,6 +1276,210 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "$20 pesos de descuento", Value = 20, IsCorrect = false, SpeechFeedback = "$20 pesos sería el descuento si costara $100. Como cuesta $200 es el doble.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "$40 pesos de descuento", Value = 40, IsCorrect = true, SpeechFeedback = "¡Magnífico! 20 de cada 100 pesos: 20 × 2 = $40 pesos.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "$50 pesos de descuento", Value = 50, IsCorrect = false, SpeechFeedback = "$50 pesos sería el 25% de descuento.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 19 (2º Secundaria): Leyes de los Exponentes
+    /// </summary>
+    private PedagogicalTopic BuildExponentLawsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_exponent_laws_01",
+            Title = "El Reactor de Energía: Leyes de los Exponentes",
+            Level = AcademicLevel.SecondarySecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido a 2º de Secundaria! En la era digital y espacial manejamos cantidades astronómicas de bytes y átomos. Las leyes de los exponentes son las reglas secretas que permiten simplificar multiplicaciones gigantescas sumando pequeños exponentes: a^m · a^n = a^(m+n).",
+            NarrativeIntroSimplified = "Al multiplicar potencias de la misma base, no necesitas multiplicar todo: solo suma los exponentes.",
+            CoreConceptExplanation = "Ley del producto de potencias con la misma base: a^m · a^n = a^(m+n). La base se conserva y los exponentes se suman algebraicamente.",
+            CoreConceptSimplified = "Si multiplicas 2² por 2³, la base sigue siendo 2 y sumas 2 + 3 = 5 (2⁵).",
+            PrinciplesAddressed = new List<string>
+            {
+                "Ley del producto de potencias de la misma base: a^m · a^n = a^(m+n)",
+                "Potencia de una potencia: (a^m)^n = a^(m·n)",
+                "Propiedad del exponente cero: a^0 = 1"
+            },
+            CongratulationMessage = "¡Poder Exponencial! Dominas las leyes de los exponentes para acelerar cualquier cálculo matemático."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "exp_law_ex_01",
+            Title = "El Producto de Potencias: 2³ × 2²",
+            GameType = GamePlayType.ExponentLaws,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = 5,
+            StandardInstruction = "Aplica la ley de exponentes para simplificar: 2³ × 2². Como las bases son iguales (2), la regla indica que los exponentes se suman (3 + 2). ¿Cuál es el exponente resultante?",
+            SimplifiedInstruction = "En 2³ × 2², suma los exponentes: 3 + 2. ¿Cuál es el resultado?",
+            ScreenReaderDescription = "Producto de potencias con base 2: exponente 3 por exponente 2. Suma de exponentes 3 más 2.",
+            FirstHint = "Conserva la base 2 y suma los exponentes: 3 + 2.",
+            SecondHintDetailed = "3 + 2 = 5. El resultado simplificado es 2⁵ (exponente 5).",
+            ExplanationOfSuccess = "¡Exacto! 2³ × 2² = 2^(3+2) = 2⁵. El exponente resultante es 5."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "exp_item_1", Name = "Potencia 2³", EmojiSymbol = "💎", AccessibleDescription = "Base 2 con exponente 3", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex1.ItemsGroupB.Add(new ManipulableItem { Id = "exp_item_2", Name = "Potencia 2²", EmojiSymbol = "✨", AccessibleDescription = "Base 2 con exponente 2", OrderIndex = 2, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "Exponente 5 (2⁵)", Value = 5, IsCorrect = true, SpeechFeedback = "¡Magnífico! 3 + 2 = 5. El exponente es 5.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "Exponente 6 (2⁶)", Value = 6, IsCorrect = false, SpeechFeedback = "¡Cuidado! Los exponentes se suman, no se multiplican (3 + 2 = 5, no 3 × 2).", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "Exponente 1", Value = 1, IsCorrect = false, SpeechFeedback = "No se restan los exponentes en la multiplicación; se suman.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 20 (2º Secundaria): Reducción de Términos Semejantes en Polinomios
+    /// </summary>
+    private PedagogicalTopic BuildPolynomialLikeTermsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_polynomials_like_terms_01",
+            Title = "El Almacén de Términos: Reducción de Polinomios",
+            Level = AcademicLevel.SecondarySecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "En el almacén escolar no puedes sumar cajas de cuadernos con cajas de lápices: juntas cuadernos con cuadernos y lápices con lápices. En álgebra ocurre exactamente lo mismo: solo se pueden sumar o restar aquellos términos que tienen la misma parte literal (términos semejantes).",
+            NarrativeIntroSimplified = "En álgebra solo sumamos las letras iguales con las letras iguales.",
+            CoreConceptExplanation = "Dos o más términos son semejantes si tienen la misma variable elevada al mismo exponente. Al reducirlos, sumamos o restamos algebraicamente sus coeficientes numéricos conservando la variable intacta: ax + bx = (a + b)x.",
+            CoreConceptSimplified = "3x + 4x son 7x. No puedes sumar x con y.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Identificación de términos semejantes por su parte literal y exponente",
+                "Reducción y simplificación de polinomios multivariables",
+                "Aplicación al inventario y modelado algebraico"
+            },
+            CongratulationMessage = "¡Maestro del Álgebra! Organizas y reduces polinomios con total claridad y elegancia."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "poly_ex_01",
+            Title = "Clasificando Útiles: 3x + 2y + 4x + 5y",
+            GameType = GamePlayType.PolynomialLikeTerms,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = 7,
+            StandardInstruction = "En el inventario tenemos la expresión: 3x + 2y + 4x + 5y, donde x representa cuadernos e y lápices. Reduciendo los términos semejantes, ¿cuál es el coeficiente total de cuadernos x?",
+            SimplifiedInstruction = "Junta las x: 3x más 4x. ¿Cuántas x tienes en total?",
+            ScreenReaderDescription = "Expresión: 3x más 2y más 4x más 5y. Pregunta por el coeficiente del término semejante x.",
+            FirstHint = "Agrupa solo los términos que tienen x: 3x + 4x.",
+            SecondHintDetailed = "(3 + 4)x = 7x. El coeficiente de x es 7.",
+            ExplanationOfSuccess = "¡Excelente! 3x + 4x = 7x (y 2y + 5y = 7y). El coeficiente final de x es 7."
+        };
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5x", Value = 5, IsCorrect = false, SpeechFeedback = "Revisa la suma de 3 + 4.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "7x (coeficiente 7)", Value = 7, IsCorrect = true, SpeechFeedback = "¡Correcto! 3x + 4x = 7x.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "14xy", Value = 14, IsCorrect = false, SpeechFeedback = "¡No! No se juntan las letras x con y. Se mantienen separadas.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 21 (2º Secundaria): Sistemas de Ecuaciones Lineales 2×2
+    /// </summary>
+    private PedagogicalTopic BuildLinearSystems2x2Topic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_linear_systems_2x2_01",
+            Title = "La Cuenta de la Taquería: Sistemas de Ecuaciones 2×2",
+            Level = AcademicLevel.SecondarySecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Llegamos a la taquería del barrio! Si dos amigos van a cenar y piden órdenes combinadas de tacos y refrescos con cuentas globales, ¿cómo averiguar el precio individual de un taco? ¡Con un sistema de dos ecuaciones lineales con dos incógnitas (2×2)! La resta o eliminación nos da la solución exacta.",
+            NarrativeIntroSimplified = "Comparamos dos cuentas de comida para descubrir cuánto cuesta cada cosa por separado.",
+            CoreConceptExplanation = "Un sistema 2×2 consta de dos ecuaciones con dos incógnitas compartidas. Mediante el método de reducción (eliminación), restamos una ecuación de la otra para cancelar una variable y resolver la restante.",
+            CoreConceptSimplified = "Si 2 tacos y 1 refresco cuestan $45, y 1 taco y 1 refresco cuestan $30, la diferencia de $15 es el precio de 1 taco.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Modelado de situaciones simultáneas con dos incógnitas (x, y)",
+                "Método algebraico de reducción / eliminación",
+                "Verificación de la solución en ambas ecuaciones"
+            },
+            CongratulationMessage = "¡Detective Algebraico! Resuelves sistemas de ecuaciones simultáneas sin titubear."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "sys2x2_ex_01",
+            Title = "La Orden de Tacos y Refrescos",
+            GameType = GamePlayType.LinearSystem2x2,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = 15,
+            StandardInstruction = "En la taquería: 2 tacos (x) y 1 refresco (y) cuestan $45 pesos (2x + y = 45). En la mesa de al lado, 1 taco (x) y 1 refresco (y) cuestan $30 pesos (x + y = 30). Restando ambas cuentas, ¿cuánto cuesta exactamente 1 taco (x)?",
+            SimplifiedInstruction = "2 tacos y 1 refresco valen $45. 1 taco y 1 refresco valen $30. Resta 45 menos 30 para saber el costo de 1 taco.",
+            ScreenReaderDescription = "Sistema 2x2: ecuación uno 2x + y = 45; ecuación dos x + y = 30. Resta para hallar el valor de x.",
+            FirstHint = "Resta la segunda orden de la primera: (2x + y) - (x + y) = 45 - 30.",
+            SecondHintDetailed = "x = 45 - 30 = 15 pesos por taco.",
+            ExplanationOfSuccess = "¡Brillante deducción! 1 taco cuesta $15 pesos (y el refresco cuesta $15 pesos). Comprobamos: 2(15) + 15 = 30 + 15 = 45 pesos."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "taco_ex", Name = "Taco (x)", EmojiSymbol = "🌮", AccessibleDescription = "Taco de precio incógnita x", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex1.ItemsGroupB.Add(new ManipulableItem { Id = "soda_ex", Name = "Refresco (y)", EmojiSymbol = "🥤", AccessibleDescription = "Refresco de precio incógnita y", OrderIndex = 2, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "$10 pesos", Value = 10, IsCorrect = false, SpeechFeedback = "Si el taco costara 10, la cuenta no coincidiría.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "$15 pesos por taco", Value = 15, IsCorrect = true, SpeechFeedback = "¡Magnífico! 45 - 30 = 15 pesos por taco.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "$20 pesos", Value = 20, IsCorrect = false, SpeechFeedback = "20 pesos es demasiado alto; 45 menos 30 es 15.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 22 (2º Secundaria): El Teorema de Pitágoras
+    /// </summary>
+    private PedagogicalTopic BuildPythagoreanTheoremTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "sec_pythagorean_theorem_01",
+            Title = "Arquitectura Accesible: El Teorema de Pitágoras",
+            Level = AcademicLevel.SecondarySecondGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Para construir una escuela 100% accesible, diseñamos rampas para sillas de ruedas. La rampa forma la hipotenusa de un triángulo rectángulo perfecto. Pitágoras descubrió que la suma de los cuadrados de los catetos es igual al cuadrado de la hipotenusa: a² + b² = c².",
+            NarrativeIntroSimplified = "En un triángulo con esquina recta, el lado largo al cuadrado es igual a la suma de los dos lados cortos al cuadrado.",
+            CoreConceptExplanation = "En todo triángulo rectángulo, el cuadrado de la longitud de la hipotenusa (c) es igual a la suma de los cuadrados de las longitudes de los catetos (a y b): c² = a² + b² <=> c = √(a² + b²).",
+            CoreConceptSimplified = "Eleva al cuadrado los dos lados rectos, súmalos y saca la raíz cuadrada para hallar la rampa.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Enunciado geométrico y algebraico del Teorema de Pitágoras: a² + b² = c²",
+                "Cálculo de la hipotenusa a partir de los catetos conocidos",
+                "Aplicación práctica a la accesibilidad y diseño universal"
+            },
+            CongratulationMessage = "¡Gran Arquitecto Pitagórico! Calculas hipotenusas y construyes rampas perfectas con el teorema fundamental de la geometría."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "pyth_ex_01",
+            Title = "La Rampa Clásica: Catetos 3m y 4m",
+            GameType = GamePlayType.PythagoreanTheorem,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = 5,
+            StandardInstruction = "Una rampa accesible tiene una altura vertical de 3 metros (cateto a) y una base horizontal de 4 metros (cateto b). Si c² = 3² + 4² = 9 + 16 = 25, ¿cuánto mide la longitud de la rampa inclinada c (√25)?",
+            SimplifiedInstruction = "La rampa mide: 3² + 4² = 9 + 16 = 25. La raíz de 25 es la respuesta. ¿Cuánto mide?",
+            ScreenReaderDescription = "Teorema de Pitágoras: cateto 3 y cateto 4. Cuadrados: 9 más 16 igual a 25. Raíz cuadrada de 25.",
+            FirstHint = "Calcula la raíz cuadrada de 25: ¿qué número multiplicado por sí mismo da 25?",
+            SecondHintDetailed = "5 × 5 = 25, por lo tanto c = √25 = 5 metros.",
+            ExplanationOfSuccess = "¡Espectacular! c = √(3² + 4²) = √(9 + 16) = √25 = 5 metros. ¡Es la terna pitagórica más famosa de la historia!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "ramp_icon", Name = "Rampa accesible", EmojiSymbol = "📐", AccessibleDescription = "Rampa de hipotenusa 5 metros", OrderIndex = 1, MusicalPitchHz = Frequencies[3] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 metros de rampa (c = √25)", Value = 5, IsCorrect = true, SpeechFeedback = "¡Exacto! c = 5 metros. 3² + 4² = 5².", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "7 metros (sumando lados)", Value = 7, IsCorrect = false, SpeechFeedback = "¡Cuidado! No se suman directamente 3 + 4; se suman sus cuadrados y se saca raíz.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "12 metros", Value = 12, IsCorrect = false, SpeechFeedback = "12 sería 3 × 4, pero buscamos la hipotenusa que es 5.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

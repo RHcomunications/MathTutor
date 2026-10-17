@@ -249,6 +249,58 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void ExponentLawsTopic_CoversPowerProductAndQuotients()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var expTopic = topics.FirstOrDefault(t => t.Id == "sec_exponent_laws_01");
+
+        Assert.NotNull(expTopic);
+        Assert.Equal(AcademicLevel.SecondarySecondGrade, expTopic.Level);
+        Assert.Contains(expTopic.PrinciplesAddressed, p => p.Contains("potencias"));
+        Assert.Contains(expTopic.PrinciplesAddressed, p => p.Contains("exponente"));
+        Assert.True(expTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void PolynomialLikeTermsTopic_CoversSimplificationAndAlgebraicLanguage()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var polyTopic = topics.FirstOrDefault(t => t.Id == "sec_polynomials_like_terms_01");
+
+        Assert.NotNull(polyTopic);
+        Assert.Equal(AcademicLevel.SecondarySecondGrade, polyTopic.Level);
+        Assert.Contains(polyTopic.PrinciplesAddressed, p => p.Contains("términos semejantes"));
+        Assert.Contains(polyTopic.PrinciplesAddressed, p => p.Contains("Reducción"));
+        Assert.True(polyTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void LinearSystems2x2Topic_CoversSimultaneousEquationsAndSolutionPairs()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var sysTopic = topics.FirstOrDefault(t => t.Id == "sec_linear_systems_2x2_01");
+
+        Assert.NotNull(sysTopic);
+        Assert.Equal(AcademicLevel.SecondarySecondGrade, sysTopic.Level);
+        Assert.Contains(sysTopic.PrinciplesAddressed, p => p.Contains("simultáneas"));
+        Assert.Contains(sysTopic.PrinciplesAddressed, p => p.Contains("reducción"));
+        Assert.True(sysTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void PythagoreanTheoremTopic_CoversRightTrianglesAndHypotenuse()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var pythTopic = topics.FirstOrDefault(t => t.Id == "sec_pythagorean_theorem_01");
+
+        Assert.NotNull(pythTopic);
+        Assert.Equal(AcademicLevel.SecondarySecondGrade, pythTopic.Level);
+        Assert.Contains(pythTopic.PrinciplesAddressed, p => p.Contains("Pitágoras"));
+        Assert.Contains(pythTopic.PrinciplesAddressed, p => p.Contains("hipotenusa"));
+        Assert.True(pythTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

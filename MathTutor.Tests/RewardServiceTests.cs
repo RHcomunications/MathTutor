@@ -37,7 +37,7 @@ public class RewardServiceTests
         profile.CompletedLessonIds.Add("kinder_counting_01");
 
         var stations = _rewards.GetRealmStations(profile);
-        Assert.Equal(19, stations.Count);
+        Assert.Equal(23, stations.Count);
         Assert.Equal("station_1", stations[0].Id);
         Assert.True(stations[0].IsCompleted);
         Assert.False(stations[0].IsCurrentStation);
@@ -80,7 +80,19 @@ public class RewardServiceTests
         Assert.Equal("sec_linear_equations_01", stations[16].TopicId);
         Assert.Equal("station_18", stations[17].Id);
         Assert.Equal("sec_percentages_01", stations[17].TopicId);
+
+        // Estaciones añadidas para 2º de secundaria
         Assert.Equal("station_19", stations[18].Id);
-        Assert.Equal("prog_seed_01", stations[18].TopicId);
+        Assert.Equal("sec_exponent_laws_01", stations[18].TopicId);
+        Assert.Equal("station_20", stations[19].Id);
+        Assert.Equal("sec_polynomials_like_terms_01", stations[19].TopicId);
+        Assert.Equal("station_21", stations[20].Id);
+        Assert.Equal("sec_linear_systems_2x2_01", stations[20].TopicId);
+        Assert.Equal("station_22", stations[21].Id);
+        Assert.Equal("sec_pythagorean_theorem_01", stations[21].TopicId);
+
+        // Estación final: Programación
+        Assert.Equal("station_23", stations[22].Id);
+        Assert.Equal("prog_seed_01", stations[22].TopicId);
     }
 }

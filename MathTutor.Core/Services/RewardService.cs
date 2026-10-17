@@ -178,6 +178,42 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_exponent_laws",
+                Title = "Señor de los Exponentes",
+                Description = "Dominaste el producto y cociente de potencias con la misma base.",
+                IconEmoji = "⚡",
+                AssociatedTopicId = "sec_exponent_laws_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_polynomials",
+                Title = "Domador de Polinomios",
+                Description = "Agrupaste y redujiste términos semejantes en expresiones algebraicas.",
+                IconEmoji = "🧩",
+                AssociatedTopicId = "sec_polynomials_like_terms_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_linear_systems_2x2",
+                Title = "Decodificador 2x2",
+                Description = "Resolviste sistemas de dos ecuaciones lineales con dos incógnitas.",
+                IconEmoji = "🔍",
+                AssociatedTopicId = "sec_linear_systems_2x2_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_pythagoras",
+                Title = "Héroe Pitagórico",
+                Description = "Aplicaste a² + b² = c² en triángulos rectángulos y rampas del entorno.",
+                IconEmoji = "📐",
+                AssociatedTopicId = "sec_pythagorean_theorem_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -386,11 +422,47 @@ public class RewardService
             new()
             {
                 Id = "station_19",
+                Name = "La Torre de las Potencias y Exponentes",
+                Description = "La cumbre donde las bases iguales suman o restan sus exponentes.",
+                LandmarkEmoji = "⚡",
+                TopicId = "sec_exponent_laws_01",
+                OrderIndex = 19
+            },
+            new()
+            {
+                Id = "station_20",
+                Name = "El Valle de los Polinomios",
+                Description = "La llanura donde agrupamos y simplificamos términos semejantes.",
+                LandmarkEmoji = "🧩",
+                TopicId = "sec_polynomials_like_terms_01",
+                OrderIndex = 20
+            },
+            new()
+            {
+                Id = "station_21",
+                Name = "El Centro de Mando 2x2",
+                Description = "La estación donde dos radares resuelven pares ordenados (x, y).",
+                LandmarkEmoji = "🔍",
+                TopicId = "sec_linear_systems_2x2_01",
+                OrderIndex = 21
+            },
+            new()
+            {
+                Id = "station_22",
+                Name = "La Gran Rampa Pitagórica",
+                Description = "El monumento inclinado donde la suma de catetos al cuadrado da la hipotenusa.",
+                LandmarkEmoji = "📐",
+                TopicId = "sec_pythagorean_theorem_01",
+                OrderIndex = 22
+            },
+            new()
+            {
+                Id = "station_23",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 19
+                OrderIndex = 23
             }
         };
 

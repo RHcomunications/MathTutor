@@ -437,4 +437,86 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, pctList.Count);
         Assert.All(pctList, ex => Assert.Equal(GamePlayType.PercentageCalculation, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateExponentLawsExercise_ProducesValidMultiplicationOrDivisionExponents()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondarySecondGrade, Age = 13 };
+        var rng = new Random(2000);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateExponentLawsExercise(profile, rng);
+            Assert.Equal(GamePlayType.ExponentLaws, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 1 && ex.ExpectedResult <= 12);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GeneratePolynomialLikeTermsExercise_CalculatesTotalCoefficientAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondarySecondGrade, Age = 13 };
+        var rng = new Random(2100);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GeneratePolynomialLikeTermsExercise(profile, rng);
+            Assert.Equal(GamePlayType.PolynomialLikeTerms, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 2);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateLinearSystem2x2Exercise_FindsAccurateVariable()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondarySecondGrade, Age = 13 };
+        var rng = new Random(2200);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateLinearSystem2x2Exercise(profile, rng);
+            Assert.Equal(GamePlayType.LinearSystem2x2, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 12 && ex.ExpectedResult <= 18);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GeneratePythagoreanTheoremExercise_SolvesHypotenuseAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondarySecondGrade, Age = 13 };
+        var rng = new Random(2300);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GeneratePythagoreanTheoremExercise(profile, rng);
+            Assert.Equal(GamePlayType.PythagoreanTheorem, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 5);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_SecondarySecondGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.SecondarySecondGrade, Age = 13 };
+
+        var expList = _generator.GenerateExercisesForTopic("sec_exponent_laws_01", profile, count: 3);
+        Assert.Equal(3, expList.Count);
+        Assert.All(expList, ex => Assert.Equal(GamePlayType.ExponentLaws, ex.GameType));
+
+        var polyList = _generator.GenerateExercisesForTopic("sec_polynomials_like_terms_01", profile, count: 3);
+        Assert.Equal(3, polyList.Count);
+        Assert.All(polyList, ex => Assert.Equal(GamePlayType.PolynomialLikeTerms, ex.GameType));
+
+        var sysList = _generator.GenerateExercisesForTopic("sec_linear_systems_2x2_01", profile, count: 3);
+        Assert.Equal(3, sysList.Count);
+        Assert.All(sysList, ex => Assert.Equal(GamePlayType.LinearSystem2x2, ex.GameType));
+
+        var pythList = _generator.GenerateExercisesForTopic("sec_pythagorean_theorem_01", profile, count: 3);
+        Assert.Equal(3, pythList.Count);
+        Assert.All(pythList, ex => Assert.Equal(GamePlayType.PythagoreanTheorem, ex.GameType));
+    }
 }

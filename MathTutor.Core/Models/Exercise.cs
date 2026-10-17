@@ -32,7 +32,11 @@ public enum GamePlayType
     SignedNumbersAddition,    // Números enteros con signo (positivos y negativos, deudas y saldo)
     OrderOfOperationsPEMDAS,  // Jerarquía de operaciones y signos de agrupación (PEMDAS)
     LinearEquationAXB,        // Ecuaciones lineales de la forma ax + b = c
-    PercentageCalculation     // Cálculo de porcentajes y descuentos en la tiendita
+    PercentageCalculation,    // Cálculo de porcentajes y descuentos en la tiendita
+    ExponentLaws,             // Leyes de los exponentes (producto de potencias, potencia de potencia, a^0=1)
+    PolynomialLikeTerms,      // Reducción de términos semejantes y polinomios
+    LinearSystem2x2,          // Sistemas de dos ecuaciones lineales con dos incógnitas (2x2)
+    PythagoreanTheorem        // Teorema de Pitágoras (a^2 + b^2 = c^2 en triángulos rectángulos y rampas)
 }
 
 /// <summary>

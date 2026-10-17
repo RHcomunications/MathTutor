@@ -1117,6 +1117,226 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de leyes de los exponentes: producto de potencias de la misma base a^m * a^n = a^(m+n) (2º Secundaria).
+    /// </summary>
+    public Exercise GenerateExponentLawsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int baseNum = isSimplified ? 2 : rng.Next(2, 4);
+        int m = isSimplified ? 1 : rng.Next(2, 4);
+        int n = isSimplified ? 2 : rng.Next(2, 4);
+        int expectedExponent = m + n;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_exp_law_{Guid.NewGuid():N}",
+            Title = $"Leyes de Exponentes: {baseNum}^{m} × {baseNum}^{n}",
+            GameType = GamePlayType.ExponentLaws,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = expectedExponent,
+            StandardInstruction = $"Aplica la ley del producto de potencias con la misma base: {baseNum}^{m} × {baseNum}^{n}. La regla nos dice que los exponentes se suman (a^m × a^n = a^(m+n)). ¿Cuál es el exponente final de {baseNum}?",
+            SimplifiedInstruction = $"En {baseNum}^{m} × {baseNum}^{n}, los exponentes se suman: {m} + {n}. ¿Cuál es el exponente?",
+            ScreenReaderDescription = $"Multiplicación de potencias con base {baseNum}: exponente {m} por exponente {n}. Suma de exponentes.",
+            FirstHint = $"La base se conserva ({baseNum}) y los exponentes se suman: {m} + {n}.",
+            SecondHintDetailed = $"{m} + {n} = {expectedExponent}. La expresión simplificada es {baseNum}^{expectedExponent}.",
+            ExplanationOfSuccess = $"¡Magnífico! {baseNum}^{m} × {baseNum}^{n} = {baseNum}^{expectedExponent}. Al multiplicar potencias de la misma base, se mantiene la base y se suman los exponentes."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "exp_m",
+            Name = $"Potencia {baseNum}^{m}",
+            EmojiSymbol = "💎",
+            AccessibleDescription = $"Base {baseNum} con exponente {m}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        ex.ItemsGroupB.Add(new ManipulableItem
+        {
+            Id = "exp_n",
+            Name = $"Potencia {baseNum}^{n}",
+            EmojiSymbol = "✨",
+            AccessibleDescription = $"Base {baseNum} con exponente {n}",
+            OrderIndex = 2,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, expectedExponent, min: Math.Max(2, expectedExponent - 2), max: expectedExponent + 3, unitLabel: "(exponente)", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de reducción de términos semejantes en polinomios (2º Secundaria).
+    /// </summary>
+    public Exercise GeneratePolynomialLikeTermsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? 2 : rng.Next(2, 6);
+        int c = isSimplified ? 3 : rng.Next(2, 6);
+        int expectedX = a + c;
+
+        int b = isSimplified ? 1 : rng.Next(2, 5);
+        int d = isSimplified ? 2 : rng.Next(2, 5);
+        int totalY = b + d;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_poly_{Guid.NewGuid():N}",
+            Title = $"Reducción de Términos: {a}x + {b}y + {c}x + {d}y",
+            GameType = GamePlayType.PolynomialLikeTerms,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = expectedX,
+            StandardInstruction = $"En el almacén escolar clasifican materiales: {a}x libretas + {b}y lápices + {c}x libretas + {d}y lápices. Reduciendo términos semejantes, ¿cuál es el coeficiente total de libretas x?",
+            SimplifiedInstruction = $"Junta las x con las x: tienes {a}x y le sumas {c}x. ¿Cuántas x tienes en total?",
+            ScreenReaderDescription = $"Expresión algebraica: {a}x más {b}y más {c}x más {d}y. Suma los coeficientes del término semejante x.",
+            FirstHint = $"Solo puedes sumar términos con la misma letra: suma los números de x ({a} + {c}).",
+            SecondHintDetailed = $"{a}x + {c}x = {expectedX}x. El coeficiente de x es {expectedX}.",
+            ExplanationOfSuccess = $"¡Exacto! {a}x + {c}x = {expectedX}x (y {b}y + {d}y = {totalY}y). Los términos semejantes solo se suman entre familias con la misma letra."
+        };
+
+        for (int i = 1; i <= a; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_x1_{i}",
+                Name = $"Libreta x #{i}",
+                EmojiSymbol = "📘",
+                AccessibleDescription = "Primer grupo de libreta x",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[1]
+            });
+        }
+        for (int i = 1; i <= c; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_x2_{i}",
+                Name = $"Libreta x #{a + i}",
+                EmojiSymbol = "📘",
+                AccessibleDescription = "Segundo grupo de libreta x",
+                OrderIndex = a + i,
+                MusicalPitchHz = PentatonicScaleHz[1]
+            });
+        }
+
+        BuildOptions(ex, expectedX, min: Math.Max(3, expectedX - 3), max: expectedX + 3, unitLabel: "x", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de sistema de ecuaciones lineales 2x2 en la taquería (2º Secundaria).
+    /// </summary>
+    public Exercise GenerateLinearSystem2x2Exercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int tacoPrice = isSimplified ? 12 : rng.Next(12, 19);
+        int drinkPrice = isSimplified ? 15 : rng.Next(14, 22);
+        int p2 = tacoPrice + drinkPrice;
+        int p1 = (2 * tacoPrice) + drinkPrice;
+        string currency = profile.CurrencyName;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_sys2x2_{Guid.NewGuid():N}",
+            Title = "La Taquería: Sistema de Ecuaciones 2×2",
+            GameType = GamePlayType.LinearSystem2x2,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = tacoPrice,
+            StandardInstruction = $"En la taquería del barrio: por 2 tacos y 1 refresco pagas ${p1} {currency} (2x + y = {p1}). Por 1 taco y 1 refresco pagas ${p2} {currency} (x + y = {p2}). Comparando ambas cuentas, ¿cuánto cuesta exactamente 1 taco (x)?",
+            SimplifiedInstruction = $"2 tacos y 1 refresco cuestan ${p1}. 1 taco y 1 refresco cuestan ${p2}. La diferencia es el precio de 1 taco. ¿Cuánto cuesta?",
+            ScreenReaderDescription = $"Sistema 2x2: ecuación uno es 2x + y = {p1}. Ecuación dos es x + y = {p2}. Restando ambas ecuaciones se obtiene el precio de x.",
+            FirstHint = $"Observa que la única diferencia entre las dos órdenes es 1 taco adicional. Resta: ${p1} - ${p2}.",
+            SecondHintDetailed = $"{p1} - {p2} = {tacoPrice} {currency}. Por tanto, 1 taco cuesta ${tacoPrice} {currency}.",
+            ExplanationOfSuccess = $"¡Excelente deducción algebraica! Al restar las dos ecuaciones eliminamos el refresco (y - y = 0) y obtenemos: x = {p1} - {p2} = ${tacoPrice} {currency} por taco."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_taco",
+            Name = "Orden de tacos (x)",
+            EmojiSymbol = "🌮",
+            AccessibleDescription = "Taco de precio incógnita x",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        ex.ItemsGroupB.Add(new ManipulableItem
+        {
+            Id = "item_soda",
+            Name = "Refresco (y)",
+            EmojiSymbol = "🥤",
+            AccessibleDescription = "Refresco de precio incógnita y",
+            OrderIndex = 2,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, tacoPrice, min: Math.Max(5, tacoPrice - 4), max: tacoPrice + 5, unitLabel: currency, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio del Teorema de Pitágoras con ternas pitagóricas en rampas accesibles (2º Secundaria).
+    /// </summary>
+    public Exercise GeneratePythagoreanTheoremExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        var triplets = isSimplified
+            ? new (int a, int b, int c)[] { (3, 4, 5) }
+            : new (int a, int b, int c)[] { (3, 4, 5), (6, 8, 10), (5, 12, 13) };
+
+        var t = triplets[rng.Next(triplets.Length)];
+        int expectedHypotenuse = t.c;
+        int a2 = t.a * t.a;
+        int b2 = t.b * t.b;
+        int sumSquares = a2 + b2;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_pyth_{Guid.NewGuid():N}",
+            Title = "La Rampa Accesible: Teorema de Pitágoras",
+            GameType = GamePlayType.PythagoreanTheorem,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = expectedHypotenuse,
+            StandardInstruction = $"En la escuela diseñamos una rampa accesible para personas en silla de ruedas. La rampa forma un triángulo rectángulo con una base de {t.b} metros y una altura de {t.a} metros. Aplicando el Teorema de Pitágoras (c² = a² + b² = {a2} + {b2} = {sumSquares}), ¿cuántos metros de largo mide la rampa inclinada c?",
+            SimplifiedInstruction = $"Una rampa tiene base de {t.b} metros y altura de {t.a} metros. Si c² = {a2} + {b2} = {sumSquares}, ¿cuánto mide la rampa (√{sumSquares})?",
+            ScreenReaderDescription = $"Triángulo rectángulo: cateto altura {t.a} metros, cateto base {t.b} metros. Hipotenusa c al cuadrado es {sumSquares}. Raíz cuadrada de {sumSquares}.",
+            FirstHint = $"Suma los cuadrados de los catetos: {a2} + {b2} = {sumSquares}. Luego saca la raíz cuadrada de {sumSquares}.",
+            SecondHintDetailed = $"c = √{sumSquares} = {expectedHypotenuse} metros.",
+            ExplanationOfSuccess = $"¡Brillante! Por el Teorema de Pitágoras: c = √({t.a}² + {t.b}²) = √({a2} + {b2}) = √{sumSquares} = {expectedHypotenuse} metros. ¡La rampa cumple perfectamente las medidas arquitectónicas!"
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "ramp_slope",
+            Name = $"Rampa Inclinada ({expectedHypotenuse}m)",
+            EmojiSymbol = "📐",
+            AccessibleDescription = $"Rampa accesible de hipotenusa {expectedHypotenuse} metros",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[3]
+        });
+
+        BuildOptions(ex, expectedHypotenuse, min: Math.Max(3, expectedHypotenuse - 3), max: expectedHypotenuse + 3, unitLabel: "metros", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -1172,6 +1392,14 @@ public class ExerciseGenerator
                 "sec_linear_equations_01" => GenerateLinearEquationAXBExercise(profile, rng),
 
                 "sec_percentages_01" => GeneratePercentageExercise(profile, rng),
+
+                "sec_exponent_laws_01" => GenerateExponentLawsExercise(profile, rng),
+
+                "sec_polynomials_like_terms_01" => GeneratePolynomialLikeTermsExercise(profile, rng),
+
+                "sec_linear_systems_2x2_01" => GenerateLinearSystem2x2Exercise(profile, rng),
+
+                "sec_pythagorean_theorem_01" => GeneratePythagoreanTheoremExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };
