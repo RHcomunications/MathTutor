@@ -79,6 +79,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_mixed_fractions",
+                Title = "Chef de los Mixtos",
+                Description = "Dominaste enteros y fracciones impropias mayores a la unidad.",
+                IconEmoji = "🧇",
+                AssociatedTopicId = "elem_mixed_fractions_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_decimals",
+                Title = "Tesorero Decimal",
+                Description = "Manejaste monedas de centavos y el valor de los números decimales.",
+                IconEmoji = "🪙",
+                AssociatedTopicId = "elem_decimals_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_powers",
+                Title = "Mago del Exponente",
+                Description = "Desataste el crecimiento acelerado y la duplicación de las potencias.",
+                IconEmoji = "💎",
+                AssociatedTopicId = "elem_powers_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -188,11 +215,38 @@ public class RewardService
             new()
             {
                 Id = "station_8",
+                Name = "La Cocina de los Mixtos",
+                Description = "El lugar donde horneamos waffles y comprendemos más de un entero.",
+                LandmarkEmoji = "🧇",
+                TopicId = "elem_mixed_fractions_01",
+                OrderIndex = 8
+            },
+            new()
+            {
+                Id = "station_9",
+                Name = "El Mercado de los Céntimos",
+                Description = "El bazar donde compramos con monedas y aprendemos el valor decimal.",
+                LandmarkEmoji = "🪙",
+                TopicId = "elem_decimals_01",
+                OrderIndex = 9
+            },
+            new()
+            {
+                Id = "station_10",
+                Name = "La Cueva de las Potencias",
+                Description = "La cámara mágica donde los cofres duplican gemas exponencialmente.",
+                LandmarkEmoji = "💎",
+                TopicId = "elem_powers_01",
+                OrderIndex = 10
+            },
+            new()
+            {
+                Id = "station_11",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 8
+                OrderIndex = 11
             }
         };
 

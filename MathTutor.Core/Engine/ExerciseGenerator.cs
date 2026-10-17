@@ -557,6 +557,169 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de fracciones mixtas e impropias (5º Grado).
+    /// </summary>
+    public Exercise GenerateMixedFractionsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int whole = 1;
+        int denom = isSimplified ? 2 : (rng.Next(2, 5)); // 2, 3 o 4
+        int remNumerator = 1;
+
+        int totalParts = (whole * denom) + remNumerator;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_mixed_{Guid.NewGuid():N}",
+            Title = $"Fracciones Mixtas: {whole} entero y {remNumerator}/{denom}",
+            GameType = GamePlayType.MixedFractions,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = totalParts,
+            StandardInstruction = $"Ada horneó {whole} waffle entero y {remNumerator}/{denom} de otro. Si cada waffle se divide en {denom} pedazos iguales, ¿cuántos pedazos ({remNumerator}/{denom}) hay en total en {whole} y {remNumerator}/{denom}?",
+            SimplifiedInstruction = $"Tienes 1 waffle entero y {remNumerator} pedazo de {denom}. Si partes el entero en {denom} pedazos, ¿cuántos pedazos tienes en total?",
+            ScreenReaderDescription = $"Un waffle completo partido en {denom} porciones más otro waffle con {remNumerator} porción de {denom}.",
+            FirstHint = $"1 waffle entero son {denom} pedazos. Súmale el pedazo extra.",
+            SecondHintDetailed = $"{denom} pedazos del entero + {remNumerator} pedazo extra = {totalParts} pedazos en total ({totalParts}/{denom}).",
+            ExplanationOfSuccess = $"¡Fantástico! {whole} entero con {remNumerator}/{denom} equivale a la fracción impropia {totalParts}/{denom}. ¡Tienes {totalParts} partes iguales!"
+        };
+
+        for (int i = 1; i <= totalParts; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"mixed_slice_{i}",
+                Name = $"Porción de waffle {i}",
+                EmojiSymbol = "🧇",
+                AccessibleDescription = i <= denom
+                    ? $"Porción {i} del primer waffle entero"
+                    : $"Porción extra {i - denom} del segundo waffle",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, totalParts, min: Math.Max(2, totalParts - 3), max: totalParts + 3, unitLabel: "partes", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de decimales y sistema monetario (5º Grado).
+    /// </summary>
+    public Exercise GenerateDecimalsMoneyExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int dollars = isSimplified ? 1 : rng.Next(1, 4);
+        int halfDollars = isSimplified ? 1 : (rng.Next(1, 3) * 1);
+        int totalCents = (dollars * 100) + (halfDollars * 50);
+        decimal decimalAmount = totalCents / 100m;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_dec_{Guid.NewGuid():N}",
+            Title = $"El Monedero Mágico: ${decimalAmount:F2}",
+            GameType = GamePlayType.DecimalsMoney,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = totalCents,
+            StandardInstruction = $"En el mercado compras frutas mágicas. Tienes {dollars} moneda(s) de $1.00 (100¢) y {halfDollars} moneda(s) de $0.50 (50¢). ¿Cuántos centavos tienes en total? (Equivale a ${decimalAmount:F2})",
+            SimplifiedInstruction = $"Tienes {dollars} moneda de $1 y {halfDollars} de 50 centavos. ¿Cuántos centavos tienes en total?",
+            ScreenReaderDescription = $"{dollars} monedas de un peso y {halfDollars} monedas de cincuenta centavos. Total: {totalCents} centavos.",
+            FirstHint = $"Cada $1.00 son 100 centavos. Suma: ({dollars * 100}) + ({halfDollars * 50}).",
+            SecondHintDetailed = $"{dollars * 100} centavos más {halfDollars * 50} centavos es igual a {totalCents} centavos (${decimalAmount:F2}).",
+            ExplanationOfSuccess = $"¡Excelente! Tienes {totalCents} centavos, que se escribe matemáticamente como ${decimalAmount:F2}. ¡Los decimales son las partes de un peso entero!"
+        };
+
+        for (int i = 1; i <= dollars; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"coin_d_{i}",
+                Name = $"Moneda de $1.00 #{i}",
+                EmojiSymbol = "🪙",
+                AccessibleDescription = $"Moneda de 1 peso (100 centavos)",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[0]
+            });
+        }
+
+        for (int i = 1; i <= halfDollars; i++)
+        {
+            ex.ItemsGroupB.Add(new ManipulableItem
+            {
+                Id = $"coin_c_{i}",
+                Name = $"Moneda de $0.50 #{i}",
+                EmojiSymbol = "🥈",
+                AccessibleDescription = $"Moneda de 50 centavos (0.50 pesos)",
+                OrderIndex = dollars + i,
+                MusicalPitchHz = PentatonicScaleHz[2]
+            });
+        }
+
+        BuildOptions(ex, totalCents, min: Math.Max(50, totalCents - 100), max: totalCents + 100, unitLabel: "centavos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de primeras potencias y crecimiento exponencial: 2^n (5º Grado).
+    /// </summary>
+    public Exercise GeneratePowersExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int exponent = isSimplified ? rng.Next(1, 3) : rng.Next(2, 4);
+        int powerResult = (int)Math.Pow(2, exponent);
+
+        var formulaStr = exponent switch
+        {
+            1 => "2",
+            2 => "2 × 2",
+            3 => "2 × 2 × 2",
+            _ => "2 × 2 × 2 × 2"
+        };
+
+        var ex = new Exercise
+        {
+            Id = $"gen_pow_{Guid.NewGuid():N}",
+            Title = $"El Cofre Duplicador: 2 con exponente {exponent} (2^{exponent})",
+            GameType = GamePlayType.PowersAndExponentGrowth,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = powerResult,
+            StandardInstruction = $"En el cofre de gemas mágicas, cada nivel duplica los cristales. Para 2 elevado a la {exponent} (2^{exponent}), multiplicamos la base (2) por sí misma {exponent} veces: {formulaStr}. ¿Cuántos cristales se forman?",
+            SimplifiedInstruction = $"El cofre duplica cristales: 2 con potencia {exponent} es {formulaStr}. ¿Cuánto es?",
+            ScreenReaderDescription = $"Potencia 2 elevado a la {exponent}. Multiplicación repetida: {formulaStr}.",
+            FirstHint = $"Calcula la multiplicación: {formulaStr}.",
+            SecondHintDetailed = $"{formulaStr} = {powerResult}.",
+            ExplanationOfSuccess = $"¡Increíble! 2^{exponent} = {powerResult}. ¡Las potencias representan multiplicación repetida y crecimiento acelerado!"
+        };
+
+        for (int i = 1; i <= powerResult; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"gem_pow_{i}",
+                Name = $"Cristal de Poder #{i}",
+                EmojiSymbol = "💎",
+                AccessibleDescription = $"Cristal número {i} duplicado",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, powerResult, min: Math.Max(2, powerResult - 4), max: powerResult + 4, unitLabel: "cristales", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -590,6 +753,12 @@ public class ExerciseGenerator
                     : GenerateFractionEquivalenceExercise(profile, rng),
 
                 "elem_distributive_01" => GenerateMultiplicationDistributiveExercise(profile, rng),
+
+                "elem_mixed_fractions_01" => GenerateMixedFractionsExercise(profile, rng),
+
+                "elem_decimals_01" => GenerateDecimalsMoneyExercise(profile, rng),
+
+                "elem_powers_01" => GeneratePowersExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };

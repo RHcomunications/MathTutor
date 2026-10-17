@@ -23,6 +23,9 @@ public class CurriculumService
             BuildDivisionAndFairSharingTopic(),
             BuildFractionsTopic(),
             BuildDistributiveMultiplicationTopic(),
+            BuildMixedFractionsTopic(),
+            BuildDecimalsAndMoneyTopic(),
+            BuildPowersAndExponentsTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -640,6 +643,182 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "38", Value = 38, IsCorrect = false, SpeechFeedback = "Cerca, pero revisa la suma de 30 más 12.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "42", Value = 42, IsCorrect = true, SpeechFeedback = "¡Magnífico! 30 + 12 = 42. 14 × 3 = 42.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "52", Value = 52, IsCorrect = false, SpeechFeedback = "Sumaste diez de más. 30 + 12 es 42.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 8 (5º Grado): Fracciones Mixtas y Más de un Entero
+    /// </summary>
+    private PedagogicalTopic BuildMixedFractionsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_mixed_fractions_01",
+            Title = "La Cocina Mágica: Fracciones Mixtas y Más de un Entero",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡En la cocina mágica, a veces horneamos tanto que un solo molde no alcanza! Cuando tenemos uno o más enteros completos junto con una fracción, formamos un número mixto o una fracción impropia. ¡Acompáñame a contar deliciosas rebanadas!",
+            NarrativeIntroSimplified = "Cuando tenemos cosas completas y un pedacito más, tenemos fracciones mixtas.",
+            CoreConceptExplanation = "Un número mixto combina enteros y una fracción propia (ej. 1 1/2). Si cortamos el entero en pedazos iguales al denominador, podemos expresarlo como fracción impropia (3/2), donde el numerador es mayor que el denominador.",
+            CoreConceptSimplified = "1 waffle entero cortado a la mitad son 2 pedazos. Con 1 pedazo extra tienes 3 pedazos de mitad (3/2).",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de número mixto (parte entera y parte fraccionaria propia)",
+                "Conversión visual y concreta a fracción impropia: 1 1/2 = 3/2",
+                "Comprensión de cantidades fraccionarias mayores a la unidad"
+            },
+            CongratulationMessage = "¡Fabuloso! Ahora eres un maestro cocinero de las fracciones mixtas. Entiendes lo que significa tener más de un entero completo."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "mixed_ex_01",
+            Title = "Waffles con Fruta: 1 Entero y 1/2",
+            GameType = GamePlayType.MixedFractions,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 3,
+            StandardInstruction = "Ada horneó 1 waffle entero y 1/2 de otro. Si cada waffle se divide en 2 pedazos iguales, ¿cuántos pedazos de 1/2 hay en total en 1 y 1/2?",
+            SimplifiedInstruction = "Tienes 1 waffle entero partido en 2, más 1 pedazo extra. ¿Cuántos pedazos hay en total?",
+            ScreenReaderDescription = "Un waffle entero partido en 2 porciones y medio waffle más partido en 1 porción. Total: 3 medios waffles.",
+            FirstHint = "1 waffle entero son 2 medios pedazos. Suma el pedazo suelto.",
+            SecondHintDetailed = "2 medios + 1 medio = 3 medios pedazos (3/2).",
+            ExplanationOfSuccess = "¡Correcto! 1 y 1/2 waffle equivalen a 3 medios pedazos (3/2). ¡Es una fracción impropia!"
+        };
+
+        for (int i = 1; i <= 3; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"mix_w_{i}",
+                Name = $"Porción de waffle {i}",
+                EmojiSymbol = "🧇",
+                AccessibleDescription = i <= 2 ? $"Porción {i} del primer waffle" : "Porción extra del segundo waffle",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 partes", Value = 2, IsCorrect = false, SpeechFeedback = "Eso solo sería el primer waffle entero. Falta el medio waffle extra.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "3 partes (3/2)", Value = 3, IsCorrect = true, SpeechFeedback = "¡Magnífico! 2 mitades del entero más 1 mitad extra son 3 mitades (3/2).", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4 partes", Value = 4, IsCorrect = false, SpeechFeedback = "Para 4 mitades necesitarías 2 waffles enteros completos.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 9 (5º Grado): Números Decimales y Monedas
+    /// </summary>
+    private PedagogicalTopic BuildDecimalsAndMoneyTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_decimals_01",
+            Title = "El Mercado de los Céntimos: Números Decimales y Monedas",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenidos al Mercado de las Joyas y Céntimos! Cuando compramos cosas en la vida real, los precios no siempre son números enteros: usamos monedas de centavos para pagar partes de un peso. El punto decimal separa los pesos enteros de los centavos.",
+            NarrativeIntroSimplified = "Los números decimales nos sirven para contar dinero: pesos y monedas de centavos.",
+            CoreConceptExplanation = "El sistema decimal extiende el valor posicional a partes más pequeñas que uno: décimos (0.1) y centésimos (0.01). Un peso entero tiene 100 centavos ($1.00), y media moneda son 50 centavos ($0.50). Juntos hacen $1.50.",
+            CoreConceptSimplified = "El punto decimal separa los pesos enteros de los centavitos sueltos.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Comprensión de los decimales como fracciones decimales (décimos y centésimos)",
+                "Aplicación funcional del sistema decimal en monedas y dinero cotidiano",
+                "Interpretación del valor posicional a la derecha del punto decimal"
+            },
+            CongratulationMessage = "¡Excelente comprador! Has dominado el valor de las monedas y los números decimales en el mercado."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "dec_ex_01",
+            Title = "Comprando Frutas: $1.50 en Monedas",
+            GameType = GamePlayType.DecimalsMoney,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 150,
+            StandardInstruction = "En el mercado tienes 1 moneda de $1.00 (100 centavos) y 1 moneda de $0.50 (50 centavos). ¿Cuántos centavos tienes en total? (Equivale a $1.50).",
+            SimplifiedInstruction = "Tienes 1 moneda de $1 (100 centavos) y 1 moneda de 50 centavos. ¿Cuántos centavos tienes en total?",
+            ScreenReaderDescription = "1 moneda dorada de un peso (100 centavos) y 1 moneda plateada de cincuenta centavos. Total: 150 centavos o 1 peso con 50.",
+            FirstHint = "Suma 100 centavos más 50 centavos.",
+            SecondHintDetailed = "100 + 50 = 150 centavos ($1.50).",
+            ExplanationOfSuccess = "¡Exacto! Tienes 150 centavos, que se escribe $1.50 con un punto decimal. ¡Los decimales representan las partes sueltas de un entero!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_1", Name = "Moneda de $1.00", EmojiSymbol = "🪙", AccessibleDescription = "Moneda dorada de 1 peso (100 centavos)", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex1.ItemsGroupB.Add(new ManipulableItem { Id = "coin_2", Name = "Moneda de $0.50", EmojiSymbol = "🥈", AccessibleDescription = "Moneda plateada de 50 centavos", OrderIndex = 2, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "120 centavos ($1.20)", Value = 120, IsCorrect = false, SpeechFeedback = "No, recuerda que la moneda plateada vale 50 centavos.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "150 centavos ($1.50)", Value = 150, IsCorrect = true, SpeechFeedback = "¡Magnífico! 100 + 50 = 150 centavos ($1.50).", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "200 centavos ($2.00)", Value = 200, IsCorrect = false, SpeechFeedback = "Para 200 centavos necesitarías dos monedas de un peso.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 10 (5º Grado): Primeras Potencias y Crecimiento Exponencial
+    /// </summary>
+    private PedagogicalTopic BuildPowersAndExponentsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_powers_01",
+            Title = "El Cofre Duplicador: Primeras Potencias y Crecimiento Mágico",
+            Level = AcademicLevel.UpperElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Has llegado a la Cueva de los Tesoros Legendarios! Aquí encontramos el legendario Cofre Duplicador: cada vez que subes un nivel, el número de gemas no solo se suma, ¡se multiplica por sí mismo! Este es el asombroso poder de los exponentes.",
+            NarrativeIntroSimplified = "El cofre duplica cosas: 2 al cubo es 2 por 2 por 2 = 8. Las potencias multiplican por el mismo número varias veces.",
+            CoreConceptExplanation = "Una potencia representa una multiplicación repetida de la misma base: a^n. En base 2: 2^1 = 2, 2^2 = 2 × 2 = 4, 2^3 = 2 × 2 × 2 = 8. El exponente nos indica cuántas veces multiplicamos la base por sí misma.",
+            CoreConceptSimplified = "El número chiquito de arriba (exponente) te dice cuántas veces multiplicar el número por sí mismo.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de potencia como multiplicación iterada de un factor constante",
+                "Diferenciación entre producto (2 × 3 = 6) y potenciación (2^3 = 8)",
+                "Modelado intuitivo del crecimiento exponencial"
+            },
+            CongratulationMessage = "¡Poder sin límites! Comprendes cómo crecen las potencias y los exponentes mágicos."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "pow_ex_01",
+            Title = "El Poder de 2 Elevado a la 3 (2³)",
+            GameType = GamePlayType.PowersAndExponentGrowth,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = 8,
+            StandardInstruction = "En el cofre duplicador colocamos un cristal con potencia 3: 2³. Esto significa multiplicar 2 por sí mismo 3 veces: (2 × 2 × 2). Primero 2 × 2 = 4, y luego 4 × 2 = ... ¿cuántos cristales hay al final?",
+            SimplifiedInstruction = "2 multiplicado por sí mismo 3 veces: 2 × 2 × 2. ¿Cuánto da?",
+            ScreenReaderDescription = "Potencia de base 2 y exponente 3. Multiplicación repetida: 2 por 2 por 2.",
+            FirstHint = "Multiplica paso a paso: 2 × 2 = 4. Ahora multiplica 4 × 2.",
+            SecondHintDetailed = "4 × 2 = 8. Por tanto, 2³ = 8.",
+            ExplanationOfSuccess = "¡Extraordinario! 2³ = 8. ¡Cuidado de no confundirlo con 2 × 3 que es 6! Las potencias crecen mucho más rápido."
+        };
+
+        for (int i = 1; i <= 8; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"gem_pow_{i}",
+                Name = $"Cristal de Poder {i}",
+                EmojiSymbol = "💎",
+                AccessibleDescription = $"Cristal brillante duplicado número {i}",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 cristales (como 2 × 3)", Value = 6, IsCorrect = false, SpeechFeedback = "¡Cuidado con la trampa! 2 × 3 es sumar 2 tres veces. En potencia multiplicas: 2 × 2 = 4, y 4 × 2 = 8.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "8 cristales (2³ = 2 × 2 × 2)", Value = 8, IsCorrect = true, SpeechFeedback = "¡Magnífico! 2 × 2 × 2 = 8. 2³ = 8.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "9 cristales", Value = 9, IsCorrect = false, SpeechFeedback = "9 es 3 × 3. Aquí multiplicamos doses: 2 × 2 × 2 = 8.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

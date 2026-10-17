@@ -206,4 +206,70 @@ public class ExerciseGeneratorTests
         Assert.Equal(4, distList.Count);
         Assert.All(distList, ex => Assert.Equal(GamePlayType.MultiplicationDistributive, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateMixedFractionsExercise_CalculatesTotalPartsCorrectly()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 10 };
+        var rng = new Random(900);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateMixedFractionsExercise(profile, rng);
+            Assert.Equal(GamePlayType.MixedFractions, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 3);
+            Assert.Equal(ex.ExpectedResult, ex.ItemsGroupA.Count);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateDecimalsMoneyExercise_ProducesValidMonetaryValues()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 10 };
+        var rng = new Random(1000);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateDecimalsMoneyExercise(profile, rng);
+            Assert.Equal(GamePlayType.DecimalsMoney, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 100); // Al menos $1.00
+            Assert.True(ex.ExpectedResult % 50 == 0); // Múltiplo de 50 centavos
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GeneratePowersExercise_ProducesAccurateExponentialResult()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 10 };
+        var rng = new Random(1100);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GeneratePowersExercise(profile, rng);
+            Assert.Equal(GamePlayType.PowersAndExponentGrowth, ex.GameType);
+            Assert.True(ex.ExpectedResult is 2 or 4 or 8 or 16);
+            Assert.Equal(ex.ExpectedResult, ex.ItemsGroupA.Count);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_FifthGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.UpperElementary, Age = 10 };
+
+        var mixedList = _generator.GenerateExercisesForTopic("elem_mixed_fractions_01", profile, count: 3);
+        Assert.Equal(3, mixedList.Count);
+        Assert.All(mixedList, ex => Assert.Equal(GamePlayType.MixedFractions, ex.GameType));
+
+        var decList = _generator.GenerateExercisesForTopic("elem_decimals_01", profile, count: 3);
+        Assert.Equal(3, decList.Count);
+        Assert.All(decList, ex => Assert.Equal(GamePlayType.DecimalsMoney, ex.GameType));
+
+        var powList = _generator.GenerateExercisesForTopic("elem_powers_01", profile, count: 3);
+        Assert.Equal(3, powList.Count);
+        Assert.All(powList, ex => Assert.Equal(GamePlayType.PowersAndExponentGrowth, ex.GameType));
+    }
 }

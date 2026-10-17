@@ -21,7 +21,10 @@ public enum GamePlayType
     DivisionFairSharing,      // Reparto equitativo entre amigos sin que sobre nada
     FractionParts,            // Fracción como parte de un todo: numerador (partes tomadas) y denominador (total de partes)
     FractionEquivalence,      // Fracciones equivalentes (1/2 = 2/4)
-    MultiplicationDistributive // Descomposición aditiva y propiedad distributiva: (20 + 4) x 3 = 60 + 12
+    MultiplicationDistributive, // Descomposición aditiva y propiedad distributiva: (20 + 4) x 3 = 60 + 12
+    MixedFractions,           // Fracciones impropias y números mixtos (ej. 1 1/2 = 3/2)
+    DecimalsMoney,            // Decimales cotidianos: décimos y centésimos con monedas
+    PowersAndExponentGrowth   // Potencias iniciales y crecimiento exponencial (2^1, 2^2, 2^3)
 }
 
 /// <summary>

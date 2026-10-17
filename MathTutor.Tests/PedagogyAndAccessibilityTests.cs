@@ -106,6 +106,45 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void MixedFractionsTopic_CoversMixedNumbersAndImproperFractions()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var mixedTopic = topics.FirstOrDefault(t => t.Id == "elem_mixed_fractions_01");
+
+        Assert.NotNull(mixedTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, mixedTopic.Level);
+        Assert.Contains(mixedTopic.PrinciplesAddressed, p => p.Contains("mixto"));
+        Assert.Contains(mixedTopic.PrinciplesAddressed, p => p.Contains("impropia"));
+        Assert.True(mixedTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void DecimalsTopic_CoversMoneyAndDecimalPlaceValue()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var decTopic = topics.FirstOrDefault(t => t.Id == "elem_decimals_01");
+
+        Assert.NotNull(decTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, decTopic.Level);
+        Assert.Contains(decTopic.PrinciplesAddressed, p => p.Contains("decimal"));
+        Assert.Contains(decTopic.PrinciplesAddressed, p => p.Contains("monedas"));
+        Assert.True(decTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void PowersTopic_CoversExponentsAndMultiplicationGrowth()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var powTopic = topics.FirstOrDefault(t => t.Id == "elem_powers_01");
+
+        Assert.NotNull(powTopic);
+        Assert.Equal(AcademicLevel.UpperElementary, powTopic.Level);
+        Assert.Contains(powTopic.PrinciplesAddressed, p => p.Contains("potencia") || p.Contains("Potencia"));
+        Assert.Contains(powTopic.PrinciplesAddressed, p => p.Contains("exponencial"));
+        Assert.True(powTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile
