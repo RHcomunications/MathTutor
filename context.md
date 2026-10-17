@@ -375,18 +375,20 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 
 ## 5. Comandos de Verificación, Empaquetado y Limpieza Obligatoria para Contribuidores
 
-> **REGLA DE HIGIENE DE DISCO**: Al finalizar cualquier sesión de verificación, pruebas o empaquetado de release, **es obligatorio eliminar todos los residuos de compilación (`bin/`, `obj/`, `publish*`, `.zip`)** para no acumular espacio innecesario en disco.
+> **REGLA DE HIGIENE DE DISCO**: En el directorio del proyecto no deben acumularse residuos de compilaciones anteriores (`obj/`, `bin/Debug/`, carpetas temporales `publish-*` ni paquetes `.zip` de versiones previas). **Únicamente debe permanecer en disco la compilación limpia correspondiente a la última release (`bin/Release`)**.
 
 ```powershell
-# 1. Compilar toda la solución con cero advertencias permitidas
+# 1. Limpiar cualquier residuo de compilaciones anteriores antes de compilar la nueva versión
+Get-ChildItem -Path . -Include bin,obj,publish*,TestResults -Directory -Recurse -Force | Remove-Item -Recurse -Force
+Get-ChildItem -Path . -Include *.zip -File -Recurse -Force | Remove-Item -Force
+
+# 2. Compilar toda la solución en modo Release (0 advertencias permitidas)
 dotnet build -c Release --nologo /p:TreatWarningsAsErrors=true
 
-# 2. Ejecutar las 108 pruebas unitarias automatizadas
+# 3. Ejecutar las 108 pruebas unitarias automatizadas sobre la compilación Release
 dotnet test -c Release --nologo --no-build
 
-# 3. Publicar ejecutable win-x64 autocontenido de archivo único
-dotnet publish MathTutor.WpfApp/MathTutor.WpfApp.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:DebugSymbols=false -o ./publish-win-x64
-
-# 4. Limpieza obligatoria de residuos de compilación (bin, obj, carpetas de publicación y paquetes temporales)
-Get-ChildItem -Path . -Include bin,obj,publish* -Directory -Recurse -Force | Remove-Item -Recurse -Force
+# 4. Eliminar directorios intermedios (obj) conservando únicamente bin/Release de la última release
+Get-ChildItem -Path . -Include obj,publish*,TestResults -Directory -Recurse -Force | Remove-Item -Recurse -Force
 ```
+
