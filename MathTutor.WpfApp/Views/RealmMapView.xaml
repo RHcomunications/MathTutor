@@ -165,23 +165,44 @@
             </ListBox>
 
             <!-- Título de la Sala de Trofeos -->
-            <TextBlock Text="🏅 Sala de Trofeos e Insignias del Reino:"
+            <TextBlock Text="🏅 Sala de Trofeos e Insignias del Reino (Usa Tab y las flechas para explorar tus medallas):"
                        FontSize="{DynamicResource AppSubHeaderFontSize}"
                        FontWeight="Bold"
                        Foreground="{DynamicResource AppAccentBrush}"
                        Margin="4,16,0,12"/>
 
-            <!-- Cuadrícula / WrapPanel de Insignias -->
-            <ItemsControl x:Name="ItemsBadges">
-                <ItemsControl.ItemsPanel>
+            <!-- Tarea 11: Cuadrícula / WrapPanel de Insignias navegable por teclado y flechas -->
+            <ListBox x:Name="ItemsBadges"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     SelectionMode="Single"
+                     IsSynchronizedWithCurrentItem="True"
+                     KeyboardNavigation.DirectionalNavigation="Cycle"
+                     KeyboardNavigation.TabNavigation="Once"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.CanContentScroll="False"
+                     AutomationProperties.Name="Sala de trofeos e insignias del Reino"
+                     AutomationProperties.HelpText="Usa las flechas para explorar tus insignias desbloqueadas y por descubrir."
+                     SelectionChanged="ItemsBadges_SelectionChanged">
+                <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel HorizontalAlignment="Center"/>
                     </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="8"/>
+                        <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleBadgeName}"/>
+                        <Setter Property="AutomationProperties.HelpText" Value="Usa las flechas para escuchar el siguiente trofeo."/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Width="260"
-                                Margin="8"
                                 Padding="16"
                                 CornerRadius="12"
                                 Background="{Binding BadgeBackgroundBrush}"
@@ -213,8 +234,8 @@
                             </StackPanel>
                         </Border>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

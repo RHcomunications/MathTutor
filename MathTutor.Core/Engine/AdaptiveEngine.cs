@@ -12,46 +12,75 @@ namespace MathTutor.Core.Engine;
 public class AdaptiveEngine
 {
     /// <summary>
-    /// Devuelve los niveles escolares permitidos para la edad del alumno (Tarea 6: Validación adaptativa Edad vs. Nivel Escolar).
-    /// Evita que niños pequeños vean o seleccionen por error niveles avanzados de Secundaria, Preparatoria o Programación.
+    /// Devuelve los niveles escolares permitidos para la edad y condición del alumno (Tarea 6 y Tarea 12).
+    /// Evita que niños pequeños vean o seleccionen por error niveles avanzados, permitiendo a los 12 años
+    /// elegir también 1º de Secundaria y habilitando niveles base de refuerzo para alumnos con discapacidad intelectual.
     /// </summary>
-    public static IReadOnlyList<AcademicLevel> GetAllowedLevelsForAge(int age) => age switch
+    public static IReadOnlyList<AcademicLevel> GetAllowedLevelsForAge(int age, DisabilityType disability = DisabilityType.None)
     {
-        >= 3 and <= 5 => new[]
+        var baseLevels = age switch
         {
-            AcademicLevel.Kindergarten
-        },
-        >= 6 and <= 12 => new[]
+            >= 3 and <= 5 => new[]
+            {
+                AcademicLevel.Kindergarten
+            },
+            >= 6 and <= 11 => new[]
+            {
+                AcademicLevel.EarlyElementary,
+                AcademicLevel.MiddleElementary,
+                AcademicLevel.UpperElementary
+            },
+            12 => new[]
+            {
+                AcademicLevel.EarlyElementary,
+                AcademicLevel.MiddleElementary,
+                AcademicLevel.UpperElementary,
+                AcademicLevel.SecondaryFirstGrade
+            },
+            >= 13 and <= 15 => new[]
+            {
+                AcademicLevel.SecondaryFirstGrade,
+                AcademicLevel.SecondarySecondGrade,
+                AcademicLevel.SecondaryThirdGrade
+            },
+            >= 16 => new[]
+            {
+                AcademicLevel.Kindergarten,
+                AcademicLevel.EarlyElementary,
+                AcademicLevel.MiddleElementary,
+                AcademicLevel.UpperElementary,
+                AcademicLevel.SecondaryFirstGrade,
+                AcademicLevel.SecondarySecondGrade,
+                AcademicLevel.SecondaryThirdGrade,
+                AcademicLevel.HighSchoolFirstGrade,
+                AcademicLevel.HighSchoolSecondGrade,
+                AcademicLevel.HighSchoolThirdGrade,
+                AcademicLevel.ProgrammingFoundations
+            },
+            _ => new[]
+            {
+                AcademicLevel.Kindergarten
+            }
+        };
+
+        if (disability == DisabilityType.Intellectual && age >= 6 && age <= 15)
         {
-            AcademicLevel.EarlyElementary,
-            AcademicLevel.MiddleElementary,
-            AcademicLevel.UpperElementary
-        },
-        >= 13 and <= 15 => new[]
-        {
-            AcademicLevel.SecondaryFirstGrade,
-            AcademicLevel.SecondarySecondGrade,
-            AcademicLevel.SecondaryThirdGrade
-        },
-        >= 16 => new[]
-        {
-            AcademicLevel.Kindergarten,
-            AcademicLevel.EarlyElementary,
-            AcademicLevel.MiddleElementary,
-            AcademicLevel.UpperElementary,
-            AcademicLevel.SecondaryFirstGrade,
-            AcademicLevel.SecondarySecondGrade,
-            AcademicLevel.SecondaryThirdGrade,
-            AcademicLevel.HighSchoolFirstGrade,
-            AcademicLevel.HighSchoolSecondGrade,
-            AcademicLevel.HighSchoolThirdGrade,
-            AcademicLevel.ProgrammingFoundations
-        },
-        _ => new[]
-        {
-            AcademicLevel.Kindergarten
+            var foundational = new[]
+            {
+                AcademicLevel.Kindergarten,
+                AcademicLevel.EarlyElementary,
+                AcademicLevel.MiddleElementary,
+                AcademicLevel.UpperElementary
+            };
+
+            return foundational
+                .Concat(baseLevels)
+                .Distinct()
+                .ToArray();
         }
-    };
+
+        return baseLevels;
+    }
 
     /// <summary>
     /// Sugiere el nivel escolar inicial óptimo dentro de los niveles permitidos para la edad indicada.

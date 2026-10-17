@@ -98,14 +98,14 @@
                             Click="BtnToggleFont_Click"/>
 
                     <Button x:Name="BtnToggleSpeech"
-                            Content="🔊 Lector (F2)"
+                            Content="🔊 Sonidos (F2)"
                             Style="{StaticResource AccessibleActionButton}"
                             Background="{DynamicResource AppSurfaceBrush}"
                             Foreground="{DynamicResource AppTextPrimaryBrush}"
                             Height="44"
                             Padding="12,6"
                             Margin="4,0"
-                            AutomationProperties.Name="Activar o desactivar anuncios automáticos al lector de pantalla. Tecla F2"
+                            AutomationProperties.Name="Activar o desactivar sonidos internos del juego. El lector de pantalla permanece siempre activo. Tecla F2"
                             Click="BtnToggleSpeech_Click"/>
 
                     <Button x:Name="BtnHelpVoice"

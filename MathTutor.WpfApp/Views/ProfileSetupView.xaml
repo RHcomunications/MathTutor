@@ -169,10 +169,10 @@
                                    Margin="0,8,0,6"/>
 
                         <CheckBox x:Name="ChkVoiceSynthesis"
-                                  Content="Habilitar Anuncios Automáticos para Lector de Pantalla (NVDA, JAWS o Narrador)"
+                                  Content="Efectos de Audio Interno del Juego (El lector de pantalla NVDA, JAWS o Narrador permanece siempre activo)"
                                   FontSize="{DynamicResource AppBaseFontSize}"
                                   Margin="0,4"
-                                  AutomationProperties.Name="Habilitar anuncios automáticos para el lector de pantalla del sistema"
+                                  AutomationProperties.Name="Efectos de audio interno del juego. El lector de pantalla del sistema permanece siempre activo"
                                   Checked="ChkVoiceSynthesis_Changed"
                                   Unchecked="ChkVoiceSynthesis_Changed"
                                   GotFocus="Control_GotFocus"/>

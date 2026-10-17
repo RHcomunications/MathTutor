@@ -65,22 +65,25 @@ public class CurriculumService
     }
 
     /// <summary>
-    /// Devuelve las misiones pedagógicas permitidas según la edad del alumno (Tarea 6).
+    /// Devuelve las misiones pedagógicas permitidas según la edad y condición del alumno (Tarea 6 y Tarea 12).
     /// </summary>
-    public List<PedagogicalTopic> GetTopicsForAge(int age)
+    public List<PedagogicalTopic> GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)
     {
-        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(age);
+        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(age, disability);
         return GetAllTopics()
             .FindAll(t => allowedLevels.Contains(t.Level));
     }
 
     /// <summary>
-    /// Obtiene la siguiente misión recomendada tras completar <paramref name="currentTopicId"/> (Tarea 7).
-    /// Busca dentro de los niveles permitidos para la edad del alumno.
+    /// Obtiene la siguiente misión recomendada tras completar <paramref name="currentTopicId"/> (Tarea 7 y Tarea 10).
+    /// Busca dentro de los niveles permitidos para la edad del alumno y devuelve null si ya completó todas las misiones de su etapa.
     /// </summary>
     public PedagogicalTopic? GetNextTopic(string currentTopicId, UserProfile? profile = null)
     {
-        var topics = profile != null ? GetTopicsForAge(profile.Age) : GetAllTopics();
+        var topics = profile != null
+            ? GetTopicsForAge(profile.Age, profile.Disability)
+            : GetAllTopics();
+
         if (topics.Count == 0)
         {
             topics = GetAllTopics();
@@ -94,14 +97,10 @@ public class CurriculumService
 
         if (profile != null)
         {
-            var nextUncompleted = topics.Find(t => t.Id != currentTopicId && !profile.CompletedLessonIds.Contains(t.Id));
-            if (nextUncompleted != null)
-            {
-                return nextUncompleted;
-            }
+            return topics.Find(t => t.Id != currentTopicId && !profile.CompletedLessonIds.Contains(t.Id));
         }
 
-        return topics.Count > 0 ? topics[0] : null;
+        return null;
     }
 
     /// <summary>

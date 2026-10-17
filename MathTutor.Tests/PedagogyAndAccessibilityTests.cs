@@ -617,5 +617,34 @@ public class PedagogyAndAccessibilityTests
         Assert.NotNull(nextFromAddition);
         Assert.Equal("elem_subtraction_01", nextFromAddition.Id);
     }
-}
 
+    [Fact]
+    public void CurriculumService_GetNextTopic_ReturnsNullWhenAllStageMissionsCompleted()
+    {
+        var profile = new UserProfile
+        {
+            Age = 4,
+            CompletedLessonIds = { "kinder_counting_01" }
+        };
+
+        var nextAfterKinder = _curriculum.GetNextTopic("kinder_counting_01", profile);
+        Assert.Null(nextAfterKinder);
+    }
+
+    [Fact]
+    public void AdaptiveEngine_GetAllowedLevelsForAge_IncludesSecondaryFirstGradeAtAge12AndFoundationalForIntellectualDisability()
+    {
+        // A los 12 años se permite tanto Primaria como 1º de Secundaria (Tarea 12)
+        var age12Levels = AdaptiveEngine.GetAllowedLevelsForAge(12);
+        Assert.Contains(AcademicLevel.UpperElementary, age12Levels);
+        Assert.Contains(AcademicLevel.SecondaryFirstGrade, age12Levels);
+
+        // Un adolescente de 14 años con Discapacidad Intelectual conserva acceso a niveles base de refuerzo
+        var age14Intellectual = AdaptiveEngine.GetAllowedLevelsForAge(14, DisabilityType.Intellectual);
+        Assert.Contains(AcademicLevel.Kindergarten, age14Intellectual);
+        Assert.Contains(AcademicLevel.EarlyElementary, age14Intellectual);
+        Assert.Contains(AcademicLevel.MiddleElementary, age14Intellectual);
+        Assert.Contains(AcademicLevel.UpperElementary, age14Intellectual);
+        Assert.Contains(AcademicLevel.SecondarySecondGrade, age14Intellectual);
+    }
+}

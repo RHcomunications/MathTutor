@@ -150,14 +150,10 @@ public partial class MainWindow : Window
 
         if (_acc.LoadSavedProfile())
         {
-            // Ya existía un perfil previo guardado: restaurar, entrar al menú y posicionar foco automático (Tarea 1)
+            // Ya existía un perfil previo guardado: restaurar, entrar al menú y posicionar foco automático (Tarea 1 y Tarea 8)
             UpdateTopStatus();
             NavigateTo(_menuView);
             _menuView.RefreshData();
-            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
-            {
-                _menuView.FocusFirstMissionItem();
-            });
         }
         else
         {

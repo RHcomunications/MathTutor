@@ -44,6 +44,7 @@ public partial class MissionCompletedDialog : Window
             const string finishLabel = "Volver al Menú de Misiones";
             BtnNextMission.Content = finishLabel;
             AutomationProperties.SetName(BtnNextMission, finishLabel);
+            TxtTransitionPrompt.Text = "¡Completaste todas las misiones de esta etapa! Presiona Enter o Escape para volver al Mapa del Reino.";
         }
 
         Loaded += MissionCompletedDialog_Loaded;
@@ -56,8 +57,9 @@ public partial class MissionCompletedDialog : Window
         BtnNextMission.Focus();
         Keyboard.Focus(BtnNextMission);
 
-        string nextTitle = _nextTopic != null ? $"Siguiente misión: {_nextTopic.Title}." : string.Empty;
-        _spokenAnnouncement = $"¡Felicidades! Misión completada. {_completedTopic.CongratulationMessage} {nextTitle} Presiona Enter para jugar la siguiente misión o Escape para volver al mapa.";
+        _spokenAnnouncement = _nextTopic != null
+            ? $"¡Felicidades! Misión completada. {_completedTopic.CongratulationMessage} Siguiente misión: {_nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
+            : $"¡Felicidades! Misión completada. {_completedTopic.CongratulationMessage} Has superado todas las misiones de tu etapa actual. Presiona Enter o Escape para volver al mapa.";
 
         // Anunciar después de que el foco del diálogo se estabilice en el árbol UIA
         Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>

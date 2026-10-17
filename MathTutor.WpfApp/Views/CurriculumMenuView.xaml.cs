@@ -33,19 +33,13 @@ public partial class CurriculumMenuView : UserControl
     public CurriculumMenuView()
     {
         InitializeComponent();
-        Loaded += CurriculumMenuView_Loaded;
-    }
-
-    private void CurriculumMenuView_Loaded(object sender, RoutedEventArgs e)
-    {
-        RefreshData();
     }
 
     public void RefreshData()
     {
         var profile = _acc.CurrentProfile;
 
-        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(profile.Age);
+        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disability);
         if (!allowedLevels.Contains(profile.CurrentLevel))
         {
             profile.CurrentLevel = AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
@@ -56,8 +50,8 @@ public partial class CurriculumMenuView : UserControl
         TxtStarsCount.Text = profile.StarsTotal.ToString();
         TxtStreakCount.Text = profile.CurrentStreak.ToString();
 
-        // Tarea 6: Filtrar las misiones permitidas para la edad del alumno
-        var allowedTopics = _curriculum.GetTopicsForAge(profile.Age);
+        // Tarea 6 y Tarea 12: Filtrar las misiones permitidas para la edad y condición del alumno
+        var allowedTopics = _curriculum.GetTopicsForAge(profile.Age, profile.Disability);
         // Priorizar las misiones del nivel actual del alumno arriba, manteniendo el orden pedagógico en el resto
         var orderedTopics = allowedTopics
             .OrderByDescending(t => t.Level == profile.CurrentLevel)

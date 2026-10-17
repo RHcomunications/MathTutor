@@ -128,3 +128,46 @@
      * Asignar el foco automáticamente al botón primario: **"Siguiente Misión: [Nombre]"** (`Key.Enter`).
      * Asignar el botón secundario: **"Volver al Mapa del Reino"** (`Key.Escape`).
   3. Emitir el anuncio de voz: *"¡Felicidades! Misión completada. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."*
+
+---
+
+# 🔍 Fase 2: Correcciones Derivadas de la Auditoría Integral (Tareas 8 a 12)
+
+## 📌 Tarea 8: Prevención de Doble Refresco y Doble Anuncio al Navegar entre Vistas
+* **Componente / Archivo:** `MathTutor.WpfApp/MainWindow.xaml.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`, `MathTutor.WpfApp/Views/RealmMapView.xaml.cs`.
+* **Comportamiento Detectado en Auditoría:** `CurriculumMenuView` y `RealmMapView` suscribían el evento `Loaded` para invocar `RefreshData()` / `RefreshMap()`, mientras que `MainWindow` también invocaba `RefreshData()` / `RefreshMap()` tras cada `NavigateTo(...)`. Al montarse el `UserControl` en el árbol visual, `RefreshData()` se ejecutaba dos veces seguidas, duplicando el anuncio de voz y el tono musical.
+* **Comportamiento Esperado:** Cada transición hacia el menú principal o el Mapa del Reino debe refrescar los datos, posicionar el foco y emitir el anuncio de bienvenida **exactamente una sola vez**.
+* **Instrucciones de Implementación:**
+  1. Eliminar la suscripción automática a `Loaded` en `CurriculumMenuView` y `RealmMapView`, delegando la invocación única de `RefreshData()` y `RefreshMap()` al flujo explícito de navegación en `MainWindow`.
+
+---
+
+## 📌 Tarea 9: Alineación de Etiquetas XAML con el Desacoplamiento de Audio Interno (`F2`)
+* **Componente / Archivo:** `MathTutor.WpfApp/MainWindow.xaml`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml`.
+* **Comportamiento Detectado en Auditoría:** Aunque la lógica de la Tarea 5 desacopló `F2` para conmutar exclusivamente el audio interno del juego (dejando el lector de pantalla siempre activo), las etiquetas XAML de `BtnToggleSpeech` (`"🔊 Lector (F2)"`) y `ChkVoiceSynthesis` aún mencionaban activar/desactivar los anuncios del lector de pantalla.
+* **Comportamiento Esperado:** Las etiquetas visuales y `AutomationProperties.Name` deben indicar con total claridad que controlan los **sonidos internos del juego** y que el lector de pantalla (NVDA, JAWS o Narrador) permanece siempre activo.
+
+---
+
+## 📌 Tarea 10: Resolución de Fin de Etapa en `CurriculumService.GetNextTopic`
+* **Componente / Archivo:** `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml.cs`.
+* **Comportamiento Detectado en Auditoría:** Al completar todas las misiones disponibles dentro de un rango de edad (por ejemplo, `kinder_counting_01` entre los 3 y 5 años), `GetNextTopic` hacía fallback a `topics[0]`, sugiriendo repetir la misma misión como *"Siguiente Misión"* en lugar de notificar que se completaron todas las misiones de la etapa.
+* **Comportamiento Esperado:** Cuando no exista una misión siguiente en la secuencia ni otra misión pendiente en el rango de edad del alumno, `GetNextTopic` debe devolver `null` para que `MissionCompletedDialog` felicite al alumno por completar toda su etapa y muestre **"Volver al Menú de Misiones"**.
+
+---
+
+## 📌 Tarea 11: Navegación por Teclado y Lectura Limpia en la Sala de Trofeos (`ItemsBadges`)
+* **Componente / Archivo:** `MathTutor.WpfApp/Views/RealmMapView.xaml`, `MathTutor.WpfApp/Views/RealmMapView.xaml.cs`.
+* **Comportamiento Detectado en Auditoría:** Mientras que la lista de estaciones (`ItemsStations`) era un `ListBox` navegable con flechas, la cuadrícula de las 46 insignias (`ItemsBadges`) seguía siendo un `ItemsControl` estático cuyos elementos no recibían foco de teclado, impidiendo que un alumno ciego inspeccionara sus trofeos ganados.
+* **Comportamiento Esperado:** Convertir `ItemsBadges` en un `ListBox` accesible con `KeyboardNavigation.DirectionalNavigation="Cycle"`, `KeyboardNavigation.TabNavigation="Once"`, foco de 4px (`AccessibleFocusVisual`) y etiqueta limpia sin emojis `AutomationProperties.Name` (`"Trofeo desbloqueado: {Título}. {Descripción}"` o `"Trofeo bloqueado: {Título}. {Descripción}"`).
+
+---
+
+## 📌 Tarea 12: Flexibilidad Pedagógica en `GetAllowedLevelsForAge` (12 Años en 1º de Secundaria y Discapacidad Intelectual)
+* **Componente / Archivo:** `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.Core/Engine/CurriculumService.cs`, vistas de perfil, menú y mapa.
+* **Comportamiento Detectado en Auditoría:**
+  1. Un alumno de 12 años que ya cursa `1º de Secundaria (12 a 13 años)` no veía disponible `SecondaryFirstGrade` en su selector.
+  2. Un alumno de 13 a 15 años con `DisabilityType.Intellectual` solo veía misiones de Secundaria, sin poder repasar niveles base de Preescolar o Primaria si necesitaba refuerzo pedagógico.
+* **Comportamiento Esperado:**
+  1. Habilitar `SecondaryFirstGrade` también a partir de los 12 años junto con los niveles de Primaria.
+  2. Añadir soporte para `DisabilityType` en `GetAllowedLevelsForAge(int age, DisabilityType disability = DisabilityType.None)` y `GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)` de modo que cuando `disability == DisabilityType.Intellectual` siempre se incluyan los niveles fundamentales (`Kindergarten`, `EarlyElementary`, `MiddleElementary`, `UpperElementary`) además de los niveles de su edad.

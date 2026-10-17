@@ -85,7 +85,7 @@ public partial class ProfileSetupView : UserControl
 
     private void PopulateAcademicLevelsForAge(int age)
     {
-        var allowedLevels = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(age);
+        var allowedLevels = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(age, _acc.CurrentProfile.Disability);
         CmbAcademicLevel.Items.Clear();
 
         foreach (var level in allowedLevels)
@@ -122,7 +122,7 @@ public partial class ProfileSetupView : UserControl
         SelectComboByTag(CmbAge, profile.Age);
         PopulateAcademicLevelsForAge(profile.Age);
 
-        var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age);
+        var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disability);
         if (!System.Linq.Enumerable.Contains(allowed, profile.CurrentLevel))
         {
             profile.CurrentLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
@@ -174,6 +174,17 @@ public partial class ProfileSetupView : UserControl
         {
             _acc.CurrentProfile.Disability = dis;
             _acc.CurrentProfile.ApplyRecommendedAccessibilityDefaults();
+
+            _isInitializing = true;
+            PopulateAcademicLevelsForAge(_acc.CurrentProfile.Age);
+            var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(_acc.CurrentProfile.Age, dis);
+            if (!System.Linq.Enumerable.Contains(allowed, _acc.CurrentProfile.CurrentLevel))
+            {
+                _acc.CurrentProfile.CurrentLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(_acc.CurrentProfile.Age);
+            }
+            SelectComboByTag(CmbAcademicLevel, _acc.CurrentProfile.CurrentLevel);
+            _isInitializing = false;
+
             SyncAccessibilityControlsFromProfile();
 
             _acc.Announce($"Seleccionado: {item.Content}. Opciones de accesibilidad adaptadas automáticamente.");

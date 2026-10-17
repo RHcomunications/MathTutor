@@ -32,6 +32,7 @@ public class BadgeDisplayItem
     public Brush UnlockStatusBrush { get; set; } = Brushes.Gray;
     public Brush BadgeBackgroundBrush { get; set; } = Brushes.Transparent;
     public Brush BadgeBorderBrush { get; set; } = Brushes.Gray;
+    public string AccessibleBadgeName { get; set; } = string.Empty;
 }
 
 public partial class RealmMapView : UserControl
@@ -46,18 +47,12 @@ public partial class RealmMapView : UserControl
     public RealmMapView()
     {
         InitializeComponent();
-        Loaded += RealmMapView_Loaded;
-    }
-
-    private void RealmMapView_Loaded(object sender, RoutedEventArgs e)
-    {
-        RefreshMap();
     }
 
     public void RefreshMap()
     {
         var profile = _acc.CurrentProfile;
-        var allowedTopicIds = _curriculum.GetTopicsForAge(profile.Age)
+        var allowedTopicIds = _curriculum.GetTopicsForAge(profile.Age, profile.Disability)
             .Select(t => t.Id)
             .ToHashSet();
 
@@ -123,11 +118,12 @@ public partial class RealmMapView : UserControl
             ItemsStations.SelectedIndex = recommendedIndex;
         }
 
-        // Insignias del reino
+        // Insignias del reino (Tarea 11: Etiqueta accesible limpia sin emojis para el lector de pantalla)
         var badgeDisplayList = new List<BadgeDisplayItem>();
         foreach (var b in badges)
         {
             string status = b.IsUnlocked ? "✨ ¡DESBLOQUEADA!" : "🔒 Bloqueada";
+            string cleanBadgeState = b.IsUnlocked ? "Trofeo desbloqueado" : "Trofeo bloqueado";
             var statusBrush = b.IsUnlocked ? (Brush)FindResource("AppSuccessBrush") : (Brush)FindResource("AppTextSecondaryBrush");
             var cardBg = b.IsUnlocked ? (Brush)FindResource("AppCardBrush") : (Brush)FindResource("AppSurfaceBrush");
             var borderBrush = b.IsUnlocked ? (Brush)FindResource("AppAccentBrush") : (Brush)FindResource("AppBorderBrush");
@@ -140,10 +136,15 @@ public partial class RealmMapView : UserControl
                 UnlockStatusText = status,
                 UnlockStatusBrush = statusBrush,
                 BadgeBackgroundBrush = cardBg,
-                BadgeBorderBrush = borderBrush
+                BadgeBorderBrush = borderBrush,
+                AccessibleBadgeName = $"{cleanBadgeState}: {b.Title}. {b.Description}"
             });
         }
         ItemsBadges.ItemsSource = badgeDisplayList;
+        if (badgeDisplayList.Count > 0)
+        {
+            ItemsBadges.SelectedIndex = 0;
+        }
 
         // Tarea 1 y Tarea 2: Posicionar el foco en la estación recomendada al abrir el mapa
         Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
@@ -151,7 +152,7 @@ public partial class RealmMapView : UserControl
             FocusSelectedStationItem();
         });
 
-        _acc.Announce($"Mapa del Reino Matemágico. Has desbloqueado {unlockedCount} de {badges.Count} trofeos. Usa las flechas arriba y abajo para explorar las estaciones y presiona Enter para comenzar.", speak: true, playTone: true);
+        _acc.Announce($"Mapa del Reino Matemágico. Has desbloqueado {unlockedCount} de {badges.Count} trofeos. Usa las flechas arriba y abajo para explorar las estaciones, presiona Enter para comenzar, o Tab para revisar tu sala de trofeos.", speak: true, playTone: true);
     }
 
     public void FocusSelectedStationItem()
@@ -191,6 +192,14 @@ public partial class RealmMapView : UserControl
     private void ItemsStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (IsLoaded && ItemsStations.SelectedItem is RealmStationDisplayItem)
+        {
+            _acc.Audio.PlayNavigationClick();
+        }
+    }
+
+    private void ItemsBadges_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (IsLoaded && ItemsBadges.SelectedItem is BadgeDisplayItem)
         {
             _acc.Audio.PlayNavigationClick();
         }
