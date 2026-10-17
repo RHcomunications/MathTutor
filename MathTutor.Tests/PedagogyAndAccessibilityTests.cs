@@ -353,6 +353,45 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void AnalyticDistanceTopic_CoversEuclideanDistanceAndCoordinates()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var distTopic = topics.FirstOrDefault(t => t.Id == "prep_analytic_distance_01");
+
+        Assert.NotNull(distTopic);
+        Assert.Equal(AcademicLevel.HighSchoolFirstGrade, distTopic.Level);
+        Assert.Contains(distTopic.PrinciplesAddressed, p => p.Contains("distancia euclidiana"));
+        Assert.Contains(distTopic.PrinciplesAddressed, p => p.Contains("Pitágoras"));
+        Assert.True(distTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void LineSlopeTopic_CoversSlopeMAndRateOfChange()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var slopeTopic = topics.FirstOrDefault(t => t.Id == "prep_line_slope_01");
+
+        Assert.NotNull(slopeTopic);
+        Assert.Equal(AcademicLevel.HighSchoolFirstGrade, slopeTopic.Level);
+        Assert.Contains(slopeTopic.PrinciplesAddressed, p => p.Contains("pendiente"));
+        Assert.Contains(slopeTopic.PrinciplesAddressed, p => p.Contains("razón de cambio"));
+        Assert.True(slopeTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void LinearEquationYMXBTopic_CoversSlopeInterceptFormAndTariffs()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var ymxbTopic = topics.FirstOrDefault(t => t.Id == "prep_line_equation_ymxb_01");
+
+        Assert.NotNull(ymxbTopic);
+        Assert.Equal(AcademicLevel.HighSchoolFirstGrade, ymxbTopic.Level);
+        Assert.Contains(ymxbTopic.PrinciplesAddressed, p => p.Contains("y = mx + b"));
+        Assert.Contains(ymxbTopic.PrinciplesAddressed, p => p.Contains("ordenada al origen"));
+        Assert.True(ymxbTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

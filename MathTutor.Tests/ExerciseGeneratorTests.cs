@@ -601,4 +601,67 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, funcList.Count);
         Assert.All(funcList, ex => Assert.Equal(GamePlayType.QuadraticFunctionCurve, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateAnalyticDistanceExercise_SolvesExactEuclideanDistance()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolFirstGrade, Age = 15 };
+        var rng = new Random(2800);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateAnalyticDistanceExercise(profile, rng);
+            Assert.Equal(GamePlayType.AnalyticDistance2D, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 5);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateLineSlopeExercise_ComputesSlopeAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolFirstGrade, Age = 15 };
+        var rng = new Random(2900);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateLineSlopeExercise(profile, rng);
+            Assert.Equal(GamePlayType.LineSlopeM, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 2 && ex.ExpectedResult <= 5);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateLinearEquationYMXBExercise_CalculatesTotalCostAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolFirstGrade, Age = 15 };
+        var rng = new Random(3000);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateLinearEquationYMXBExercise(profile, rng);
+            Assert.Equal(GamePlayType.LinearEquationYMXB, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 6);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_HighSchoolFirstGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolFirstGrade, Age = 15 };
+
+        var distList = _generator.GenerateExercisesForTopic("prep_analytic_distance_01", profile, count: 3);
+        Assert.Equal(3, distList.Count);
+        Assert.All(distList, ex => Assert.Equal(GamePlayType.AnalyticDistance2D, ex.GameType));
+
+        var slopeList = _generator.GenerateExercisesForTopic("prep_line_slope_01", profile, count: 3);
+        Assert.Equal(3, slopeList.Count);
+        Assert.All(slopeList, ex => Assert.Equal(GamePlayType.LineSlopeM, ex.GameType));
+
+        var ymxbList = _generator.GenerateExercisesForTopic("prep_line_equation_ymxb_01", profile, count: 3);
+        Assert.Equal(3, ymxbList.Count);
+        Assert.All(ymxbList, ex => Assert.Equal(GamePlayType.LinearEquationYMXB, ex.GameType));
+    }
 }

@@ -40,7 +40,10 @@ public enum GamePlayType
     QuadraticEquations,       // Ecuaciones cuadráticas (ax² + c = 0 y ax² + bx + c = 0, fórmula general)
     TriangleSimilarityThales, // Semejanza de triángulos y Teorema de Tales (sombras y proporciones)
     TrigonometricRatios,      // Razones trigonométricas básicas (seno, coseno, tangente en triángulo rectángulo)
-    QuadraticFunctionCurve    // Funciones cuadráticas y parábolas (y = ax², vértice y trayectoria)
+    QuadraticFunctionCurve,   // Funciones cuadráticas y parábolas (y = ax², vértice y trayectoria)
+    AnalyticDistance2D,       // Distancia entre dos puntos en el plano cartesiano d = √((x2-x1)² + (y2-y1)²)
+    LineSlopeM,               // Pendiente de la recta m = (y2 - y1) / (x2 - x1) e inclinación
+    LinearEquationYMXB        // Ecuación de la recta en forma pendiente-ordenada al origen: y = mx + b
 }
 
 /// <summary>

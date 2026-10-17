@@ -250,6 +250,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_analytic_distance",
+                Title = "Topógrafo Cartesiano",
+                Description = "Calculaste distancias euclidianas exactas en el plano cartesiano con d = √((Δx)² + (Δy)²).",
+                IconEmoji = "📍",
+                AssociatedTopicId = "prep_analytic_distance_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_line_slope",
+                Title = "Ingeniero de Pendientes",
+                Description = "Determinaste la razón de cambio e inclinación m = Δy / Δx en viaductos y caminos.",
+                IconEmoji = "🌉",
+                AssociatedTopicId = "prep_line_slope_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_line_ymxb",
+                Title = "Estratega Lineal y = mx + b",
+                Description = "Modelaste tarifas, costos fijos y variables con la ecuación fundamental de la recta.",
+                IconEmoji = "🛺",
+                AssociatedTopicId = "prep_line_equation_ymxb_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -530,11 +557,38 @@ public class RewardService
             new()
             {
                 Id = "station_27",
+                Name = "La Central de Fibra Óptica",
+                Description = "El nodo de telecomunicaciones donde medimos distancias euclidianas exactas d = √((Δx)² + (Δy)²).",
+                LandmarkEmoji = "📍",
+                TopicId = "prep_analytic_distance_01",
+                OrderIndex = 27
+            },
+            new()
+            {
+                Id = "station_28",
+                Name = "El Viaducto de las Pendientes",
+                Description = "La autopista elevada donde calculamos la inclinación y razón de cambio m = Δy / Δx.",
+                LandmarkEmoji = "🌉",
+                TopicId = "prep_line_slope_01",
+                OrderIndex = 28
+            },
+            new()
+            {
+                Id = "station_29",
+                Name = "La Terminal del Mototaxi Lineal",
+                Description = "La estación de transporte donde modelamos costos fijos y variables con y = mx + b.",
+                LandmarkEmoji = "🛺",
+                TopicId = "prep_line_equation_ymxb_01",
+                OrderIndex = 29
+            },
+            new()
+            {
+                Id = "station_30",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 27
+                OrderIndex = 30
             }
         };
 

@@ -37,6 +37,9 @@ public enum AcademicLevel
     SecondaryFirstGrade = 6, // 1º de secundaria (12 a 13 años): Números con signo, jerarquía, ecuaciones ax+b=c, porcentajes
     SecondarySecondGrade = 7, // 2º de secundaria (13 a 14 años): Leyes de exponentes, Pitágoras, sistemas 2x2
     SecondaryThirdGrade = 8,  // 3º de secundaria (14 a 15 años): Ecuaciones cuadráticas, trigonometría básica, semejanza
+    HighSchoolFirstGrade = 9, // 1º de preparatoria / bachillerato (15 a 16 años): Geometría analítica, pendiente m, recta y=mx+b, distancia
+    HighSchoolSecondGrade = 10, // 2º de preparatoria / bachillerato (16 a 17 años): Precálculo, funciones trigonométricas continuas, logaritmos
+    HighSchoolThirdGrade = 11,  // 3º de preparatoria / bachillerato (17 a 18 años): Introducción al cálculo diferencial/integral y probabilidad
     ProgrammingFoundations = 5 // Fundamentos lógicos y algoritmos matemáticos (pensamiento computacional)
 }
 

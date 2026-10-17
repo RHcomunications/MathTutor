@@ -42,6 +42,9 @@ public class CurriculumService
             BuildThalesSimilarityTopic(),
             BuildTrigonometricRatiosTopic(),
             BuildQuadraticFunctionsTopic(),
+            BuildAnalyticDistanceTopic(),
+            BuildLineSlopeTopic(),
+            BuildLinearEquationYMXBTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -1688,6 +1691,160 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "12 metros (2 × 6)", Value = 12, IsCorrect = false, SpeechFeedback = "Recuerda elevar 3 al cuadrado primero (3² = 9), no 3 × 2.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "18 metros (y = 2 × 9)", Value = 18, IsCorrect = true, SpeechFeedback = "¡Magnífico! 3² = 9, y 2 × 9 = 18 metros.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "36 metros", Value = 36, IsCorrect = false, SpeechFeedback = "36 es demasiado alto; 2 × 9 = 18.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 27 (1º Preparatoria): Distancia entre Puntos en el Plano Cartesiano
+    /// </summary>
+    private PedagogicalTopic BuildAnalyticDistanceTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_analytic_distance_01",
+            Title = "La Red de Telecomunicaciones: Distancia entre Puntos",
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido a la Educación Media Superior! En 1º de Preparatoria las matemáticas se fusionan con la geometría analítica de René Descartes. Cada antena celular, satélite o pixel en una pantalla tiene coordenadas exactas (x, y). Conectar dos puntos con fibra óptica requiere calcular la distancia euclidiana d = √((x₂ - x₁)² + (y₂ - y₁)²), que es la generalización de Pitágoras en el plano.",
+            NarrativeIntroSimplified = "Para saber la distancia entre dos puntos en un mapa, calculamos los pasos horizontales y verticales y aplicamos la raíz cuadrada.",
+            CoreConceptExplanation = "La distancia entre dos puntos A(x₁, y₁) y B(x₂, y₂) en el plano cartesiano se deduce del Teorema de Pitágoras: d = √((Δx)² + (Δy)²), donde Δx = x₂ - x₁ y Δy = y₂ - y₁.",
+            CoreConceptSimplified = "Si de A a B avanzas 3 en horizontal y 4 en vertical, la distancia directa es √(3² + 4²) = 5.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Definición y cálculo de la distancia euclidiana entre dos puntos en ℝ²",
+                "Relación fundamental entre la geometría analítica y el Teorema de Pitágoras",
+                "Modelado de redes de telecomunicación y rutas óptimas"
+            },
+            CongratulationMessage = "¡Gran Analista de Redes! Calculas distancias euclidianas con precisión matemática fundamental para el desarrollo de mapas y gráficos."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "dist2d_ex_01",
+            Title = "Conexión de Antenas A(1, 2) y B(4, 6)",
+            GameType = GamePlayType.AnalyticDistance2D,
+            TargetAgeMin = 14,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            ExpectedResult = 5,
+            StandardInstruction = "En la red metropolitana conectamos la antena A(1, 2) con la antena B(4, 6). Las diferencias de coordenadas son dx = 4 - 1 = 3 km y dy = 6 - 2 = 4 km. Aplicando d = √(3² + 4²) = √(9 + 16) = √25, ¿cuántos kilómetros de fibra óptica se necesitan?",
+            SimplifiedInstruction = "La antena A y B tienen diferencia horizontal de 3km y vertical de 4km. Si d² = 3² + 4² = 25, ¿cuánto es la raíz de 25?",
+            ScreenReaderDescription = "Distancia analítica: A(1, 2) a B(4, 6). dx es 3, dy es 4. Raíz cuadrada de 25.",
+            FirstHint = "Calcula la suma de los cuadrados: 3² + 4² = 9 + 16 = 25.",
+            SecondHintDetailed = "d = √25 = 5 kilómetros.",
+            ExplanationOfSuccess = "¡Excelente! d = √((4 - 1)² + (6 - 2)²) = √(3² + 4²) = √25 = 5 km. ¡Es la distancia cartesiana exacta!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "ant_a_item", Name = "Antena A(1,2)", EmojiSymbol = "📍", AccessibleDescription = "Antena origen A", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex1.ItemsGroupB.Add(new ManipulableItem { Id = "ant_b_item", Name = "Antena B(4,6)", EmojiSymbol = "📡", AccessibleDescription = "Antena destino B", OrderIndex = 2, MusicalPitchHz = Frequencies[2] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 km de fibra (d = √25)", Value = 5, IsCorrect = true, SpeechFeedback = "¡Magnífico! d = 5 km.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "7 km (sumando 3 + 4)", Value = 7, IsCorrect = false, SpeechFeedback = "No se suman directamente los catetos; la distancia directa es la hipotenusa (5 km).", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "12 km", Value = 12, IsCorrect = false, SpeechFeedback = "12 no corresponde a la raíz de 25.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 28 (1º Preparatoria): Pendiente de la Recta m = Δy / Δx
+    /// </summary>
+    private PedagogicalTopic BuildLineSlopeTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_line_slope_01",
+            Title = "La Rampa del Viaducto: La Pendiente m",
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "La inclinación de una carretera o la velocidad con que sube un elevador se describe con un único número mágico: la pendiente m. La pendiente nos dice cuánto cambia la altura (y) por cada paso horizontal (x) que damos. Es el concepto central que abre las puertas al cálculo diferencial.",
+            NarrativeIntroSimplified = "La pendiente mide qué tan inclinada está una recta: es el cambio vertical dividido entre el cambio horizontal.",
+            CoreConceptExplanation = "La pendiente de una recta no vertical que pasa por (x₁, y₁) y (x₂, y₂) es m = (y₂ - y₁) / (x₂ - x₁) = Δy / Δx. Una pendiente positiva asciende de izquierda a derecha; una negativa desciende; una pendiente cero es totalmente horizontal.",
+            CoreConceptSimplified = "Si subes 6 metros al avanzar 2 metros en horizontal, la pendiente es 6 ÷ 2 = 3.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Definición geométrica y analítica de la pendiente de una recta: m = Δy / Δx",
+                "Interpretación de la pendiente como razón de cambio constante",
+                "Relación entre pendiente, ángulo de inclinación y accesibilidad vial"
+            },
+            CongratulationMessage = "¡Gran Ingeniero Vial! Dominas la pendiente y la razón de cambio que gobierna las pendientes del mundo físico."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "slope_ex_01",
+            Title = "El Viaducto Metropolitano: P(1, 3) y Q(3, 9)",
+            GameType = GamePlayType.LineSlopeM,
+            TargetAgeMin = 14,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            ExpectedResult = 3,
+            StandardInstruction = "El trazo de un viaducto pasa por los puntos P(1, 3) y Q(3, 9). Calculando el incremento vertical Δy = 9 - 3 = 6 y el incremento horizontal Δx = 3 - 1 = 2, ¿cuál es el valor de la pendiente m = 6 / 2?",
+            SimplifiedInstruction = "Divide el cambio en vertical (6) entre el cambio en horizontal (2): 6 ÷ 2. ¿Cuánto vale la pendiente?",
+            ScreenReaderDescription = "Pendiente de la recta: punto P(1, 3) y Q(3, 9). Δy es 6, Δx es 2. Pendiente 6 entre 2.",
+            FirstHint = "Divide el cambio vertical entre el horizontal: m = (9 - 3) / (3 - 1) = 6 / 2.",
+            SecondHintDetailed = "m = 6 ÷ 2 = 3.",
+            ExplanationOfSuccess = "¡Excelente! m = (9 - 3) / (3 - 1) = 6 / 2 = 3. Por cada kilómetro horizontal, la vía asciende 3 kilómetros."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "bridge_slope_item", Name = "Viaducto m=3", EmojiSymbol = "🌉", AccessibleDescription = "Viaducto con pendiente de 3", OrderIndex = 1, MusicalPitchHz = Frequencies[1] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "m = 2", Value = 2, IsCorrect = false, SpeechFeedback = "6 entre 2 no es 2; realiza la división 6 ÷ 2.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "m = 3 de pendiente", Value = 3, IsCorrect = true, SpeechFeedback = "¡Correcto! m = 6 / 2 = 3.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "m = 4", Value = 4, IsCorrect = false, SpeechFeedback = "4 × 2 sería 8, pero buscamos 6.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 29 (1º Preparatoria): Ecuación de la Recta y = mx + b
+    /// </summary>
+    private PedagogicalTopic BuildLinearEquationYMXBTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_line_equation_ymxb_01",
+            Title = "La Tarifa de Transporte: Ecuación y = mx + b",
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Casi todo en la economía cotidiana se modela con una recta: un costo fijo inicial (b) más un costo variable por cada unidad o kilómetro recorrido (m). La ecuación en su forma pendiente-ordenada al origen y = mx + b es la reina del modelado lineal y el primer paso hacia los algoritmos de predicción.",
+            NarrativeIntroSimplified = "y = mx + b suma un valor inicial b más una cantidad m por cada paso x.",
+            CoreConceptExplanation = "En la ecuación de la recta y = mx + b, m representa la pendiente (ritmo de cambio) y b representa la ordenada al origen (el valor de y cuando x = 0, punto de corte con el eje vertical).",
+            CoreConceptSimplified = "Si cobras $10 de entrada y $5 por cada juego, en 3 juegos pagas: (5 × 3) + 10 = 25.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Forma pendiente-ordenada al origen de la ecuación lineal: y = mx + b",
+                "Interpretación de la ordenada al origen b como condición o costo inicial",
+                "Modelado de tarifas y funciones lineales en contextos socioeconómicos"
+            },
+            CongratulationMessage = "¡Fabuloso Modelador Lineal! Con y = mx + b comprendes cómo predecir costos y trazar trayectorias en cualquier sistema."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "ymxb_ex_01",
+            Title = "El Mototaxi del Barrio: y = 4x + 10",
+            GameType = GamePlayType.LinearEquationYMXB,
+            TargetAgeMin = 14,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            ExpectedResult = 26,
+            StandardInstruction = "En el servicio de mototaxi, la tarifa en pesos es y = 4x + 10, donde $4 pesos es el costo por kilómetro (m), $10 pesos es el banderazo inicial (b) y x son los kilómetros recorridos. Si una persona viaja x = 4 kilómetros, ¿cuánto paga en total y = 4(4) + 10?",
+            SimplifiedInstruction = "Calcula 4 × 4 + 10. Primero multiplica 4 por 4 (= 16) y luego suma 10. ¿Cuánto pagas?",
+            ScreenReaderDescription = "Ecuación de la recta y = 4x + 10. Para x = 4 kilómetros: 4 por 4 es 16, más 10 pesos da 26 pesos.",
+            FirstHint = "Multiplica 4 por los 4 km: 4 × 4 = 16. Luego suma el banderazo: 16 + 10.",
+            SecondHintDetailed = "y = 16 + 10 = 26 pesos.",
+            ExplanationOfSuccess = "¡Brillante! y = 4(4) + 10 = 16 + 10 = $26 pesos. ¡La ecuación y = mx + b modela a la perfección los costos de transporte!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "taxi_ymxb_item", Name = "Mototaxi", EmojiSymbol = "🛺", AccessibleDescription = "Mototaxi con tarifa y = 4x + 10", OrderIndex = 1, MusicalPitchHz = Frequencies[3] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "$24 pesos", Value = 24, IsCorrect = false, SpeechFeedback = "Revisa la suma: 16 + 10 es 26.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "$26 pesos en total", Value = 26, IsCorrect = true, SpeechFeedback = "¡Magnífico! 4 × 4 + 10 = 26 pesos.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "$30 pesos", Value = 30, IsCorrect = false, SpeechFeedback = "30 pesos es demasiado alto; 16 más 10 es 26.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

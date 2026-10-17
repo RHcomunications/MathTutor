@@ -1523,6 +1523,164 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de distancia entre dos puntos en el plano cartesiano (1º Preparatoria).
+    /// d = √((x2 - x1)² + (y2 - y1)²). Se utilizan ternas enteras (ej. 3-4-5, 6-8-10).
+    /// </summary>
+    public Exercise GenerateAnalyticDistanceExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        // Generamos un segmento con catetos dx y dy que formen terna pitagórica exacta
+        var triplets = isSimplified
+            ? new (int dx, int dy, int d)[] { (3, 4, 5) }
+            : new (int dx, int dy, int d)[] { (3, 4, 5), (6, 8, 10), (5, 12, 13) };
+
+        var t = triplets[rng.Next(triplets.Length)];
+        int x1 = rng.Next(1, 5);
+        int y1 = rng.Next(1, 5);
+        int x2 = x1 + t.dx;
+        int y2 = y1 + t.dy;
+        int expectedDistance = t.d;
+
+        int dx2 = t.dx * t.dx;
+        int dy2 = t.dy * t.dy;
+        int sumSq = dx2 + dy2;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_dist2d_{Guid.NewGuid():N}",
+            Title = $"La Red de Fibra Óptica: Distancia entre Puntos",
+            GameType = GamePlayType.AnalyticDistance2D,
+            TargetAgeMin = 14,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            ExpectedResult = expectedDistance,
+            StandardInstruction = $"En la ciudad se conectan dos antenas de telecomunicación ubicadas en los puntos A({x1}, {y1}) y B({x2}, {y2}). Aplicando la fórmula de distancia en el plano cartesiano d = √((x₂ - x₁)² + (y₂ - y₁)²), donde dx = {t.dx} y dy = {t.dy} (d² = {dx2} + {dy2} = {sumSq}), ¿cuántos kilómetros de cable de fibra óptica se requieren (√{sumSq})?",
+            SimplifiedInstruction = $"Calcula la distancia entre el punto A({x1}, {y1}) y el punto B({x2}, {y2}). Si d² = {dx2} + {dy2} = {sumSq}, ¿cuánto mide la distancia directa (√{sumSq})?",
+            ScreenReaderDescription = $"Geometría analítica: distancia entre A({x1}, {y1}) y B({x2}, {y2}). Diferencia en x es {t.dx}, diferencia en y es {t.dy}. Suma de cuadrados es {sumSq}. Raíz cuadrada de {sumSq}.",
+            FirstHint = $"Resta las coordenadas para hallar los lados del triángulo rectángulo: dx = {x2} - {x1} = {t.dx}, dy = {y2} - {y1} = {t.dy}.",
+            SecondHintDetailed = $"d = √({t.dx}² + {t.dy}²) = √({dx2} + {dy2}) = √{sumSq} = {expectedDistance} kilómetros.",
+            ExplanationOfSuccess = $"¡Excelente cálculo analítico! d = √(({x2} - {x1})² + ({y2} - {y1})²) = √({sumSq}) = {expectedDistance} km. ¡La distancia euclidiana es el núcleo de los motores de gráficos y GPS!"
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "point_a",
+            Name = $"Antena A({x1}, {y1})",
+            EmojiSymbol = "📍",
+            AccessibleDescription = $"Punto A en coordenadas ({x1}, {y1})",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[0]
+        });
+
+        ex.ItemsGroupB.Add(new ManipulableItem
+        {
+            Id = "point_b",
+            Name = $"Antena B({x2}, {y2})",
+            EmojiSymbol = "📡",
+            AccessibleDescription = $"Punto B en coordenadas ({x2}, {y2})",
+            OrderIndex = 2,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, expectedDistance, min: Math.Max(3, expectedDistance - 3), max: expectedDistance + 3, unitLabel: "km", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de cálculo de pendiente de la recta m = (y2 - y1) / (x2 - x1) (1º Preparatoria).
+    /// </summary>
+    public Exercise GenerateLineSlopeExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int m = isSimplified ? 2 : rng.Next(2, 5); // pendiente entera positiva
+        int x1 = rng.Next(1, 4);
+        int dx = rng.Next(1, 4);
+        int x2 = x1 + dx;
+        int dy = m * dx;
+        int y1 = rng.Next(1, 5);
+        int y2 = y1 + dy;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_slope_{Guid.NewGuid():N}",
+            Title = $"La Pendiente del Viaducto: m = Δy / Δx",
+            GameType = GamePlayType.LineSlopeM,
+            TargetAgeMin = 14,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            ExpectedResult = m,
+            StandardInstruction = $"En la construcción de un viaducto urbano, la vía pasa por los puntos A({x1}, {y1}) y B({x2}, {y2}). Calculando la razón de cambio o pendiente de inclinación m = (y₂ - y₁) / (x₂ - x₁) = ({y2} - {y1}) / ({x2} - {x1}) = {dy} / {dx}, ¿cuál es el valor de la pendiente m?",
+            SimplifiedInstruction = $"Halla la pendiente: resta las alturas ({y2} - {y1} = {dy}) y divide entre la distancia horizontal ({x2} - {x1} = {dx}). ¿Cuánto da {dy} ÷ {dx}?",
+            ScreenReaderDescription = $"Pendiente analítica m: punto uno ({x1}, {y1}), punto dos ({x2}, {y2}). Incremento en y es {dy}, incremento en x es {dx}. Pendiente igual a {dy} entre {dx}.",
+            FirstHint = $"Calcula el cambio vertical Δy = {y2} - {y1} = {dy} y el horizontal Δx = {x2} - {x1} = {dx}.",
+            SecondHintDetailed = $"m = Δy / Δx = {dy} / {dx} = {m}.",
+            ExplanationOfSuccess = $"¡Brillante! La pendiente de la recta es m = {m}. La pendiente representa la inclinación y razón de cambio instantáneo que da inicio al cálculo."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "slope_road",
+            Name = "Viaducto Inclinado",
+            EmojiSymbol = "🌉",
+            AccessibleDescription = $"Viaducto con pendiente m = {m}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[1]
+        });
+
+        BuildOptions(ex, m, min: 1, max: m + 3, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de la ecuación de la recta pendiente-ordenada al origen: y = mx + b (1º Preparatoria).
+    /// Evaluar y para un valor de x dado, o determinar la ordenada al origen b.
+    /// </summary>
+    public Exercise GenerateLinearEquationYMXBExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int m = isSimplified ? 3 : rng.Next(2, 5);
+        int b = isSimplified ? 5 : rng.Next(2, 8);
+        int x = isSimplified ? 4 : rng.Next(2, 6);
+        int expectedY = (m * x) + b;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_ymxb_{Guid.NewGuid():N}",
+            Title = $"Tarifa de Transporte: y = {m}x + {b}",
+            GameType = GamePlayType.LinearEquationYMXB,
+            TargetAgeMin = 14,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolFirstGrade,
+            ExpectedResult = expectedY,
+            StandardInstruction = $"En el servicio de mototaxi de la comunidad, la tarifa en pesos sigue la recta lineal y = mx + b, donde m = ${m} pesos por kilómetro (pendiente), b = ${b} pesos de banderazo inicial (ordenada al origen), y x son los kilómetros recorridos. Si viajas x = {x} kilómetros, ¿cuánto pagas en total y = {m}({x}) + {b}?",
+            SimplifiedInstruction = $"Calcula y = {m} × {x} + {b}. Multiplica {m} por {x} y luego súmale {b}. ¿Cuánto pagas en total?",
+            ScreenReaderDescription = $"Ecuación de la recta y = {m}x + {b}. Para x = {x} kilómetros: {m} por {x} es {m * x}, más {b} pesos da {expectedY} pesos.",
+            FirstHint = $"Multiplica la pendiente por los kilómetros: {m} × {x} = {m * x}. Luego suma el banderazo: + {b}.",
+            SecondHintDetailed = $"y = ({m * x}) + {b} = {expectedY} pesos.",
+            ExplanationOfSuccess = $"¡Exacto! y = {m}({x}) + {b} = {m * x} + {b} = ${expectedY} pesos. La recta y = mx + b modela costos fijos y variables en la economía cotidiana."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "taxi_item",
+            Name = "Mototaxi",
+            EmojiSymbol = "🛺",
+            AccessibleDescription = $"Mototaxi con tarifa y = {m}x + {b}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[3]
+        });
+
+        BuildOptions(ex, expectedY, min: Math.Max(5, expectedY - 5), max: expectedY + 5, unitLabel: profile.CurrencyName, rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -1594,6 +1752,12 @@ public class ExerciseGenerator
                 "sec_trigonometry_ratios_01" => GenerateTrigonometricRatiosExercise(profile, rng),
 
                 "sec_quadratic_functions_01" => GenerateQuadraticFunctionCurveExercise(profile, rng),
+
+                "prep_analytic_distance_01" => GenerateAnalyticDistanceExercise(profile, rng),
+
+                "prep_line_slope_01" => GenerateLineSlopeExercise(profile, rng),
+
+                "prep_line_equation_ymxb_01" => GenerateLinearEquationYMXBExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };
