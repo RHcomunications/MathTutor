@@ -50,6 +50,11 @@ public partial class MainWindow : Window
         _lessonView.StartGameRequested += (topic) =>
         {
             NavigateTo(_gameView);
+            var dynamicExercises = _curriculum.GenerateAdaptiveExercises(topic, _acc.CurrentProfile);
+            if (dynamicExercises.Count > 0)
+            {
+                topic.Exercises = dynamicExercises;
+            }
             _gameView.StartTopicGame(topic);
         };
 

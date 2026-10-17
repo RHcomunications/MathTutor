@@ -10,6 +10,7 @@ public class CurriculumService
 {
     // Escala musical pentatónica y diatónica (C4 a C5) para conteo sensorial
     private static readonly int[] Frequencies = { 262, 294, 330, 349, 392, 440, 494, 523 };
+    private readonly ExerciseGenerator _generator = new();
 
     public List<PedagogicalTopic> GetAllTopics()
     {
@@ -20,6 +21,14 @@ public class CurriculumService
             BuildSubtractionAndInverseTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
+    }
+
+    /// <summary>
+    /// Genera una serie fresca de ejercicios adaptados dinámicamente según la edad y condición del alumno.
+    /// </summary>
+    public List<Exercise> GenerateAdaptiveExercises(PedagogicalTopic topic, UserProfile profile, int count = 3)
+    {
+        return _generator.GenerateExercisesForTopic(topic.Id, profile, count);
     }
 
     /// <summary>
