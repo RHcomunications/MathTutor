@@ -49,7 +49,10 @@ public enum GamePlayType
     LogarithmBinary,          // Logaritmos en base 2 log₂(n) y complejidad de búsqueda binaria
     CalculusDerivativeRate,   // Cálculo diferencial: derivada y razón de cambio instantánea f'(x)
     CalculusIntegralArea,     // Cálculo integral: acumulación y área bajo la curva ∫f(x)dx
-    ProbabilityAndStats       // Probabilidad clásica y estadística descriptiva (media aritmética y casos favorables)
+    ProbabilityAndStats,      // Probabilidad clásica y estadística descriptiva (media aritmética y casos favorables)
+    ProgrammingVariablesState, // Programación 1: Variables, asignación y actualización de estado (x = x + a - b)
+    ProgrammingConditionalsIfElse, // Programación 1: Condicionales SI / SI NO (if / else) y toma de decisiones
+    ProgrammingBooleanLogic   // Programación 1: Lógica booleana y compuertas lógicas (AND, OR, NOT)
 }
 
 /// <summary>

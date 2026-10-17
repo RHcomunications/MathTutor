@@ -51,7 +51,10 @@ public class CurriculumService
             BuildCalculusDerivativeTopic(),
             BuildCalculusIntegralTopic(),
             BuildProbabilityAndStatsTopic(),
-            BuildRepeatedAdditionAndProgrammingSeedTopic()
+            BuildRepeatedAdditionAndProgrammingSeedTopic(),
+            BuildProgrammingVariablesTopic(),
+            BuildProgrammingConditionalsTopic(),
+            BuildProgrammingBooleanLogicTopic()
         };
     }
 
@@ -66,7 +69,8 @@ public class CurriculumService
             or "sec_signed_numbers_01"
             or "sec_linear_equations_01"
             or "sec_percentages_01"
-            or "sec_linear_systems_2x2_01";
+            or "sec_linear_systems_2x2_01"
+            or "prog_variables_state_01";
 
         // Si el perfil requiere rango reducido por discapacidad intelectual o moneda de otro país en temas monetarios,
         // generamos todos procedimentalmente para garantizar rango numérico y vocabulario regional exactos.
@@ -2200,6 +2204,183 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "7 puntos", Value = 7, IsCorrect = false, SpeechFeedback = "7 es el valor mínimo de la muestra, pero el promedio está en el centro.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "8 puntos de media (x̄ = 8)", Value = 8, IsCorrect = true, SpeechFeedback = "¡Magnífico! 24 ÷ 3 = 8 puntos.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "24 puntos", Value = 24, IsCorrect = false, SpeechFeedback = "24 es la suma total; falta dividirla entre los 3 datos.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 37 (Objetivo 14 - Programación Inclusiva 1): Variables, Asignación y Estado en Memoria
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingVariablesTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_variables_state_01",
+            Title = "Cajas de Memoria: Variables, Asignación y Estado (x = x + a)",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido al Módulo 1 de Programación Inclusiva! Ya dominas las incógnitas del álgebra; ahora descubrirás cómo las computadoras guardan información. En programación, una 'variable' es como una caja etiquetada en la memoria donde guardamos un dato (como el saldo de la tiendita o las vidas de un juego) y lo actualizamos línea por línea.",
+            NarrativeIntroSimplified = "Una variable es como una cajita con nombre donde la computadora guarda un número y lo puede cambiar sumando o restando.",
+            CoreConceptExplanation = "En programación, el signo '=' significa 'asignar o guardar'. La instrucción 'saldo = 10' guarda el número 10 en la caja 'saldo'. Si en la siguiente línea escribimos 'saldo = saldo + 5', la computadora toma el 10 que había adentro, le suma 5 y guarda el nuevo valor 15 en la misma caja.",
+            CoreConceptSimplified = "Si la caja 'saldo' tiene 10 y el código dice 'saldo = saldo + 5', ahora la caja guarda 15.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de variable como espacio con nombre en la memoria del programa",
+                "Diferencia entre igualdad algebraica y asignación computacional (x = x + a)",
+                "Seguimiento secuencial (traza) del estado de una variable línea por línea"
+            },
+            CongratulationMessage = "¡Programador de Memoria! Dominas las variables y el seguimiento de estado paso a paso."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_var_ex_01",
+            Title = "Rastreando la Variable 'saldo' en la Tiendita",
+            GameType = GamePlayType.ProgrammingVariablesState,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 12,
+            StandardInstruction = "En el sistema accesible de la tiendita ejecutamos estas 3 instrucciones en orden:\n1) saldo = 10\n2) saldo = saldo + 5\n3) saldo = saldo - 3\n¿Qué valor queda almacenado en la variable 'saldo' al finalizar la línea 3?",
+            SimplifiedInstruction = "La caja 'saldo' empieza en 10. En el paso 2 le sumamos 5 (10 + 5 = 15) y en el paso 3 le restamos 3 (15 - 3). ¿Cuánto vale 'saldo' al final?",
+            ScreenReaderDescription = "Traza de variable: línea 1, saldo igual a 10. Línea 2, saldo igual a saldo más 5. Línea 3, saldo igual a saldo menos 3.",
+            FirstHint = "Calcula primero la línea 2: como 'saldo' valía 10, al hacer saldo + 5 ahora vale 15.",
+            SecondHintDetailed = "En la línea 3 restamos 3 al valor 15 que tenía la variable: 15 - 3 = 12 pesos.",
+            ExplanationOfSuccess = "¡Excelente traza de código! La variable 'saldo' pasó de 10 a 15 y finalmente a 12 pesos. Así es como todos los programas actualizan su estado en memoria."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "var_trace_item",
+            Name = "Variable saldo (10 → 15 → 12)",
+            EmojiSymbol = "📦",
+            AccessibleDescription = "Caja de memoria saldo: inicia en 10, sube a 15 y termina en 12",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[2]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "10 pesos (el valor inicial)", Value = 10, IsCorrect = false, SpeechFeedback = "10 era el valor en la línea 1, pero las líneas 2 y 3 modificaron la variable.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "12 pesos (10 + 5 - 3)", Value = 12, IsCorrect = true, SpeechFeedback = "¡Exacto! 10 + 5 = 15, y 15 - 3 = 12 pesos.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "15 pesos (sin restar la línea 3)", Value = 15, IsCorrect = false, SpeechFeedback = "15 es el valor al terminar la línea 2; falta aplicar la resta de la línea 3 (- 3).", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 38 (Objetivo 14 - Programación Inclusiva 1): Condicionales SI / SI NO (if / else)
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingConditionalsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_conditionals_ifelse_01",
+            Title = "El Semáforo Inteligente: Condicionales SI / SI NO (if / else)",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¿Cómo sabe un lector de pantalla o un bastón inteligente cuándo activar una alerta sonora? ¡Gracias a las estructuras condicionales! Usando las desigualdades matemáticas (mayor que >, menor que <, mayor o igual >=), el código evalúa una pregunta lógica y elige el camino verdadero (SI / if) o el camino alternativo (SI NO / else).",
+            NarrativeIntroSimplified = "Con la instrucción SI (if), el programa hace una pregunta: si se cumple sigue un camino, y SI NO (else) sigue el otro.",
+            CoreConceptExplanation = "Una estructura condicional evalúa una condición booleana (Verdadera o Falsa): 'SI (condición) ENTONCES { acción A } SI NO { acción B }'. Nunca se ejecutan ambos bloques a la vez: si la condición se cumple se ejecuta únicamente la rama SI; en caso contrario se ejecuta la rama SI NO.",
+            CoreConceptSimplified = "En 'SI puntos >= 10 suma 5, SI NO suma 2': si tienes 12 puntos, como 12 es mayor que 10, sumas 5 (12 + 5 = 17).",
+            PrinciplesAddressed = new List<string>
+            {
+                "Evaluación de operadores relacionales (>, <, >=, <=, ==) en código",
+                "Bifurcación del flujo de ejecución mediante bloques SI (if) y SI NO (else)",
+                "Diseño de reglas de decisión en aplicaciones y tecnología asistiva"
+            },
+            CongratulationMessage = "¡Arquitecto de Decisiones! Sabes programar condicionales if/else para que el software tome decisiones inteligentes."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_if_ex_01",
+            Title = "Bono en el Lector Inteligente: SI puntos >= 10",
+            GameType = GamePlayType.ProgrammingConditionalsIfElse,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 17,
+            StandardInstruction = "Observa el siguiente bloque condicional de nuestro tutor accesible:\n• puntos = 12\n• SI (puntos >= 10) ENTONCES { bono = 5 } SI NO { bono = 2 }\n• total = puntos + bono\n¿Qué valor numérico tendrá la variable 'total' al ejecutarse el programa?",
+            SimplifiedInstruction = "Tienes puntos = 12. La regla dice: SI puntos es 10 o más, bono = 5; SI NO, bono = 2. ¿Cuánto vale puntos + bono?",
+            ScreenReaderDescription = "Código condicional: puntos igual a 12. Si puntos mayor o igual a 10 entonces bono igual a 5; si no, bono igual a 2. Total igual a puntos más bono.",
+            FirstHint = "Compara: ¿12 es mayor o igual a 10? ¡Sí! Por lo tanto se cumple la condición SI y bono = 5.",
+            SecondHintDetailed = "Ahora suma puntos + bono: 12 + 5 = 17 puntos.",
+            ExplanationOfSuccess = "¡Brillante! Como 12 >= 10 es Verdadero, el programa ejecutó la rama SI (bono = 5) e ignoró la rama SI NO, dando total = 12 + 5 = 17."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "cond_if_item",
+            Name = "SI (12 >= 10) → bono = 5",
+            EmojiSymbol = "🚦",
+            AccessibleDescription = "Condicional verdadero: 12 es mayor o igual a 10, asigna bono 5 para un total de 17",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[4]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "14 puntos (usando la rama SI NO: 12 + 2)", Value = 14, IsCorrect = false, SpeechFeedback = "14 resultaría de sumar bono = 2, pero como 12 >= 10 sí se cumple, debemos usar bono = 5.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "17 puntos (rama SI: 12 + 5)", Value = 17, IsCorrect = true, SpeechFeedback = "¡Exacto! Como 12 >= 10 es verdadero, bono vale 5 y 12 + 5 = 17.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "19 puntos (sumando ambos bonos)", Value = 19, IsCorrect = false, SpeechFeedback = "En un condicional SI / SI NO nunca se ejecutan ambas ramas a la vez; solo se suma el bono de la rama elegida.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 39 (Objetivo 14 - Programación Inclusiva 1): Lógica Booleana y Compuertas Lógicas (AND, OR, NOT)
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingBooleanLogicTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_boolean_logic_01",
+            Title = "Las Compuertas del Robot: Lógica Booleana (Y / AND, O / OR, NO / NOT)",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Llegamos al corazón lógico de todas las computadoras! El matemático George Boole descubrió que toda decisión compleja puede construirse combinando valores Verdaderos (1) y Falsos (0) mediante tres operadores lógicos: Y (AND), O (OR) y NO (NOT). ¡Con ellos programamos sensores de seguridad y sistemas de asistencia!",
+            NarrativeIntroSimplified = "El operador lógico Y (AND) exige que las dos condiciones sean verdaderas (1 y 1) al mismo tiempo.",
+            CoreConceptExplanation = "En Lógica Booleana (donde 1 = Verdadero y 0 = Falso): 1) El operador Y (AND) solo da Verdadero si AMBAS condiciones son verdaderas (1 Y 1 = 1; si alguna es 0, da 0). 2) El operador O (OR) da Verdadero si AL MENOS UNA es verdadera. 3) El operador NO (NOT) invierte el valor (NO 1 = 0, NO 0 = 1).",
+            CoreConceptSimplified = "En una compuerta Y (AND), 1 Y 1 es Verdadero, pero 1 Y 0 es Falso porque falta uno de los dos.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Álgebra de Boole: valores de verdad binarios (1 = Verdadero, 0 = Falso)",
+                "Tablas de verdad de los operadores conjunción Y (AND), disyunción O (OR) y negación NO (NOT)",
+                "Evaluación de condiciones compuestas en robótica y accesibilidad"
+            },
+            CongratulationMessage = "¡Maestro de la Lógica Booleana! Has completado el Objetivo 14 de Programación Inclusiva."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_bool_ex_01",
+            Title = "Rampa Robótica Accesible: Compuerta Y (AND)",
+            GameType = GamePlayType.ProgrammingBooleanLogic,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 18,
+            StandardInstruction = "Una rampa robótica accesible tiene energía base = 10 y evalúa dos sensores de seguridad con el operador lógico Y (AND), donde 1 = Activo y 0 = Inactivo:\n• sensor_boton = 1, sensor_rampa = 1\n• SI (sensor_boton == 1 Y sensor_rampa == 1) ENTONCES { energia = 10 + 8 } SI NO { energia = 10 + 2 }\n¿Cuál es el valor final de 'energia'?",
+            SimplifiedInstruction = "Para sumar +8, los dos sensores deben valer 1. Como sensor_boton = 1 y sensor_rampa = 1, ambos están activos. ¿Cuánto es 10 + 8?",
+            ScreenReaderDescription = "Compuerta booleana AND: sensor botón igual a 1 y sensor rampa igual a 1. Si ambos son 1, energía es 10 más 8; si no, 10 más 2.",
+            FirstHint = "Evalúa la compuerta Y (AND): ¿sensor_boton vale 1 Y sensor_rampa vale 1? ¡Sí, ambos valen 1!",
+            SecondHintDetailed = "Como (1 Y 1) es Verdadero, se ejecuta la primera rama: energia = 10 + 8 = 18 unidades.",
+            ExplanationOfSuccess = "¡Extraordinario! En la compuerta lógica Y (AND), 1 Y 1 = Verdadero, por lo que la rampa activó su potencia completa: 10 + 8 = 18 unidades."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "bool_and_item",
+            Name = "Compuerta Y (1 AND 1 = Verdadero → +8)",
+            EmojiSymbol = "🔌",
+            AccessibleDescription = "Compuerta lógica AND con ambas entradas en 1, activando el impulso de 8 para un total de 18",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[5]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "12 unidades (rama SI NO: 10 + 2)", Value = 12, IsCorrect = false, SpeechFeedback = "12 sería si alguno de los sensores fuera 0, pero aquí ambos sensores valen 1.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "18 unidades (1 AND 1 es Verdadero: 10 + 8)", Value = 18, IsCorrect = true, SpeechFeedback = "¡Magnífico! Como ambos sensores valen 1, la compuerta Y es verdadera y 10 + 8 = 18.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "20 unidades (sumando 10 + 8 + 2)", Value = 20, IsCorrect = false, SpeechFeedback = "Recuerda que solo se suma el impulso de la rama verdadera (+8), no ambos.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

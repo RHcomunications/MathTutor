@@ -2029,6 +2029,156 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de Variables, Asignación y Actualización de Estado en código (Objetivo 14 - Programación 1).
+    /// </summary>
+    public Exercise GenerateProgrammingVariablesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int initial = isSimplified ? rng.Next(5, 10) : rng.Next(10, 21);
+        int deposit = isSimplified ? rng.Next(2, 6) : rng.Next(4, 10);
+        int expense = isSimplified ? rng.Next(1, 4) : rng.Next(2, 7);
+        int afterDeposit = initial + deposit;
+        int finalValue = afterDeposit - expense;
+
+        string currency = profile.CurrencyName;
+        string store = profile.StoreName;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_var_{Guid.NewGuid():N}",
+            Title = $"Cajas de Memoria: Variable 'saldo' en la {store}",
+            GameType = GamePlayType.ProgrammingVariablesState,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = finalValue,
+            StandardInstruction = $"En una aplicación accesible para la {store}, creamos la variable 'saldo' en {currency} y ejecutamos estas 3 líneas de código en orden:\n1) saldo = {initial}\n2) saldo = saldo + {deposit}\n3) saldo = saldo - {expense}\n¿Qué valor numérico queda guardado en la variable 'saldo' al terminar la línea 3?",
+            SimplifiedInstruction = $"La caja llamada 'saldo' empieza con {initial}. Primero le sumamos {deposit} ({initial} + {deposit} = {afterDeposit}) y luego le restamos {expense}. ¿Cuánto queda en 'saldo'?",
+            ScreenReaderDescription = $"Programa de tres líneas con la variable saldo: línea 1, saldo igual a {initial}. Línea 2, saldo igual a saldo más {deposit}. Línea 3, saldo igual a saldo menos {expense}.",
+            FirstHint = $"Sigue el estado línea por línea: en la línea 2, 'saldo' pasa de {initial} a {initial} + {deposit} = {afterDeposit}.",
+            SecondHintDetailed = $"En la línea 3 tomamos el valor actualizado ({afterDeposit}) y le restamos {expense}: {afterDeposit} - {expense} = {finalValue} {currency}.",
+            ExplanationOfSuccess = $"¡Excelente programador! La variable 'saldo' comenzó en {initial}, subió a {afterDeposit} y terminó en {finalValue} {currency}. Una variable guarda y actualiza su estado paso a paso."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "var_box_state",
+            Name = $"Variable saldo ({initial} → {afterDeposit} → {finalValue})",
+            EmojiSymbol = "📦",
+            AccessibleDescription = $"Caja de memoria de la variable saldo: inicia en {initial}, suma {deposit} dando {afterDeposit} y resta {expense} dando {finalValue}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[2]
+        });
+
+        BuildOptions(ex, finalValue, min: Math.Max(1, finalValue - 4), max: finalValue + 4, unitLabel: currency, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Condicionales SI / SI NO (if / else) (Objetivo 14 - Programación 1).
+    /// </summary>
+    public Exercise GenerateProgrammingConditionalsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int threshold = 10;
+        bool conditionMet = rng.Next(0, 2) == 0;
+        int basePoints = conditionMet
+            ? (isSimplified ? 12 : rng.Next(10, 16))
+            : (isSimplified ? 6 : rng.Next(5, 10));
+
+        int highBonus = isSimplified ? 5 : rng.Next(4, 8);
+        int lowBonus = isSimplified ? 2 : rng.Next(1, 4);
+        int appliedBonus = (basePoints >= threshold) ? highBonus : lowBonus;
+        int finalTotal = basePoints + appliedBonus;
+
+        string branchTaken = conditionMet ? "SI (verdadera)" : "SI NO (falsa)";
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_if_{Guid.NewGuid():N}",
+            Title = $"Decisiones del Código: SI puntos >= {threshold} ENTONCES...",
+            GameType = GamePlayType.ProgrammingConditionalsIfElse,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = finalTotal,
+            StandardInstruction = $"El lector de pantalla inteligente evalúa el avance del alumno con este condicional:\n• puntos = {basePoints}\n• SI (puntos >= {threshold}) ENTONCES {{ bono = {highBonus} }} SI NO {{ bono = {lowBonus} }}\n• total = puntos + bono\n¿Cuál es el valor final de la variable 'total'?",
+            SimplifiedInstruction = $"Tienes puntos = {basePoints}. Si tus puntos son {threshold} o más, ganas un bono de {highBonus}; si son menos de {threshold}, ganas {lowBonus}. ¿Cuánto es puntos + bono?",
+            ScreenReaderDescription = $"Condicional if else: variable puntos igual a {basePoints}. Si puntos es mayor o igual a {threshold}, bono vale {highBonus}; si no, bono vale {lowBonus}. Calcular total igual a puntos más bono.",
+            FirstHint = $"Primero compara: ¿{basePoints} es mayor o igual a {threshold}? Como la condición es {(conditionMet ? "verdadera" : "falsa")}, el programa entra a la rama {branchTaken} y asigna bono = {appliedBonus}.",
+            SecondHintDetailed = $"Con puntos = {basePoints} y bono = {appliedBonus}, sumamos total = {basePoints} + {appliedBonus} = {finalTotal} puntos.",
+            ExplanationOfSuccess = $"¡Lógica impecable! Como {basePoints} {(conditionMet ? ">=" : "<")} {threshold}, el condicional eligió bono = {appliedBonus} y calculó total = {basePoints} + {appliedBonus} = {finalTotal}."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "cond_gate_item",
+            Name = $"Condicional ({basePoints} >= {threshold} → +{appliedBonus})",
+            EmojiSymbol = "🚦",
+            AccessibleDescription = $"Semáforo condicional: puntos {basePoints} comparado con {threshold} asigna bono {appliedBonus}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[4]
+        });
+
+        BuildOptions(ex, finalTotal, min: Math.Max(3, finalTotal - 4), max: finalTotal + 4, unitLabel: "puntos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Lógica Booleana y Compuertas Lógicas (AND / Y, OR / O) (Objetivo 14 - Programación 1).
+    /// </summary>
+    public Exercise GenerateProgrammingBooleanLogicExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int baseEnergy = isSimplified ? 10 : rng.Next(10, 16);
+        int turboBoost = isSimplified ? 5 : rng.Next(6, 10);
+        int safeBoost = 2;
+
+        bool bothTrue = rng.Next(0, 2) == 0;
+        int sensorBoton = 1;
+        int sensorRampa = bothTrue ? 1 : 0;
+
+        int addedBoost = (sensorBoton == 1 && sensorRampa == 1) ? turboBoost : safeBoost;
+        int totalEnergy = baseEnergy + addedBoost;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_bool_{Guid.NewGuid():N}",
+            Title = "Compuertas Lógicas del Robot: Operador Y (AND)",
+            GameType = GamePlayType.ProgrammingBooleanLogic,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = totalEnergy,
+            StandardInstruction = $"Una rampa robótica accesible tiene energía base = {baseEnergy} y evalúa dos sensores con el operador lógico Y (AND), donde 1 es Activo y 0 es Inactivo:\n• sensor_boton = {sensorBoton}, sensor_rampa = {sensorRampa}\n• SI (sensor_boton == 1 Y sensor_rampa == 1) ENTONCES {{ energia = {baseEnergy} + {turboBoost} }} SI NO {{ energia = {baseEnergy} + {safeBoost} }}\nRecuerda que 'A Y B' solo es verdadero si AMBOS valen 1. ¿Cuál es la energía final?",
+            SimplifiedInstruction = $"Para sumar el impulso grande (+{turboBoost}), los dos sensores deben valer 1. Aquí sensor_boton = {sensorBoton} y sensor_rampa = {sensorRampa}. Si ambos son 1 suma {baseEnergy} + {turboBoost}; si no, suma {baseEnergy} + {safeBoost}.",
+            ScreenReaderDescription = $"Compuerta lógica AND: sensor botón vale {sensorBoton} y sensor rampa vale {sensorRampa}. Si ambos valen 1, energía es {baseEnergy} más {turboBoost}; si no, es {baseEnergy} más {safeBoost}.",
+            FirstHint = $"En la compuerta lógica Y (AND), ambos sensores deben ser 1. Aquí tenemos ({sensorBoton} Y {sensorRampa}), por lo que la condición es {(bothTrue ? "VERDADERA" : "FALSA")}.",
+            SecondHintDetailed = $"Como la condición Y es {(bothTrue ? "verdadera" : "falsa")}, sumamos {baseEnergy} + {addedBoost} = {totalEnergy} unidades de energía.",
+            ExplanationOfSuccess = $"¡Dominio total de la lógica de Boole! Con sensor_boton = {sensorBoton} y sensor_rampa = {sensorRampa}, la compuerta Y (AND) dio {(bothTrue ? "Verdadero" : "Falso")} y la energía fue {baseEnergy} + {addedBoost} = {totalEnergy}."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "bool_gate_item",
+            Name = $"Compuerta Y ({sensorBoton} AND {sensorRampa} → +{addedBoost})",
+            EmojiSymbol = "🔌",
+            AccessibleDescription = $"Compuerta booleana AND con entradas {sensorBoton} y {sensorRampa}, sumando {addedBoost} a {baseEnergy}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[5]
+        });
+
+        BuildOptions(ex, totalEnergy, min: Math.Max(5, totalEnergy - 4), max: totalEnergy + 4, unitLabel: "unidades", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -2120,6 +2270,12 @@ public class ExerciseGenerator
                 "prep_probability_stats_01" => GenerateProbabilityAndStatsExercise(profile, rng),
 
                 "prog_seed_01" => GeneratePatternAndLoopSeedExercise(profile, rng),
+
+                "prog_variables_state_01" => GenerateProgrammingVariablesExercise(profile, rng),
+
+                "prog_conditionals_ifelse_01" => GenerateProgrammingConditionalsExercise(profile, rng),
+
+                "prog_boolean_logic_01" => GenerateProgrammingBooleanLogicExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };
@@ -2215,6 +2371,9 @@ public class ExerciseGenerator
             GamePlayType.CalculusIntegralArea => "La integral definida de una tasa constante es el área del rectángulo: multiplica la altura por el tiempo.",
             GamePlayType.ProbabilityAndStats => "Para hallar la media aritmética x̄, suma todos los datos de la muestra y divide entre la cantidad de datos.",
             GamePlayType.PatternAndLoopSeed => "En el bucle REPETIR, suma los pasos de cada salto tantas veces como indica el contador.",
+            GamePlayType.ProgrammingVariablesState => "Sigue el valor de la variable línea por línea: primero aplica la suma al valor inicial y al resultado réstale el gasto.",
+            GamePlayType.ProgrammingConditionalsIfElse => "Evalúa primero si la condición del SI (>=) se cumple para elegir el bono correcto antes de sumarlo.",
+            GamePlayType.ProgrammingBooleanLogic => "En el operador lógico Y (AND), la condición solo es verdadera si ambas entradas valen 1 al mismo tiempo.",
             _ => "Revisa paso a paso los datos del problema."
         };
 

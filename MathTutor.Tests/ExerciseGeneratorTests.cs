@@ -809,11 +809,59 @@ public class ExerciseGeneratorTests
     }
 
     [Fact]
+    public void GenerateProgrammingVariablesExercise_TracksVariableStateAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.ProgrammingFoundations, Age = 12 };
+        var rng = new Random(3800);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateProgrammingVariablesExercise(profile, rng);
+            Assert.Equal(GamePlayType.ProgrammingVariablesState, ex.GameType);
+            Assert.Equal(AcademicLevel.ProgrammingFoundations, ex.Level);
+            Assert.True(ex.ExpectedResult >= 5 && ex.ExpectedResult <= 30);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateProgrammingConditionalsExercise_EvaluatesIfElseBranchAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.ProgrammingFoundations, Age = 12 };
+        var rng = new Random(3900);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateProgrammingConditionalsExercise(profile, rng);
+            Assert.Equal(GamePlayType.ProgrammingConditionalsIfElse, ex.GameType);
+            Assert.Equal(AcademicLevel.ProgrammingFoundations, ex.Level);
+            Assert.True(ex.ExpectedResult >= 6 && ex.ExpectedResult <= 25);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateProgrammingBooleanLogicExercise_EvaluatesAndGateAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.ProgrammingFoundations, Age = 12 };
+        var rng = new Random(4000);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateProgrammingBooleanLogicExercise(profile, rng);
+            Assert.Equal(GamePlayType.ProgrammingBooleanLogic, ex.GameType);
+            Assert.Equal(AcademicLevel.ProgrammingFoundations, ex.Level);
+            Assert.True(ex.ExpectedResult >= 12 && ex.ExpectedResult <= 26);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
     public void AllCurriculumTopics_GenerateAdaptiveExercisesWithoutFallbackToCounting()
     {
         var curriculum = new CurriculumService();
         var allTopics = curriculum.GetAllTopics();
-        Assert.Equal(36, allTopics.Count);
+        Assert.Equal(39, allTopics.Count);
 
         foreach (var topic in allTopics)
         {
@@ -871,8 +919,8 @@ public class ExerciseGeneratorTests
         var stations = rewards.GetRealmStations(profile);
         var badges = rewards.GetAllBadges(profile);
 
-        Assert.Equal(36, allTopics.Count);
-        Assert.Equal(36, stations.Count);
+        Assert.Equal(39, allTopics.Count);
+        Assert.Equal(39, stations.Count);
 
         var topicIds = allTopics.Select(t => t.Id).ToHashSet();
         var stationTopicIds = stations.Select(s => s.TopicId).ToHashSet();

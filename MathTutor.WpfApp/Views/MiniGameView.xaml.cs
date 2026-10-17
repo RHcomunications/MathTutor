@@ -98,8 +98,8 @@ public partial class MiniGameView : UserControl
         BorderManipulables.Visibility = (hasItemsA || hasItemsB) ? Visibility.Visible : Visibility.Collapsed;
 
         int totalItems = _currentExercise.ItemsGroupA.Count + _currentExercise.ItemsGroupB.Count;
-        bool isSymbolicAdvanced = _currentExercise.Level >= AcademicLevel.SecondaryFirstGrade &&
-                                  _currentExercise.Level != AcademicLevel.ProgrammingFoundations &&
+        bool isSymbolicAdvanced = (_currentExercise.Level >= AcademicLevel.SecondaryFirstGrade ||
+                                   (_currentExercise.Level == AcademicLevel.ProgrammingFoundations && _currentExercise.GameType != GamePlayType.PatternAndLoopSeed)) &&
                                   totalItems <= 2;
 
         TxtManipulablesPrompt.Text = isSymbolicAdvanced

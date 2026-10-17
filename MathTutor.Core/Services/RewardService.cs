@@ -340,6 +340,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_prog_variables",
+                Title = "Guardián de Variables",
+                Description = "Dominaste la asignación y actualización de estado en memoria (x = x + a).",
+                IconEmoji = "📦",
+                AssociatedTopicId = "prog_variables_state_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prog_conditionals",
+                Title = "Arquitecto de Condicionales",
+                Description = "Programaste decisiones inteligentes con estructuras SI / SI NO (if / else).",
+                IconEmoji = "🚦",
+                AssociatedTopicId = "prog_conditionals_ifelse_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prog_boolean",
+                Title = "Maestro de la Lógica Booleana",
+                Description = "Combinaste sensores y condiciones con operadores Y (AND), O (OR) y NO (NOT).",
+                IconEmoji = "🔌",
+                AssociatedTopicId = "prog_boolean_logic_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_star_collector",
                 Title = "Coleccionista de Estrellas",
                 Description = "Acumulaste 15 o más estrellas doradas en tus misiones.",
@@ -697,6 +724,33 @@ public class RewardService
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
                 OrderIndex = 36
+            },
+            new()
+            {
+                Id = "station_37",
+                Name = "La Bóveda de las Variables en Memoria",
+                Description = "El centro de datos donde las variables guardan y actualizan su estado línea por línea.",
+                LandmarkEmoji = "📦",
+                TopicId = "prog_variables_state_01",
+                OrderIndex = 37
+            },
+            new()
+            {
+                Id = "station_38",
+                Name = "El Cruce de los Semáforos Condicionales",
+                Description = "La intersección algorítmica donde los bloques SI / SI NO (if / else) guían el código.",
+                LandmarkEmoji = "🚦",
+                TopicId = "prog_conditionals_ifelse_01",
+                OrderIndex = 38
+            },
+            new()
+            {
+                Id = "station_39",
+                Name = "El Laboratorio de Compuertas de Boole",
+                Description = "La sala de circuitos donde los operadores Y (AND), O (OR) y NO (NOT) activan robots accesibles.",
+                LandmarkEmoji = "🔌",
+                TopicId = "prog_boolean_logic_01",
+                OrderIndex = 39
             }
         };
 
