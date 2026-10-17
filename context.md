@@ -373,7 +373,9 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 
 ---
 
-## 5. Comandos de Verificación y Empaquetado para Contribuidores
+## 5. Comandos de Verificación, Empaquetado y Limpieza Obligatoria para Contribuidores
+
+> **REGLA DE HIGIENE DE DISCO**: Al finalizar cualquier sesión de verificación, pruebas o empaquetado de release, **es obligatorio eliminar todos los residuos de compilación (`bin/`, `obj/`, `publish*`, `.zip`)** para no acumular espacio innecesario en disco.
 
 ```powershell
 # 1. Compilar toda la solución con cero advertencias permitidas
@@ -384,6 +386,7 @@ dotnet test -c Release --nologo --no-build
 
 # 3. Publicar ejecutable win-x64 autocontenido de archivo único
 dotnet publish MathTutor.WpfApp/MathTutor.WpfApp.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:DebugSymbols=false -o ./publish-win-x64
+
+# 4. Limpieza obligatoria de residuos de compilación (bin, obj, carpetas de publicación y paquetes temporales)
+Get-ChildItem -Path . -Include bin,obj,publish* -Directory -Recurse -Force | Remove-Item -Recurse -Force
 ```
-
-
