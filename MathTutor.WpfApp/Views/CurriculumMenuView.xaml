@@ -79,18 +79,42 @@
             </Border>
 
             <!-- Título de Selección de Misión -->
-            <TextBlock Text="Misiones de Aprendizaje Disponibles:"
+            <TextBlock Text="Misiones de Aprendizaje Disponibles (Usa las flechas Arriba/Abajo y Enter):"
                        FontSize="{DynamicResource AppSubHeaderFontSize}"
                        FontWeight="Bold"
                        Foreground="{DynamicResource AppAccentBrush}"
                        Margin="4,0,0,12"/>
 
-            <!-- Contenedor dinámico de temas -->
-            <ItemsControl x:Name="ItemsTopics">
-                <ItemsControl.ItemTemplate>
+            <!-- Tarea 2 y Tarea 3: ListBox accesible con navegación direccional por flechas y etiquetas limpias -->
+            <ListBox x:Name="ItemsTopics"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     HorizontalContentAlignment="Stretch"
+                     SelectionMode="Single"
+                     IsSynchronizedWithCurrentItem="True"
+                     KeyboardNavigation.DirectionalNavigation="Cycle"
+                     KeyboardNavigation.TabNavigation="Once"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.CanContentScroll="False"
+                     AutomationProperties.Name="Lista de misiones de aprendizaje disponibles"
+                     AutomationProperties.HelpText="Usa las flechas arriba y abajo para cambiar de misión y presiona Enter o Espacio para comenzar."
+                     PreviewKeyDown="ItemsTopics_PreviewKeyDown"
+                     SelectionChanged="ItemsTopics_SelectionChanged">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0,0,0,16"/>
+                        <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleButtonName}"/>
+                        <Setter Property="AutomationProperties.HelpText" Value="Presiona Enter o Espacio para comenzar."/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource AccessibleCard}"
-                                Margin="0,0,0,16"
                                 BorderBrush="{DynamicResource AppBorderBrush}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -134,15 +158,16 @@
                                         MinWidth="160"
                                         Height="60"
                                         Tag="{Binding TopicId}"
+                                        Focusable="False"
+                                        IsTabStop="False"
                                         AutomationProperties.Name="{Binding AccessibleButtonName}"
-                                        AutomationProperties.HelpText="Presiona para iniciar esta lección lúdica"
-                                        Click="BtnEnterTopic_Click"
-                                        GotFocus="Button_GotFocus"/>
+                                        AutomationProperties.HelpText="Presiona Enter o Espacio para comenzar."
+                                        Click="BtnEnterTopic_Click"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

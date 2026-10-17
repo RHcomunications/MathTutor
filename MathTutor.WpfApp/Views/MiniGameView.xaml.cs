@@ -71,8 +71,17 @@ public partial class MiniGameView : UserControl
         // Renderizar opciones adaptativas
         RenderOptions();
 
-        // Poner el foco en el contenedor antes del anuncio para que el evento de foco no corte al lector de pantalla
-        Focus();
+        // Tarea 1: Poner el foco real de teclado en el primer botón de opción interactivo (o en el contenedor) antes del anuncio
+        if (PanelOptions.Children.Count > 0 && PanelOptions.Children[0] is Button firstOptionBtn)
+        {
+            firstOptionBtn.Focus();
+            Keyboard.Focus(firstOptionBtn);
+        }
+        else
+        {
+            Focus();
+            Keyboard.Focus(this);
+        }
 
         // Anuncio inicial accesible al lector de pantalla del sistema (NVDA, JAWS o Narrador)
         string fullSpeech = $"{_currentExercise.Title}. {adaptedInstruction}.";
@@ -272,14 +281,17 @@ public partial class MiniGameView : UserControl
                 : option.SpeechFeedback;
 
             BtnNextExercise.Focus();
+            Keyboard.Focus(BtnNextExercise);
 
             string announceMsg = $"¡Extraordinario! Respuesta correcta. {TxtSuccessExplanation.Text}. Presiona Enter para avanzar.";
-            _acc.Announce(announceMsg, speak: true);
+            _acc.AnnounceAssertive(announceMsg);
         }
         else
         {
             _adaptive.RecordAttempt(profile, _currentExercise, isCorrect: false, _attemptsCount);
-            _acc.Audio.PlayHintTone();
+
+            // Tarea 4: Efecto de audio procedural PCM de error diagnóstico
+            _acc.Audio.PlayErrorChord();
 
             // Marcar visualmente la opción incorrecta probada para evitar que el alumno repita el mismo error por accidente
             foreach (var child in PanelOptions.Children)
@@ -302,10 +314,11 @@ public partial class MiniGameView : UserControl
             string hintLabel = showDetailed ? "Pista Paso a Paso" : "Pista Orientadora";
             string hint = showDetailed ? _currentExercise.SecondHintDetailed : _currentExercise.FirstHint;
 
-            TxtHintMessage.Text = $"Cosmo te explica por qué no es {option.Label}:\n• {option.SpeechFeedback}\n• {hintLabel}: {hint}";
+            string feedbackMessage = $"{option.SpeechFeedback} {hintLabel} de Cosmo: {hint}";
+            TxtHintMessage.Text = $"Incorrecto. Cosmo te explica por qué no es {option.Label}:\n• {option.SpeechFeedback}\n• {hintLabel}: {hint}";
 
-            string speechFeedback = $"{option.SpeechFeedback} {hintLabel} de Cosmo: {hint}";
-            _acc.Announce(speechFeedback, speak: true);
+            // Tarea 4: Anuncio asertivo prioritario e inmediato hacia el lector de pantalla
+            _acc.AnnounceAssertive($"Incorrecto. {feedbackMessage}");
         }
     }
 
@@ -381,7 +394,6 @@ public partial class MiniGameView : UserControl
         if (_topic != null && _exerciseIndex >= _topic.Exercises.Count)
         {
             _acc.Audio.PlaySuccessChord();
-            _acc.Announce($"¡Misión completada con éxito! {_topic.CongratulationMessage}", speak: true);
             MissionCompleted?.Invoke(_topic);
         }
         else

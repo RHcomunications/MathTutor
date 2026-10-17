@@ -81,8 +81,24 @@ public partial class MainWindow : Window
             }
             _acc.SaveCurrentProfile();
             UpdateTopStatus();
-            NavigateTo(_menuView);
-            _menuView.RefreshData();
+
+            // Tarea 7: Diálogo modal accesible al completar una misión
+            var nextTopic = _curriculum.GetNextTopic(topic.Id, _acc.CurrentProfile);
+            var dialog = new MissionCompletedDialog(topic, nextTopic)
+            {
+                Owner = this
+            };
+
+            bool? result = dialog.ShowDialog();
+            if (result == true && dialog.ContinueToNextMission && nextTopic != null)
+            {
+                OpenTopicLesson(nextTopic.Id);
+            }
+            else
+            {
+                NavigateTo(_mapView);
+                _mapView.RefreshMap();
+            }
         };
 
         _mapView.BackToMenuRequested += () =>
@@ -134,11 +150,14 @@ public partial class MainWindow : Window
 
         if (_acc.LoadSavedProfile())
         {
-            // Ya existía un perfil previo guardado: restaurar y entrar al menú
+            // Ya existía un perfil previo guardado: restaurar, entrar al menú y posicionar foco automático (Tarea 1)
             UpdateTopStatus();
             NavigateTo(_menuView);
             _menuView.RefreshData();
-            _acc.Announce($"¡Bienvenido de nuevo, {_acc.CurrentProfile.Name}! Tienes {_acc.CurrentProfile.StarsTotal} estrellas acumuladas. Elige tu misión.", speak: true, playTone: true);
+            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+            {
+                _menuView.FocusFirstMissionItem();
+            });
         }
         else
         {
@@ -165,14 +184,17 @@ public partial class MainWindow : Window
         TxtLiveAnnouncement.Text = message;
     }
 
-    private void RaiseLiveRegionAnnouncement(string message)
+    private void RaiseLiveRegionAnnouncement(string message, bool immediate)
     {
         if (string.IsNullOrWhiteSpace(message))
             return;
 
-        // Despachar en ApplicationIdle garantiza que cualquier cambio de foco (Focus())
-        // se procese primero en el árbol UIA y no interrumpa la lectura del anuncio en NVDA/JAWS/Narrador.
-        Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () =>
+        // Si es asertivo inmediato (ej. respuesta incorrecta o atajo F2/F3/F4), se despacha en prioridad Normal.
+        // Si proviene de una transición de pantalla, se despacha en ApplicationIdle para que el foco (Keyboard.Focus)
+        // se procese primero en el árbol UIA y no interrumpa la lectura en NVDA/JAWS/Narrador.
+        var priority = immediate ? DispatcherPriority.Normal : DispatcherPriority.ApplicationIdle;
+
+        Dispatcher.BeginInvoke(priority, () =>
         {
             _repeatToggleFlag = !_repeatToggleFlag;
             string liveText = _repeatToggleFlag ? message : message + "\u200B";

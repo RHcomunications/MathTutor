@@ -50,6 +50,7 @@ public partial class LessonView : UserControl
         string concept = _adaptive.GetAdaptedConceptExplanation(_topic, profile);
 
         BtnStartGame.Focus();
+        System.Windows.Input.Keyboard.Focus(BtnStartGame);
 
         string speechMessage = $"{_topic.Title}. Cosmo dice: {narrative}. {concept}. {TxtGuidedExample.Text} Presiona Enter para jugar el reto lúdico, Tab para explorar el texto línea por línea, o F1 para escuchar de nuevo.";
         _acc.Announce(speechMessage, speak: true, playTone: true);

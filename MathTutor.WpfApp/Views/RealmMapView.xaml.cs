@@ -38,6 +38,7 @@ public partial class RealmMapView : UserControl
 {
     private readonly AccessibilityManager _acc = AccessibilityManager.Instance;
     private readonly RewardService _rewards = new();
+    private readonly MathTutor.Core.Engine.CurriculumService _curriculum = new();
 
     public event Action<string>? StationSelected;
     public event Action? BackToMenuRequested;
@@ -56,33 +57,48 @@ public partial class RealmMapView : UserControl
     public void RefreshMap()
     {
         var profile = _acc.CurrentProfile;
-        var stations = _rewards.GetRealmStations(profile);
-        var badges = _rewards.GetAllBadges(profile);
+        var allowedTopicIds = _curriculum.GetTopicsForAge(profile.Age)
+            .Select(t => t.Id)
+            .ToHashSet();
+
+        var stations = _rewards.GetRealmStations(profile)
+            .Where(s => allowedTopicIds.Contains(s.TopicId))
+            .ToList();
+        var badges = _rewards.GetAllBadges(profile)
+            .Where(b => string.IsNullOrEmpty(b.AssociatedTopicId) || allowedTopicIds.Contains(b.AssociatedTopicId))
+            .ToList();
 
         int unlockedCount = badges.Count(b => b.IsUnlocked);
         TxtBadgesUnlockedCount.Text = $"{unlockedCount}/{badges.Count}";
 
         // Estaciones del mapa
         var stationDisplayList = new List<RealmStationDisplayItem>();
+        int recommendedIndex = 0;
+
         for (int i = 0; i < stations.Count; i++)
         {
             var s = stations[i];
             string status;
+            string cleanState;
             Brush statusBrush;
 
             if (s.IsCompleted)
             {
                 status = "⭐ ¡Estación Completada con Éxito! (3 Estrellas)";
+                cleanState = "Misión completada";
                 statusBrush = (Brush)FindResource("AppSuccessBrush");
             }
             else if (s.IsCurrentStation)
             {
                 status = "📍 ¡Tu Próximo Desafío Recomendado!";
+                cleanState = "Misión recomendada";
                 statusBrush = (Brush)FindResource("AppAccentBrush");
+                recommendedIndex = i;
             }
             else
             {
                 status = "🔒 Sendero por Desbloquear";
+                cleanState = "Misión disponible";
                 statusBrush = (Brush)FindResource("AppTextSecondaryBrush");
             }
 
@@ -96,10 +112,16 @@ public partial class RealmMapView : UserControl
                 StationNumberPrefix = $"Paso {i + 1}:",
                 StatusText = status,
                 StatusBrush = statusBrush,
-                AccessibleActionName = $"Entrar a la estación {s.Name}. {status}"
+                // Tarea 3: Etiqueta accesible limpia sin emojis: "{Estado}: {NombreMision}"
+                AccessibleActionName = $"{cleanState}: {s.Name}"
             });
         }
         ItemsStations.ItemsSource = stationDisplayList;
+
+        if (stationDisplayList.Count > 0)
+        {
+            ItemsStations.SelectedIndex = recommendedIndex;
+        }
 
         // Insignias del reino
         var badgeDisplayList = new List<BadgeDisplayItem>();
@@ -123,7 +145,55 @@ public partial class RealmMapView : UserControl
         }
         ItemsBadges.ItemsSource = badgeDisplayList;
 
-        _acc.Announce($"Mapa del Reino Matemágico. Has desbloqueado {unlockedCount} de {badges.Count} trofeos. Explora el sendero de aventuras.", speak: true, playTone: true);
+        // Tarea 1 y Tarea 2: Posicionar el foco en la estación recomendada al abrir el mapa
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
+        {
+            FocusSelectedStationItem();
+        });
+
+        _acc.Announce($"Mapa del Reino Matemágico. Has desbloqueado {unlockedCount} de {badges.Count} trofeos. Usa las flechas arriba y abajo para explorar las estaciones y presiona Enter para comenzar.", speak: true, playTone: true);
+    }
+
+    public void FocusSelectedStationItem()
+    {
+        if (ItemsStations.Items.Count > 0)
+        {
+            if (ItemsStations.SelectedIndex < 0)
+            {
+                ItemsStations.SelectedIndex = 0;
+            }
+            ItemsStations.UpdateLayout();
+            if (ItemsStations.ItemContainerGenerator.ContainerFromIndex(ItemsStations.SelectedIndex) is ListBoxItem stationItem)
+            {
+                stationItem.Focus();
+                System.Windows.Input.Keyboard.Focus(stationItem);
+                return;
+            }
+        }
+
+        BtnBackToMenu.Focus();
+        System.Windows.Input.Keyboard.Focus(BtnBackToMenu);
+    }
+
+    private void ItemsStations_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Space)
+        {
+            if (ItemsStations.SelectedItem is RealmStationDisplayItem selected && !string.IsNullOrEmpty(selected.TopicId))
+            {
+                e.Handled = true;
+                _acc.Audio.PlayNavigationClick();
+                StationSelected?.Invoke(selected.TopicId);
+            }
+        }
+    }
+
+    private void ItemsStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (IsLoaded && ItemsStations.SelectedItem is RealmStationDisplayItem)
+        {
+            _acc.Audio.PlayNavigationClick();
+        }
     }
 
     private void BtnStation_Click(object sender, RoutedEventArgs e)

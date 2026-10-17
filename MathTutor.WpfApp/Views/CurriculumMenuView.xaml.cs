@@ -45,14 +45,21 @@ public partial class CurriculumMenuView : UserControl
     {
         var profile = _acc.CurrentProfile;
 
+        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(profile.Age);
+        if (!allowedLevels.Contains(profile.CurrentLevel))
+        {
+            profile.CurrentLevel = AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
+        }
+
         TxtWelcomeUser.Text = $"¡Hola, {profile.Name}! Elige tu aventura";
-        TxtUserSummary.Text = $"Nivel: {GetAcademicLevelName(profile.CurrentLevel)} | Condición: {GetDisabilityName(profile.Disability)}";
+        TxtUserSummary.Text = $"Edad: {profile.Age} años | Nivel: {GetAcademicLevelName(profile.CurrentLevel)} | Condición: {GetDisabilityName(profile.Disability)}";
         TxtStarsCount.Text = profile.StarsTotal.ToString();
         TxtStreakCount.Text = profile.CurrentStreak.ToString();
 
-        var allTopics = _curriculum.GetAllTopics();
+        // Tarea 6: Filtrar las misiones permitidas para la edad del alumno
+        var allowedTopics = _curriculum.GetTopicsForAge(profile.Age);
         // Priorizar las misiones del nivel actual del alumno arriba, manteniendo el orden pedagógico en el resto
-        var orderedTopics = allTopics
+        var orderedTopics = allowedTopics
             .OrderByDescending(t => t.Level == profile.CurrentLevel)
             .ToList();
 
@@ -75,6 +82,13 @@ public partial class CurriculumMenuView : UserControl
 
             string btnLabel = isCompleted ? "🔄 Volver a Jugar" : "🚀 Entrar a Jugar";
 
+            // Tarea 3: Etiqueta accesible limpia sin emojis ni redundancia: "{Estado}: {NombreMision}"
+            string cleanState = isCompleted
+                ? "Misión completada"
+                : isCurrentLevel
+                    ? "Misión recomendada"
+                    : "Misión disponible";
+
             displayList.Add(new TopicDisplayItem
             {
                 TopicId = t.Id,
@@ -84,14 +98,67 @@ public partial class CurriculumMenuView : UserControl
                 PrinciplesSnippet = principles,
                 StatusBadgeText = statusBadge,
                 ActionButtonLabel = btnLabel,
-                AccessibleButtonName = $"{btnLabel}: {t.Title}. {statusBadge}"
+                AccessibleButtonName = $"{cleanState}: {t.Title}"
             });
         }
 
         ItemsTopics.ItemsSource = displayList;
 
-        int completedCount = profile.CompletedLessonIds.Count;
-        _acc.Announce($"Menú principal de aventuras. Nivel {GetAcademicLevelName(profile.CurrentLevel)}. Tienes {profile.StarsTotal} estrellas, {completedCount} de {allTopics.Count} misiones completadas. Las misiones de tu grado aparecen primero.", speak: true, playTone: true);
+        if (displayList.Count > 0)
+        {
+            ItemsTopics.SelectedIndex = 0;
+        }
+
+        // Tarea 1 y Tarea 2: Posicionar el foco real de teclado en el primer item de la lista de misiones
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
+        {
+            FocusFirstMissionItem();
+        });
+
+        int completedCount = allowedTopics.Count(t => profile.CompletedLessonIds.Contains(t.Id));
+        _acc.Announce($"Bienvenido a MathTutor, {profile.Name}. Menú de misiones para {GetAcademicLevelName(profile.CurrentLevel)}. Tienes {profile.StarsTotal} estrellas y {completedCount} de {allowedTopics.Count} misiones completadas. Usa las flechas arriba y abajo para elegir misión y presiona Enter para comenzar.", speak: true, playTone: true);
+    }
+
+    public void FocusFirstMissionItem()
+    {
+        if (ItemsTopics.Items.Count > 0)
+        {
+            if (ItemsTopics.SelectedIndex < 0)
+            {
+                ItemsTopics.SelectedIndex = 0;
+            }
+            ItemsTopics.UpdateLayout();
+            if (ItemsTopics.ItemContainerGenerator.ContainerFromIndex(ItemsTopics.SelectedIndex) is ListBoxItem firstItem)
+            {
+                firstItem.Focus();
+                System.Windows.Input.Keyboard.Focus(firstItem);
+                return;
+            }
+        }
+
+        BtnOpenRealmMap.Focus();
+        System.Windows.Input.Keyboard.Focus(BtnOpenRealmMap);
+    }
+
+    private void ItemsTopics_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Space)
+        {
+            if (ItemsTopics.SelectedItem is TopicDisplayItem selected && !string.IsNullOrEmpty(selected.TopicId))
+            {
+                e.Handled = true;
+                _acc.Audio.PlayNavigationClick();
+                TopicSelected?.Invoke(selected.TopicId);
+            }
+        }
+    }
+
+    private void ItemsTopics_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (IsLoaded && ItemsTopics.SelectedItem is TopicDisplayItem)
+        {
+            _acc.Audio.PlayNavigationClick();
+        }
     }
 
     private void BtnEnterTopic_Click(object sender, RoutedEventArgs e)
@@ -107,11 +174,6 @@ public partial class CurriculumMenuView : UserControl
     {
         _acc.Audio.PlayNavigationClick();
         RealmMapRequested?.Invoke();
-    }
-
-    private void Button_GotFocus(object sender, RoutedEventArgs e)
-    {
-        _acc.Audio.PlayNavigationClick();
     }
 
     private static string GetAcademicLevelName(AcademicLevel level) => level switch

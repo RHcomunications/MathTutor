@@ -58,18 +58,42 @@
             </Border>
 
             <!-- Título de las Estaciones del Reino -->
-            <TextBlock Text="🏰 Estaciones del Sendero de Aventuras:"
+            <TextBlock Text="🏰 Estaciones del Sendero de Aventuras (Usa las flechas Arriba/Abajo y Enter):"
                        FontSize="{DynamicResource AppSubHeaderFontSize}"
                        FontWeight="Bold"
                        Foreground="{DynamicResource AppAccentBrush}"
                        Margin="4,0,0,12"/>
 
-            <!-- Lista de Estaciones del Sendero -->
-            <ItemsControl x:Name="ItemsStations">
-                <ItemsControl.ItemTemplate>
+            <!-- Tarea 2 y Tarea 3: Lista de Estaciones del Sendero con navegación direccional por flechas -->
+            <ListBox x:Name="ItemsStations"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     HorizontalContentAlignment="Stretch"
+                     SelectionMode="Single"
+                     IsSynchronizedWithCurrentItem="True"
+                     KeyboardNavigation.DirectionalNavigation="Cycle"
+                     KeyboardNavigation.TabNavigation="Once"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.CanContentScroll="False"
+                     AutomationProperties.Name="Lista de estaciones del Mapa del Reino"
+                     AutomationProperties.HelpText="Usa las flechas arriba y abajo para cambiar de estación y presiona Enter o Espacio para comenzar."
+                     PreviewKeyDown="ItemsStations_PreviewKeyDown"
+                     SelectionChanged="ItemsStations_SelectionChanged">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0,0,0,14"/>
+                        <Setter Property="AutomationProperties.Name" Value="{Binding AccessibleActionName}"/>
+                        <Setter Property="AutomationProperties.HelpText" Value="Presiona Enter o Espacio para comenzar."/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource AccessibleCard}"
-                                Margin="0,0,0,14"
                                 BorderBrush="{DynamicResource AppBorderBrush}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -129,13 +153,16 @@
                                         MinWidth="130"
                                         Height="54"
                                         Tag="{Binding TopicId}"
+                                        Focusable="False"
+                                        IsTabStop="False"
                                         AutomationProperties.Name="{Binding AccessibleActionName}"
+                                        AutomationProperties.HelpText="Presiona Enter o Espacio para comenzar."
                                         Click="BtnStation_Click"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <!-- Título de la Sala de Trofeos -->
             <TextBlock Text="🏅 Sala de Trofeos e Insignias del Reino:"

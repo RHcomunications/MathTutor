@@ -32,23 +32,27 @@ public class SpeechService : IDisposable
     private bool _nvdaClientDllAvailable = true;
 
     /// <summary>
+    /// Canal B: Integración con el lector de pantalla del sistema (NVDA, JAWS, Narrador).
+    /// Permanece siempre activo (true por defecto) de forma independiente al audio interno (F2).
+    /// </summary>
+    public bool IsScreenReaderIntegrationEnabled
+    {
+        get => _enabled;
+        set => _enabled = value;
+    }
+
+    /// <summary>
     /// Acción delegada conectada por la ventana principal para disparar la región en vivo
     /// de Microsoft UI Automation (UIA LiveRegionChanged), compatible de forma nativa con
     /// NVDA, JAWS y el Narrador de Windows a la velocidad exacta del usuario.
+    /// El segundo parámetro indica si el anuncio es asertivo inmediato (true) o tras asentar foco (false).
     /// </summary>
-    public Action<string>? UiAutomationLiveRegionAnnouncer { get; set; }
+    public Action<string, bool>? UiAutomationLiveRegionAnnouncer { get; set; }
 
     public bool Enabled
     {
         get => _enabled;
-        set
-        {
-            _enabled = value;
-            if (!_enabled)
-            {
-                Stop();
-            }
-        }
+        set => _enabled = value;
     }
 
     /// <summary>
@@ -80,7 +84,7 @@ public class SpeechService : IDisposable
     /// Envía el texto directamente al lector de pantalla del sistema (NVDA, JAWS o Narrador)
     /// respetando el sintetizador y la velocidad del usuario.
     /// </summary>
-    public void Speak(string text, bool interruptPrevious = true)
+    public void Speak(string text, bool interruptPrevious = true, bool immediateLiveRegion = false)
     {
         if (!_enabled || string.IsNullOrWhiteSpace(text))
             return;
@@ -95,7 +99,15 @@ public class SpeechService : IDisposable
 
         // 3. Canal nativo universal de Windows (Microsoft UI Automation LiveRegionChanged):
         // Soportado nativamente por NVDA, JAWS y Narrador de Windows en WPF sin requerir DLLs externas.
-        UiAutomationLiveRegionAnnouncer?.Invoke(text);
+        UiAutomationLiveRegionAnnouncer?.Invoke(text, immediateLiveRegion);
+    }
+
+    /// <summary>
+    /// Emite un anuncio prioritario asertivo (Tarea 4) que interrumpe locuciones previas y notifica de inmediato.
+    /// </summary>
+    public void SpeakAssertive(string text)
+    {
+        Speak(text, interruptPrevious: true, immediateLiveRegion: true);
     }
 
     /// <summary>

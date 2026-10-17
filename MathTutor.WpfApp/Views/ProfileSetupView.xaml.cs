@@ -25,11 +25,12 @@ public partial class ProfileSetupView : UserControl
         LoadCurrentProfileData();
         _isInitializing = false;
 
-        // Poner el foco en el campo de nombre antes de anunciar para no interrumpir al lector de pantalla
+        // Tarea 1: Poner el foco real de teclado en el primer control interactivo antes de anunciar
         TxtName.Focus();
+        System.Windows.Input.Keyboard.Focus(TxtName);
 
         // Anunciar la pantalla actual al lector de pantalla del sistema (NVDA, JAWS o Narrador)
-        _acc.Announce("Pantalla de caracterización del alumno. Configura tu nombre, edad, nivel y condición para personalizar tu experiencia de aprendizaje.", speak: true, playTone: true);
+        _acc.Announce("Bienvenido a MathTutor. Pantalla de caracterización del alumno. Presiona Tab para navegar por las opciones.", speak: true, playTone: true);
     }
 
     private void PopulateDropdowns()
@@ -41,19 +42,8 @@ public partial class ProfileSetupView : UserControl
             CmbAge.Items.Add(new ComboBoxItem { Content = $"{i} años", Tag = i });
         }
 
-        // Niveles académicos completos
-        CmbAcademicLevel.Items.Clear();
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Jardín de Niños (3 a 5 años)", Tag = AcademicLevel.Kindergarten });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Primaria Baja (6 a 8 años - 1º y 2º)", Tag = AcademicLevel.EarlyElementary });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Primaria Media (9 a 10 años - 3º y 4º)", Tag = AcademicLevel.MiddleElementary });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Primaria Alta (11 a 12 años - 5º y 6º)", Tag = AcademicLevel.UpperElementary });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "1º de Secundaria (12 a 13 años)", Tag = AcademicLevel.SecondaryFirstGrade });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "2º de Secundaria (13 a 14 años)", Tag = AcademicLevel.SecondarySecondGrade });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "3º de Secundaria (14 a 15 años)", Tag = AcademicLevel.SecondaryThirdGrade });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "1º de Preparatoria / Bachillerato (15 a 16 años)", Tag = AcademicLevel.HighSchoolFirstGrade });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "2º de Preparatoria / Bachillerato (16 a 17 años)", Tag = AcademicLevel.HighSchoolSecondGrade });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "3º de Preparatoria / Bachillerato (17 a 18 años)", Tag = AcademicLevel.HighSchoolThirdGrade });
-        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Fundamentos de Programación y Algoritmos", Tag = AcademicLevel.ProgrammingFoundations });
+        // Tarea 6: Poblar dinámicamente solo los niveles escolares permitidos según la edad del alumno
+        PopulateAcademicLevelsForAge(_acc.CurrentProfile.Age);
 
         // Región / País de América Latina
         CmbRegion.Items.Clear();
@@ -93,12 +83,51 @@ public partial class ProfileSetupView : UserControl
         CmbFontSize.Items.Add(new ComboBoxItem { Content = "Gigante (34 pt)", Tag = FontSizeLevel.Huge });
     }
 
+    private void PopulateAcademicLevelsForAge(int age)
+    {
+        var allowedLevels = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(age);
+        CmbAcademicLevel.Items.Clear();
+
+        foreach (var level in allowedLevels)
+        {
+            CmbAcademicLevel.Items.Add(new ComboBoxItem
+            {
+                Content = GetAcademicLevelDisplayLabel(level),
+                Tag = level
+            });
+        }
+    }
+
+    private static string GetAcademicLevelDisplayLabel(AcademicLevel level) => level switch
+    {
+        AcademicLevel.Kindergarten => "Jardín de Niños (3 a 5 años)",
+        AcademicLevel.EarlyElementary => "Primaria Baja (6 a 8 años - 1º y 2º)",
+        AcademicLevel.MiddleElementary => "Primaria Media (9 a 10 años - 3º y 4º)",
+        AcademicLevel.UpperElementary => "Primaria Alta (11 a 12 años - 5º y 6º)",
+        AcademicLevel.SecondaryFirstGrade => "1º de Secundaria (12 a 13 años)",
+        AcademicLevel.SecondarySecondGrade => "2º de Secundaria (13 a 14 años)",
+        AcademicLevel.SecondaryThirdGrade => "3º de Secundaria (14 a 15 años)",
+        AcademicLevel.HighSchoolFirstGrade => "1º de Preparatoria / Bachillerato (15 a 16 años)",
+        AcademicLevel.HighSchoolSecondGrade => "2º de Preparatoria / Bachillerato (16 a 17 años)",
+        AcademicLevel.HighSchoolThirdGrade => "3º de Preparatoria / Bachillerato (17 a 18 años)",
+        AcademicLevel.ProgrammingFoundations => "Fundamentos de Programación y Algoritmos",
+        _ => "Jardín de Niños (3 a 5 años)"
+    };
+
     private void LoadCurrentProfileData()
     {
         var profile = _acc.CurrentProfile;
         TxtName.Text = profile.Name;
 
         SelectComboByTag(CmbAge, profile.Age);
+        PopulateAcademicLevelsForAge(profile.Age);
+
+        var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age);
+        if (!System.Linq.Enumerable.Contains(allowed, profile.CurrentLevel))
+        {
+            profile.CurrentLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
+        }
+
         SelectComboByTag(CmbAcademicLevel, profile.CurrentLevel);
         SelectComboByTag(CmbRegion, profile.Region);
         SelectComboByTag(CmbDisabilityType, profile.Disability);
@@ -170,21 +199,15 @@ public partial class ProfileSetupView : UserControl
         if (CmbAge.SelectedItem is ComboBoxItem item && item.Tag is int age)
         {
             _acc.CurrentProfile.Age = age;
-            var suggestedLevel = age switch
-            {
-                <= 5 => AcademicLevel.Kindergarten,
-                <= 8 => AcademicLevel.EarlyElementary,
-                <= 10 => AcademicLevel.MiddleElementary,
-                11 => AcademicLevel.UpperElementary,
-                12 => AcademicLevel.SecondaryFirstGrade,
-                13 => AcademicLevel.SecondarySecondGrade,
-                14 => AcademicLevel.SecondaryThirdGrade,
-                15 => AcademicLevel.HighSchoolFirstGrade,
-                16 => AcademicLevel.HighSchoolSecondGrade,
-                _ => AcademicLevel.HighSchoolThirdGrade
-            };
+            var suggestedLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(age);
+
+            _isInitializing = true;
+            PopulateAcademicLevelsForAge(age);
             SelectComboByTag(CmbAcademicLevel, suggestedLevel);
-            _acc.Announce($"Edad: {age} años");
+            _isInitializing = false;
+
+            _acc.CurrentProfile.CurrentLevel = suggestedLevel;
+            _acc.Announce($"Edad: {age} años. Nivel escolar ajustado a {GetAcademicLevelDisplayLabel(suggestedLevel)}.");
         }
     }
 
@@ -229,16 +252,21 @@ public partial class ProfileSetupView : UserControl
     private void ChkVoiceSynthesis_Changed(object sender, RoutedEventArgs e)
     {
         if (_isInitializing) return;
-        _acc.CurrentProfile.Preferences.EnableVoiceSynthesis = ChkVoiceSynthesis.IsChecked == true;
-        _acc.Speech.Enabled = _acc.CurrentProfile.Preferences.EnableVoiceSynthesis;
-        _acc.Announce(_acc.Speech.Enabled ? "Síntesis de voz habilitada" : "Síntesis de voz deshabilitada");
+        bool enabled = ChkVoiceSynthesis.IsChecked == true;
+        _acc.CurrentProfile.Preferences.EnableVoiceSynthesis = enabled;
+        _acc.IsInternalAudioEnabled = enabled && _acc.CurrentProfile.Preferences.PlayAudioCues;
+        _acc.Audio.Enabled = _acc.IsInternalAudioEnabled;
+        _acc.IsScreenReaderIntegrationEnabled = true;
+        _acc.Announce(enabled ? "Audio interno habilitado. El lector de pantalla permanece activo." : "Audio interno deshabilitado. El lector de pantalla permanece activo.");
     }
 
     private void ChkAudioCues_Changed(object sender, RoutedEventArgs e)
     {
         if (_isInitializing) return;
-        _acc.CurrentProfile.Preferences.PlayAudioCues = ChkAudioCues.IsChecked == true;
-        _acc.Audio.Enabled = _acc.CurrentProfile.Preferences.PlayAudioCues;
+        bool enabled = ChkAudioCues.IsChecked == true;
+        _acc.CurrentProfile.Preferences.PlayAudioCues = enabled;
+        _acc.IsInternalAudioEnabled = enabled;
+        _acc.Audio.Enabled = enabled;
         if (_acc.Audio.Enabled)
         {
             _acc.Audio.PlaySuccessChord();

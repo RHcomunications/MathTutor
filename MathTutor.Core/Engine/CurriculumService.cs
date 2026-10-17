@@ -65,6 +65,46 @@ public class CurriculumService
     }
 
     /// <summary>
+    /// Devuelve las misiones pedagógicas permitidas según la edad del alumno (Tarea 6).
+    /// </summary>
+    public List<PedagogicalTopic> GetTopicsForAge(int age)
+    {
+        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(age);
+        return GetAllTopics()
+            .FindAll(t => allowedLevels.Contains(t.Level));
+    }
+
+    /// <summary>
+    /// Obtiene la siguiente misión recomendada tras completar <paramref name="currentTopicId"/> (Tarea 7).
+    /// Busca dentro de los niveles permitidos para la edad del alumno.
+    /// </summary>
+    public PedagogicalTopic? GetNextTopic(string currentTopicId, UserProfile? profile = null)
+    {
+        var topics = profile != null ? GetTopicsForAge(profile.Age) : GetAllTopics();
+        if (topics.Count == 0)
+        {
+            topics = GetAllTopics();
+        }
+
+        int idx = topics.FindIndex(t => t.Id == currentTopicId);
+        if (idx >= 0 && idx + 1 < topics.Count)
+        {
+            return topics[idx + 1];
+        }
+
+        if (profile != null)
+        {
+            var nextUncompleted = topics.Find(t => t.Id != currentTopicId && !profile.CompletedLessonIds.Contains(t.Id));
+            if (nextUncompleted != null)
+            {
+                return nextUncompleted;
+            }
+        }
+
+        return topics.Count > 0 ? topics[0] : null;
+    }
+
+    /// <summary>
     /// Genera una serie de ejercicios que conecta el reto base de la lección con ejercicios procedimentales adaptados.
     /// </summary>
     public List<Exercise> GenerateAdaptiveExercises(PedagogicalTopic topic, UserProfile profile, int count = 3)

@@ -93,6 +93,32 @@ public class AccessibleAudioCueService
     }
 
     /// <summary>
+    /// Reproduce un acorde diagnóstico descendente suave cuando una respuesta es incorrecta (Tarea 4).
+    /// </summary>
+    public void PlayErrorChord()
+    {
+        if (!_enabled) return;
+        Task.Run(async () =>
+        {
+            try
+            {
+                int[] errorNotes = { 392, 330 }; // G4 -> E4 (intervalo diagnóstico descendente)
+                foreach (var note in errorNotes)
+                {
+                    using var wavStream = GenerateToneStream(note, 170, 0.38);
+                    using var player = new SoundPlayer(wavStream);
+                    player.Play();
+                    await Task.Delay(120);
+                }
+            }
+            catch
+            {
+                // Fallback seguro
+            }
+        });
+    }
+
+    /// <summary>
     /// Sonido sutil al mover el foco de teclado para orientación espacial.
     /// </summary>
     public void PlayNavigationClick()

@@ -539,4 +539,83 @@ public class PedagogyAndAccessibilityTests
         Assert.Equal(initialStreak + 1, profile.CurrentStreak);
         Assert.Contains(ex.Id, profile.CompletedExerciseIds);
     }
+
+    [Fact]
+    public void AdaptiveEngine_GetAllowedLevelsForAge_EnforcesAgeBracketRules()
+    {
+        // 3 a 5 años: únicamente Preescolar / Kínder
+        var kinderLevels = AdaptiveEngine.GetAllowedLevelsForAge(4);
+        Assert.Single(kinderLevels);
+        Assert.Contains(AcademicLevel.Kindergarten, kinderLevels);
+
+        // 6 a 12 años: Primaria Inicial, Media y Superior
+        var elementaryLevels = AdaptiveEngine.GetAllowedLevelsForAge(9);
+        Assert.Equal(3, elementaryLevels.Count);
+        Assert.Contains(AcademicLevel.EarlyElementary, elementaryLevels);
+        Assert.Contains(AcademicLevel.MiddleElementary, elementaryLevels);
+        Assert.Contains(AcademicLevel.UpperElementary, elementaryLevels);
+        Assert.DoesNotContain(AcademicLevel.SecondaryFirstGrade, elementaryLevels);
+
+        // 13 a 15 años: Secundaria 1º, 2º y 3º
+        var secondaryLevels = AdaptiveEngine.GetAllowedLevelsForAge(14);
+        Assert.Equal(3, secondaryLevels.Count);
+        Assert.Contains(AcademicLevel.SecondaryFirstGrade, secondaryLevels);
+        Assert.Contains(AcademicLevel.SecondarySecondGrade, secondaryLevels);
+        Assert.Contains(AcademicLevel.SecondaryThirdGrade, secondaryLevels);
+        Assert.DoesNotContain(AcademicLevel.HighSchoolFirstGrade, secondaryLevels);
+
+        // 16 años o más: todos los niveles incluyendo Preparatoria y Semilla de Programación
+        var highSchoolLevels = AdaptiveEngine.GetAllowedLevelsForAge(17);
+        Assert.Contains(AcademicLevel.HighSchoolFirstGrade, highSchoolLevels);
+        Assert.Contains(AcademicLevel.HighSchoolSecondGrade, highSchoolLevels);
+        Assert.Contains(AcademicLevel.HighSchoolThirdGrade, highSchoolLevels);
+        Assert.Contains(AcademicLevel.ProgrammingFoundations, highSchoolLevels);
+    }
+
+    [Fact]
+    public void AdaptiveEngine_GetRecommendedLevelForAge_ReturnsAppropriateDefaultLevel()
+    {
+        Assert.Equal(AcademicLevel.Kindergarten, AdaptiveEngine.GetRecommendedLevelForAge(4));
+        Assert.Equal(AcademicLevel.EarlyElementary, AdaptiveEngine.GetRecommendedLevelForAge(7));
+        Assert.Equal(AcademicLevel.MiddleElementary, AdaptiveEngine.GetRecommendedLevelForAge(10));
+        Assert.Equal(AcademicLevel.UpperElementary, AdaptiveEngine.GetRecommendedLevelForAge(12));
+        Assert.Equal(AcademicLevel.SecondaryFirstGrade, AdaptiveEngine.GetRecommendedLevelForAge(13));
+        Assert.Equal(AcademicLevel.SecondarySecondGrade, AdaptiveEngine.GetRecommendedLevelForAge(14));
+        Assert.Equal(AcademicLevel.SecondaryThirdGrade, AdaptiveEngine.GetRecommendedLevelForAge(15));
+        Assert.Equal(AcademicLevel.HighSchoolFirstGrade, AdaptiveEngine.GetRecommendedLevelForAge(16));
+        Assert.Equal(AcademicLevel.HighSchoolSecondGrade, AdaptiveEngine.GetRecommendedLevelForAge(17));
+        Assert.Equal(AcademicLevel.HighSchoolThirdGrade, AdaptiveEngine.GetRecommendedLevelForAge(18));
+    }
+
+    [Fact]
+    public void CurriculumService_GetTopicsForAge_FiltersOutInappropriateLevels()
+    {
+        var age5Topics = _curriculum.GetTopicsForAge(5);
+        Assert.NotEmpty(age5Topics);
+        Assert.All(age5Topics, t => Assert.Equal(AcademicLevel.Kindergarten, t.Level));
+
+        var age8Topics = _curriculum.GetTopicsForAge(8);
+        Assert.NotEmpty(age8Topics);
+        Assert.All(age8Topics, t =>
+            Assert.True(t.Level is AcademicLevel.EarlyElementary or AcademicLevel.MiddleElementary or AcademicLevel.UpperElementary));
+
+        var age14Topics = _curriculum.GetTopicsForAge(14);
+        Assert.NotEmpty(age14Topics);
+        Assert.All(age14Topics, t =>
+            Assert.True(t.Level is AcademicLevel.SecondaryFirstGrade or AcademicLevel.SecondarySecondGrade or AcademicLevel.SecondaryThirdGrade));
+
+        var age17Topics = _curriculum.GetTopicsForAge(17);
+        Assert.Equal(_curriculum.GetAllTopics().Count, age17Topics.Count);
+    }
+
+    [Fact]
+    public void CurriculumService_GetNextTopic_ResolvesNextSequentialMissionWithinAgeFilter()
+    {
+        var profile = new UserProfile { Age = 8 };
+        var nextFromAddition = _curriculum.GetNextTopic("elem_addition_01", profile);
+
+        Assert.NotNull(nextFromAddition);
+        Assert.Equal("elem_subtraction_01", nextFromAddition.Id);
+    }
 }
+

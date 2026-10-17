@@ -12,6 +12,65 @@ namespace MathTutor.Core.Engine;
 public class AdaptiveEngine
 {
     /// <summary>
+    /// Devuelve los niveles escolares permitidos para la edad del alumno (Tarea 6: Validación adaptativa Edad vs. Nivel Escolar).
+    /// Evita que niños pequeños vean o seleccionen por error niveles avanzados de Secundaria, Preparatoria o Programación.
+    /// </summary>
+    public static IReadOnlyList<AcademicLevel> GetAllowedLevelsForAge(int age) => age switch
+    {
+        >= 3 and <= 5 => new[]
+        {
+            AcademicLevel.Kindergarten
+        },
+        >= 6 and <= 12 => new[]
+        {
+            AcademicLevel.EarlyElementary,
+            AcademicLevel.MiddleElementary,
+            AcademicLevel.UpperElementary
+        },
+        >= 13 and <= 15 => new[]
+        {
+            AcademicLevel.SecondaryFirstGrade,
+            AcademicLevel.SecondarySecondGrade,
+            AcademicLevel.SecondaryThirdGrade
+        },
+        >= 16 => new[]
+        {
+            AcademicLevel.Kindergarten,
+            AcademicLevel.EarlyElementary,
+            AcademicLevel.MiddleElementary,
+            AcademicLevel.UpperElementary,
+            AcademicLevel.SecondaryFirstGrade,
+            AcademicLevel.SecondarySecondGrade,
+            AcademicLevel.SecondaryThirdGrade,
+            AcademicLevel.HighSchoolFirstGrade,
+            AcademicLevel.HighSchoolSecondGrade,
+            AcademicLevel.HighSchoolThirdGrade,
+            AcademicLevel.ProgrammingFoundations
+        },
+        _ => new[]
+        {
+            AcademicLevel.Kindergarten
+        }
+    };
+
+    /// <summary>
+    /// Sugiere el nivel escolar inicial óptimo dentro de los niveles permitidos para la edad indicada.
+    /// </summary>
+    public static AcademicLevel GetRecommendedLevelForAge(int age) => age switch
+    {
+        <= 5 => AcademicLevel.Kindergarten,
+        <= 8 => AcademicLevel.EarlyElementary,
+        <= 10 => AcademicLevel.MiddleElementary,
+        <= 12 => AcademicLevel.UpperElementary,
+        13 => AcademicLevel.SecondaryFirstGrade,
+        14 => AcademicLevel.SecondarySecondGrade,
+        15 => AcademicLevel.SecondaryThirdGrade,
+        16 => AcademicLevel.HighSchoolFirstGrade,
+        17 => AcademicLevel.HighSchoolSecondGrade,
+        _ => AcademicLevel.HighSchoolThirdGrade
+    };
+
+    /// <summary>
     /// Obtiene la instrucción adaptada a la edad y discapacidad del alumno.
     /// </summary>
     public string GetAdaptedInstruction(Exercise exercise, UserProfile profile)

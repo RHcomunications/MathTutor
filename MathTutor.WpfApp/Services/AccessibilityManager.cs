@@ -21,6 +21,20 @@ public class AccessibilityManager
     public AccessibleAudioCueService Audio { get; } = new();
     public ProfileStorageService Storage { get; } = new();
 
+    /// <summary>
+    /// Canal A (Controlado por F2): Audio y efectos acústicos internos del juego.
+    /// </summary>
+    public bool IsInternalAudioEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Canal B (Siempre activo por defecto): Comunicación nativa hacia lectores de pantalla externos (NVDA, JAWS, Narrador).
+    /// </summary>
+    public bool IsScreenReaderIntegrationEnabled
+    {
+        get => Speech.IsScreenReaderIntegrationEnabled;
+        set => Speech.IsScreenReaderIntegrationEnabled = value;
+    }
+
     public event Action? ThemeChanged;
     public event Action? FontSizeChanged;
     public event Action<string>? AnnouncementMade;
@@ -35,11 +49,16 @@ public class AccessibilityManager
     public void ApplyProfile(UserProfile profile)
     {
         CurrentProfile = profile;
-        Speech.Enabled = profile.Preferences.EnableVoiceSynthesis;
+
+        // Canal B: Siempre activo para garantizar que NVDA, JAWS y Narrador nunca queden mudos
+        IsScreenReaderIntegrationEnabled = true;
+
+        // Canal A: Audio interno del juego (controlado por F2 / preferencias)
+        IsInternalAudioEnabled = profile.Preferences.PlayAudioCues && profile.Preferences.EnableVoiceSynthesis;
+        Audio.Enabled = IsInternalAudioEnabled;
+
         Speech.SetRate(profile.Preferences.SpeechRate);
         Speech.SetVolume(profile.Preferences.SpeechVolume);
-
-        Audio.Enabled = profile.Preferences.PlayAudioCues;
 
         ApplyTheme(profile.Preferences.Theme);
         ApplyFontSize(profile.Preferences.FontSize);
@@ -68,8 +87,8 @@ public class AccessibilityManager
     }
 
     /// <summary>
-    /// Envía un anuncio directamente al lector de pantalla del sistema (NVDA, JAWS o Narrador de Windows)
-    /// respetando la velocidad y el sintetizador del usuario.
+    /// Envía un anuncio separando Canal B (lector de pantalla del sistema, siempre activo)
+    /// y Canal A (efectos de audio internos del juego, controlados por F2).
     /// </summary>
     public void Announce(string message, bool speak = true, bool playTone = false)
     {
@@ -77,14 +96,31 @@ public class AccessibilityManager
 
         AnnouncementMade?.Invoke(message);
 
-        if (playTone && Audio.Enabled)
+        // Canal A: Solo reproduce pistas sonoras internas si F2 no las ha desactivado
+        if (playTone && IsInternalAudioEnabled && Audio.Enabled)
         {
             Audio.PlayHintTone();
         }
 
-        if (speak && Speech.Enabled)
+        // Canal B: SIEMPRE envía al lector de pantalla externo (NVDA / JAWS / Narrador / UIA)
+        if (speak && IsScreenReaderIntegrationEnabled)
         {
-            Speech.Speak(message);
+            Speech.Speak(message, interruptPrevious: true, immediateLiveRegion: false);
+        }
+    }
+
+    /// <summary>
+    /// Emite un anuncio asertivo prioritario e inmediato hacia el lector de pantalla (Tarea 4).
+    /// </summary>
+    public void AnnounceAssertive(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message)) return;
+
+        AnnouncementMade?.Invoke(message);
+
+        if (IsScreenReaderIntegrationEnabled)
+        {
+            Speech.SpeakAssertive(message);
         }
     }
 
@@ -103,7 +139,7 @@ public class AccessibilityManager
         };
 
         ApplyTheme(nextTheme);
-        Announce($"Esquema de contraste cambiado a: {GetThemeDisplayName(nextTheme)}");
+        AnnounceAssertive($"Esquema de contraste cambiado a: {GetThemeDisplayName(nextTheme)}");
     }
 
     /// <summary>
@@ -121,21 +157,22 @@ public class AccessibilityManager
         };
 
         ApplyFontSize(nextSize);
-        Announce($"Tamaño de texto ajustado a: {GetFontSizeDisplayName(nextSize)}");
+        AnnounceAssertive($"Tamaño de texto ajustado a: {GetFontSizeDisplayName(nextSize)}");
     }
 
+    /// <summary>
+    /// Conmuta únicamente el audio interno del juego (Canal A - Tecla F2).
+    /// El canal del lector de pantalla del sistema (Canal B) permanece siempre activo (Tarea 5).
+    /// </summary>
     public void ToggleSpeech()
     {
-        bool newState = !CurrentProfile.Preferences.EnableVoiceSynthesis;
-        CurrentProfile.Preferences.EnableVoiceSynthesis = newState;
+        IsInternalAudioEnabled = !IsInternalAudioEnabled;
+        CurrentProfile.Preferences.EnableVoiceSynthesis = IsInternalAudioEnabled;
+        CurrentProfile.Preferences.PlayAudioCues = IsInternalAudioEnabled;
+        Audio.Enabled = IsInternalAudioEnabled;
 
-        string status = newState ? "activados" : "desactivados";
-        string msg = $"Anuncios automáticos para lector de pantalla {status}";
-
-        // Si se acaba de desactivar, anunciamos este último aviso antes de silenciar los anuncios automáticos
-        Speech.Enabled = true;
-        Announce(msg, speak: true);
-        Speech.Enabled = newState;
+        string status = IsInternalAudioEnabled ? "activado" : "desactivado";
+        AnnounceAssertive($"Audio interno del juego {status}. El lector de pantalla permanece activo.");
     }
 
     public void ApplyTheme(HighContrastTheme theme)

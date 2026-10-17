@@ -32,7 +32,7 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
   - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de 102 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de 106 pruebas unitarias xUnit).
 
 ---
 
@@ -69,18 +69,19 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
 | Tecla | Acción |
 |---|---|
 | **F1** | Repetir en voz alta la última instrucción o explicación |
-| **F2** | Activar / Desactivar la síntesis de voz (TTS) |
+| **F2** | Activar / Desactivar los sonidos internos del juego (el lector de pantalla permanece siempre activo) |
 | **F3** | Cambiar cíclicamente el esquema de contraste (Lúdico, Alto Contraste Oscuro, Claro, Baja Estimulación) |
 | **F4** | Cambiar cíclicamente el tamaño de letra (Estándar, Grande, Muy Grande, Gigante) |
 | **F5** | Abrir la pantalla de caracterización y perfil del alumno |
 | **F6** | Abrir el Mapa del Reino y Medallero de Insignias (45 estaciones) |
-| **Escape** | Volver al menú principal de aventuras |
+| **Flechas (↑ ↓ ← →)** | Navegar misión por misión en el menú principal y en el Mapa del Reino |
+| **Escape** | Volver al menú principal de aventuras (o cerrar el diálogo al terminar una misión) |
 | **1, 2, 3** | Responder directamente la opción correspondiente en el minijuego |
-| **Enter / Espacio** | Activar botón seleccionado o avanzar al siguiente reto tras acertar |
+| **Enter / Espacio** | Iniciar misión seleccionada o avanzar a la siguiente misión tras completar un nivel |
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.0.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.1.0`)
 
 Desde la terminal en esta carpeta:
 
@@ -88,9 +89,10 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build -c Release
 
-# Ejecutar las 102 pruebas unitarias automatizadas
+# Ejecutar las 106 pruebas unitarias automatizadas
 dotnet test -c Release
 
 # Iniciar la aplicación interactiva
 dotnet run --project MathTutor.WpfApp/MathTutor.WpfApp.csproj -c Release
 ```
+
