@@ -104,4 +104,46 @@ public class ExerciseGeneratorTests
             Assert.Contains(ex.Options, o => o.IsCorrect);
         }
     }
+
+    [Fact]
+    public void GenerateMultiplicationArrayExercise_MatchesProductAndGrid()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.EarlyElementary, Age = 8 };
+        var rng = new Random(400);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateMultiplicationArrayExercise(profile, rng);
+            Assert.Equal(ex.ExpectedResult, ex.ItemsGroupA.Count);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateDivisionFairSharingExercise_DividesEqually()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.EarlyElementary, Age = 8 };
+        var rng = new Random(500);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateDivisionFairSharingExercise(profile, rng);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_MultiplicationAndDivision_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.EarlyElementary, Age = 8 };
+        
+        var multList = _generator.GenerateExercisesForTopic("elem_multiplication_01", profile, count: 4);
+        Assert.Equal(4, multList.Count);
+        Assert.All(multList, ex => Assert.Equal(GamePlayType.MultiplicationArray, ex.GameType));
+
+        var divList = _generator.GenerateExercisesForTopic("elem_division_01", profile, count: 4);
+        Assert.Equal(4, divList.Count);
+        Assert.All(divList, ex => Assert.Equal(GamePlayType.DivisionFairSharing, ex.GameType));
+    }
 }

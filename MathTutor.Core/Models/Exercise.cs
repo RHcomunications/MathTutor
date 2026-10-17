@@ -16,7 +16,9 @@ public enum GamePlayType
     ZeroNeutralProperty,      // La nube transparente: sumar o restar cero no cambia nada (a+0 = a)
     SubtractionTakeAway,      // Quitar estrellas o despedir amiguitos y contar los que quedan
     InverseRelation,          // Deshacer el camino: si 3+2=5, entonces 5-2=3
-    PatternAndLoopSeed         // Semilla a programación: repetir patrones y saltos idénticos
+    PatternAndLoopSeed,       // Semilla a programación: repetir patrones y saltos idénticos
+    MultiplicationArray,      // Matrices rectangulares de filas x columnas y grupos iguales
+    DivisionFairSharing       // Reparto equitativo entre amigos sin que sobre nada
 }
 
 /// <summary>

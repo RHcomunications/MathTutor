@@ -19,6 +19,8 @@ public class CurriculumService
             BuildKindergartenCountingTopic(),
             BuildAdditionAndPropertiesTopic(),
             BuildSubtractionAndInverseTopic(),
+            BuildMultiplicationAndArraysTopic(),
+            BuildDivisionAndFairSharingTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -376,6 +378,132 @@ public class CurriculumService
 
         topic.Exercises.Add(ex1);
 
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 5: Multiplicación Temprana (Matrices rectangulares, grupos iguales y conmutatividad del producto)
+    /// </summary>
+    private PedagogicalTopic BuildMultiplicationAndArraysTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_multiplication_01",
+            Title = "El Huerto de las Multiplicaciones: Filas, Columnas y Grupos Iguales",
+            Level = AcademicLevel.EarlyElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido al Gran Huerto de los Patrones! Multiplicar no es memorizar listas aburridas: es descubrir la belleza de organizar cosas en filas y columnas rectangulares o armar grupos exactamente iguales. Cuando tienes 3 filas con 4 zanahorias, ¡la multiplicación te dice el total en un pestañeo!",
+            NarrativeIntroSimplified = "Multiplicar es sumar grupos iguales muy rápido. Si tienes 3 filas con 2 manzanas, sumas 2 + 2 + 2.",
+            CoreConceptExplanation = "Multiplicar significa calcular el total de varios grupos que tienen la misma cantidad de elementos. Se representa con matrices de filas por columnas. Su superpoder es la conmutatividad: 2 filas de 4 manzanas dan exactamente el mismo total que 4 filas de 2 manzanas (2 × 4 = 4 × 2 = 8).",
+            CoreConceptSimplified = "Multiplicar es juntar filas que tienen la misma cantidad de cosas.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Multiplicación como suma repetida de sumandos iguales",
+                "Disposición rectangular en matrices (filas × columnas)",
+                "Propiedad conmutativa del producto: a × b = b × a"
+            },
+            CongratulationMessage = "¡Fabuloso! Ahora comprendes la multiplicación a través de filas y grupos iguales. ¡Eres un maestro de los patrones!"
+        };
+
+        // Ejercicio introductorio base
+        var ex1 = new Exercise
+        {
+            Id = "mult_ex_01",
+            Title = "Las Filas de Manzanas del Huerto",
+            GameType = GamePlayType.MultiplicationArray,
+            TargetAgeMin = 6,
+            TargetAgeMax = 9,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = 6,
+            StandardInstruction = "Cosmo organizó sus manzanas en 2 filas bien ordenadas. Cada fila tiene 3 manzanas rojas. ¿Cuántas manzanas hay en total? ¡Es la multiplicación 2 × 3!",
+            SimplifiedInstruction = "Hay 2 filas. Cada fila tiene 3 manzanas. ¿Cuántas hay en total?",
+            ScreenReaderDescription = "Una cuadrícula de 2 filas con 3 manzanas cada una. Total: 6 manzanas.",
+            FirstHint = "Suma la primera fila más la segunda fila: 3 + 3...",
+            SecondHintDetailed = "2 veces 3 es igual a 6. 2 × 3 = 6.",
+            ExplanationOfSuccess = "¡Extraordinario! 2 × 3 = 6. Dos filas de tres manzanas nos dan seis manzanas en total."
+        };
+
+        for (int i = 1; i <= 6; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"m_item_{i}",
+                Name = $"Manzana #{i}",
+                EmojiSymbol = "🍎",
+                AccessibleDescription = $"Manzana número {i} del huerto",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 manzanas", Value = 5, IsCorrect = false, SpeechFeedback = "Mmm, te falta una manzana. Recuerda que son 3 + 3.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "6 manzanas (2 × 3)", Value = 6, IsCorrect = true, SpeechFeedback = "¡Exacto! 2 veces 3 es igual a 6.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "7 manzanas", Value = 7, IsCorrect = false, SpeechFeedback = "Son solo 2 filas de 3, no agregamos de más.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 6: División Temprana (Reparto equitativo y relación inversa con el producto)
+    /// </summary>
+    private PedagogicalTopic BuildDivisionAndFairSharingTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_division_01",
+            Title = "El Banquete de los Amigos: División y Reparto Equitativo",
+            Level = AcademicLevel.EarlyElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "En el Reino Matemágico la regla de oro de la amistad es la equidad: cuando tenemos tesoros o deliciosas frutas para compartir, ¡todos los amigos reciben exactamente la misma cantidad! Dividir es repartir en partes iguales para que todos celebren contentos.",
+            NarrativeIntroSimplified = "Dividir es repartir cosas entre amigos para que todos tengan lo mismo y nadie se quede sin nada.",
+            CoreConceptExplanation = "Dividir significa repartir una cantidad total en partes exactamente iguales entre un número de receptores o grupos. Además, es el camino inverso de la multiplicación: si 2 amigos reciben 3 galletas cada uno (2 × 3 = 6), entonces 6 galletas repartidas entre 2 amigos da 3 a cada uno (6 ÷ 2 = 3).",
+            CoreConceptSimplified = "Dividir es dar una porción igual a cada amigo sin que sobre nada.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto fundamental de división como reparto equitativo (Fair Sharing)",
+                "Partición exacta en partes iguales",
+                "Relación inversa entre la multiplicación y la división: (a × b = c) <=> (c ÷ b = a)"
+            },
+            CongratulationMessage = "¡Felicidades! Eres el repartidor más justo del reino. Comprendes cómo compartir y dividir con equidad."
+        };
+
+        // Ejercicio introductorio base
+        var ex1 = new Exercise
+        {
+            Id = "div_ex_01",
+            Title = "El Reparto de Bellotas entre Ardillas",
+            GameType = GamePlayType.DivisionFairSharing,
+            TargetAgeMin = 6,
+            TargetAgeMax = 9,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = 3,
+            StandardInstruction = "Tenemos 6 ricas bellotas para repartir equitativamente entre 2 ardillitas amigas. ¿Cuántas bellotas le tocan a cada ardillita para que sea perfectamente justo? ¡Es 6 ÷ 2!",
+            SimplifiedInstruction = "Tienes 6 bellotas para 2 ardillas. Repártelas en partes iguales. ¿Cuántas le tocan a cada una?",
+            ScreenReaderDescription = "6 bellotas en el centro y 2 ardillitas esperando su parte igual.",
+            FirstHint = "Si le das 1 a cada una gastas 2. Si le das otra a cada una gastas 4. Con otra más gastas las 6.",
+            SecondHintDetailed = "6 repartido entre 2 ardillas da 3 bellotas a cada una.",
+            ExplanationOfSuccess = "¡Magnífico! 6 ÷ 2 = 3. Cada ardillita recibe 3 bellotas y ninguna se queda triste."
+        };
+
+        for (int i = 1; i <= 6; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"div_m_{i}",
+                Name = $"Bellota #{i}",
+                EmojiSymbol = "🌰",
+                AccessibleDescription = $"Bellota número {i} para repartir",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 bellotas a cada una", Value = 2, IsCorrect = false, SpeechFeedback = "Con 2 a cada una sólo repartes 4, todavía te sobran bellotas.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "3 bellotas a cada una", Value = 3, IsCorrect = true, SpeechFeedback = "¡Exacto! 6 dividido entre 2 es igual a 3.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4 bellotas a cada una", Value = 4, IsCorrect = false, SpeechFeedback = "No alcanzan para darle 4 a cada una, necesitarías 8 bellotas.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
         return topic;
     }
 }

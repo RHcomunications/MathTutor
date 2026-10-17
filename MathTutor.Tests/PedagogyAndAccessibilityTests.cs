@@ -57,6 +57,29 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void MultiplicationTopic_CoversArraysAndProperties()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var multTopic = topics.FirstOrDefault(t => t.Id == "elem_multiplication_01");
+
+        Assert.NotNull(multTopic);
+        Assert.Contains(multTopic.PrinciplesAddressed, p => p.Contains("suma repetida"));
+        Assert.Contains(multTopic.PrinciplesAddressed, p => p.Contains("matrices"));
+        Assert.Contains(multTopic.PrinciplesAddressed, p => p.Contains("conmutativa"));
+    }
+
+    [Fact]
+    public void DivisionTopic_CoversFairSharingAndInverse()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var divTopic = topics.FirstOrDefault(t => t.Id == "elem_division_01");
+
+        Assert.NotNull(divTopic);
+        Assert.Contains(divTopic.PrinciplesAddressed, p => p.Contains("reparto equitativo"));
+        Assert.Contains(divTopic.PrinciplesAddressed, p => p.Contains("inversa"));
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

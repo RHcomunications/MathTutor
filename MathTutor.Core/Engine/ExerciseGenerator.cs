@@ -310,6 +310,107 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de multiplicación temprana mediante matrices rectangulares (filas x columnas) y grupos iguales.
+    /// </summary>
+    public Exercise GenerateMultiplicationArrayExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 6);
+
+        int rows = isSimplified ? rng.Next(2, 4) : rng.Next(2, 5);
+        int cols = isSimplified ? rng.Next(1, 3) : rng.Next(2, 5);
+        int total = rows * cols;
+
+        var visual = ItemVisualTypes[rng.Next(ItemVisualTypes.Length)];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_mult_{Guid.NewGuid():N}",
+            Title = $"El Huerto Mágico: Filas de {visual.Name}s",
+            GameType = GamePlayType.MultiplicationArray,
+            TargetAgeMin = 6,
+            TargetAgeMax = 9,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = total,
+            StandardInstruction = $"En el huerto de Cosmo plantamos {rows} filas con {cols} {visual.Name.ToLower()}s en cada fila. ¿Cuántas hay en total? ¡Calcula {rows} × {cols}!",
+            SimplifiedInstruction = $"Hay {rows} grupitos. Cada grupito tiene {cols} {visual.Name.ToLower()}s. ¿Cuántas hay en total?",
+            ScreenReaderDescription = $"Una cuadrícula de {rows} filas por {cols} columnas con {visual.Name.ToLower()}s. Total: {total}.",
+            FirstHint = $"Suma cada fila: {string.Join(" + ", Enumerable.Repeat(cols.ToString(), rows))}...",
+            SecondHintDetailed = $"{rows} veces {cols} es igual a {total}.",
+            ExplanationOfSuccess = $"¡Espectacular! {rows} × {cols} = {total}. Multiplicar es una forma rápida de sumar grupos iguales: ¡{rows} veces {cols} da {total}!"
+        };
+
+        int itemOrder = 1;
+        for (int r = 1; r <= rows; r++)
+        {
+            for (int c = 1; c <= cols; c++)
+            {
+                ex.ItemsGroupA.Add(new ManipulableItem
+                {
+                    Id = $"item_{r}_{c}",
+                    Name = $"{visual.Name} (Fila {r}, Col {c})",
+                    EmojiSymbol = visual.Emoji,
+                    AccessibleDescription = $"{visual.Name} en fila {r}, columna {c}",
+                    OrderIndex = itemOrder,
+                    MusicalPitchHz = PentatonicScaleHz[(itemOrder - 1) % PentatonicScaleHz.Length]
+                });
+                itemOrder++;
+            }
+        }
+
+        BuildOptions(ex, total, min: Math.Max(1, total - 3), max: total + 3, unitLabel: visual.Name.ToLower() + "s", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de división temprana mediante reparto equitativo (Fair Sharing).
+    /// </summary>
+    public Exercise GenerateDivisionFairSharingExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 6);
+
+        int friends = rng.Next(2, 4); // 2 o 3 amigos
+        int sharePerFriend = isSimplified ? rng.Next(1, 4) : rng.Next(2, 5); // 1 a 3 (simplificado) o 2 a 4
+        int total = friends * sharePerFriend;
+
+        var visual = ItemVisualTypes[rng.Next(ItemVisualTypes.Length)];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_div_{Guid.NewGuid():N}",
+            Title = "El Banquete Justo: Reparto Equitativo",
+            GameType = GamePlayType.DivisionFairSharing,
+            TargetAgeMin = 6,
+            TargetAgeMax = 9,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = sharePerFriend,
+            StandardInstruction = $"Tenemos {total} {visual.Name.ToLower()}s deliciosas para repartir en partes exactamente iguales entre {friends} amiguitos. ¿Cuántas le tocan a cada amiguito? ¡Calcula {total} ÷ {friends}!",
+            SimplifiedInstruction = $"Reparte {total} {visual.Name.ToLower()}s entre {friends} amiguitos. A todos les toca lo mismo. ¿Cuántas le tocan a cada uno?",
+            ScreenReaderDescription = $"Hay {total} {visual.Name.ToLower()}s en la mesa y {friends} amigos esperando su porción equitativa.",
+            FirstHint = $"Si le das una a cada amigo, gastas {friends}. Si repites hasta que no quede ninguna, ¿cuántas tendrá cada uno?",
+            SecondHintDetailed = $"{total} repartido entre {friends} es igual a {sharePerFriend} para cada uno.",
+            ExplanationOfSuccess = $"¡Brillante y equitativo! {total} ÷ {friends} = {sharePerFriend}. Dividir consiste en repartir en partes exactamente iguales sin que nadie quede triste."
+        };
+
+        for (int i = 0; i < total; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"div_item_{i + 1}",
+                Name = $"{visual.Name} {i + 1}",
+                EmojiSymbol = visual.Emoji,
+                AccessibleDescription = $"{visual.Name} para repartir número {i + 1}",
+                OrderIndex = i + 1,
+                MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, sharePerFriend, min: 1, max: sharePerFriend + 3, unitLabel: $"{visual.Name.ToLower()}s a cada uno", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -333,6 +434,10 @@ public class ExerciseGenerator
                 },
 
                 "elem_subtraction_01" => GenerateSubtractionExercise(profile, rng),
+
+                "elem_multiplication_01" => GenerateMultiplicationArrayExercise(profile, rng),
+
+                "elem_division_01" => GenerateDivisionFairSharingExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };
