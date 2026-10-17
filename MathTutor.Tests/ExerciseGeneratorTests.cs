@@ -146,4 +146,64 @@ public class ExerciseGeneratorTests
         Assert.Equal(4, divList.Count);
         Assert.All(divList, ex => Assert.Equal(GamePlayType.DivisionFairSharing, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateFractionPartsExercise_MatchesNumeratorAndTotalItems()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.MiddleElementary, Age = 9 };
+        var rng = new Random(600);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateFractionPartsExercise(profile, rng);
+            Assert.Equal(GamePlayType.FractionParts, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 1 && ex.ExpectedResult <= ex.ItemsGroupA.Count);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateFractionEquivalenceExercise_HasValidCorrectOption()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.MiddleElementary, Age = 9 };
+        var rng = new Random(700);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateFractionEquivalenceExercise(profile, rng);
+            Assert.Equal(GamePlayType.FractionEquivalence, ex.GameType);
+            Assert.Equal(1, ex.ExpectedResult);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == 1);
+        }
+    }
+
+    [Fact]
+    public void GenerateMultiplicationDistributiveExercise_CalculatesCorrectProduct()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.MiddleElementary, Age = 9 };
+        var rng = new Random(800);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateMultiplicationDistributiveExercise(profile, rng);
+            Assert.Equal(GamePlayType.MultiplicationDistributive, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 20);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_FractionsAndDistributive_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.MiddleElementary, Age = 9 };
+
+        var fracList = _generator.GenerateExercisesForTopic("elem_fractions_01", profile, count: 4);
+        Assert.Equal(4, fracList.Count);
+        Assert.Contains(fracList, ex => ex.GameType == GamePlayType.FractionParts);
+        Assert.Contains(fracList, ex => ex.GameType == GamePlayType.FractionEquivalence);
+
+        var distList = _generator.GenerateExercisesForTopic("elem_distributive_01", profile, count: 4);
+        Assert.Equal(4, distList.Count);
+        Assert.All(distList, ex => Assert.Equal(GamePlayType.MultiplicationDistributive, ex.GameType));
+    }
 }

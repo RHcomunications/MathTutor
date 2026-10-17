@@ -80,6 +80,32 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void FractionsTopic_CoversNumeratorDenominatorAndEquivalence()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var fracTopic = topics.FirstOrDefault(t => t.Id == "elem_fractions_01");
+
+        Assert.NotNull(fracTopic);
+        Assert.Equal(AcademicLevel.MiddleElementary, fracTopic.Level);
+        Assert.Contains(fracTopic.PrinciplesAddressed, p => p.Contains("numerador") || p.Contains("todo"));
+        Assert.Contains(fracTopic.PrinciplesAddressed, p => p.Contains("equivalencia"));
+        Assert.True(fracTopic.Exercises.Count >= 2);
+    }
+
+    [Fact]
+    public void DistributiveTopic_CoversDecompositionAndProperties()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var distTopic = topics.FirstOrDefault(t => t.Id == "elem_distributive_01");
+
+        Assert.NotNull(distTopic);
+        Assert.Equal(AcademicLevel.MiddleElementary, distTopic.Level);
+        Assert.Contains(distTopic.PrinciplesAddressed, p => p.Contains("distributiva"));
+        Assert.Contains(distTopic.PrinciplesAddressed, p => p.Contains("Descomposición"));
+        Assert.True(distTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

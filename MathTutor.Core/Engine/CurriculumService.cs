@@ -21,6 +21,8 @@ public class CurriculumService
             BuildSubtractionAndInverseTopic(),
             BuildMultiplicationAndArraysTopic(),
             BuildDivisionAndFairSharingTopic(),
+            BuildFractionsTopic(),
+            BuildDistributiveMultiplicationTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -502,6 +504,142 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 bellotas a cada una", Value = 2, IsCorrect = false, SpeechFeedback = "Con 2 a cada una sólo repartes 4, todavía te sobran bellotas.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "3 bellotas a cada una", Value = 3, IsCorrect = true, SpeechFeedback = "¡Exacto! 6 dividido entre 2 es igual a 3.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4 bellotas a cada una", Value = 4, IsCorrect = false, SpeechFeedback = "No alcanzan para darle 4 a cada una, necesitarías 8 bellotas.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 6 (4º Grado): Fracciones y Partes Iguales (Numerador, Denominador y Equivalencias)
+    /// </summary>
+    private PedagogicalTopic BuildFractionsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_fractions_01",
+            Title = "La Pastelería Mágica: El Secreto de las Fracciones y Partes Iguales",
+            Level = AcademicLevel.MiddleElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenidos a la Pastelería Mágica! Cuando compartimos un delicioso pastel o una pizza con amigos, no siempre comemos piezas enteras: las cortamos en rebanadas exactamente iguales. ¡Eso son las fracciones!",
+            NarrativeIntroSimplified = "En la pastelería cortamos pasteles en partes iguales. Las partes de un todo se llaman fracciones.",
+            CoreConceptExplanation = "Una fracción expresa partes de un todo dividido en pedazos iguales. El número de abajo (denominador) indica en cuántas partes iguales se dividió el todo. El número de arriba (numerador) indica cuántas partes tomamos o comemos. Además, dos fracciones con números distintos pueden representar la misma cantidad: ¡1/2 es exactamente igual a 2/4!",
+            CoreConceptSimplified = "El número de abajo dice el total de partes iguales. El de arriba dice cuántas partes tomaste.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Comprensión de la fracción como parte de un todo unitario",
+                "Identificación del numerador (partes consideradas) y denominador (total de partes congruentes)",
+                "Noción de equivalencia de fracciones (representación visual de 1/2 = 2/4)"
+            },
+            CongratulationMessage = "¡Formidable! Ahora eres un maestro pastelero de las fracciones. Sabes leer partes iguales y encontrar equivalencias mágicas."
+        };
+
+        // Ejercicio 1: Numerador y denominador en un pastel
+        var ex1 = new Exercise
+        {
+            Id = "frac_ex_01",
+            Title = "El Pastel de Fresas de la Pastelería",
+            GameType = GamePlayType.FractionParts,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = 3,
+            StandardInstruction = "Un pastel se cortó en 4 rebanadas iguales. Los amigos comieron 3 de esas rebanadas. ¿Cuál es el numerador (la cantidad de rebanadas que se comieron)?",
+            SimplifiedInstruction = "El pastel tiene 4 pedazos iguales. Se comieron 3. ¿Cuántos pedazos se comieron?",
+            ScreenReaderDescription = "Un pastel redondo dividido en 4 rebanadas idénticas. 3 rebanadas han sido tomadas y queda 1 rebanada en el plato.",
+            FirstHint = "El número de arriba (numerador) indica las partes tomadas: cuenta cuántas rebanadas se comieron.",
+            SecondHintDetailed = "Se comieron 3 de 4 partes. El numerador es 3 y la fracción es 3/4.",
+            ExplanationOfSuccess = "¡Correcto! El numerador es 3. La fracción es 3/4: tomaron 3 partes de un total de 4 partes iguales."
+        };
+
+        for (int i = 1; i <= 4; i++)
+        {
+            bool isTaken = i <= 3;
+            ex1.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"frac_slice_{i}",
+                Name = $"Rebanada {i}",
+                EmojiSymbol = "🍰",
+                AccessibleDescription = isTaken ? $"Rebanada {i} comida" : $"Rebanada {i} disponible",
+                OrderIndex = i,
+                MusicalPitchHz = Frequencies[(i - 1) % Frequencies.Length]
+            });
+        }
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 rebanadas", Value = 2, IsCorrect = false, SpeechFeedback = "No, se tomaron más de 2 rebanadas. Cuenta las tomadas.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "3 rebanadas (3/4)", Value = 3, IsCorrect = true, SpeechFeedback = "¡Magnífico! 3 rebanadas de 4. El numerador es 3.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "4 rebanadas", Value = 4, IsCorrect = false, SpeechFeedback = "4 es el total de pedazos (el denominador), pero solo se comieron 3.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+
+        // Ejercicio 2: Equivalencia (1/2 = 2/4)
+        var ex2 = new Exercise
+        {
+            Id = "frac_ex_02",
+            Title = "El Espejo de las Fracciones Equivalentes",
+            GameType = GamePlayType.FractionEquivalence,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = 1,
+            StandardInstruction = "Ada comió 1/2 de su barra de chocolate. Tito comió 2/4 de una barra exactamente igual. ¿Ambos comieron la misma cantidad de chocolate?",
+            SimplifiedInstruction = "¿La mitad (1/2) es del mismo tamaño que 2 cuartos (2/4)?",
+            ScreenReaderDescription = "Dos barras de chocolate iguales. Una partida a la mitad (1 de 2), la otra en 4 pedazos (2 de 4). Ambas cubren exactamente el mismo tamaño.",
+            FirstHint = "Piensa: si divides 1 rebanada grande en 2 pequeñas, tienes 2 de 4. ¡Ocupan el mismo espacio!",
+            SecondHintDetailed = "1/2 y 2/4 son fracciones equivalentes: representan la misma cantidad de chocolate.",
+            ExplanationOfSuccess = "¡Exacto! 1/2 y 2/4 son fracciones equivalentes. Aunque los números cambien, el tamaño de chocolate comido es idéntico."
+        };
+
+        ex2.Options.Add(new ExerciseOption { Id = "opt_yes", Label = "¡Sí! Son equivalentes (1/2 = 2/4)", Value = 1, IsCorrect = true, SpeechFeedback = "¡Exacto! Son fracciones equivalentes.", AccessibleKeyShortcut = "1" });
+        ex2.Options.Add(new ExerciseOption { Id = "opt_no", Label = "No, uno comió más que el otro", Value = 2, IsCorrect = false, SpeechFeedback = "Aunque 4 pedazos son más pequeños, 2 de ellos hacen exactamente media barra.", AccessibleKeyShortcut = "2" });
+
+        topic.Exercises.Add(ex2);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 7 (4º Grado): Multiplicación por Descomposición y Propiedad Distributiva
+    /// </summary>
+    private PedagogicalTopic BuildDistributiveMultiplicationTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "elem_distributive_01",
+            Title = "Multiplicar Descomponiendo en Bloques: Propiedad Distributiva",
+            Level = AcademicLevel.MiddleElementary,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Cuando los números se hacen grandes y retadores, ¡los matemáticos inteligentes no se asustan! Usamos un superpoder secreto: los desarmamos en bloques de decenas y unidades, multiplicamos cada bloque por separado y luego sumamos los resultados.",
+            NarrativeIntroSimplified = "Para multiplicar números grandes, los rompemos en partes fáciles (decenas y unidades), multiplicamos y sumamos.",
+            CoreConceptExplanation = "La propiedad distributiva nos enseña que multiplicar una suma por un número es igual a sumar las multiplicaciones individuales: (a + b) × c = (a × c) + (b × c). Por ejemplo, 14 × 3 se calcula desarmando 14 en (10 + 4), multiplicando (10 × 3 = 30) y (4 × 3 = 12), y sumando al final: 30 + 12 = 42.",
+            CoreConceptSimplified = "Rompe un número como 14 en 10 y 4. Multiplica cada parte y suma los resultados.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Descomposición aditiva en potencias de diez (decenas y unidades)",
+                "Propiedad distributiva de la multiplicación sobre la adición: (a + b) × c = (a × c) + (b × c)",
+                "Estrategia de cálculo mental flexible para productos multidígito"
+            },
+            CongratulationMessage = "¡Extraordinario estratega! Has dominado la propiedad distributiva. Multiplicar números grandes ahora es pan comido para ti."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "distrib_ex_01",
+            Title = "Descomponiendo 14 × 3 en Bloques",
+            GameType = GamePlayType.MultiplicationDistributive,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = 42,
+            StandardInstruction = "Para calcular 14 × 3, descomponemos 14 en (10 + 4). Primero calculamos (10 × 3 = 30) y luego (4 × 3 = 12). Al sumar 30 + 12, ¿cuál es el resultado final de 14 × 3?",
+            SimplifiedInstruction = "Rompe 14 en 10 y 4. Diez por tres es 30, y cuatro por tres es 12. Suma 30 + 12.",
+            ScreenReaderDescription = "Multiplicación distributiva de 14 por 3. Bloque de decenas: 10 por 3 igual a 30. Bloque de unidades: 4 por 3 igual a 12. Total sumado: 30 más 12.",
+            FirstHint = "Suma el resultado de las decenas (30) más las unidades (12).",
+            SecondHintDetailed = "30 + 12 = 42.",
+            ExplanationOfSuccess = "¡Espectacular! 14 × 3 = 42. Descomponer números grandes en decenas y unidades hace que la multiplicación sea rápida y sin errores."
+        };
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "38", Value = 38, IsCorrect = false, SpeechFeedback = "Cerca, pero revisa la suma de 30 más 12.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "42", Value = 42, IsCorrect = true, SpeechFeedback = "¡Magnífico! 30 + 12 = 42. 14 × 3 = 42.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "52", Value = 52, IsCorrect = false, SpeechFeedback = "Sumaste diez de más. 30 + 12 es 42.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

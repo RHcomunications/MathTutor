@@ -61,6 +61,24 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_fractions",
+                Title = "Maestro de las Fracciones",
+                Description = "Comprendiste partes iguales, numeradores y fracciones equivalentes.",
+                IconEmoji = "🍰",
+                AssociatedTopicId = "elem_fractions_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_distributive",
+                Title = "Estratega de la Descomposición",
+                Description = "Multiplicaste cantidades mayores rompiéndolas en decenas y unidades.",
+                IconEmoji = "🧩",
+                AssociatedTopicId = "elem_distributive_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -152,11 +170,29 @@ public class RewardService
             new()
             {
                 Id = "station_6",
+                Name = "La Pastelería de las Fracciones",
+                Description = "El taller donde los pasteles se dividen en partes mágicamente iguales.",
+                LandmarkEmoji = "🍰",
+                TopicId = "elem_fractions_01",
+                OrderIndex = 6
+            },
+            new()
+            {
+                Id = "station_7",
+                Name = "El Taller de los Bloques Multiplicadores",
+                Description = "El laboratorio donde los números se descomponen para multiplicar con maestría.",
+                LandmarkEmoji = "🧩",
+                TopicId = "elem_distributive_01",
+                OrderIndex = 7
+            },
+            new()
+            {
+                Id = "station_8",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 6
+                OrderIndex = 8
             }
         };
 

@@ -18,7 +18,10 @@ public enum GamePlayType
     InverseRelation,          // Deshacer el camino: si 3+2=5, entonces 5-2=3
     PatternAndLoopSeed,       // Semilla a programación: repetir patrones y saltos idénticos
     MultiplicationArray,      // Matrices rectangulares de filas x columnas y grupos iguales
-    DivisionFairSharing       // Reparto equitativo entre amigos sin que sobre nada
+    DivisionFairSharing,      // Reparto equitativo entre amigos sin que sobre nada
+    FractionParts,            // Fracción como parte de un todo: numerador (partes tomadas) y denominador (total de partes)
+    FractionEquivalence,      // Fracciones equivalentes (1/2 = 2/4)
+    MultiplicationDistributive // Descomposición aditiva y propiedad distributiva: (20 + 4) x 3 = 60 + 12
 }
 
 /// <summary>

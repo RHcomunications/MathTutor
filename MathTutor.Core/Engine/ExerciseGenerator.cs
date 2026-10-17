@@ -411,6 +411,152 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de fracciones como partes de un todo (numerador y denominador).
+    /// </summary>
+    public Exercise GenerateFractionPartsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        // Denominador (partes totales): 2, 4 para simplificado; 2, 3, 4, 6 para regular
+        int[] possibleDenoms = isSimplified ? new[] { 2, 4 } : new[] { 2, 3, 4, 6 };
+        int denominator = possibleDenoms[rng.Next(possibleDenoms.Length)];
+        int numerator = rng.Next(1, denominator);
+
+        var (foodName, emoji) = rng.Next(2) == 0 ? ("Pizza", "🍕") : ("Barra de Chocolate", "🍫");
+
+        var ex = new Exercise
+        {
+            Id = $"gen_frac_{Guid.NewGuid():N}",
+            Title = $"La Repostería Mágica: Partes de la {foodName}",
+            GameType = GamePlayType.FractionParts,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = numerator,
+            StandardInstruction = $"Cosmo horneó una deliciosa {foodName.ToLower()} y la cortó en {denominator} partes exactamente iguales. Si te comes {numerator} de esas partes, ¿cuál es el numerador (las partes que comiste)? ¡Estamos representando la fracción {numerator}/{denominator}!",
+            SimplifiedInstruction = $"La {foodName.ToLower()} se cortó en {denominator} rebanadas iguales. Si te comes {numerator}, ¿cuántas rebanadas tomaste?",
+            ScreenReaderDescription = $"Una {foodName.ToLower()} dividida en {denominator} partes iguales. Se han seleccionado {numerator} partes.",
+            FirstHint = $"En una fracción, el número de arriba (numerador) indica las partes tomadas ({numerator}), y el de abajo (denominador) el total ({denominator}).",
+            SecondHintDetailed = $"Tomaste {numerator} partes de un total de {denominator}.",
+            ExplanationOfSuccess = $"¡Excelente! El numerador es {numerator}. La fracción es {numerator}/{denominator}: tomaste {numerator} partes de un todo dividido en {denominator} partes iguales."
+        };
+
+        for (int i = 1; i <= denominator; i++)
+        {
+            bool isTaken = i <= numerator;
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"frac_slice_{i}",
+                Name = $"Porción {i} de {denominator}",
+                EmojiSymbol = emoji,
+                AccessibleDescription = isTaken
+                    ? $"Rebanada {i} de {denominator} (Comida/Tomada)"
+                    : $"Rebanada {i} de {denominator} (Disponible)",
+                OrderIndex = i,
+                MusicalPitchHz = PentatonicScaleHz[(i - 1) % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, numerator, min: 1, max: denominator, unitLabel: "partes tomadas", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de equivalencia de fracciones (por ejemplo, 1/2 = 2/4).
+    /// </summary>
+    public Exercise GenerateFractionEquivalenceExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        // 1/2 = 2/4 o 1/3 = 2/6 o 2/4 = 4/8
+        var equivalences = new (int n1, int d1, int n2, int d2)[]
+        {
+            (1, 2, 2, 4),
+            (1, 2, 3, 6),
+            (2, 4, 4, 8),
+            (1, 3, 2, 6)
+        };
+        var eq = equivalences[rng.Next(equivalences.Length)];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_equiv_{Guid.NewGuid():N}",
+            Title = "El Espejo de las Fracciones Equivalentes",
+            GameType = GamePlayType.FractionEquivalence,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = 1, // 1 = "Sí, representan exactamente la misma cantidad"
+            StandardInstruction = $"Ada comió {eq.n1}/{eq.d1} de su barra de chocolate. Tito comió {eq.n2}/{eq.d2} de una barra idéntica. ¿Ambos comieron la misma cantidad total de chocolate?",
+            SimplifiedInstruction = $"¿La fracción {eq.n1}/{eq.d1} es igual en tamaño que {eq.n2}/{eq.d2}?",
+            ScreenReaderDescription = $"Dos barras iguales. La primera dividida en {eq.d1} partes con {eq.n1} tomadas. La segunda dividida en {eq.d2} partes con {eq.n2} tomadas.",
+            FirstHint = $"Observa que {eq.n2} es el doble de {eq.n1}, y {eq.d2} es el doble de {eq.d1}. ¡Ocupan el mismo espacio!",
+            SecondHintDetailed = $"{eq.n1}/{eq.d1} y {eq.n2}/{eq.d2} son fracciones equivalentes: representan la misma porción.",
+            ExplanationOfSuccess = $"¡Exacto! {eq.n1}/{eq.d1} es equivalente a {eq.n2}/{eq.d2}. Aunque usemos números distintos, ¡representan exactamente la misma cantidad!"
+        };
+
+        ex.Options.Add(new ExerciseOption
+        {
+            Id = "opt_yes",
+            Value = 1,
+            Label = $"¡Sí! Son equivalentes ({eq.n1}/{eq.d1} = {eq.n2}/{eq.d2})",
+            IsCorrect = true,
+            AccessibleKeyShortcut = "1",
+            SpeechFeedback = $"¡Maravilloso! Son equivalentes porque representan la misma porción del chocolate."
+        });
+
+        ex.Options.Add(new ExerciseOption
+        {
+            Id = "opt_no",
+            Value = 2,
+            Label = "No, uno comió más que el otro",
+            IsCorrect = false,
+            AccessibleKeyShortcut = "2",
+            SpeechFeedback = "Mmm, observa con cuidado: aunque las rebanadas son más pequeñas, son más en cantidad y suman lo mismo."
+        });
+
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de multiplicación por descomposición aditiva / propiedad distributiva: (20 + 4) x 3 = 60 + 12 = 72.
+    /// </summary>
+    public Exercise GenerateMultiplicationDistributiveExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int tens = isSimplified ? 10 : (rng.Next(1, 4) * 10); // 10, 20 o 30
+        int units = isSimplified ? rng.Next(1, 4) : rng.Next(2, 6); // 1 a 5
+        int multiplier = isSimplified ? 2 : rng.Next(2, 5); // 2, 3 o 4
+
+        int totalNumber = tens + units;
+        int tensProduct = tens * multiplier;
+        int unitsProduct = units * multiplier;
+        int finalResult = totalNumber * multiplier;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_distrib_{Guid.NewGuid():N}",
+            Title = $"Multiplicar Descomponiendo: {totalNumber} × {multiplier}",
+            GameType = GamePlayType.MultiplicationDistributive,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = finalResult,
+            StandardInstruction = $"Para calcular {totalNumber} × {multiplier}, descomponemos {totalNumber} en ({tens} + {units}). Multiplicamos por separado: ({tens} × {multiplier} = {tensProduct}) y ({units} × {multiplier} = {unitsProduct}). Al sumar {tensProduct} + {unitsProduct}, ¿cuál es el gran total?",
+            SimplifiedInstruction = $"Rompe {totalNumber} en {tens} y {units}. {tens} × {multiplier} = {tensProduct}, y {units} × {multiplier} = {unitsProduct}. Suma {tensProduct} + {unitsProduct}.",
+            ScreenReaderDescription = $"Multiplicación por descomposición: ({tens} + {units}) por {multiplier}. {tens} por {multiplier} es {tensProduct}, más {units} por {multiplier} que es {unitsProduct}.",
+            FirstHint = $"Suma los dos bloques: {tensProduct} + {unitsProduct}.",
+            SecondHintDetailed = $"{tensProduct} más {unitsProduct} es igual a {finalResult}.",
+            ExplanationOfSuccess = $"¡Espectacular! {totalNumber} × {multiplier} = {finalResult}. Romper números grandes en decenas y unidades hace que multiplicar sea facilísimo."
+        };
+
+        BuildOptions(ex, finalResult, min: Math.Max(10, finalResult - 8), max: finalResult + 8, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -438,6 +584,12 @@ public class ExerciseGenerator
                 "elem_multiplication_01" => GenerateMultiplicationArrayExercise(profile, rng),
 
                 "elem_division_01" => GenerateDivisionFairSharingExercise(profile, rng),
+
+                "elem_fractions_01" => (i % 2 == 0)
+                    ? GenerateFractionPartsExercise(profile, rng)
+                    : GenerateFractionEquivalenceExercise(profile, rng),
+
+                "elem_distributive_01" => GenerateMultiplicationDistributiveExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };
