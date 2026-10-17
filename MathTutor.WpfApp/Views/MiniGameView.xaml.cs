@@ -162,16 +162,28 @@ public partial class MiniGameView : UserControl
             _countedItemsCount++;
             _acc.Audio.PlayNote(item.MusicalPitchHz, 300);
 
-            // Resaltar visualmente que ya fue contado
+            // Resaltar visualmente que ya fue explorado/contado
             btn.Background = (Brush)FindResource("AppCardBrush");
             label.Foreground = (Brush)FindResource("AppSuccessBrush");
             label.Text = $"✓ #{displayOrder}";
 
-            string speechCount = $"¡{displayOrder}!";
             int totalItems = (_currentExercise?.ItemsGroupA.Count ?? 0) + (_currentExercise?.ItemsGroupB.Count ?? 0);
-            if (_countedItemsCount == totalItems)
+            bool isSymbolicAdvanced = _currentExercise != null &&
+                                      _currentExercise.Level >= AcademicLevel.SecondaryFirstGrade &&
+                                      totalItems <= 2;
+
+            string speechCount;
+            if (isSymbolicAdvanced)
             {
-                speechCount += $" ¡Terminaste de contar todos! Hay {totalItems} en total. El último número es el total de la colección.";
+                speechCount = $"{item.Name}: {item.AccessibleDescription}.";
+            }
+            else
+            {
+                speechCount = $"¡{displayOrder}!";
+                if (_countedItemsCount == totalItems)
+                {
+                    speechCount += $" ¡Terminaste de contar todos! Hay {totalItems} en total. El último número es el total de la colección.";
+                }
             }
 
             _acc.Announce(speechCount, speak: true);

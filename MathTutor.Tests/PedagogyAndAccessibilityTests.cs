@@ -431,6 +431,45 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void CalculusDerivativeTopic_CoversInstantaneousRateAndPowerRule()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var derivTopic = topics.FirstOrDefault(t => t.Id == "prep_calculus_derivative_01");
+
+        Assert.NotNull(derivTopic);
+        Assert.Equal(AcademicLevel.HighSchoolThirdGrade, derivTopic.Level);
+        Assert.Contains(derivTopic.PrinciplesAddressed, p => p.Contains("razón de cambio instantánea") || p.Contains("recta tangente"));
+        Assert.Contains(derivTopic.PrinciplesAddressed, p => p.Contains("derivación"));
+        Assert.True(derivTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void CalculusIntegralTopic_CoversAreaUnderCurveAndFundamentalTheorem()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var intTopic = topics.FirstOrDefault(t => t.Id == "prep_calculus_integral_01");
+
+        Assert.NotNull(intTopic);
+        Assert.Equal(AcademicLevel.HighSchoolThirdGrade, intTopic.Level);
+        Assert.Contains(intTopic.PrinciplesAddressed, p => p.Contains("área bajo la curva"));
+        Assert.Contains(intTopic.PrinciplesAddressed, p => p.Contains("Teorema Fundamental"));
+        Assert.True(intTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
+    public void ProbabilityAndStatsTopic_CoversArithmeticMeanAndDataScience()
+    {
+        var topics = _curriculum.GetAllTopics();
+        var statsTopic = topics.FirstOrDefault(t => t.Id == "prep_probability_stats_01");
+
+        Assert.NotNull(statsTopic);
+        Assert.Equal(AcademicLevel.HighSchoolThirdGrade, statsTopic.Level);
+        Assert.Contains(statsTopic.PrinciplesAddressed, p => p.Contains("media aritmética"));
+        Assert.Contains(statsTopic.PrinciplesAddressed, p => p.Contains("ciencia de datos"));
+        Assert.True(statsTopic.Exercises.Count >= 1);
+    }
+
+    [Fact]
     public void AdaptiveEngine_SimplifiesLanguage_ForIntellectualDisability()
     {
         var profile = new UserProfile

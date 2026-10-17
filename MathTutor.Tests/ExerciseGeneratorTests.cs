@@ -727,4 +727,67 @@ public class ExerciseGeneratorTests
         Assert.Equal(3, logList.Count);
         Assert.All(logList, ex => Assert.Equal(GamePlayType.LogarithmBinary, ex.GameType));
     }
+
+    [Fact]
+    public void GenerateCalculusDerivativeExercise_ComputesInstantaneousVelocityAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolThirdGrade, Age = 17 };
+        var rng = new Random(3400);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateCalculusDerivativeExercise(profile, rng);
+            Assert.Equal(GamePlayType.CalculusDerivativeRate, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 8 && ex.ExpectedResult <= 40);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateCalculusIntegralExercise_ComputesAreaUnderCurveAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolThirdGrade, Age = 17 };
+        var rng = new Random(3500);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateCalculusIntegralExercise(profile, rng);
+            Assert.Equal(GamePlayType.CalculusIntegralArea, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 9 && ex.ExpectedResult <= 42);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateProbabilityAndStatsExercise_ComputesArithmeticMeanAccurately()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolThirdGrade, Age = 17 };
+        var rng = new Random(3600);
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = _generator.GenerateProbabilityAndStatsExercise(profile, rng);
+            Assert.Equal(GamePlayType.ProbabilityAndStats, ex.GameType);
+            Assert.True(ex.ExpectedResult >= 6 && ex.ExpectedResult <= 9);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+        }
+    }
+
+    [Fact]
+    public void GenerateExercisesForTopic_HighSchoolThirdGrade_GeneratesValidLists()
+    {
+        var profile = new UserProfile { CurrentLevel = AcademicLevel.HighSchoolThirdGrade, Age = 17 };
+
+        var derivList = _generator.GenerateExercisesForTopic("prep_calculus_derivative_01", profile, count: 3);
+        Assert.Equal(3, derivList.Count);
+        Assert.All(derivList, ex => Assert.Equal(GamePlayType.CalculusDerivativeRate, ex.GameType));
+
+        var intList = _generator.GenerateExercisesForTopic("prep_calculus_integral_01", profile, count: 3);
+        Assert.Equal(3, intList.Count);
+        Assert.All(intList, ex => Assert.Equal(GamePlayType.CalculusIntegralArea, ex.GameType));
+
+        var statsList = _generator.GenerateExercisesForTopic("prep_probability_stats_01", profile, count: 3);
+        Assert.Equal(3, statsList.Count);
+        Assert.All(statsList, ex => Assert.Equal(GamePlayType.ProbabilityAndStats, ex.GameType));
+    }
 }

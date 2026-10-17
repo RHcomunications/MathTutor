@@ -48,6 +48,9 @@ public class CurriculumService
             BuildConicCircleTopic(),
             BuildSineWaveContinuousTopic(),
             BuildLogarithmBinaryTopic(),
+            BuildCalculusDerivativeTopic(),
+            BuildCalculusIntegralTopic(),
+            BuildProbabilityAndStatsTopic(),
             BuildRepeatedAdditionAndProgrammingSeedTopic()
         };
     }
@@ -2001,6 +2004,159 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 pasos (2⁵ = 32)", Value = 5, IsCorrect = false, SpeechFeedback = "2 a la 5 es 32; para 64 se requiere un paso más.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "6 pasos (log₂ 64 = 6)", Value = 6, IsCorrect = true, SpeechFeedback = "¡Magnífico! 2⁶ = 64. log₂(64) = 6.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "8 pasos", Value = 8, IsCorrect = false, SpeechFeedback = "8 × 8 es 64, pero en base 2 buscamos la potencia 2^k, que es 6.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 33 (3º Preparatoria): Cálculo Diferencial — La Derivada y Razón de Cambio Instantánea
+    /// </summary>
+    private PedagogicalTopic BuildCalculusDerivativeTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_calculus_derivative_01",
+            Title = "El Velocímetro del Futuro: Cálculo Diferencial y Derivadas",
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido a 3º de Preparatoria! Hasta ahora medíamos la pendiente entre dos puntos separados. Pero ¿qué pasa cuando acercamos esos dos puntos hasta que la distancia entre ellos tiende a cero? ¡Nace la derivada del Cálculo Diferencial! La derivada nos revela la velocidad exacta en un instante preciso y es el motor del descenso de gradiente con el que aprenden las inteligencias artificiales.",
+            NarrativeIntroSimplified = "La derivada nos dice qué tan rápido cambia algo en un instante exacto, como el velocímetro de un auto.",
+            CoreConceptExplanation = "La derivada f'(x) representa la pendiente de la recta tangente y la razón de cambio instantánea de f(x). Por la regla de la potencia, si f(t) = a·t^n, su derivada es f'(t) = n·a·t^(n-1). Para f(t) = a·t², la velocidad instantánea es v(t) = f'(t) = 2a·t.",
+            CoreConceptSimplified = "Para derivar t², bajas el 2 a multiplicar: la derivada de 3t² es 6t. Luego multiplicas 6 por el segundo t.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Concepto de límite y razón de cambio instantánea (pendiente de la recta tangente)",
+                "Regla de derivación de potencias: d/dt (a·t²) = 2a·t",
+                "Interpretación física (velocidad instantánea) y computacional (gradiente)"
+            },
+            CongratulationMessage = "¡Maestro del Cálculo Diferencial! Dominas las derivadas y la razón de cambio instantáneo."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "deriv_ex_01",
+            Title = "La Velocidad Instantánea del Tren Eléctrico: f(t) = 3t²",
+            GameType = GamePlayType.CalculusDerivativeRate,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = 12,
+            StandardInstruction = "Un tren eléctrico autónomo arranca desde la estación siguiendo la función de posición f(t) = 3t² metros. Su velocidad instantánea está dada por la derivada f'(t) = 6t. ¿Cuál es su velocidad exacta en m/s al pasar por el segundo t = 2?",
+            SimplifiedInstruction = "La velocidad es f'(t) = 6 × t. Cuando t = 2 segundos, ¿cuánto vale 6 × 2?",
+            ScreenReaderDescription = "Cálculo diferencial: función de posición f de t igual a 3t al cuadrado. Derivada f prima de t igual a 6t. Evaluar en t = 2 segundos.",
+            FirstHint = "Al derivar 3t², bajamos el exponente 2 multiplicando al 3: 2 × 3t = 6t. Ahora sustituye t = 2.",
+            SecondHintDetailed = "f'(2) = 6 × 2 = 12 m/s.",
+            ExplanationOfSuccess = "¡Brillante! En el instante t = 2 s, el tren viaja exactamente a 12 m/s. La derivada transforma una curva de posición en una fórmula de velocidad instantánea."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "train_deriv_item", Name = "Velocímetro f'(2) = 12 m/s", EmojiSymbol = "🚄", AccessibleDescription = "Tren eléctrico con derivada f'(t) = 6t", OrderIndex = 1, MusicalPitchHz = Frequencies[5] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 m/s", Value = 6, IsCorrect = false, SpeechFeedback = "6 m/s es en el segundo t = 1. En t = 2 es el doble.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "12 m/s (f'(2) = 6 × 2)", Value = 12, IsCorrect = true, SpeechFeedback = "¡Exacto! f'(2) = 6 × 2 = 12 m/s.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "18 m/s", Value = 18, IsCorrect = false, SpeechFeedback = "18 m/s sería en el segundo t = 3.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 34 (3º Preparatoria): Cálculo Integral — Área Bajo la Curva y Acumulación
+    /// </summary>
+    private PedagogicalTopic BuildCalculusIntegralTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_calculus_integral_01",
+            Title = "El Acumulador Solar: Cálculo Integral y Área Bajo la Curva",
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Si la derivada nos dice la velocidad en cada instante, ¿cómo descubrimos la cantidad total acumulada a lo largo del tiempo? ¡Con la operación inversa: la Integral! En Cálculo Integral, sumar infinitos instantes equivale a calcular el área exacta bajo la curva de una gráfica.",
+            NarrativeIntroSimplified = "Integrar significa juntar todos los pedacitos para saber el total acumulado, midiendo el área debajo de una gráfica.",
+            CoreConceptExplanation = "Por el Teorema Fundamental del Cálculo, la integral definida ∫₀ᵇ f(t) dt representa el área neta bajo la curva f(t) en el intervalo [0, b] y mide la acumulación total de una razón de cambio.",
+            CoreConceptSimplified = "Si entran 5 litros cada minuto durante 4 minutos, el área del rectángulo bajo la línea es 5 × 4 = 20 litros.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Interpretación geométrica de la integral definida como área bajo la curva",
+                "Teorema Fundamental del Cálculo: relación inversa entre derivada e integral",
+                "Simulación numérica de acumulación en física y motores de videojuegos"
+            },
+            CongratulationMessage = "¡Arquitecto de la Integración! Comprendes cómo el área bajo la curva acumula energía, distancia y flujo."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "integral_ex_01",
+            Title = "Cosecha de Energía Solar: ∫₀⁴ 5 dt",
+            GameType = GamePlayType.CalculusIntegralArea,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = 20,
+            StandardInstruction = "Un panel solar comunitario genera una potencia constante de f(t) = 5 kilovatios durante un lapso de t = 0 a t = 4 horas. La energía total acumulada es el área bajo la curva dada por la integral definida ∫₀⁴ 5 dt. ¿Cuántos kilovatios-hora (kWh) se acumularon en total?",
+            SimplifiedInstruction = "Calcula el área bajo la línea: 5 kilovatios constantes durante 4 horas (5 × 4). ¿Cuánta energía se acumuló?",
+            ScreenReaderDescription = "Cálculo integral: integral definida de 0 a 4 de 5 diferencial de t. Área rectangular de altura 5 y base 4.",
+            FirstHint = "La región bajo f(t) = 5 entre t = 0 y t = 4 es un rectángulo de altura 5 y base 4.",
+            SecondHintDetailed = "∫₀⁴ 5 dt = 5 × 4 = 20 kWh.",
+            ExplanationOfSuccess = "¡Extraordinario! La integral definida es 20 kWh. ¡Acabas de aplicar el Teorema Fundamental del Cálculo para medir la energía acumulada!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "solar_integral_item", Name = "Área Bajo la Curva (20 kWh)", EmojiSymbol = "🔋", AccessibleDescription = "Panel solar con área acumulada de 20 kWh", OrderIndex = 1, MusicalPitchHz = Frequencies[6] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "9 kWh (sumando 5 + 4)", Value = 9, IsCorrect = false, SpeechFeedback = "El área de un rectángulo se calcula multiplicando base por altura, no sumando.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "20 kWh (∫₀⁴ 5 dt = 20)", Value = 20, IsCorrect = true, SpeechFeedback = "¡Magnífico! 5 × 4 = 20 kWh acumulados.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "25 kWh", Value = 25, IsCorrect = false, SpeechFeedback = "25 sería durante 5 horas; aquí fueron 4 horas.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 35 (3º Preparatoria): Probabilidad y Estadística para Ciencia de Datos
+    /// </summary>
+    private PedagogicalTopic BuildProbabilityAndStatsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prep_probability_stats_01",
+            Title = "El Oráculo de los Datos: Probabilidad y Estadística",
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Hemos llegado a la cima de la Educación Media Superior! En el mundo real y en la ciencia de datos, analizamos muestras de información para encontrar patrones y tomar decisiones inteligentes. Las medidas de tendencia central como la media aritmética (promedio) resumen conjuntos complejos en un valor representativo.",
+            NarrativeIntroSimplified = "El promedio o media suma todos los datos y los reparte en partes iguales para resumir la información.",
+            CoreConceptExplanation = "La media aritmética (x̄) de un conjunto de n datos se obtiene sumando todos los valores y dividiendo entre el número total de observaciones: x̄ = (x₁ + x₂ + ... + xₙ) / n.",
+            CoreConceptSimplified = "Si en tres ensayos sacaste 7, 8 y 9, sumas 7 + 8 + 9 = 24 y divides 24 ÷ 3 = 8 de promedio.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Medidas de tendencia central: cálculo e interpretación de la media aritmética (x̄)",
+                "Análisis de muestras de datos para toma de decisiones basada en evidencia",
+                "Fundamentos estadísticos para ciencia de datos e inteligencia artificial"
+            },
+            CongratulationMessage = "¡Científico de Datos Graduado! Has completado toda la Preparatoria y estás 100% listo para conquistar la Programación Inclusiva."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "stats_ex_01",
+            Title = "Precisión del Lector de Pantalla: Media Aritmética x̄",
+            GameType = GamePlayType.ProbabilityAndStats,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = 8,
+            StandardInstruction = "En un laboratorio de tecnología asistiva se evaluó la velocidad de respuesta de un lector de pantalla en 3 pruebas, obteniendo calificaciones de 7, 8 y 9 puntos. ¿Cuál es la media aritmética o promedio x̄ = (7 + 8 + 9) / 3?",
+            SimplifiedInstruction = "Suma 7 + 8 + 9 (= 24) y divide entre 3 para conocer el promedio. ¿Cuánto es 24 ÷ 3?",
+            ScreenReaderDescription = "Estadística descriptiva: datos 7, 8 y 9. Suma total 24. Dividido entre 3 observaciones da media 8.",
+            FirstHint = "Suma los tres valores: 7 + 8 + 9 = 24. Ahora divide 24 entre 3.",
+            SecondHintDetailed = "x̄ = 24 ÷ 3 = 8 puntos.",
+            ExplanationOfSuccess = "¡Excelente! La media aritmética es x̄ = 8 puntos. ¡Con este dominio de la estadística y el cálculo estás listo para programar el futuro!"
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "stats_chart_item", Name = "Muestra (7, 8, 9) -> x̄ = 8", EmojiSymbol = "📊", AccessibleDescription = "Gráfica estadística con media igual a 8", OrderIndex = 1, MusicalPitchHz = Frequencies[7] });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "7 puntos", Value = 7, IsCorrect = false, SpeechFeedback = "7 es el valor mínimo de la muestra, pero el promedio está en el centro.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "8 puntos de media (x̄ = 8)", Value = 8, IsCorrect = true, SpeechFeedback = "¡Magnífico! 24 ÷ 3 = 8 puntos.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "24 puntos", Value = 24, IsCorrect = false, SpeechFeedback = "24 es la suma total; falta dividirla entre los 3 datos.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

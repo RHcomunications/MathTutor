@@ -614,55 +614,58 @@ public class ExerciseGenerator
         rng ??= Random.Shared;
         bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
 
-        int dollars = isSimplified ? 1 : rng.Next(1, 4);
-        int halfDollars = isSimplified ? 1 : (rng.Next(1, 3) * 1);
-        int totalCents = (dollars * 100) + (halfDollars * 50);
-        decimal decimalAmount = totalCents / 100m;
+        int wholeUnits = isSimplified ? 1 : rng.Next(1, 4);
+        int halfUnits = isSimplified ? 1 : rng.Next(1, 3);
+        int totalSubUnits = (wholeUnits * 100) + (halfUnits * 50);
+        decimal decimalAmount = totalSubUnits / 100m;
+        string currency = profile.CurrencyName;
+        string fraction = profile.CurrencyFractionName;
+        string symbol = profile.CurrencySymbol;
 
         var ex = new Exercise
         {
             Id = $"gen_dec_{Guid.NewGuid():N}",
-            Title = $"El Monedero Mágico: ${decimalAmount:F2}",
+            Title = $"El Monedero Mágico: {symbol}{decimalAmount:F2}",
             GameType = GamePlayType.DecimalsMoney,
             TargetAgeMin = 9,
             TargetAgeMax = 12,
             Level = AcademicLevel.UpperElementary,
-            ExpectedResult = totalCents,
-            StandardInstruction = $"En el mercado compras frutas mágicas. Tienes {dollars} moneda(s) de $1.00 (100¢) y {halfDollars} moneda(s) de $0.50 (50¢). ¿Cuántos centavos tienes en total? (Equivale a ${decimalAmount:F2})",
-            SimplifiedInstruction = $"Tienes {dollars} moneda de $1 y {halfDollars} de 50 centavos. ¿Cuántos centavos tienes en total?",
-            ScreenReaderDescription = $"{dollars} monedas de un peso y {halfDollars} monedas de cincuenta centavos. Total: {totalCents} centavos.",
-            FirstHint = $"Cada $1.00 son 100 centavos. Suma: ({dollars * 100}) + ({halfDollars * 50}).",
-            SecondHintDetailed = $"{dollars * 100} centavos más {halfDollars * 50} centavos es igual a {totalCents} centavos (${decimalAmount:F2}).",
-            ExplanationOfSuccess = $"¡Excelente! Tienes {totalCents} centavos, que se escribe matemáticamente como ${decimalAmount:F2}. ¡Los decimales son las partes de un peso entero!"
+            ExpectedResult = totalSubUnits,
+            StandardInstruction = $"En el mercado compras frutas mágicas. Tienes {wholeUnits} moneda(s) de {symbol}1.00 (100 {fraction}) y {halfUnits} moneda(s) de {symbol}0.50 (50 {fraction}). ¿Cuántos {fraction} tienes en total? (Equivale a {symbol}{decimalAmount:F2})",
+            SimplifiedInstruction = $"Tienes {wholeUnits} moneda de {symbol}1 y {halfUnits} de 50 {fraction}. ¿Cuántos {fraction} tienes en total?",
+            ScreenReaderDescription = $"{wholeUnits} monedas de 1.00 {currency} y {halfUnits} monedas de cincuenta {fraction}. Total: {totalSubUnits} {fraction}.",
+            FirstHint = $"Cada {symbol}1.00 son 100 {fraction}. Suma: ({wholeUnits * 100}) + ({halfUnits * 50}).",
+            SecondHintDetailed = $"{wholeUnits * 100} {fraction} más {halfUnits * 50} {fraction} es igual a {totalSubUnits} {fraction} ({symbol}{decimalAmount:F2}).",
+            ExplanationOfSuccess = $"¡Excelente! Tienes {totalSubUnits} {fraction}, que se escribe matemáticamente como {symbol}{decimalAmount:F2} {currency}. ¡Los decimales son las partes de una unidad entera!"
         };
 
-        for (int i = 1; i <= dollars; i++)
+        for (int i = 1; i <= wholeUnits; i++)
         {
             ex.ItemsGroupA.Add(new ManipulableItem
             {
                 Id = $"coin_d_{i}",
-                Name = $"Moneda de $1.00 #{i}",
+                Name = $"Moneda de {symbol}1.00 #{i}",
                 EmojiSymbol = "🪙",
-                AccessibleDescription = $"Moneda de 1 peso (100 centavos)",
+                AccessibleDescription = $"Moneda de {symbol}1.00 (100 {fraction})",
                 OrderIndex = i,
                 MusicalPitchHz = PentatonicScaleHz[0]
             });
         }
 
-        for (int i = 1; i <= halfDollars; i++)
+        for (int i = 1; i <= halfUnits; i++)
         {
             ex.ItemsGroupB.Add(new ManipulableItem
             {
                 Id = $"coin_c_{i}",
-                Name = $"Moneda de $0.50 #{i}",
+                Name = $"Moneda de {symbol}0.50 #{i}",
                 EmojiSymbol = "🥈",
-                AccessibleDescription = $"Moneda de 50 centavos (0.50 pesos)",
-                OrderIndex = dollars + i,
+                AccessibleDescription = $"Moneda de 50 {fraction} (0.50 {currency})",
+                OrderIndex = wholeUnits + i,
                 MusicalPitchHz = PentatonicScaleHz[2]
             });
         }
 
-        BuildOptions(ex, totalCents, min: Math.Max(50, totalCents - 100), max: totalCents + 100, unitLabel: "centavos", rng);
+        BuildOptions(ex, totalSubUnits, min: Math.Max(50, totalSubUnits - 100), max: totalSubUnits + 100, unitLabel: fraction, rng);
         return ex;
     }
 
@@ -1649,6 +1652,9 @@ public class ExerciseGenerator
         int x = isSimplified ? 4 : rng.Next(2, 6);
         int expectedY = (m * x) + b;
 
+        string currency = profile.CurrencyName;
+        string symbol = profile.CurrencySymbol;
+
         var ex = new Exercise
         {
             Id = $"gen_ymxb_{Guid.NewGuid():N}",
@@ -1658,12 +1664,12 @@ public class ExerciseGenerator
             TargetAgeMax = 18,
             Level = AcademicLevel.HighSchoolFirstGrade,
             ExpectedResult = expectedY,
-            StandardInstruction = $"En el servicio de mototaxi de la comunidad, la tarifa en pesos sigue la recta lineal y = mx + b, donde m = ${m} pesos por kilómetro (pendiente), b = ${b} pesos de banderazo inicial (ordenada al origen), y x son los kilómetros recorridos. Si viajas x = {x} kilómetros, ¿cuánto pagas en total y = {m}({x}) + {b}?",
+            StandardInstruction = $"En el servicio de mototaxi de la comunidad, la tarifa en {currency} sigue la recta lineal y = mx + b, donde m = {symbol}{m} {currency} por kilómetro (pendiente), b = {symbol}{b} {currency} de banderazo inicial (ordenada al origen), y x son los kilómetros recorridos. Si viajas x = {x} kilómetros, ¿cuánto pagas en total y = {m}({x}) + {b}?",
             SimplifiedInstruction = $"Calcula y = {m} × {x} + {b}. Multiplica {m} por {x} y luego súmale {b}. ¿Cuánto pagas en total?",
-            ScreenReaderDescription = $"Ecuación de la recta y = {m}x + {b}. Para x = {x} kilómetros: {m} por {x} es {m * x}, más {b} pesos da {expectedY} pesos.",
+            ScreenReaderDescription = $"Ecuación de la recta y = {m}x + {b}. Para x = {x} kilómetros: {m} por {x} es {m * x}, más {b} {currency} da {expectedY} {currency}.",
             FirstHint = $"Multiplica la pendiente por los kilómetros: {m} × {x} = {m * x}. Luego suma el banderazo: + {b}.",
-            SecondHintDetailed = $"y = ({m * x}) + {b} = {expectedY} pesos.",
-            ExplanationOfSuccess = $"¡Exacto! y = {m}({x}) + {b} = {m * x} + {b} = ${expectedY} pesos. La recta y = mx + b modela costos fijos y variables en la economía cotidiana."
+            SecondHintDetailed = $"y = ({m * x}) + {b} = {expectedY} {currency}.",
+            ExplanationOfSuccess = $"¡Exacto! y = {m}({x}) + {b} = {m * x} + {b} = {symbol}{expectedY} {currency}. La recta y = mx + b modela costos fijos y variables en la economía cotidiana."
         };
 
         ex.ItemsGroupA.Add(new ManipulableItem
@@ -1676,7 +1682,7 @@ public class ExerciseGenerator
             MusicalPitchHz = PentatonicScaleHz[3]
         });
 
-        BuildOptions(ex, expectedY, min: Math.Max(5, expectedY - 5), max: expectedY + 5, unitLabel: profile.CurrencyName, rng);
+        BuildOptions(ex, expectedY, min: Math.Max(5, expectedY - 5), max: expectedY + 5, unitLabel: currency, rng);
         return ex;
     }
 
@@ -1786,8 +1792,8 @@ public class ExerciseGenerator
             TargetAgeMax = 18,
             Level = AcademicLevel.HighSchoolSecondGrade,
             ExpectedResult = exponent,
-            StandardInstruction = $"En un diccionario digital de {numberN} palabras ordenadas alfabéticamente, un algoritmo de búsqueda binaria divide la lista a la mitad en cada paso. El número máximo de comparaciones requeridas es log₂({numberN}). Sabiendo que 2 raised to what power equals {numberN} (2^k = {numberN}), ¿cuántos pasos k toma encontrar cualquier palabra?",
-            SimplifiedInstruction = $"Si vas partiendo a la mitad {numberN} cosas, ¿cuántas veces tienes que doblar el 2 (2 × 2 × 2...) para llegar a {numberN}?",
+            StandardInstruction = $"En un diccionario digital de {numberN} palabras ordenadas alfabéticamente, un algoritmo de búsqueda binaria divide la lista a la mitad en cada paso. El número máximo de comparaciones requeridas es log₂({numberN}). Sabiendo que 2 elevado a k es igual a {numberN} (2^k = {numberN}), ¿cuántos pasos k toma encontrar cualquier palabra?",
+            SimplifiedInstruction = $"Si vas partiendo a la mitad {numberN} cosas, ¿cuántas veces tienes que multiplicar el 2 (2 × 2 × 2...) para llegar a {numberN}?",
             ScreenReaderDescription = $"Logaritmo en base 2 de {numberN}. Exponente k tal que 2 a la k es igual a {numberN}. Resultado es {exponent} pasos.",
             FirstHint = $"Calcula las potencias de 2: 2¹=2, 2²=4, 2³=8, 2⁴=16, etc. ¿A qué exponente corresponde {numberN}?",
             SecondHintDetailed = $"2^{exponent} = {numberN}, por lo tanto log₂({numberN}) = {exponent}.",
@@ -1805,6 +1811,144 @@ public class ExerciseGenerator
         });
 
         BuildOptions(ex, exponent, min: Math.Max(2, exponent - 2), max: exponent + 3, unitLabel: "pasos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Cálculo Diferencial: derivada y razón de cambio instantánea f'(t) (3º Preparatoria).
+    /// Si la posición es f(t) = a·t², su derivada (velocidad instantánea) es f'(t) = 2a·t.
+    /// </summary>
+    public Exercise GenerateCalculusDerivativeExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int a = isSimplified ? 3 : rng.Next(2, 6);
+        int t = isSimplified ? 2 : rng.Next(2, 5);
+        int coeffDeriv = 2 * a;
+        int velocity = coeffDeriv * t;
+
+        string coeffText = a == 1 ? "" : a.ToString();
+
+        var ex = new Exercise
+        {
+            Id = $"gen_deriv_{Guid.NewGuid():N}",
+            Title = $"Velocidad Instantánea: Derivada de f(t) = {coeffText}t²",
+            GameType = GamePlayType.CalculusDerivativeRate,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = velocity,
+            StandardInstruction = $"Un vehículo autónomo eléctrico acelera siguiendo la función de posición f(t) = {coeffText}t² metros. Aplicando la regla de la potencia del cálculo diferencial, la velocidad instantánea es la derivada f'(t) = 2·({a})t = {coeffDeriv}t. ¿Cuál es su velocidad instantánea en m/s exactamente en el segundo t = {t}?",
+            SimplifiedInstruction = $"La velocidad instantánea es f'(t) = {coeffDeriv} × t. Si el tiempo es t = {t} segundos, ¿cuánto da {coeffDeriv} × {t}?",
+            ScreenReaderDescription = $"Cálculo diferencial: función de posición f de t igual a {a} por t al cuadrado. Su derivada f prima de t es {coeffDeriv} por t. Evaluada en t igual a {t} segundos.",
+            FirstHint = $"Para derivar {a}t², baja el exponente 2 multiplicando a {a}: obtienes {coeffDeriv}t. Ahora sustituye t = {t}.",
+            SecondHintDetailed = $"f'({t}) = {coeffDeriv} × {t} = {velocity} m/s.",
+            ExplanationOfSuccess = $"¡Magistral! La derivada evaluada en t = {t} es f'({t}) = {velocity} m/s. En programación e inteligencia artificial, la derivada (gradiente) indica hacia dónde ajustar los pesos de una red neuronal."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "deriv_speedometer",
+            Name = $"Velocímetro f'({t}) = {velocity} m/s",
+            EmojiSymbol = "🏎️",
+            AccessibleDescription = $"Vehículo autónomo con derivada de posición f'(t) = {coeffDeriv}t",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[5]
+        });
+
+        BuildOptions(ex, velocity, min: Math.Max(4, velocity - 4), max: velocity + 4, unitLabel: "m/s", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Cálculo Integral: área bajo la curva e integral definida ∫₀ᵇ v dt (3º Preparatoria).
+    /// Acumulación de flujo o distancia recorrida con rapidez constante o escalonada.
+    /// </summary>
+    public Exercise GenerateCalculusIntegralExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int rate = isSimplified ? 4 : rng.Next(3, 8); // litros por minuto o m/s
+        int timeB = isSimplified ? 3 : rng.Next(3, 7); // intervalo [0, b]
+        int areaAccumulated = rate * timeB;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_integral_{Guid.NewGuid():N}",
+            Title = $"Acumulación Total: Integral ∫₀^{timeB} {rate} dt",
+            GameType = GamePlayType.CalculusIntegralArea,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = areaAccumulated,
+            StandardInstruction = $"Una bomba solar vierte agua en una cisterna comunitaria a una razón constante f(t) = {rate} litros por minuto desde t = 0 hasta t = {timeB} minutos. En cálculo integral, el volumen total acumulado es el área bajo la curva dada por la integral definida ∫₀^{timeB} {rate} dt = [{rate}t]₀^{timeB}. ¿Cuántos litros se acumulan en total?",
+            SimplifiedInstruction = $"Calcula el área bajo la gráfica: si entran {rate} litros cada minuto durante {timeB} minutos, ¿cuántos litros se juntan en total ({rate} × {timeB})?",
+            ScreenReaderDescription = $"Cálculo integral: integral definida de 0 a {timeB} de la función constante {rate} diferencial de t. Área del rectángulo bajo la curva de altura {rate} y base {timeB}.",
+            FirstHint = $"El área bajo la línea horizontal y = {rate} entre 0 y {timeB} forma un rectángulo de base {timeB} y altura {rate}.",
+            SecondHintDetailed = $"∫₀^{timeB} {rate} dt = {rate} × {timeB} = {areaAccumulated} litros.",
+            ExplanationOfSuccess = $"¡Extraordinario! La integral definida vale {areaAccumulated} litros. Integrar significa sumar infinitos pedacitos para conocer la acumulación total, como los motores físicos de videojuegos que integran la velocidad en cada fotograma."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "integral_tank",
+            Name = $"Área Bajo la Curva ({areaAccumulated} L)",
+            EmojiSymbol = "🔋",
+            AccessibleDescription = $"Acumulador con área bajo la curva de {rate} por {timeB} igual a {areaAccumulated}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[6]
+        });
+
+        BuildOptions(ex, areaAccumulated, min: Math.Max(6, areaAccumulated - 5), max: areaAccumulated + 5, unitLabel: "litros", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Probabilidad y Estadística Descriptiva (media aritmética exacta) (3º Preparatoria).
+    /// </summary>
+    public Exercise GenerateProbabilityAndStatsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int mean = isSimplified ? 8 : rng.Next(6, 10);
+        int delta = isSimplified ? 1 : rng.Next(1, 3);
+        // Tres datos simétricos alrededor de la media: (mean - delta), mean, (mean + delta)
+        int d1 = mean - delta;
+        int d2 = mean;
+        int d3 = mean + delta;
+        int sum = d1 + d2 + d3;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_stats_{Guid.NewGuid():N}",
+            Title = $"Ciencia de Datos: Media Aritmética x̄",
+            GameType = GamePlayType.ProbabilityAndStats,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = mean,
+            StandardInstruction = $"Al entrenar un modelo de reconocimiento de voz inclusivo, se registraron los puntajes de precisión en 3 pruebas: {d1}, {d2} y {d3} puntos. Para evaluar el rendimiento estadístico, calcula el promedio o media aritmética x̄ = ({d1} + {d2} + {d3}) / 3 = {sum} / 3. ¿Cuál es la media x̄?",
+            SimplifiedInstruction = $"Suma los 3 puntajes ({d1} + {d2} + {d3} = {sum}) y divide el total entre 3 para hallar el promedio. ¿Cuánto es {sum} ÷ 3?",
+            ScreenReaderDescription = $"Estadística descriptiva: conjunto de tres datos: {d1}, {d2} y {d3}. Suma total igual a {sum}. Media aritmética igual a {sum} dividido entre 3.",
+            FirstHint = $"Suma primero todos los datos: {d1} + {d2} + {d3} = {sum}. Luego divide ese resultado entre 3.",
+            SecondHintDetailed = $"x̄ = {sum} ÷ 3 = {mean} puntos.",
+            ExplanationOfSuccess = $"¡Excelente! La media aritmética es x̄ = {mean} puntos. La estadística y la probabilidad son el corazón de la ciencia de datos y el aprendizaje automático moderno."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "stats_chart",
+            Name = $"Muestra de Datos ({d1}, {d2}, {d3})",
+            EmojiSymbol = "📊",
+            AccessibleDescription = $"Conjunto de datos estadísticos con suma {sum} y promedio {mean}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[7]
+        });
+
+        BuildOptions(ex, mean, min: Math.Max(3, mean - 3), max: mean + 3, unitLabel: "puntos", rng);
         return ex;
     }
 
@@ -1892,6 +2036,12 @@ public class ExerciseGenerator
                 "prep_sine_wave_01" => GenerateSineWaveContinuousExercise(profile, rng),
 
                 "prep_logarithm_binary_01" => GenerateLogarithmBinaryExercise(profile, rng),
+
+                "prep_calculus_derivative_01" => GenerateCalculusDerivativeExercise(profile, rng),
+
+                "prep_calculus_integral_01" => GenerateCalculusIntegralExercise(profile, rng),
+
+                "prep_probability_stats_01" => GenerateProbabilityAndStatsExercise(profile, rng),
 
                 _ => GenerateCountingExercise(profile, rng)
             };

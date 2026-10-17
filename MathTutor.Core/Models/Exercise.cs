@@ -46,7 +46,10 @@ public enum GamePlayType
     LinearEquationYMXB,       // Ecuación de la recta en forma pendiente-ordenada al origen: y = mx + b
     ConicCircleRadius,        // Ecuación de la circunferencia x² + y² = r² y radio de proximidad
     SineWaveContinuous,       // Ondas senoidales y armónicas y = A · sen(x) aplicadas al sonido
-    LogarithmBinary           // Logaritmos en base 2 log₂(n) y complejidad de búsqueda binaria
+    LogarithmBinary,          // Logaritmos en base 2 log₂(n) y complejidad de búsqueda binaria
+    CalculusDerivativeRate,   // Cálculo diferencial: derivada y razón de cambio instantánea f'(x)
+    CalculusIntegralArea,     // Cálculo integral: acumulación y área bajo la curva ∫f(x)dx
+    ProbabilityAndStats       // Probabilidad clásica y estadística descriptiva (media aritmética y casos favorables)
 }
 
 /// <summary>

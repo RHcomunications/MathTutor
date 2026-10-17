@@ -97,9 +97,15 @@ public partial class CurriculumMenuView : UserControl
     private static string GetAcademicLevelName(AcademicLevel level) => level switch
     {
         AcademicLevel.Kindergarten => "Jardín de Niños (3 a 5 años)",
-        AcademicLevel.EarlyElementary => "Primaria Baja (6 a 8 años)",
-        AcademicLevel.MiddleElementary => "Primaria Media (9 a 10 años)",
-        AcademicLevel.UpperElementary => "Primaria Alta (11 a 12 años)",
+        AcademicLevel.EarlyElementary => "Primaria Baja (1º y 2º - 6 a 8 años)",
+        AcademicLevel.MiddleElementary => "Primaria Media (3º y 4º - 9 a 10 años)",
+        AcademicLevel.UpperElementary => "Primaria Alta (5º y 6º - 11 a 12 años)",
+        AcademicLevel.SecondaryFirstGrade => "1º de Secundaria (12 a 13 años)",
+        AcademicLevel.SecondarySecondGrade => "2º de Secundaria (13 a 14 años)",
+        AcademicLevel.SecondaryThirdGrade => "3º de Secundaria (14 a 15 años)",
+        AcademicLevel.HighSchoolFirstGrade => "1º de Preparatoria / Bachillerato (15 a 16 años)",
+        AcademicLevel.HighSchoolSecondGrade => "2º de Preparatoria / Bachillerato (16 a 17 años)",
+        AcademicLevel.HighSchoolThirdGrade => "3º de Preparatoria / Bachillerato (17 a 18 años)",
         AcademicLevel.ProgrammingFoundations => "Fundamentos de Programación y Algoritmos",
         _ => "General"
     };

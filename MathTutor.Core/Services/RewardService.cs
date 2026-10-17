@@ -304,6 +304,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_calculus_derivative",
+                Title = "Maestro de las Derivadas",
+                Description = "Calculaste la razón de cambio instantánea y velocidad f'(t) en el Cálculo Diferencial.",
+                IconEmoji = "🚄",
+                AssociatedTopicId = "prep_calculus_derivative_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_calculus_integral",
+                Title = "Arquitecto de la Integral",
+                Description = "Determinaste el área bajo la curva y la acumulación total con ∫₀ᵇ f(t) dt.",
+                IconEmoji = "🔋",
+                AssociatedTopicId = "prep_calculus_integral_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_probability_stats",
+                Title = "Oráculo de la Ciencia de Datos",
+                Description = "Dominaste la media aritmética x̄ y el análisis estadístico de muestras.",
+                IconEmoji = "📊",
+                AssociatedTopicId = "prep_probability_stats_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_programming",
                 Title = "Programador de Bucles",
                 Description = "Uniste las matemáticas con los algoritmos y la computación.",
@@ -638,11 +665,38 @@ public class RewardService
             new()
             {
                 Id = "station_33",
+                Name = "La Pista del Velocímetro Diferencial",
+                Description = "El circuito de alta velocidad donde la derivada f'(t) revela la razón de cambio instantánea.",
+                LandmarkEmoji = "🚄",
+                TopicId = "prep_calculus_derivative_01",
+                OrderIndex = 33
+            },
+            new()
+            {
+                Id = "station_34",
+                Name = "La Central de Integración Solar",
+                Description = "La planta de energía limpia donde la integral definida ∫₀ᵇ f(t) dt acumula el área bajo la curva.",
+                LandmarkEmoji = "🔋",
+                TopicId = "prep_calculus_integral_01",
+                OrderIndex = 34
+            },
+            new()
+            {
+                Id = "station_35",
+                Name = "El Observatorio de Ciencia de Datos",
+                Description = "El centro estadístico donde la media aritmética x̄ y la probabilidad entrenan modelos inteligentes.",
+                LandmarkEmoji = "📊",
+                TopicId = "prep_probability_stats_01",
+                OrderIndex = 35
+            },
+            new()
+            {
+                Id = "station_36",
                 Name = "La Torre de los Robots y Bucles",
                 Description = "La cúspide tecnológica donde las matemáticas programan el futuro.",
                 LandmarkEmoji = "🚀",
                 TopicId = "prog_seed_01",
-                OrderIndex = 33
+                OrderIndex = 36
             }
         };
 

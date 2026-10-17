@@ -34,20 +34,34 @@ public partial class ProfileSetupView : UserControl
 
     private void PopulateDropdowns()
     {
-        // Edades de 3 a 12
+        // Edades de 3 a 18
         CmbAge.Items.Clear();
-        for (int i = 3; i <= 12; i++)
+        for (int i = 3; i <= 18; i++)
         {
             CmbAge.Items.Add(new ComboBoxItem { Content = $"{i} años", Tag = i });
         }
 
-        // Niveles académicos
+        // Niveles académicos completos
         CmbAcademicLevel.Items.Clear();
         CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Jardín de Niños (3 a 5 años)", Tag = AcademicLevel.Kindergarten });
         CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Primaria Baja (6 a 8 años - 1º y 2º)", Tag = AcademicLevel.EarlyElementary });
         CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Primaria Media (9 a 10 años - 3º y 4º)", Tag = AcademicLevel.MiddleElementary });
         CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Primaria Alta (11 a 12 años - 5º y 6º)", Tag = AcademicLevel.UpperElementary });
+        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "1º de Secundaria (12 a 13 años)", Tag = AcademicLevel.SecondaryFirstGrade });
+        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "2º de Secundaria (13 a 14 años)", Tag = AcademicLevel.SecondarySecondGrade });
+        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "3º de Secundaria (14 a 15 años)", Tag = AcademicLevel.SecondaryThirdGrade });
+        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "1º de Preparatoria / Bachillerato (15 a 16 años)", Tag = AcademicLevel.HighSchoolFirstGrade });
+        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "2º de Preparatoria / Bachillerato (16 a 17 años)", Tag = AcademicLevel.HighSchoolSecondGrade });
+        CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "3º de Preparatoria / Bachillerato (17 a 18 años)", Tag = AcademicLevel.HighSchoolThirdGrade });
         CmbAcademicLevel.Items.Add(new ComboBoxItem { Content = "Fundamentos de Programación y Algoritmos", Tag = AcademicLevel.ProgrammingFoundations });
+
+        // Región / País de América Latina
+        CmbRegion.Items.Clear();
+        CmbRegion.Items.Add(new ComboBoxItem { Content = "México (Pesos $ y Centavos - Tiendita / Mercado)", Tag = RegionalContext.Mexico });
+        CmbRegion.Items.Add(new ComboBoxItem { Content = "Colombia (Pesos $ - Tienda de Barrio)", Tag = RegionalContext.Colombia });
+        CmbRegion.Items.Add(new ComboBoxItem { Content = "Argentina (Pesos $ y Centavos - Kiosco)", Tag = RegionalContext.Argentina });
+        CmbRegion.Items.Add(new ComboBoxItem { Content = "Perú (Soles S/ y Céntimos - Bodega)", Tag = RegionalContext.Peru });
+        CmbRegion.Items.Add(new ComboBoxItem { Content = "Chile (Pesos $ - Almacén)", Tag = RegionalContext.Chile });
 
         // Tipos de discapacidad
         CmbDisabilityType.Items.Clear();
@@ -86,6 +100,7 @@ public partial class ProfileSetupView : UserControl
 
         SelectComboByTag(CmbAge, profile.Age);
         SelectComboByTag(CmbAcademicLevel, profile.CurrentLevel);
+        SelectComboByTag(CmbRegion, profile.Region);
         SelectComboByTag(CmbDisabilityType, profile.Disability);
         SelectComboByTag(CmbDisabilitySeverity, profile.Severity);
         SelectComboByTag(CmbTheme, profile.Preferences.Theme);
@@ -149,14 +164,20 @@ public partial class ProfileSetupView : UserControl
         if (CmbAge.SelectedItem is ComboBoxItem item && item.Tag is int age)
         {
             _acc.CurrentProfile.Age = age;
-            if (age <= 5)
+            var suggestedLevel = age switch
             {
-                SelectComboByTag(CmbAcademicLevel, AcademicLevel.Kindergarten);
-            }
-            else if (age <= 8)
-            {
-                SelectComboByTag(CmbAcademicLevel, AcademicLevel.EarlyElementary);
-            }
+                <= 5 => AcademicLevel.Kindergarten,
+                <= 8 => AcademicLevel.EarlyElementary,
+                <= 10 => AcademicLevel.MiddleElementary,
+                11 => AcademicLevel.UpperElementary,
+                12 => AcademicLevel.SecondaryFirstGrade,
+                13 => AcademicLevel.SecondarySecondGrade,
+                14 => AcademicLevel.SecondaryThirdGrade,
+                15 => AcademicLevel.HighSchoolFirstGrade,
+                16 => AcademicLevel.HighSchoolSecondGrade,
+                _ => AcademicLevel.HighSchoolThirdGrade
+            };
+            SelectComboByTag(CmbAcademicLevel, suggestedLevel);
             _acc.Announce($"Edad: {age} años");
         }
     }
@@ -168,6 +189,16 @@ public partial class ProfileSetupView : UserControl
         {
             _acc.CurrentProfile.CurrentLevel = level;
             _acc.Announce($"Nivel académico: {item.Content}");
+        }
+    }
+
+    private void CmbRegion_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isInitializing) return;
+        if (CmbRegion.SelectedItem is ComboBoxItem item && item.Tag is RegionalContext region)
+        {
+            _acc.CurrentProfile.Region = region;
+            _acc.Announce($"País y contexto cultural: {item.Content}");
         }
     }
 

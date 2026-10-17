@@ -88,6 +88,22 @@
                     </StackPanel>
                 </Grid>
 
+                <!-- Campo: País y Contexto Cultural (Latinoamérica) -->
+                <StackPanel Margin="0,0,0,16">
+                    <TextBlock Text="3b. País y Moneda (Adaptación Cultural de Ejemplos)"
+                               FontSize="{DynamicResource AppBaseFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AppTextPrimaryBrush}"
+                               Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CmbRegion"
+                              FontSize="{DynamicResource AppBaseFontSize}"
+                              MinHeight="48"
+                              Padding="10,6"
+                              AutomationProperties.Name="País y adaptación cultural de moneda y vocabulario"
+                              SelectionChanged="CmbRegion_SelectionChanged"
+                              GotFocus="Control_GotFocus"/>
+                </StackPanel>
+
                 <!-- Sección: Caracterización de Discapacidad -->
                 <Border Background="{DynamicResource AppSurfaceBrush}"
                         BorderBrush="{DynamicResource AppBorderBrush}"
