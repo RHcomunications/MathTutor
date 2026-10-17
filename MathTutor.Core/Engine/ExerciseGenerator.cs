@@ -2179,6 +2179,146 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio de Ciclos PARA / MIENTRAS (for / while) y Variables Acumuladoras (Objetivo 15 - Programación 2).
+    /// </summary>
+    public Exercise GenerateProgrammingLoopsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int initial = isSimplified ? rng.Next(2, 6) : rng.Next(3, 9);
+        int iterations = isSimplified ? rng.Next(2, 4) : rng.Next(3, 6);
+        int stepValue = isSimplified ? rng.Next(2, 4) : rng.Next(2, 6);
+        int addedByLoop = iterations * stepValue;
+        int finalTotal = initial + addedByLoop;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_loop_{Guid.NewGuid():N}",
+            Title = $"Ciclo PARA (for): Acumulando en {iterations} Iteraciones",
+            GameType = GamePlayType.ProgrammingLoopsForWhile,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = finalTotal,
+            StandardInstruction = $"Un sintetizador de voz accesible ejecuta el siguiente ciclo PARA (for) con una variable acumuladora:\n1) palabras = {initial}\n2) PARA i = 1 HASTA {iterations} HACER {{ palabras = palabras + {stepValue} }}\nEn cada una de las {iterations} vueltas del ciclo, 'palabras' aumenta en {stepValue}. ¿Cuál es el valor final de 'palabras' al terminar el ciclo?",
+            SimplifiedInstruction = $"La variable 'palabras' empieza en {initial}. El ciclo repite {iterations} veces la orden de sumar +{stepValue} ({iterations} × {stepValue} = {addedByLoop}). ¿Cuánto es {initial} + {addedByLoop}?",
+            ScreenReaderDescription = $"Ciclo for: variable palabras inicia en {initial}. Para i desde 1 hasta {iterations}, palabras igual a palabras más {stepValue}. Calcular el valor final de palabras.",
+            FirstHint = $"El ciclo se repite {iterations} veces y en cada vuelta suma {stepValue}, acumulando {iterations} × {stepValue} = {addedByLoop} palabras nuevas.",
+            SecondHintDetailed = $"Suma el valor inicial ({initial}) más lo acumulado en el ciclo ({addedByLoop}): {initial} + {addedByLoop} = {finalTotal} palabras.",
+            ExplanationOfSuccess = $"¡Excelente dominio de los ciclos! El ciclo PARA ejecutó {iterations} iteraciones sumando {stepValue} cada vez ({addedByLoop} en total), pasando de {initial} a {finalTotal} palabras."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "loop_accumulator_item",
+            Name = $"Ciclo for ({initial} + {iterations}×{stepValue} = {finalTotal})",
+            EmojiSymbol = "🔄",
+            AccessibleDescription = $"Ciclo repetitivo for de {iterations} vueltas sumando {stepValue} al valor inicial {initial} para dar {finalTotal}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[3]
+        });
+
+        BuildOptions(ex, finalTotal, min: Math.Max(4, finalTotal - 4), max: finalTotal + 4, unitLabel: "palabras", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Arreglos (Arrays), Listas e Índices desde Cero [0, 1, 2...] (Objetivo 15 - Programación 2).
+    /// </summary>
+    public Exercise GenerateProgrammingArraysExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        string currency = profile.CurrencyName;
+        string store = profile.StoreName;
+
+        int v0 = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+        int v1 = v0 + rng.Next(2, 4);
+        int v2 = v1 + rng.Next(2, 4);
+        int v3 = v2 + rng.Next(2, 4);
+        int[] arr = [v0, v1, v2, v3];
+
+        int idxA = 0;
+        int idxB = isSimplified ? 1 : rng.Next(1, 4);
+        int expectedSum = arr[idxA] + arr[idxB];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_arr_{Guid.NewGuid():N}",
+            Title = $"Arreglos desde el Índice Cero: precios[{idxA}] + precios[{idxB}]",
+            GameType = GamePlayType.ProgrammingArraysZeroIndex,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = expectedSum,
+            StandardInstruction = $"En el catálogo digital de la {store}, los precios se guardan en un arreglo (Array) cuyas posiciones se numeran empezando desde el índice 0:\n• precios = [{v0}, {v1}, {v2}, {v3}]\n(Recuerda: precios[0] = {v0}, precios[1] = {v1}, precios[2] = {v2}, precios[3] = {v3}).\nSi el programa calcula total = precios[{idxA}] + precios[{idxB}], ¿cuántos {currency} vale 'total'?",
+            SimplifiedInstruction = $"En la lista precios = [{v0}, {v1}, {v2}, {v3}], la posición [0] es el primer número ({v0}) y la posición [{idxB}] vale {arr[idxB]}. ¿Cuánto es {v0} + {arr[idxB]} {currency}?",
+            ScreenReaderDescription = $"Arreglo precios con elementos {v0}, {v1}, {v2} y {v3} indexados desde cero. Calcular precios en índice {idxA} más precios en índice {idxB}.",
+            FirstHint = $"En programación el primer casillero siempre es el índice [0]. Por eso precios[{idxA}] = {arr[idxA]} y precios[{idxB}] = {arr[idxB]}.",
+            SecondHintDetailed = $"Suma los valores de ambas posiciones del arreglo: {arr[idxA]} + {arr[idxB]} = {expectedSum} {currency}.",
+            ExplanationOfSuccess = $"¡Indexación perfecta! Identificaste que precios[{idxA}] = {arr[idxA]} y precios[{idxB}] = {arr[idxB]}, obteniendo {arr[idxA]} + {arr[idxB]} = {expectedSum} {currency}."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "array_zero_item",
+            Name = $"Arreglo [{v0}, {v1}, {v2}, {v3}] (índices 0..3)",
+            EmojiSymbol = "🗂️",
+            AccessibleDescription = $"Arreglo indexado desde cero: índice 0 vale {v0}, índice 1 vale {v1}, índice 2 vale {v2}, índice 3 vale {v3}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[6]
+        });
+
+        BuildOptions(ex, expectedSum, min: Math.Max(3, expectedSum - 4), max: expectedSum + 4, unitLabel: currency, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio de Funciones Modulares, Parámetros y Valor de Retorno (return) (Objetivo 15 - Programación 2).
+    /// </summary>
+    public Exercise GenerateProgrammingFunctionsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+
+        int factor = isSimplified ? 2 : rng.Next(2, 5);
+        int baseOffset = isSimplified ? rng.Next(1, 4) : rng.Next(2, 6);
+        int inputParam = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+        int returnValue = (factor * inputParam) + baseOffset;
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prog_func_{Guid.NewGuid():N}",
+            Title = $"Funciones Modulares: calcularVolumen({inputParam})",
+            GameType = GamePlayType.ProgrammingFunctionsReturn,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = returnValue,
+            StandardInstruction = $"Igual que en matemáticas evaluamos f(x) = {factor}x + {baseOffset}, en programación definimos una función reutilizable con parámetro de entrada 'nivel' y valor de retorno (return):\n• FUNCION calcularVolumen(nivel) {{ RETORNAR ({factor} * nivel) + {baseOffset} }}\nSi nuestro programa llama a la función con calcularVolumen({inputParam}), ¿qué valor devuelve (return)?",
+            SimplifiedInstruction = $"La máquina de código 'calcularVolumen' multiplica el número de entrada por {factor} y luego le suma {baseOffset}. Si entra el número {inputParam}, ¿cuánto es ({factor} × {inputParam}) + {baseOffset}?",
+            ScreenReaderDescription = $"Función calcularVolumen con parámetro nivel: retorna {factor} por nivel más {baseOffset}. Evaluar la llamada calcularVolumen con argumento {inputParam}.",
+            FirstHint = $"Sustituye el parámetro 'nivel' por {inputParam} dentro de la función: primero multiplica {factor} × {inputParam} = {factor * inputParam}.",
+            SecondHintDetailed = $"Al producto {factor * inputParam} súmale la constante {baseOffset}: {factor * inputParam} + {baseOffset} = {returnValue} decibeles.",
+            ExplanationOfSuccess = $"¡Gran diseño modular! Al invocar calcularVolumen({inputParam}), la función evaluó ({factor} × {inputParam}) + {baseOffset} y retornó {returnValue} decibeles."
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "func_return_item",
+            Name = $"calcularVolumen({inputParam}) → return {returnValue}",
+            EmojiSymbol = "⚙️",
+            AccessibleDescription = $"Función modular: recibe parámetro {inputParam}, calcula {factor} por {inputParam} más {baseOffset} y retorna {returnValue}",
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[7]
+        });
+
+        BuildOptions(ex, returnValue, min: Math.Max(3, returnValue - 4), max: returnValue + 4, unitLabel: "decibeles", rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -2277,6 +2417,12 @@ public class ExerciseGenerator
 
                 "prog_boolean_logic_01" => GenerateProgrammingBooleanLogicExercise(profile, rng),
 
+                "prog_loops_for_while_01" => GenerateProgrammingLoopsExercise(profile, rng),
+
+                "prog_arrays_lists_01" => GenerateProgrammingArraysExercise(profile, rng),
+
+                "prog_functions_params_01" => GenerateProgrammingFunctionsExercise(profile, rng),
+
                 _ => GenerateCountingExercise(profile, rng)
             };
 
@@ -2364,7 +2510,7 @@ public class ExerciseGenerator
             GamePlayType.AnalyticDistance2D => "Calcula los incrementos Δx y Δy, elévalos al cuadrado, súmalos y obtén la raíz cuadrada.",
             GamePlayType.LineSlopeM => "La pendiente m se obtiene dividiendo el cambio vertical (y₂ - y₁) entre el horizontal (x₂ - x₁).",
             GamePlayType.LinearEquationYMXB => "En la recta y = mx + b, multiplica primero la pendiente m por x y luego suma la ordenada al origen b.",
-            GamePlayType.ConicCircleRadius => "En x² + y² = r², el número del lado derecho es r²; saca su raíz cuadrada para hallar el radio r.",
+            GamePlayType.ConicCircleRadius => "En x² + y² = r², el número del lado derecho es r², saca su raíz cuadrada para hallar el radio r.",
             GamePlayType.SineWaveContinuous => "En y = A·sen(x), el valor máximo se alcanza cuando sen(x) = 1, dando la amplitud A.",
             GamePlayType.LogarithmBinary => "El logaritmo base 2 cuenta cuántas veces debes multiplicar 2 por sí mismo para obtener ese número.",
             GamePlayType.CalculusDerivativeRate => "Por la regla de la derivada d/dt(a·t²) = 2a·t, multiplica 2 por a y por el instante t.",
@@ -2374,6 +2520,9 @@ public class ExerciseGenerator
             GamePlayType.ProgrammingVariablesState => "Sigue el valor de la variable línea por línea: primero aplica la suma al valor inicial y al resultado réstale el gasto.",
             GamePlayType.ProgrammingConditionalsIfElse => "Evalúa primero si la condición del SI (>=) se cumple para elegir el bono correcto antes de sumarlo.",
             GamePlayType.ProgrammingBooleanLogic => "En el operador lógico Y (AND), la condición solo es verdadera si ambas entradas valen 1 al mismo tiempo.",
+            GamePlayType.ProgrammingLoopsForWhile => "Multiplica el incremento por el número de repeticiones del ciclo PARA y súmalo al valor inicial de la variable acumuladora.",
+            GamePlayType.ProgrammingArraysZeroIndex => "Recuerda que en un arreglo el primer elemento siempre ocupa el índice [0], el segundo el [1], el tercero el [2] y el cuarto el [3].",
+            GamePlayType.ProgrammingFunctionsReturn => "Sustituye el parámetro de entrada en la regla de la función: multiplica primero por el factor y luego suma la constante antes de retornar.",
             _ => "Revisa paso a paso los datos del problema."
         };
 

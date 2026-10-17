@@ -37,7 +37,7 @@ public class RewardServiceTests
         profile.CompletedLessonIds.Add("kinder_counting_01");
 
         var stations = _rewards.GetRealmStations(profile);
-        Assert.Equal(39, stations.Count);
+        Assert.Equal(42, stations.Count);
         Assert.Equal("station_1", stations[0].Id);
         Assert.True(stations[0].IsCompleted);
         Assert.False(stations[0].IsCurrentStation);
@@ -134,5 +134,13 @@ public class RewardServiceTests
         Assert.Equal("prog_conditionals_ifelse_01", stations[37].TopicId);
         Assert.Equal("station_39", stations[38].Id);
         Assert.Equal("prog_boolean_logic_01", stations[38].TopicId);
+
+        // Objetivo 15 (Programación Inclusiva Módulo 2)
+        Assert.Equal("station_40", stations[39].Id);
+        Assert.Equal("prog_loops_for_while_01", stations[39].TopicId);
+        Assert.Equal("station_41", stations[40].Id);
+        Assert.Equal("prog_arrays_lists_01", stations[40].TopicId);
+        Assert.Equal("station_42", stations[41].Id);
+        Assert.Equal("prog_functions_params_01", stations[41].TopicId);
     }
 }

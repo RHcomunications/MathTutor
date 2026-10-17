@@ -861,7 +861,7 @@ public class ExerciseGeneratorTests
     {
         var curriculum = new CurriculumService();
         var allTopics = curriculum.GetAllTopics();
-        Assert.Equal(39, allTopics.Count);
+        Assert.Equal(42, allTopics.Count);
 
         foreach (var topic in allTopics)
         {
@@ -919,8 +919,8 @@ public class ExerciseGeneratorTests
         var stations = rewards.GetRealmStations(profile);
         var badges = rewards.GetAllBadges(profile);
 
-        Assert.Equal(39, allTopics.Count);
-        Assert.Equal(39, stations.Count);
+        Assert.Equal(42, allTopics.Count);
+        Assert.Equal(42, stations.Count);
 
         var topicIds = allTopics.Select(t => t.Id).ToHashSet();
         var stationTopicIds = stations.Select(s => s.TopicId).ToHashSet();
@@ -962,5 +962,33 @@ public class ExerciseGeneratorTests
                 }
             }
         }
+    }
+
+    [Fact]
+    public void GenerateProgrammingModule2Exercises_CreatesValidLoopsArraysAndFunctions()
+    {
+        var profile = new UserProfile
+        {
+            Age = 15,
+            CurrentLevel = AcademicLevel.ProgrammingFoundations,
+            Region = RegionalContext.Peru
+        };
+        var rng = new Random(1502);
+
+        var loopEx = _generator.GenerateProgrammingLoopsExercise(profile, rng);
+        Assert.Equal(GamePlayType.ProgrammingLoopsForWhile, loopEx.GameType);
+        Assert.Contains(loopEx.Options, o => o.IsCorrect && o.Value == loopEx.ExpectedResult);
+        Assert.Single(loopEx.ItemsGroupA);
+
+        var arrEx = _generator.GenerateProgrammingArraysExercise(profile, rng);
+        Assert.Equal(GamePlayType.ProgrammingArraysZeroIndex, arrEx.GameType);
+        Assert.Contains("bodega", arrEx.StandardInstruction);
+        Assert.Contains("soles", arrEx.StandardInstruction);
+        Assert.Contains(arrEx.Options, o => o.IsCorrect && o.Value == arrEx.ExpectedResult);
+
+        var funcEx = _generator.GenerateProgrammingFunctionsExercise(profile, rng);
+        Assert.Equal(GamePlayType.ProgrammingFunctionsReturn, funcEx.GameType);
+        Assert.Contains("RETORNAR", funcEx.StandardInstruction);
+        Assert.Contains(funcEx.Options, o => o.IsCorrect && o.Value == funcEx.ExpectedResult);
     }
 }

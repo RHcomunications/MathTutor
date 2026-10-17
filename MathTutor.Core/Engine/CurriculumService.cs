@@ -54,7 +54,10 @@ public class CurriculumService
             BuildRepeatedAdditionAndProgrammingSeedTopic(),
             BuildProgrammingVariablesTopic(),
             BuildProgrammingConditionalsTopic(),
-            BuildProgrammingBooleanLogicTopic()
+            BuildProgrammingBooleanLogicTopic(),
+            BuildProgrammingLoopsTopic(),
+            BuildProgrammingArraysTopic(),
+            BuildProgrammingFunctionsTopic()
         };
     }
 
@@ -66,11 +69,13 @@ public class CurriculumService
         if (count <= 0) return new List<Exercise>();
 
         bool isMonetaryTopic = topic.Id is "elem_decimals_01"
+            or "elem_proportion_01"
             or "sec_signed_numbers_01"
             or "sec_linear_equations_01"
             or "sec_percentages_01"
             or "sec_linear_systems_2x2_01"
-            or "prog_variables_state_01";
+            or "prog_variables_state_01"
+            or "prog_arrays_lists_01";
 
         // Si el perfil requiere rango reducido por discapacidad intelectual o moneda de otro país en temas monetarios,
         // generamos todos procedimentalmente para garantizar rango numérico y vocabulario regional exactos.
@@ -2381,6 +2386,183 @@ public class CurriculumService
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "12 unidades (rama SI NO: 10 + 2)", Value = 12, IsCorrect = false, SpeechFeedback = "12 sería si alguno de los sensores fuera 0, pero aquí ambos sensores valen 1.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "18 unidades (1 AND 1 es Verdadero: 10 + 8)", Value = 18, IsCorrect = true, SpeechFeedback = "¡Magnífico! Como ambos sensores valen 1, la compuerta Y es verdadera y 10 + 8 = 18.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "20 unidades (sumando 10 + 8 + 2)", Value = 20, IsCorrect = false, SpeechFeedback = "Recuerda que solo se suma el impulso de la rama verdadera (+8), no ambos.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 40 (Objetivo 15 - Programación Inclusiva 2): Ciclos PARA / MIENTRAS (for / while) y Variables Acumuladoras
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingLoopsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_loops_for_while_01",
+            Title = "El Motor de Repetición: Ciclos PARA (for) y Variables Acumuladoras",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "¡Bienvenido al Módulo 2 de Programación Inclusiva! ¿Recuerdas cómo la multiplicación resume sumas repetidas? En programación, cuando necesitamos que el código repita una tarea decenas o miles de veces (como leer cada renglón de un libro digital accesible), usamos un ciclo PARA (for) o MIENTRAS (while) junto con una variable acumuladora.",
+            NarrativeIntroSimplified = "Un ciclo PARA (for) repite una orden varias veces automáticamente y va guardando la suma en una variable acumuladora.",
+            CoreConceptExplanation = "En un ciclo 'PARA i = 1 HASTA N HACER { total = total + paso }', la variable contadora 'i' lleva la cuenta de las vueltas (iteraciones) desde 1 hasta N. En cada iteración, la variable acumuladora 'total' suma el valor de 'paso'. Al terminar las N vueltas, el total final es igual al valor inicial más (N × paso).",
+            CoreConceptSimplified = "Si 'palabras' empieza en 4 y un ciclo repite 3 veces 'palabras = palabras + 5', sumamos 3 × 5 = 15 al 4 inicial, llegando a 19.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Estructura de control iterativa PARA (for) con contador de iteraciones",
+                "Patrón de variable acumuladora (total = total + incremento) a lo largo de un ciclo",
+                "Equivalencia entre iteración computacional y progresiones aritméticas"
+            },
+            CongratulationMessage = "¡Ingeniero de Ciclos! Dominas los bucles for/while y las variables acumuladoras para automatizar cualquier proceso."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_loop_ex_01",
+            Title = "El Sintetizador de Voz: Ciclo PARA de 3 Iteraciones",
+            GameType = GamePlayType.ProgrammingLoopsForWhile,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 19,
+            StandardInstruction = "Nuestro lector de pantalla procesa párrafos usando un ciclo PARA (for) con una variable acumuladora:\n1) palabras = 4\n2) PARA i = 1 HASTA 3 HACER { palabras = palabras + 5 }\n¿Qué valor tendrá la variable 'palabras' al terminar las 3 iteraciones del ciclo?",
+            SimplifiedInstruction = "La variable 'palabras' empieza en 4. El ciclo repite 3 veces la orden de sumar +5 (3 × 5 = 15). ¿Cuánto es 4 + 15?",
+            ScreenReaderDescription = "Ciclo for: palabras inicia en 4. Para i de 1 hasta 3, palabras igual a palabras más 5. Calcular el valor final de palabras.",
+            FirstHint = "Calcula cuánto se acumula en las 3 vueltas del ciclo: en cada vuelta se suman 5 palabras, así que 3 × 5 = 15 palabras nuevas.",
+            SecondHintDetailed = "Suma el valor inicial de 'palabras' (4) más las 15 palabras acumuladas en el ciclo: 4 + 15 = 19 palabras.",
+            ExplanationOfSuccess = "¡Iteración perfecta! Vuelta 1: 4 + 5 = 9; Vuelta 2: 9 + 5 = 14; Vuelta 3: 14 + 5 = 19 palabras en total."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "loop_for_item",
+            Name = "Ciclo for (4 → 9 → 14 → 19)",
+            EmojiSymbol = "🔄",
+            AccessibleDescription = "Ciclo for de 3 iteraciones que suma 5 en cada vuelta: pasa de 4 a 9, luego a 14 y termina en 19",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[3]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "9 palabras (solo 1 vuelta del ciclo)", Value = 9, IsCorrect = false, SpeechFeedback = "9 es el valor tras la primera vuelta (4 + 5), pero el ciclo repite la suma 3 veces.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "15 palabras (olvidando el valor inicial 4)", Value = 15, IsCorrect = false, SpeechFeedback = "15 es lo que suma el ciclo (3 × 5), pero falta sumarle las 4 palabras con las que inició la variable.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "19 palabras (4 + 3 × 5)", Value = 19, IsCorrect = true, SpeechFeedback = "¡Exacto! 4 iniciales + 15 acumuladas en las 3 iteraciones = 19 palabras.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 41 (Objetivo 15 - Programación Inclusiva 2): Arreglos (Arrays), Listas e Índices desde Cero [0, 1, 2...]
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingArraysTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_arrays_lists_01",
+            Title = "El Estante Numerado desde Cero: Arreglos (Arrays) e Índices [0, 1, 2...]",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "Cuando queremos guardar toda una colección de datos en orden (como las notas musicales de una melodía accesible o la lista de precios de la tiendita), en lugar de crear cien variables sueltas usamos un Arreglo (Array) o Lista. ¡El secreto más famoso de la programación es que la primera posición de un arreglo siempre tiene el índice 0!",
+            NarrativeIntroSimplified = "Un arreglo es una fila de cajitas numeradas empezando desde el 0: la primera cajita es [0], la segunda es [1] y la tercera es [2].",
+            CoreConceptExplanation = "Un arreglo almacena elementos contiguos en memoria a los que accedemos por su índice entre corchetes. Como el índice mide cuántos pasos nos desplazamos desde el inicio, el primer elemento está en el índice [0], el segundo en [1], el tercero en [2] y el cuarto en [3]. Por ejemplo, en precios = [4, 7, 10, 12], precios[0] vale 4 y precios[2] vale 10.",
+            CoreConceptSimplified = "En la lista precios = [4, 7, 10, 12]: precios[0] es 4 (el primero) y precios[2] es 10 (el tercero).",
+            PrinciplesAddressed = new List<string>
+            {
+                "Estructura de datos lineal: Arreglos (Arrays) y colecciones ordenadas",
+                "Indexación basada en cero (Zero-Based Indexing): desplazamientos desde la posición [0]",
+                "Acceso directo por índice y operaciones aritméticas con elementos de un arreglo"
+            },
+            CongratulationMessage = "¡Maestro de las Estructuras de Datos! Dominas los arreglos y la indexación desde cero como todo un profesional."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_arr_ex_01",
+            Title = "Catálogo en Memoria: precios[0] + precios[2]",
+            GameType = GamePlayType.ProgrammingArraysZeroIndex,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 14,
+            StandardInstruction = "En el catálogo digital de la tiendita tenemos el siguiente arreglo de precios en pesos, indexado desde 0:\n• precios = [4, 7, 10, 12]\n(Donde precios[0] = 4, precios[1] = 7, precios[2] = 10 y precios[3] = 12).\nSi el carrito de compras calcula total = precios[0] + precios[2], ¿cuántos pesos vale 'total'?",
+            SimplifiedInstruction = "En la lista precios = [4, 7, 10, 12], la posición [0] vale 4 y la posición [2] vale 10. ¿Cuánto es 4 + 10 pesos?",
+            ScreenReaderDescription = "Arreglo precios igual a 4, 7, 10, 12. Índice 0 vale 4, índice 1 vale 7, índice 2 vale 10, índice 3 vale 12. Calcular precios en 0 más precios en 2.",
+            FirstHint = "Identifica los elementos por su índice empezando en 0: precios[0] es el primer número (4) y precios[2] es el tercer número (10).",
+            SecondHintDetailed = "Suma ambos elementos del arreglo: precios[0] + precios[2] = 4 + 10 = 14 pesos.",
+            ExplanationOfSuccess = "¡Excelente manejo de índices! En programación el conteo de posiciones inicia en [0]: precios[0] = 4 y precios[2] = 10, sumando 14 pesos."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "array_index_item",
+            Name = "precios = [4, 7, 10, 12] ([0]=4, [2]=10)",
+            EmojiSymbol = "🗂️",
+            AccessibleDescription = "Arreglo de 4 elementos: índice 0 vale 4, índice 1 vale 7, índice 2 vale 10 e índice 3 vale 12",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[6]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "11 pesos (sumando precios[0] + precios[1]: 4 + 7)", Value = 11, IsCorrect = false, SpeechFeedback = "7 está en el índice [1], pero el código pidió precios[2], que vale 10.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "14 pesos (precios[0]=4 + precios[2]=10)", Value = 14, IsCorrect = true, SpeechFeedback = "¡Perfecto! precios[0] es 4 y precios[2] es 10; 4 + 10 = 14 pesos.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "17 pesos (confundiendo índices con 7 + 10)", Value = 17, IsCorrect = false, SpeechFeedback = "Recuerda que el primer elemento siempre es el índice [0] (que vale 4), no el [1].", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex1);
+        return topic;
+    }
+
+    /// <summary>
+    /// Tema 42 (Objetivo 15 - Programación Inclusiva 2): Funciones Modulares, Parámetros y Valor de Retorno (return)
+    /// </summary>
+    private PedagogicalTopic BuildProgrammingFunctionsTopic()
+    {
+        var topic = new PedagogicalTopic
+        {
+            Id = "prog_functions_params_01",
+            Title = "Máquinas Reutilizables de Código: Funciones, Parámetros y Return",
+            Level = AcademicLevel.ProgrammingFoundations,
+            CharacterName = "Cosmo el Búho Sabio",
+            NarrativeIntro = "En Secundaria y Preparatoria aprendiste que una función matemática f(x) = 2x + 3 transforma una entrada x en una salida. ¡En programación una 'función' es exactamente eso! Es un bloque de código con nombre propio que recibe datos de entrada (parámetros), los procesa y devuelve un resultado con la instrucción RETORNAR (return).",
+            NarrativeIntroSimplified = "Una función de código es como una máquina con nombre: le das un número de entrada (parámetro), hace el cálculo y te devuelve (return) el resultado.",
+            CoreConceptExplanation = "Las funciones evitan repetir código y hacen los programas limpios y modulares. Al definir 'FUNCION calcularVolumen(nivel) { RETORNAR (3 * nivel) + 2 }', 'nivel' es el parámetro de entrada. Cuando llamamos a 'calcularVolumen(4)', el parámetro toma el valor 4, calcula (3 × 4) + 2 y retorna 14.",
+            CoreConceptSimplified = "En 'FUNCION calcularVolumen(nivel) { RETORNAR 3 * nivel + 2 }', si llamamos a calcularVolumen(4), calcula 3 × 4 + 2 = 14.",
+            PrinciplesAddressed = new List<string>
+            {
+                "Conexión directa entre funciones algebraicas f(x) y funciones en programación",
+                "Paso de argumentos a parámetros de entrada y evaluación del cuerpo de la función",
+                "Valor de retorno (return) y reutilización modular de código accesible"
+            },
+            CongratulationMessage = "¡Arquitecto de Software Modular! Has completado el Objetivo 15 dominando ciclos, arreglos y funciones."
+        };
+
+        var ex1 = new Exercise
+        {
+            Id = "prog_func_ex_01",
+            Title = "Llamando a la Función: calcularVolumen(4)",
+            GameType = GamePlayType.ProgrammingFunctionsReturn,
+            TargetAgeMin = 10,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.ProgrammingFoundations,
+            ExpectedResult = 14,
+            StandardInstruction = "En el módulo de audio accesible programamos esta función reutilizable:\n• FUNCION calcularVolumen(nivel) { RETORNAR (3 * nivel) + 2 }\nSi el programa principal invoca la función pasándole el argumento 4: calcularVolumen(4), ¿qué valor numérico retorna (return) la función?",
+            SimplifiedInstruction = "La función 'calcularVolumen' multiplica el número de entrada por 3 y luego suma 2. Si entra el 4, ¿cuánto es (3 × 4) + 2?",
+            ScreenReaderDescription = "Función calcularVolumen con parámetro nivel: retorna 3 por nivel más 2. Evaluar calcularVolumen con argumento 4.",
+            FirstHint = "Sustituye el parámetro 'nivel' por el argumento 4: primero multiplica 3 × 4 = 12.",
+            SecondHintDetailed = "Ahora súmale 2 al producto: 12 + 2 = 14 decibeles. Ese es el valor que retorna la función.",
+            ExplanationOfSuccess = "¡Magnífico! Al llamar a calcularVolumen(4), el parámetro 'nivel' recibió 4, evaluó (3 × 4) + 2 = 14 y retornó 14 decibeles."
+        };
+
+        ex1.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "func_call_item",
+            Name = "calcularVolumen(4) → return 14",
+            EmojiSymbol = "⚙️",
+            AccessibleDescription = "Función calcularVolumen: recibe entrada 4, calcula 3 por 4 más 2 y retorna 14",
+            OrderIndex = 1,
+            MusicalPitchHz = Frequencies[7]
+        });
+
+        ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "9 decibeles (sumando 3 + 4 + 2 en vez de multiplicar)", Value = 9, IsCorrect = false, SpeechFeedback = "Recuerda que '3 * nivel' indica multiplicación (3 × 4 = 12), no suma.", AccessibleKeyShortcut = "1" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "12 decibeles (olvidando sumar + 2 antes del return)", Value = 12, IsCorrect = false, SpeechFeedback = "12 es el resultado de 3 × 4, pero falta sumar + 2 como indica la expresión de retorno.", AccessibleKeyShortcut = "2" });
+        ex1.Options.Add(new ExerciseOption { Id = "opt3", Label = "14 decibeles (return 3 × 4 + 2 = 14)", Value = 14, IsCorrect = true, SpeechFeedback = "¡Exacto! (3 × 4) + 2 = 14 decibeles retornados.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex1);
         return topic;

@@ -367,6 +367,33 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_prog_loops",
+                Title = "Ingeniero de Ciclos",
+                Description = "Automatizaste repeticiones con ciclos PARA (for) y variables acumuladoras.",
+                IconEmoji = "🔄",
+                AssociatedTopicId = "prog_loops_for_while_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prog_arrays",
+                Title = "Maestro de Arreglos",
+                Description = "Dominaste las listas y la indexación basada en cero [0, 1, 2...].",
+                IconEmoji = "🗂️",
+                AssociatedTopicId = "prog_arrays_lists_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prog_functions",
+                Title = "Arquitecto de Funciones",
+                Description = "Diseñaste funciones modulares con parámetros de entrada y valor de retorno (return).",
+                IconEmoji = "⚙️",
+                AssociatedTopicId = "prog_functions_params_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_star_collector",
                 Title = "Coleccionista de Estrellas",
                 Description = "Acumulaste 15 o más estrellas doradas en tus misiones.",
@@ -751,6 +778,33 @@ public class RewardService
                 LandmarkEmoji = "🔌",
                 TopicId = "prog_boolean_logic_01",
                 OrderIndex = 39
+            },
+            new()
+            {
+                Id = "station_40",
+                Name = "La Turbina de los Ciclos PARA (for)",
+                Description = "El motor iterativo donde los bucles repiten instrucciones y acumulan resultados sin cansarse.",
+                LandmarkEmoji = "🔄",
+                TopicId = "prog_loops_for_while_01",
+                OrderIndex = 40
+            },
+            new()
+            {
+                Id = "station_41",
+                Name = "El Archivo de los Arreglos desde Cero",
+                Description = "La galería ordenada donde las listas guardan colecciones numeradas a partir del índice [0].",
+                LandmarkEmoji = "🗂️",
+                TopicId = "prog_arrays_lists_01",
+                OrderIndex = 41
+            },
+            new()
+            {
+                Id = "station_42",
+                Name = "La Fábrica de Funciones Modulares",
+                Description = "El taller de ingeniería donde los parámetros de entrada se transforman y retornan (return) soluciones.",
+                LandmarkEmoji = "⚙️",
+                TopicId = "prog_functions_params_01",
+                OrderIndex = 42
             }
         };
 

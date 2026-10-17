@@ -127,6 +127,17 @@ public partial class ProfileSetupView : UserControl
         }
     }
 
+    private void SyncAccessibilityControlsFromProfile()
+    {
+        _isInitializing = true;
+        ChkVoiceSynthesis.IsChecked = _acc.CurrentProfile.Preferences.EnableVoiceSynthesis;
+        ChkAudioCues.IsChecked = _acc.CurrentProfile.Preferences.PlayAudioCues;
+        ChkSimplifyLanguage.IsChecked = _acc.CurrentProfile.Preferences.SimplifyLanguage;
+        SelectComboByTag(CmbTheme, _acc.CurrentProfile.Preferences.Theme);
+        SelectComboByTag(CmbFontSize, _acc.CurrentProfile.Preferences.FontSize);
+        _isInitializing = false;
+    }
+
     private void CmbDisabilityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (_isInitializing) return;
@@ -134,15 +145,7 @@ public partial class ProfileSetupView : UserControl
         {
             _acc.CurrentProfile.Disability = dis;
             _acc.CurrentProfile.ApplyRecommendedAccessibilityDefaults();
-
-            // Sincronizar UI con las recomendaciones
-            _isInitializing = true;
-            ChkVoiceSynthesis.IsChecked = _acc.CurrentProfile.Preferences.EnableVoiceSynthesis;
-            ChkAudioCues.IsChecked = _acc.CurrentProfile.Preferences.PlayAudioCues;
-            ChkSimplifyLanguage.IsChecked = _acc.CurrentProfile.Preferences.SimplifyLanguage;
-            SelectComboByTag(CmbTheme, _acc.CurrentProfile.Preferences.Theme);
-            SelectComboByTag(CmbFontSize, _acc.CurrentProfile.Preferences.FontSize);
-            _isInitializing = false;
+            SyncAccessibilityControlsFromProfile();
 
             _acc.Announce($"Seleccionado: {item.Content}. Opciones de accesibilidad adaptadas automáticamente.");
         }
@@ -155,14 +158,7 @@ public partial class ProfileSetupView : UserControl
         {
             _acc.CurrentProfile.Severity = sev;
             _acc.CurrentProfile.ApplyRecommendedAccessibilityDefaults();
-
-            _isInitializing = true;
-            ChkVoiceSynthesis.IsChecked = _acc.CurrentProfile.Preferences.EnableVoiceSynthesis;
-            ChkAudioCues.IsChecked = _acc.CurrentProfile.Preferences.PlayAudioCues;
-            ChkSimplifyLanguage.IsChecked = _acc.CurrentProfile.Preferences.SimplifyLanguage;
-            SelectComboByTag(CmbTheme, _acc.CurrentProfile.Preferences.Theme);
-            SelectComboByTag(CmbFontSize, _acc.CurrentProfile.Preferences.FontSize);
-            _isInitializing = false;
+            SyncAccessibilityControlsFromProfile();
 
             _acc.Announce($"Severidad: {item.Content}. Ajustes de accesibilidad actualizados.");
         }

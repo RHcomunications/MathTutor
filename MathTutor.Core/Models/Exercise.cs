@@ -52,7 +52,10 @@ public enum GamePlayType
     ProbabilityAndStats,      // Probabilidad clásica y estadística descriptiva (media aritmética y casos favorables)
     ProgrammingVariablesState, // Programación 1: Variables, asignación y actualización de estado (x = x + a - b)
     ProgrammingConditionalsIfElse, // Programación 1: Condicionales SI / SI NO (if / else) y toma de decisiones
-    ProgrammingBooleanLogic   // Programación 1: Lógica booleana y compuertas lógicas (AND, OR, NOT)
+    ProgrammingBooleanLogic,  // Programación 1: Lógica booleana y compuertas lógicas (AND, OR, NOT)
+    ProgrammingLoopsForWhile, // Programación 2: Ciclos PARA / MIENTRAS (for / while) y acumuladores
+    ProgrammingArraysZeroIndex, // Programación 2: Arreglos (Arrays), listas e indexación desde cero [0, 1, 2...]
+    ProgrammingFunctionsReturn // Programación 2: Funciones modulares, parámetros de entrada y retorno (return)
 }
 
 /// <summary>

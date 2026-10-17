@@ -39,15 +39,7 @@ public partial class MainWindow : Window
             _menuView.RefreshData();
         };
 
-        _menuView.TopicSelected += (topicId) =>
-        {
-            var topic = _curriculum.GetAllTopics().Find(t => t.Id == topicId);
-            if (topic != null)
-            {
-                NavigateTo(_lessonView);
-                _lessonView.LoadTopic(topic);
-            }
-        };
+        _menuView.TopicSelected += OpenTopicLesson;
 
         _menuView.RealmMapRequested += () =>
         {
@@ -58,11 +50,6 @@ public partial class MainWindow : Window
         _lessonView.StartGameRequested += (topic) =>
         {
             NavigateTo(_gameView);
-            var dynamicExercises = _curriculum.GenerateAdaptiveExercises(topic, _acc.CurrentProfile);
-            if (dynamicExercises.Count > 0)
-            {
-                topic.Exercises = dynamicExercises;
-            }
             _gameView.StartTopicGame(topic);
         };
 
@@ -99,15 +86,7 @@ public partial class MainWindow : Window
             _menuView.RefreshData();
         };
 
-        _mapView.StationSelected += (topicId) =>
-        {
-            var topic = _curriculum.GetAllTopics().Find(t => t.Id == topicId);
-            if (topic != null)
-            {
-                NavigateTo(_lessonView);
-                _lessonView.LoadTopic(topic);
-            }
-        };
+        _mapView.StationSelected += OpenTopicLesson;
 
         _acc.AnnouncementMade += Acc_AnnouncementMade;
         _acc.ThemeChanged += () =>
@@ -124,6 +103,21 @@ public partial class MainWindow : Window
         Loaded += MainWindow_Loaded;
         Closing += MainWindow_Closing;
         KeyDown += MainWindow_KeyDown;
+    }
+
+    private void OpenTopicLesson(string topicId)
+    {
+        var topic = _curriculum.GetAllTopics().Find(t => t.Id == topicId);
+        if (topic == null) return;
+
+        var dynamicExercises = _curriculum.GenerateAdaptiveExercises(topic, _acc.CurrentProfile);
+        if (dynamicExercises.Count > 0)
+        {
+            topic.Exercises = dynamicExercises;
+        }
+
+        NavigateTo(_lessonView);
+        _lessonView.LoadTopic(topic);
     }
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
