@@ -46,8 +46,8 @@ MathTutor.slnx
 │       └── RealmMapView.xaml / .cs           (Mapa del Reino Matemágico con ListBox navegable por flechas en Estaciones y en la Sala de Trofeos)
 │
 └── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 112 pruebas)
-    ├── ExerciseGeneratorTests.cs         (62 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
-    ├── PedagogyAndAccessibilityTests.cs  (46 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
+    ├── ExerciseGeneratorTests.cs         (59 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
+    ├── PedagogyAndAccessibilityTests.cs  (49 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
     ├── ProfileStorageTests.cs            (2 pruebas de serialización/deserialización JSON de perfiles con comorbilidad)
     └── RewardServiceTests.cs             (2 pruebas integrales de las 45 estaciones y desbloqueo de las 46 insignias)
 ```
@@ -76,7 +76,7 @@ MathTutor.slnx
 - **TargetFramework**: `net10.0`, `ImplicitUsings=enable`, `Nullable=enable`.
 - **Dependencias**: Cero paquetes NuGet externos (100% BCL estándar de .NET para máxima portabilidad y velocidad de compilación).
 
-#### `MathTutor.Core/Models/Enums.cs` (90 líneas)
+#### `MathTutor.Core/Models/Enums.cs` (89 líneas)
 Define las enumeraciones fundamentales del dominio:
 1. **`DisabilityType`**:
    - `None = 0` (Neurotípico)
@@ -103,7 +103,7 @@ Define las enumeraciones fundamentales del dominio:
 6. **`FontSizeLevel`**: `Normal = 0` (18pt), `Large = 1` (23-24pt), `ExtraLarge = 2` (28-30pt), `Huge = 3` (34-36pt).
 7. **`AnswerResult`**: `None = 0`, `Correct = 1`, `NeedsGuidance = 2`, `Assisted = 3`.
 
-#### `MathTutor.Core/Models/UserProfile.cs` (188 líneas)
+#### `MathTutor.Core/Models/UserProfile.cs` (253 líneas)
 Contiene dos clases clave:
 1. **`AccessibilityPreferences`**:
    - Propiedades persistibles: `EnableVoiceSynthesis`, `ScreenReaderAnnouncements`, `Theme`, `FontSize`, `SpeechRate`, `SpeechVolume`, `PlayAudioCues`, `SimplifyLanguage`, `ReduceOptionsCount`, `SimplifiedKeyboardNavigation`, `UnlimitedTime`.
@@ -117,20 +117,20 @@ Contiene dos clases clave:
    - Gamificación: `StarsTotal`, `PointsTotal`, `CurrentStreak`, `CompletedLessonIds`, `CompletedExerciseIds`.
    - Método **`ApplyRecommendedAccessibilityDefaults()`**: Configura automáticamente el tema de contraste, tamaño de fuente, simplificación de lenguaje y reducción de opciones según `Disability`, `Severity` y `Age`.
 
-#### `MathTutor.Core/Models/Exercise.cs` (124 líneas)
+#### `MathTutor.Core/Models/Exercise.cs` (123 líneas)
 - **`GamePlayType` (Enum con 53 valores)**: Identifica la mecánica exacta de cada reto (desde `InteractiveCounting`, `OrderSequence`, `Comparison` hasta `CalculusDerivativeRate`, `CalculusIntegralArea`, `ProgrammingVariablesState`, `ProgrammingConditionalsIfElse`, `ProgrammingBooleanLogic`, `ProgrammingLoopsForWhile`, `ProgrammingArraysZeroIndex`, `ProgrammingFunctionsReturn`, `ProgrammingAlgorithmsSearch`, `ProgrammingGameCoordinates2D`, `ProgrammingAssistiveAIData`).
 - **`ManipulableItem`**: Objeto interactivo contable o explorable en pantalla (`Id`, `Name`, `EmojiSymbol`, `AccessibleDescription`, `OrderIndex`, `IsCounted`, `MusicalPitchHz`).
 - **`ExerciseOption`**: Opción de respuesta (`Id`, `Label`, `Value`, `IsCorrect`, `SpeechFeedback` con diagnóstico formativo del error o acierto, y `AccessibleKeyShortcut` `"1"`, `"2"`, `"3"`).
 - **`Exercise`**: Reto completo con instrucciones duales (`StandardInstruction` y `SimplifiedInstruction`), descripción de escena para ciegos (`ScreenReaderDescription`), colecciones `ItemsGroupA` e `ItemsGroupB`, lista `Options`, pistas escalonadas (`FirstHint`, `SecondHintDetailed`), `ExplanationOfSuccess`, `ExpectedResult`, `TargetAgeMin/Max` y `Level`.
 
-#### `MathTutor.Core/Models/PedagogicalTopic.cs` (31 líneas)
+#### `MathTutor.Core/Models/PedagogicalTopic.cs` (30 líneas)
 - Representa una misión o lección completa: `Id`, `Title`, `Level`, `CharacterName` (`"Cosmo el Búho Sabio"`), `NarrativeIntro`, `NarrativeIntroSimplified`, `CoreConceptExplanation`, `CoreConceptSimplified`, `PrinciplesAddressed` (`List<string>`), `Exercises` (`List<Exercise>`) y `CongratulationMessage`.
 
-#### `MathTutor.Core/Models/Badge.cs` (35 líneas)
+#### `MathTutor.Core/Models/Badge.cs` (34 líneas)
 - **`Badge`**: Trofeo desbloqueable (`Id`, `Title`, `Description`, `IconEmoji`, `AssociatedTopicId`, `RequiredStars`, `IsUnlocked`, `UnlockedAt`).
 - **`RealmStation`**: Estación del sendero en el Mapa del Reino (`Id`, `Name`, `Description`, `LandmarkEmoji`, `TopicId`, `OrderIndex`, `IsCompleted`, `IsCurrentStation`, `StarsEarned`).
 
-#### `MathTutor.Core/Engine/AdaptiveEngine.cs` (208 líneas)
+#### `MathTutor.Core/Engine/AdaptiveEngine.cs` (243 líneas)
 Motor de adaptación pedagógica y reglas de negocio por edad y condición:
 - **`GetAllowedLevelsForAge(int age, DisabilityType disability = DisabilityType.None)`** (Tarea 6 y Tarea 12): Devuelve la lista de niveles académicos válidos para la edad y condición del alumno:
   - `3 a 5 años`: `Kindergarten`
@@ -147,7 +147,7 @@ Motor de adaptación pedagógica y reglas de negocio por edad y condición:
   - Si `isCorrect == true`: incrementa `CurrentStreak`, otorga **3 estrellas** (primer intento), **2 estrellas** (segundo intento) o **1 estrella** (3+ intentos, premiando siempre la perseverancia), suma `starsEarned * 10` a `PointsTotal` y registra el `exercise.Id` en `CompletedExerciseIds`.
   - Si `isCorrect == false`: reduce suavemente `CurrentStreak` en 1 (sin castigo punitivo a cero).
 
-#### `MathTutor.Core/Engine/CurriculumService.cs` (2,790 líneas)
+#### `MathTutor.Core/Engine/CurriculumService.cs` (2,799 líneas)
 Contiene el catálogo pedagógico completo de las **45 misiones** (`GetAllTopics()`), el filtrado adaptativo por edad/condición y el orquestador de ejercicios:
 - **`GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)`** (Tarea 6 y Tarea 12): Filtra `GetAllTopics()` devolviendo únicamente las misiones cuyos niveles pertenecen a `AdaptiveEngine.GetAllowedLevelsForAge(age, disability)`.
 - **`GetNextTopic(string currentTopicId, UserProfile? profile = null)`** (Tarea 7 y Tarea 10): Obtiene la siguiente misión secuencial o pendiente dentro del rango de edad del alumno tras completar `currentTopicId`, devolviendo `null` cuando el alumno ha completado todas las misiones de su etapa.
@@ -155,18 +155,18 @@ Contiene el catálogo pedagógico completo de las **45 misiones** (`GetAllTopics
   - Si el alumno tiene `DisabilityType.Intellectual` o es un tema monetario con región distinta de México, genera los `count` ejercicios procedimentalmente con `ExerciseGenerator` para garantizar el rango numérico reducido y la moneda local (`soles`, `pesos`, `tiendita`, `kiosco`, `bodega`, `almacén`).
   - En caso estándar, conserva como **Reto 1** el ejercicio curado de la lección (`templateTopic.Exercises[0]`, que conecta directamente con el Ejemplo Guiado Paso a Paso) y genera procedimentalmente los retos restantes con `_generator.GenerateExercisesForTopic(topic.Id, profile, remaining)`.
 
-#### `MathTutor.Core/Engine/ExerciseGenerator.cs` (2,679 líneas)
+#### `MathTutor.Core/Engine/ExerciseGenerator.cs` (2,705 líneas)
 Generador procedimental parametrizado que produce ejercicios infinitos y libres de colisiones para las **45 estaciones**:
 - **`GetTargetRange(UserProfile)`**: Ajusta el rango numérico a `(1, 3)` para discapacidad intelectual severa, `(1, 5)` para moderada/leve o Jardín de Niños, y `(1, 10)` para primaria inicial.
 - **46 métodos públicos de generación** (`GenerateCountingExercise`, `GenerateStableOrderExercise`, `GenerateAdditionCombineExercise`, ..., `GenerateProgrammingVariablesExercise`, `GenerateProgrammingConditionalsExercise`, `GenerateProgrammingBooleanLogicExercise`, `GenerateProgrammingLoopsExercise`, `GenerateProgrammingArraysExercise`, `GenerateProgrammingFunctionsExercise`, `GenerateProgrammingAlgorithmsSearchExercise`, `GenerateProgrammingGameCoordinatesExercise`, `GenerateProgrammingAssistiveAIExercise`) conectados en el despachador `GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)`.
 - **`BuildOptions(...)`**: Construye las opciones de respuesta garantizando valores únicos, barajado determinista/aleatorio sin sesgo de posición y **retroalimentación diagnóstica específica (`SpeechFeedback`)** en cada distractor (indicando si el número elegido es mayor o menor que el resultado correcto y qué paso revisar).
 
-#### `MathTutor.Core/Services/ProfileStorageService.cs` (82 líneas)
+#### `MathTutor.Core/Services/ProfileStorageService.cs` (81 líneas)
 - Gestiona la persistencia local del perfil en `%LocalAppData%\MathTutor\user_profile.json` usando `System.Text.Json` con `JsonStringEnumConverter`.
 - Permite inyectar una ruta personalizada en el constructor (`ProfileStorageService(string? customPath = null)`) para pruebas unitarias aisladas en archivos temporales.
 - Métodos: `Save(UserProfile)`, `Load()`, `Exists()`.
 
-#### `MathTutor.Core/Services/RewardService.cs` (890 líneas)
+#### `MathTutor.Core/Services/RewardService.cs` (889 líneas)
 - **`GetAllBadges(UserProfile)`**: Define y evalúa el estado de desbloqueo (`IsUnlocked`) de las **46 insignias** (45 insignias asociadas 1-a-1 a cada `TopicId` + 1 insignia especial `"badge_star_collector"` al acumular $\ge 15$ estrellas).
 - **`GetRealmStations(UserProfile)`**: Devuelve las **45 estaciones** del Mapa del Reino (`station_1` a `station_45`), marcando `IsCompleted = true` para las lecciones en `CompletedLessonIds` y asignando `IsCurrentStation = true` a la primera estación pendiente del sendero.
 
@@ -178,7 +178,7 @@ Generador procedimental parametrizado que produce ejercicios infinitos y libres 
 - **TargetFramework**: `net10.0-windows`, `UseWPF=true`, `Nullable=enable`, `ImplicitUsings=enable`.
 - Referencia de proyecto únicamente a `MathTutor.Core.csproj` (sin `System.Speech` ni dependencias externas).
 
-#### `MathTutor.WpfApp/App.xaml` (141 líneas) y `App.xaml.cs`
+#### `MathTutor.WpfApp/App.xaml` (140 líneas) y `App.xaml.cs`
 Define los recursos globales dinámicos y estilos accesibles WCAG 2.2:
 - **Brushes dinámicos**: `AppBackgroundBrush`, `AppSurfaceBrush`, `AppCardBrush`, `AppTextPrimaryBrush`, `AppTextSecondaryBrush`, `AppAccentBrush`, `AppFocusBorderBrush`, `AppBorderBrush`, `AppSuccessBrush`.
 - **Escalas tipográficas dinámicas**: `AppBaseFontSize` (18), `AppSubHeaderFontSize` (22), `AppHeaderFontSize` (28), `AppTitleFontSize` (36).
@@ -189,7 +189,7 @@ Define los recursos globales dinámicos y estilos accesibles WCAG 2.2:
   - `AccessibleCard`: Contenedor visual de tarjetas con borde de 2px y padding de 20px.
   - `AccessibleReadOnlyTextBox`: Estilo de `TextBox` (`IsReadOnly="True"`, `IsReadOnlyCaretVisible="True"`, fondo transparente, sin bordes) que permite a los usuarios de NVDA, JAWS y Narrador navegar con `Tab` e inspeccionar textos, ecuaciones y código línea por línea o carácter por carácter con las flechas.
 
-#### `MathTutor.WpfApp/Services/SpeechService.cs` (242 líneas)
+#### `MathTutor.WpfApp/Services/SpeechService.cs` (229 líneas)
 Puente nativo de comunicación con el lector de pantalla instalado en el sistema operativo (sin SAPI5):
 - **Separación de Canales (Tarea 5)**:
   - `IsInternalAudioEnabled`: Estado del canal de audio interno del juego (conmutado por `F2`).
@@ -200,7 +200,7 @@ Puente nativo de comunicación con el lector de pantalla instalado en el sistema
   2. **JAWS COM API (`FreedomScientific.JawsApi`)**: Invoca `SayString(text, interrupt)` por reflexión COM si `jfw` está activo.
   3. **Región en Vivo Nativa de Microsoft UI Automation (`UiAutomationLiveRegionAnnouncer` y `UiAutomationAssertiveLiveRegionAnnouncer`)**: Acciones delegadas conectadas por `MainWindow.xaml.cs` que disparan el evento nativo `AutomationEvents.LiveRegionChanged`, soportado universalmente por NVDA, JAWS y el Narrador de Windows.
 
-#### `MathTutor.WpfApp/Services/AccessibleAudioCueService.cs` (194 líneas)
+#### `MathTutor.WpfApp/Services/AccessibleAudioCueService.cs` (203 líneas)
 Sintetizador acústico procedural en memoria (cero archivos `.wav` externos):
 - Genera flujos PCM WAV a `44,100 Hz`, `16-bit Mono` con envolvente lineal *Fade-In / Fade-Out* para evitar chasquidos.
 - Métodos públicos:
@@ -210,7 +210,7 @@ Sintetizador acústico procedural en memoria (cero archivos `.wav` externos):
   - `PlayHintTone()`: Intervalo cálido La4–Do#5 (`440, 554 Hz`) para pistas u orientación.
   - `PlayNavigationClick()`: Pulso corto de `880 Hz` (`35 ms`) al cambiar de foco.
 
-#### `MathTutor.WpfApp/Services/AccessibilityManager.cs` (279 líneas)
+#### `MathTutor.WpfApp/Services/AccessibilityManager.cs` (291 líneas)
 Singleton central (`AccessibilityManager.Instance`) que coordina:
 - Instancias de `CurrentProfile`, `Speech` (`SpeechService`), `Audio` (`AccessibleAudioCueService`) y `Storage` (`ProfileStorageService`).
 - Propiedades de canal desacopladas (Tarea 5): `IsInternalAudioEnabled` y `IsScreenReaderIntegrationEnabled`.
@@ -223,7 +223,7 @@ Singleton central (`AccessibilityManager.Instance`) que coordina:
   - `CycleFontSize()` (tecla `F4`): Alterna entre `Normal` (18pt), `Large` (23pt), `ExtraLarge` (28pt) y `Huge` (34pt).
   - `ToggleSpeech()` (tecla `F2`, Tarea 5): Conmuta exclusivamente el audio interno del juego (`IsInternalAudioEnabled` / `Audio.Enabled`) mientras mantiene siempre activa la salida hacia NVDA, JAWS o Narrador.
 
-#### `MathTutor.WpfApp/MainWindow.xaml` (171 líneas) y `MainWindow.xaml.cs` (345 líneas)
+#### `MathTutor.WpfApp/MainWindow.xaml` (170 líneas) y `MainWindow.xaml.cs` (318 líneas)
 Ventana principal y contenedor de navegación:
 - **Barra Superior Global**: Botones accesibles para Menú (`Esc`), Mapa (`F6`), Perfil (`F5`), Contraste (`F3`), Letra (`F4`), Audio Interno (`F2`), Repetir (`F1`) y contador de estrellas (`TxtTopStars`).
 - **Host Central**: `<ContentControl x:Name="MainContentHost"/>` que aloja dinámicamente una de las 5 vistas (`_profileView`, `_menuView`, `_lessonView`, `_gameView`, `_mapView`).
@@ -234,40 +234,40 @@ Ventana principal y contenedor de navegación:
   - Usa `DispatcherPriority.Normal` cuando `immediate = true` (anuncios asertivos de error/diagnóstico) o `DispatcherPriority.ApplicationIdle` en navegaciones de vista.
   - Alterna un espacio de ancho cero (`\u200B`) al final del texto y dispara explícitamente `RaisePropertyChangedEvent(AutomationElementIdentifiers.NameProperty, ...)` y `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)`.
 
-#### `MathTutor.WpfApp/Views/ProfileSetupView.xaml` (253 líneas) y `ProfileSetupView.xaml.cs` (325 líneas)
+#### `MathTutor.WpfApp/Views/ProfileSetupView.xaml` (280 líneas) y `ProfileSetupView.xaml.cs` (324 líneas)
 Vista de caracterización inicial del alumno (`F5`):
 - Controles: `TxtName` (nombre/apodo), `CmbAge` (3 a 18 años), `CmbAcademicLevel` (filtrado dinámicamente según la edad), `CmbRegion` (México, Colombia, Argentina, Perú, Chile), `CmbDisabilityType` (6 tipos), `CmbDisabilitySeverity` (Leve, Moderada, Severa), `ChkVoiceSynthesis`, `ChkAudioCues`, `ChkSimplifyLanguage`, `CmbTheme`, `CmbFontSize` y `BtnSaveAndStart`.
 - **Método `PopulateAcademicLevelsForAge(int age, AcademicLevel? preferredLevel = null)`** (Tarea 6): Filtra los niveles mostrados en `CmbAcademicLevel` invocando `AdaptiveEngine.GetAllowedLevelsForAge(age)` y selecciona `GetRecommendedLevelForAge(age)` si el nivel anterior ya no aplica.
 - **Método `FocusInitialElement()`** (Tarea 1): Posiciona el foco físico y lógico en `TxtName` al abrir la vista.
 
-#### `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` (171 líneas) y `CurriculumMenuView.xaml.cs` (201 líneas)
+#### `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` (173 líneas) y `CurriculumMenuView.xaml.cs` (212 líneas)
 Menú principal de misiones (`Esc`):
 - Muestra el saludo personalizado, resumen de nivel y condición, contador de estrellas (`TxtStarsCount`), racha (`TxtStreakCount`), botón `BtnOpenRealmMap` y el listado de misiones filtradas por la edad del alumno (`_curriculum.GetTopicsForAge(profile.Age)`, Tarea 6).
 - **Navegación con Flechas (`ListBox ItemsTopics`, Tarea 2)**: Sustituye el antiguo `ItemsControl` por un `ListBox` accesible con `KeyboardNavigation.DirectionalNavigation="Cycle"`, `IsSynchronizedWithCurrentItem="True"`, borde de foco de 4px (`AccessibleFocusVisual`) y soporte para `Enter` y `Espacio` (`ItemsTopics_PreviewKeyDown`).
 - **Etiquetas Limpias sin Emojis (`TopicDisplayItem`, Tarea 3)**: `AutomationProperties.Name` sigue el formato estricto `"{Estado}: {NombreMision}"` (`"Misión recomendada: ..."`, `"Misión completada: ..."`, `"Misión disponible: ..."`) y `AutomationProperties.HelpText="Presiona Enter o Espacio para comenzar."`.
 - **Método `FocusInitialElement()`** (Tarea 1): Enfoca directamente el primer `ListBoxItem` de la lista de misiones.
 
-#### `MathTutor.WpfApp/Views/LessonView.xaml` (185 líneas) y `LessonView.xaml.cs` (106 líneas)
+#### `MathTutor.WpfApp/Views/LessonView.xaml` (267 líneas) y `LessonView.xaml.cs` (212 líneas)
 Pantalla pedagógica previa a cada minijuego:
 - Muestra el título de la misión (`TxtLessonTitle`), la narrativa de Cosmo (`TxtNarrativeStory`), la explicación del concepto (`TxtCoreConcept`), el **Ejemplo Guiado Paso a Paso (`TxtGuidedExample`)** generado por `BuildGuidedExampleText(topic, profile)`, y la lista de principios (`ItemsPrinciples`).
 - `TxtNarrativeStory`, `TxtCoreConcept` y `TxtGuidedExample` usan `AccessibleReadOnlyTextBox` para permitir lectura con cursores en NVDA/JAWS/Narrador.
 - **Método `FocusInitialElement()`** (Tarea 1): Posiciona el foco inicial en `BtnStartGame` (`Focus()` + `Keyboard.Focus(...)`).
 
-#### `MathTutor.WpfApp/Views/MiniGameView.xaml` (225 líneas) y `MiniGameView.xaml.cs` (410 líneas)
+#### `MathTutor.WpfApp/Views/MiniGameView.xaml` (224 líneas) y `MiniGameView.xaml.cs` (422 líneas)
 Motor interactivo del minijuego:
 - Muestra el progreso (`Reto X de Y`), el enunciado adaptado (`TxtInstruction`), el panel de objetos manipulables/explorables (`PanelItemsGroupA` y `PanelItemsGroupB`), el banner de pistas diagnósticas (`BorderHintBanner` / `TxtHintMessage`), el panel de opciones de respuesta (`PanelOptions` con atajos `1`, `2`, `3`) y el banner de éxito (`BorderSuccessBanner` / `TxtSuccessExplanation` / `BtnNextExercise`).
 - **Evaluación Diagnóstica (`EvaluateAnswer`, Tarea 4)**:
   - Si la opción es incorrecta: toca `_acc.Audio.PlayErrorChord()`, marca visualmente el botón probado con `"✗ "` y opacidad `0.72` (sin mover el foco para no interrumpir al lector), despliega `BorderHintBanner` con `option.SpeechFeedback` + la pista escalonada (`FirstHint` o `SecondHintDetailed`) y emite `_acc.AnnounceAssertive($"Incorrecto. {feedbackMessage}")`.
   - Si la opción es correcta: registra el intento en `AdaptiveEngine`, toca `PlaySuccessChord()`, muestra la explicación del triunfo y enfoca `BtnNextExercise` con `Focus()` + `Keyboard.Focus(...)`.
 
-#### `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml` (86 líneas) y `MissionCompletedDialog.xaml.cs` (119 líneas)
+#### `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml` (85 líneas) y `MissionCompletedDialog.xaml.cs` (118 líneas)
 Diálogo modal accesible al completar una misión (Tarea 7 y Tarea 10):
 - Muestra el encabezado de celebración (`TxtCompletedHeader`), el mensaje de felicitación de Cosmo (`TxtCongratulationMessage` con `AccessibleReadOnlyTextBox`), la instrucción de transición (`TxtTransitionPrompt`), dos botones accesibles y una región en vivo propia (`TxtDialogLiveRegion`):
   - `BtnNextMission` (`IsDefault="True"`, tecla `Enter`): **"Siguiente Misión: [Título]"** (o **"Volver al Menú de Misiones"** si `_nextTopic == null`), recibe el foco automático (`Focus()` + `Keyboard.Focus(...)`) al abrirse el diálogo.
   - `BtnBackToMap` (`IsCancel="True"`, tecla `Escape`): **"Volver al Mapa del Reino (Escape)"**.
 - Al cargarse, emite el anuncio asertivo después de estabilizar el foco en `DispatcherPriority.ApplicationIdle`.
 
-#### `MathTutor.WpfApp/Views/RealmMapView.xaml` (242 líneas) y `RealmMapView.xaml.cs` (223 líneas)
+#### `MathTutor.WpfApp/Views/RealmMapView.xaml` (241 líneas) y `RealmMapView.xaml.cs` (225 líneas)
 Mapa del Reino Matemágico y Sala de Trofeos (`F6`):
 - Filtra las estaciones e insignias mostradas según los niveles permitidos para la edad y condición del alumno (`_curriculum.GetTopicsForAge(profile.Age, profile.Disability)`, Tarea 6 y Tarea 12).
 - **Navegación con Flechas en Estaciones (`ListBox ItemsStations`, Tarea 2)**: Sustituye el `ItemsControl` por un `ListBox` accesible con `KeyboardNavigation.DirectionalNavigation="Cycle"`, `IsSynchronizedWithCurrentItem="True"` y activación con `Enter` o `Espacio`.
@@ -276,14 +276,14 @@ Mapa del Reino Matemágico y Sala de Trofeos (`F6`):
 
 ---
 
-### 2.4. Proyecto `MathTutor.Tests` (Suite de 108 Pruebas Unitarias Automatizadas)
+### 2.4. Proyecto `MathTutor.Tests` (Suite de 112 Pruebas Unitarias Automatizadas)
 
 | Archivo de Pruebas | Pruebas | Qué Verifica |
 |---|---|---|
-| `ExerciseGeneratorTests.cs` (1,021 líneas) | **61** | Verifica individualmente los métodos generadores de los 16 objetivos (desde conteo de Kinder hasta Cálculo e IA Asistiva), comprobando en bucles de 20 iteraciones con semilla determinista que `ExpectedResult` sea matemáticamente exacto, que exista exactamente una opción correcta, que no haya opciones duplicadas (`Distinct`), que los rangos se reduzcan para discapacidad intelectual y que la moneda/vocabulario cambie según `RegionalContext` (Perú `S/` vs. México `$`). |
-| `PedagogyAndAccessibilityTests.cs` (650 líneas) | **43** | Verifica que las 45 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica, además de probar `AdaptiveEngine.GetAllowedLevelsForAge` (incluyendo 12 años en 1º de Secundaria y refuerzo base en Discapacidad Intelectual), `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `UserProfile.ApplyRecommendedAccessibilityDefaults()`. |
-| `ProfileStorageTests.cs` (83 líneas) | **2** | Verifica que `ProfileStorageService` serialice y deserialice fielmente todos los campos de `UserProfile` y `AccessibilityPreferences` en disco usando archivos temporales aislados. |
-| `RewardServiceTests.cs` (155 líneas) | **2** | Verifica el orden, `Id` y `TopicId` de las **45 estaciones** en `GetRealmStations` y la lógica de bloqueo/desbloqueo de las **46 insignias** en `GetAllBadges`. |
+| `ExerciseGeneratorTests.cs` (1,053 líneas) | **59** | Verifica individualmente los métodos generadores de los 16 objetivos (desde conteo de Kinder hasta Cálculo e IA Asistiva), comprobando en bucles de 20 iteraciones con semilla determinista que `ExpectedResult` sea matemáticamente exacto, que exista exactamente una opción correcta, que no haya opciones duplicadas (`Distinct`), que los rangos se reduzcan para discapacidad intelectual y que la moneda/vocabulario cambie según `RegionalContext` (Perú `S/` vs. México `$`). |
+| `PedagogyAndAccessibilityTests.cs` (740 líneas) | **49** | Verifica que las 45 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica, además de probar `AdaptiveEngine.GetAllowedLevelsForAge` (incluyendo 12 años en 1º de Secundaria y refuerzo base en Discapacidad Intelectual), `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `UserProfile.ApplyRecommendedAccessibilityDefaults()`. |
+| `ProfileStorageTests.cs` (86 líneas) | **2** | Verifica que `ProfileStorageService` serialice y deserialice fielmente todos los campos de `UserProfile` y `AccessibilityPreferences` en disco usando archivos temporales aislados. |
+| `RewardServiceTests.cs` (154 líneas) | **2** | Verifica el orden, `Id` y `TopicId` de las **45 estaciones** en `GetRealmStations` y la lógica de bloqueo/desbloqueo de las **46 insignias** en `GetAllBadges`. |
 
 ---
 

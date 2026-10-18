@@ -103,7 +103,6 @@ public partial class LessonView : UserControl
     private void AnnounceCurrentStep(bool playTone)
     {
         if (_topic == null) return;
-        var profile = _acc.CurrentProfile;
 
         string speechMessage = _currentStep switch
         {

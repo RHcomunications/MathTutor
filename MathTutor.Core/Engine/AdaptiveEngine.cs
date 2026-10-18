@@ -113,7 +113,7 @@ public class AdaptiveEngine
     /// </summary>
     public string GetAdaptedInstruction(Exercise exercise, UserProfile profile)
     {
-        if (profile.Preferences.SimplifyLanguage || profile.Disability == DisabilityType.Intellectual)
+        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
         {
             return !string.IsNullOrWhiteSpace(exercise.SimplifiedInstruction)
                 ? exercise.SimplifiedInstruction
@@ -128,7 +128,7 @@ public class AdaptiveEngine
     /// </summary>
     public string GetAdaptedTopicIntro(PedagogicalTopic topic, UserProfile profile)
     {
-        if (profile.Preferences.SimplifyLanguage || profile.Disability == DisabilityType.Intellectual)
+        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
         {
             return !string.IsNullOrWhiteSpace(topic.NarrativeIntroSimplified)
                 ? topic.NarrativeIntroSimplified
@@ -143,7 +143,7 @@ public class AdaptiveEngine
     /// </summary>
     public string GetAdaptedConceptExplanation(PedagogicalTopic topic, UserProfile profile)
     {
-        if (profile.Preferences.SimplifyLanguage || profile.Disability == DisabilityType.Intellectual)
+        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
         {
             return !string.IsNullOrWhiteSpace(topic.CoreConceptSimplified)
                 ? topic.CoreConceptSimplified
@@ -160,7 +160,7 @@ public class AdaptiveEngine
     /// </summary>
     public List<ExerciseOption> GetAdaptedOptions(Exercise exercise, UserProfile profile)
     {
-        if (profile.Preferences.ReduceOptionsCount || profile.Disability == DisabilityType.Intellectual)
+        if (profile.Preferences.ReduceOptionsCount || profile.HasDisability(DisabilityType.Intellectual))
         {
             var correct = exercise.Options.FirstOrDefault(o => o.IsCorrect);
             var distractor = exercise.Options.FirstOrDefault(o => !o.IsCorrect);

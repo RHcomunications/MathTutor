@@ -131,7 +131,7 @@ public class CurriculumService
 
         // Si el perfil requiere rango reducido por discapacidad intelectual o moneda de otro país en temas monetarios,
         // generamos todos procedimentalmente para garantizar rango numérico y vocabulario regional exactos.
-        if (profile.Disability == DisabilityType.Intellectual || (isMonetaryTopic && profile.Region != RegionalContext.Mexico))
+        if (profile.HasDisability(DisabilityType.Intellectual) || (isMonetaryTopic && profile.Region != RegionalContext.Mexico))
         {
             return _generator.GenerateExercisesForTopic(topic.Id, profile, count);
         }

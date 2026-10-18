@@ -30,7 +30,7 @@ public class ExerciseGenerator
     /// </summary>
     public (int Min, int Max) GetTargetRange(UserProfile profile)
     {
-        if (profile.Disability == DisabilityType.Intellectual)
+        if (profile.HasDisability(DisabilityType.Intellectual))
         {
             return profile.Severity switch
             {
@@ -315,7 +315,7 @@ public class ExerciseGenerator
     public Exercise GenerateMultiplicationArrayExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 6);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 6);
 
         int rows = isSimplified ? rng.Next(2, 4) : rng.Next(2, 5);
         int cols = isSimplified ? rng.Next(1, 3) : rng.Next(2, 5);
@@ -368,7 +368,7 @@ public class ExerciseGenerator
     public Exercise GenerateDivisionFairSharingExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 6);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 6);
 
         int friends = rng.Next(2, 4); // 2 o 3 amigos
         int sharePerFriend = isSimplified ? rng.Next(1, 4) : rng.Next(2, 5); // 1 a 3 (simplificado) o 2 a 4
@@ -416,7 +416,7 @@ public class ExerciseGenerator
     public Exercise GenerateFractionPartsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         // Denominador (partes totales): 2, 4 para simplificado; 2, 3, 4, 6 para regular
         int[] possibleDenoms = isSimplified ? new[] { 2, 4 } : new[] { 2, 3, 4, 6 };
@@ -547,7 +547,7 @@ public class ExerciseGenerator
     public Exercise GenerateMultiplicationDistributiveExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int tens = isSimplified ? 10 : (rng.Next(1, 4) * 10); // 10, 20 o 30
         int units = isSimplified ? rng.Next(1, 4) : rng.Next(2, 6); // 1 a 5
@@ -585,7 +585,7 @@ public class ExerciseGenerator
     public Exercise GenerateMixedFractionsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int whole = 1;
         int denom = isSimplified ? 2 : (rng.Next(2, 5)); // 2, 3 o 4
@@ -635,7 +635,7 @@ public class ExerciseGenerator
     public Exercise GenerateDecimalsMoneyExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int wholeUnits = isSimplified ? 1 : rng.Next(1, 4);
         int halfUnits = isSimplified ? 1 : rng.Next(1, 3);
@@ -698,7 +698,7 @@ public class ExerciseGenerator
     public Exercise GeneratePowersExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int exponent = isSimplified ? rng.Next(1, 3) : rng.Next(2, 4);
         int powerResult = (int)Math.Pow(2, exponent);
@@ -751,7 +751,7 @@ public class ExerciseGenerator
     public Exercise GenerateDirectProportionExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int ratio = isSimplified ? 2 : rng.Next(2, 5);
         int knownUnits = isSimplified ? 1 : rng.Next(1, 3);
@@ -799,7 +799,7 @@ public class ExerciseGenerator
     public Exercise GenerateAlgebraicBalanceExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? 2 : rng.Next(2, 6);
         int x = isSimplified ? 3 : rng.Next(2, 7);
@@ -858,7 +858,7 @@ public class ExerciseGenerator
     public Exercise GenerateSquareRootExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         var roots = isSimplified ? new[] { 2, 3 } : new[] { 2, 3, 4, 5 };
         int root = roots[rng.Next(roots.Length)];
@@ -904,7 +904,7 @@ public class ExerciseGenerator
     public Exercise GenerateCartesianCoordinatesExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int xCoord = isSimplified ? rng.Next(1, 4) : rng.Next(1, 6);
         int yCoord = isSimplified ? rng.Next(1, 4) : rng.Next(1, 6);
@@ -950,7 +950,7 @@ public class ExerciseGenerator
     public Exercise GenerateSignedNumbersExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int initialBalance = isSimplified ? 4 : rng.Next(3, 8);
         int debt = initialBalance + (isSimplified ? 2 : rng.Next(2, 6));
@@ -1006,7 +1006,7 @@ public class ExerciseGenerator
     public Exercise GenerateOrderOfOperationsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? 2 : rng.Next(2, 6);
         int b = isSimplified ? 3 : rng.Next(2, 5);
@@ -1056,7 +1056,7 @@ public class ExerciseGenerator
     public Exercise GenerateLinearEquationAXBExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? 2 : rng.Next(2, 4);
         int x = isSimplified ? 3 : rng.Next(2, 6);
@@ -1105,7 +1105,7 @@ public class ExerciseGenerator
     public Exercise GeneratePercentageExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int basePrice = isSimplified ? 100 : (rng.Next(1, 4) * 100);
         int[] allowedPercents = isSimplified ? new[] { 10, 50 } : new[] { 10, 20, 25, 50 };
@@ -1153,7 +1153,7 @@ public class ExerciseGenerator
     public Exercise GenerateExponentLawsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int baseNum = isSimplified ? 2 : rng.Next(2, 4);
         int m = isSimplified ? 1 : rng.Next(2, 4);
@@ -1207,7 +1207,7 @@ public class ExerciseGenerator
     public Exercise GeneratePolynomialLikeTermsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? 2 : rng.Next(2, 6);
         int c = isSimplified ? 3 : rng.Next(2, 6);
@@ -1269,7 +1269,7 @@ public class ExerciseGenerator
     public Exercise GenerateLinearSystem2x2Exercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int tacoPrice = isSimplified ? 12 : rng.Next(12, 19);
         int drinkPrice = isSimplified ? 15 : rng.Next(14, 22);
@@ -1325,7 +1325,7 @@ public class ExerciseGenerator
     public Exercise GeneratePythagoreanTheoremExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         var triplets = isSimplified
             ? new (int a, int b, int c)[] { (3, 4, 5) }
@@ -1375,7 +1375,7 @@ public class ExerciseGenerator
     public Exercise GenerateQuadraticEquationExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         // Raíz x elegida entre 3 y 9 (o 4 para simplificado)
         int xRoot = isSimplified ? 4 : rng.Next(3, 10);
@@ -1419,7 +1419,7 @@ public class ExerciseGenerator
     public Exercise GenerateTriangleSimilarityThalesExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         // Estudiante de altura 1 o 2 metros, sombra proporcional
         // ratio: factor de sombra (ej. sombra = altura * 2)
@@ -1468,7 +1468,7 @@ public class ExerciseGenerator
     public Exercise GenerateTrigonometricRatiosExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         // Triángulo rectángulo clásico: opuesto, adyacente, hipotenusa (3, 4, 5) o (6, 8, 10)
         int multiplier = isSimplified ? 1 : rng.Next(1, 4);
@@ -1517,7 +1517,7 @@ public class ExerciseGenerator
     public Exercise GenerateQuadraticFunctionCurveExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? 2 : rng.Next(2, 4);
         int x = isSimplified ? 3 : rng.Next(2, 5);
@@ -1561,7 +1561,7 @@ public class ExerciseGenerator
     public Exercise GenerateAnalyticDistanceExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         // Generamos un segmento con catetos dx y dy que formen terna pitagórica exacta
         var triplets = isSimplified
@@ -1626,7 +1626,7 @@ public class ExerciseGenerator
     public Exercise GenerateLineSlopeExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int m = isSimplified ? 2 : rng.Next(2, 5); // pendiente entera positiva
         int x1 = rng.Next(1, 4);
@@ -1674,7 +1674,7 @@ public class ExerciseGenerator
     public Exercise GenerateLinearEquationYMXBExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int m = isSimplified ? 3 : rng.Next(2, 5);
         int b = isSimplified ? 5 : rng.Next(2, 8);
@@ -1721,7 +1721,7 @@ public class ExerciseGenerator
     public Exercise GenerateConicCircleExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int radius = isSimplified ? 5 : rng.Next(3, 9);
         int rSquared = radius * radius;
@@ -1764,7 +1764,7 @@ public class ExerciseGenerator
     public Exercise GenerateSineWaveContinuousExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int amplitude = isSimplified ? 4 : rng.Next(3, 8); // amplitud A
         int peakValue = amplitude; // sen(90°) = 1 => y_max = A
@@ -1806,7 +1806,7 @@ public class ExerciseGenerator
     public Exercise GenerateLogarithmBinaryExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         // Potencias de 2: 2^3=8, 2^4=16, 2^5=32, 2^6=64, 2^7=128
         int exponent = isSimplified ? 4 : rng.Next(3, 7);
@@ -1850,7 +1850,7 @@ public class ExerciseGenerator
     public Exercise GenerateCalculusDerivativeExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? 3 : rng.Next(2, 6);
         int t = isSimplified ? 2 : rng.Next(2, 5);
@@ -1897,7 +1897,7 @@ public class ExerciseGenerator
     public Exercise GenerateCalculusIntegralExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int rate = isSimplified ? 4 : rng.Next(3, 8); // litros por minuto o m/s
         int timeB = isSimplified ? 3 : rng.Next(3, 7); // intervalo [0, b]
@@ -1940,7 +1940,7 @@ public class ExerciseGenerator
     public Exercise GenerateProbabilityAndStatsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int mean = isSimplified ? 8 : rng.Next(6, 10);
         int delta = isSimplified ? 1 : rng.Next(1, 3);
@@ -1987,7 +1987,7 @@ public class ExerciseGenerator
     public Exercise GeneratePatternAndLoopSeedExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int iterations = isSimplified ? rng.Next(2, 4) : rng.Next(2, 6);
         int stepsPerIteration = isSimplified ? rng.Next(2, 4) : rng.Next(2, 6);
@@ -2035,7 +2035,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingVariablesExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int initial = isSimplified ? rng.Next(5, 10) : rng.Next(10, 21);
         int deposit = isSimplified ? rng.Next(2, 6) : rng.Next(4, 10);
@@ -2083,7 +2083,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingConditionalsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int threshold = 10;
         bool conditionMet = rng.Next(0, 2) == 0;
@@ -2135,7 +2135,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingBooleanLogicExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int baseEnergy = isSimplified ? 10 : rng.Next(10, 16);
         int turboBoost = isSimplified ? 5 : rng.Next(6, 10);
@@ -2185,7 +2185,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingLoopsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int initial = isSimplified ? rng.Next(2, 6) : rng.Next(3, 9);
         int iterations = isSimplified ? rng.Next(2, 4) : rng.Next(3, 6);
@@ -2230,7 +2230,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingArraysExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
         string currency = profile.CurrencyName;
         string store = profile.StoreName;
 
@@ -2281,7 +2281,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingFunctionsExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int factor = isSimplified ? 2 : rng.Next(2, 5);
         int baseOffset = isSimplified ? rng.Next(1, 4) : rng.Next(2, 6);
@@ -2325,7 +2325,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingAlgorithmsSearchExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int a = isSimplified ? rng.Next(3, 6) : rng.Next(4, 9);
         int b = a + rng.Next(4, 8); // valor máximo en medio
@@ -2370,7 +2370,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingGameCoordinatesExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int x0 = isSimplified ? rng.Next(2, 5) : rng.Next(3, 8);
         int velocity = isSimplified ? rng.Next(2, 4) : rng.Next(3, 6);
@@ -2415,7 +2415,7 @@ public class ExerciseGenerator
     public Exercise GenerateProgrammingAssistiveAIExercise(UserProfile profile, Random? rng = null)
     {
         rng ??= Random.Shared;
-        bool isSimplified = (profile.Disability == DisabilityType.Intellectual || profile.Age <= 8);
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
 
         int mean = isSimplified ? rng.Next(4, 8) : rng.Next(6, 12);
         int delta = isSimplified ? 1 : rng.Next(2, 4);

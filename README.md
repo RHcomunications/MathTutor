@@ -32,7 +32,7 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
   - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de 106 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de 112 pruebas unitarias xUnit).
 
 ---
 
@@ -81,7 +81,7 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.1.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.3.0`)
 
 Desde la terminal en esta carpeta:
 
@@ -89,7 +89,7 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build -c Release
 
-# Ejecutar las 106 pruebas unitarias automatizadas
+# Ejecutar las 112 pruebas unitarias automatizadas
 dotnet test -c Release
 
 # Iniciar la aplicación interactiva
