@@ -219,6 +219,32 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
 
 ---
 
+# ✅ REGISTRO DE CORRECCIONES REALIZADAS — Release `v1.3.0`
+
+> **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **112/112 pruebas unitarias** superadas. Consolidado en el commit `7f66162` y publicado como release `v1.3.0` (`https://github.com/RHcomunications/MathTutor/releases/tag/v1.3.0`).
+
+### 1. Migración de la solución a .NET 10
+- **Corrección:** Los tres proyectos (`MathTutor.Core`, `MathTutor.WpfApp`, `MathTutor.Tests`) abandonan `net8.0` y se unifican en `net10.0` / `net10.0-windows`.
+- **Ubicación:** `MathTutor.Core/MathTutor.Core.csproj`, `MathTutor.WpfApp/MathTutor.WpfApp.csproj`, `MathTutor.Tests/MathTutor.Tests.csproj`.
+- **Criterio de verificación:** `dotnet build MathTutor.slnx -c Release /p:TreatWarningsAsErrors=true` → 0 advertencias / 0 errores.
+
+### 2. Refactor de comorbilidad en los motores (`HasDisability`)
+- **Corrección:** Sustituidas las comparaciones de discapacidad única (`profile.Disability == DisabilityType.Intellectual`) por el predicado de comorbilidad `profile.HasDisability(DisabilityType.Intellectual)`, de modo que las adaptaciones (rango numérico reducido, lenguaje simplificado y reducción de opciones) también se apliquen cuando la discapacidad intelectual coexiste con otras en `UserProfile.Disabilities`.
+- **Ubicación:** `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.Core/Engine/ExerciseGenerator.cs`.
+- **Criterio de verificación:** Suite de 112 pruebas (incluye `UserProfile_SupportsMultipleDisabilities_AndCombinesAdaptationsSimultaneously`).
+
+### 3. Limpieza de variable sin uso en la lección
+- **Corrección:** Eliminada la variable local `profile` no utilizada dentro de `AnnounceCurrentStep`.
+- **Ubicación:** `MathTutor.WpfApp/Views/LessonView.xaml.cs`.
+- **Criterio de verificación:** Compilación sin advertencias (`TreatWarningsAsErrors`).
+
+### 4. Sincronización de la documentación con el estado real
+- **Corrección:** Cuadrados los conteos y la versión en la documentación: `README.md` (106 → **112** pruebas; release `v1.1.0` → **`v1.3.0`**) y `context.md` (`MathTutor.Tests` `net8.0` → **`net10.0`**; suite 108/varios → **112**; diagrama 62/46 → **59/49**; y los conteos de líneas archivo por archivo).
+- **Ubicación:** `README.md`, `context.md`.
+- **Criterio de verificación:** Sin coincidencias residuales de `net8.0` (en `MathTutor.Tests`), `106 pruebas` ni `v1.1.0`.
+
+---
+
 ## 📌 BACKLOG Y MEJORAS DE UX / MULTIMEDIA
 
 - **Optimización de UI/UX:** Simplificar la navegación general de la interfaz para reducir la curva de aprendizaje.
