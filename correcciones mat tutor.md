@@ -171,3 +171,55 @@
 * **Comportamiento Esperado:**
   1. Habilitar `SecondaryFirstGrade` también a partir de los 12 años junto con los niveles de Primaria.
   2. Añadir soporte para `DisabilityType` en `GetAllowedLevelsForAge(int age, DisabilityType disability = DisabilityType.None)` y `GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)` de modo que cuando `disability == DisabilityType.Intellectual` siempre se incluyan los niveles fundamentales (`Kindergarten`, `EarlyElementary`, `MiddleElementary`, `UpperElementary`) además de los niveles de su edad.
+# INSTRUCCIONES DE ACCESIBILIDAD Y UI/UX PARA AGENTES DE CÓDIGO (MathTutor - Feedback de Usuario) 🦉✨
+
+## Contexto del Proyecto
+**MathTutor** es una aplicación en **C# (.NET 10 / WPF)** estructurada en tres proyectos:
+- `MathTutor.Core`: Dominio, motor adaptativo, perfiles y generador procedimental.
+- `MathTutor.WpfApp`: Interfaz XAML, servicios de accesibilidad (UIA / NVDA / JAWS) y audio.
+- `MathTutor.Tests`: Suite de pruebas unitarias xUnit.
+
+Se requiere implementar los siguientes ajustes de accesibilidad, lógica de juego y experiencia de usuario basados en la retroalimentación de pruebas de usuario.
+
+---
+
+## 🛠️ CORRECCIONES Y MEJORAS DE ACCESIBILIDAD Y TUTORIAL INTERACTIVO
+
+### 1. Tutorial y Lección Interactiva Paso a Paso (Sin Lectura Continua "De Corrido")
+- **Ubicación:** `MathTutor.WpfApp/Views/LessonView.xaml` y `ViewModels/LessonViewModel.cs`.
+- **Problema:** Las lecciones y tutoriales muestran y leen todo el contenido de un solo tirón (título, historia, situación, pasos y atajos). Esto genera fatiga auditiva, sobrecarga cognitiva y le resta interactividad al juego.
+- **Instrucciones de Implementación:**
+  1. Transformar el modelo de la lección/tutorial en un **flujo guiado paso a paso (Wizard/Stepper)** dentro del ViewModel.
+  2. Muestren y anuncien por voz **únicamente una tarjeta/paso a la vez**.
+  3. En cada paso del tutorial, incluir una instrucción interactiva explícita (por ejemplo: *"Paso 1 de 3: {Explicación corta}. Presiona Enter o Espacio para continuar al siguiente paso."*).
+  4. Permitir retroceder paso a paso con las flechas o la tecla `Backspace`.
+  5. Una vez completados todos los pasos intermedios de la lección, habilitar la transición al reto o ejercicio práctico.
+
+### 2. Soporte para Discapacidades Múltiples (Comorbilidad / Interseccionalidad)
+- **Ubicación:** `MathTutor.Core/Models/UserProfile.cs` y `MathTutor.WpfApp/ViewModels/ProfileViewModel.cs`.
+- **Problema:** En la pantalla de caracterización solo se permite seleccionar una única discapacidad, impidiendo configurar perfiles con múltiples necesidades (por ejemplo, Ceguera + TEA).
+- **Instrucciones de Implementación:**
+  1. Modificar la propiedad `DisabilityType` en `UserProfile` para que admita selecciones múltiples (`List<DisabilityType>` o `[Flags] Enum`).
+  2. En `ProfileView.xaml`, reemplazar los controles de selección única por casillas de verificación (`CheckBox`) accesibles.
+  3. Asegurar que las adaptaciones (anuncios para lector de pantalla, paleta de baja estimulación sensorial y simplificación de lenguaje) se activen de forma simultánea cuando el usuario marque más de una opción.
+
+### 3. Anuncio Completo de Opciones en los Retos (TTS y Lector de Pantalla)
+- **Ubicación:** `MathTutor.WpfApp/ViewModels/ChallengeViewModel.cs`.
+- **Problema:** Al iniciar un reto, la síntesis/lector lee la pregunta y la instrucción ("Elige usando 1, 2 o 3"), pero omite leer el contenido de cada opción, obligando al usuario a navegar por la interfaz para conocer las respuestas.
+- **Instrucciones de Implementación:**
+  1. En el método de inicio de reto y en el comando asociado a la tecla `F1` (Repetir), construir la cadena del anuncio concatenando explícitamente las opciones:
+     `"{Pregunta}. Opción 1: {Opcion1}. Opción 2: {Opcion2}. Opción 3: {Opcion3}. Presiona 1, 2 o 3 para responder."`
+
+### 4. Aleatorización de Opciones para Eliminar el Sesgo de Posición
+- **Ubicación:** `MathTutor.Core/Generators/` (Generadores procedimentales de retos).
+- **Problema:** La respuesta correcta suele aparecer casi siempre en la opción 2 (tecla 2), haciendo que el juego se vuelva predecible.
+- **Instrucciones de Implementación:**
+  1. En la fase final de generación de cada reto en `Core`, aplicar un algoritmo de aleatorización (*Fisher-Yates shuffle* o `OrderBy(x => Guid.NewGuid())`) a la lista de opciones.
+  2. Actualizar el índice de la respuesta correcta tras el barajado para que se distribuya equitativamente entre las posiciones 1, 2 y 3.
+
+---
+
+## 📌 BACKLOG Y MEJORAS DE UX / MULTIMEDIA
+
+- **Optimización de UI/UX:** Simplificar la navegación general de la interfaz para reducir la curva de aprendizaje.
+- **Voces e Interactividad para Infancia Temprana:** Evaluar a futuro la inclusión de voces caracterizadas y narrativas más interactivas para el nivel de Jardín de Niños.

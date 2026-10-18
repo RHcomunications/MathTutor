@@ -52,7 +52,10 @@ public partial class RealmMapView : UserControl
     public void RefreshMap()
     {
         var profile = _acc.CurrentProfile;
-        var allowedTopicIds = _curriculum.GetTopicsForAge(profile.Age, profile.Disability)
+        var topics = profile.Disabilities.Count > 0
+            ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities)
+            : _curriculum.GetTopicsForAge(profile.Age, profile.Disability);
+        var allowedTopicIds = topics
             .Select(t => t.Id)
             .ToHashSet();
 

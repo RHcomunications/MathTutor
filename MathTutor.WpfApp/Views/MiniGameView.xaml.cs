@@ -83,13 +83,17 @@ public partial class MiniGameView : UserControl
             Keyboard.Focus(this);
         }
 
-        // Anuncio inicial accesible al lector de pantalla del sistema (NVDA, JAWS o Narrador)
+        // Anuncio inicial accesible al lector de pantalla del sistema (NVDA, JAWS o Narrador) con opciones completas (Mejora 3)
+        string optionsSpeech = BuildOptionsAnnouncement(_currentOptions);
         string fullSpeech = $"{_currentExercise.Title}. {adaptedInstruction}.";
-        if (profile.Disability == DisabilityType.Visual && !string.IsNullOrWhiteSpace(_currentExercise.ScreenReaderDescription))
+        if (profile.HasDisability(DisabilityType.Visual) && !string.IsNullOrWhiteSpace(_currentExercise.ScreenReaderDescription))
         {
-            fullSpeech += $" Descripción de la escena: {_currentExercise.ScreenReaderDescription}";
+            fullSpeech += $" Descripción de la escena: {_currentExercise.ScreenReaderDescription}.";
         }
-        fullSpeech += " Elige tu respuesta usando el teclado con los números 1, 2 o 3.";
+        if (!string.IsNullOrEmpty(optionsSpeech))
+        {
+            fullSpeech += $" {optionsSpeech}";
+        }
 
         _acc.Announce(fullSpeech, speak: true, playTone: true);
     }
@@ -360,13 +364,21 @@ public partial class MiniGameView : UserControl
     {
         if (_currentExercise == null) return;
         var profile = _acc.CurrentProfile;
-        string msg = $"{_currentExercise.Title}. {_adaptive.GetAdaptedInstruction(_currentExercise, profile)}";
+        string optionsSpeech = BuildOptionsAnnouncement(_currentOptions);
+        string msg = $"{_currentExercise.Title}. {_adaptive.GetAdaptedInstruction(_currentExercise, profile)}.";
         if (BorderHintBanner.Visibility == Visibility.Visible && !string.IsNullOrWhiteSpace(TxtHintMessage.Text))
         {
-            msg += $" {TxtHintMessage.Text}";
+            msg += $" Pista: {TxtHintMessage.Text}.";
+        }
+        if (!string.IsNullOrEmpty(optionsSpeech))
+        {
+            msg += $" {optionsSpeech}";
         }
         _acc.Announce(msg, speak: true);
     }
+
+    public static string BuildOptionsAnnouncement(IReadOnlyList<ExerciseOption> options) =>
+        AdaptiveEngine.BuildOptionsAnnouncement(options);
 
     private void BtnRepeatInstruction_Click(object sender, RoutedEventArgs e)
     {

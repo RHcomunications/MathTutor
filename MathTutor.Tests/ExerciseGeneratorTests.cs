@@ -1017,4 +1017,37 @@ public class ExerciseGeneratorTests
         Assert.Contains("promedio", aiEx.StandardInstruction);
         Assert.Contains(aiEx.Options, o => o.IsCorrect && o.Value == aiEx.ExpectedResult);
     }
+
+    [Fact]
+    public void BuildOptions_And_ShuffleOptions_DistributesCorrectOptionAcrossAllPositions()
+    {
+        var profile = new UserProfile { Age = 6, CurrentLevel = AcademicLevel.EarlyElementary };
+        int option1Count = 0;
+        int option2Count = 0;
+        int option3Count = 0;
+
+        for (int i = 0; i < 90; i++)
+        {
+            var rng = new Random(i * 37 + 11);
+            var ex = _generator.GenerateCountingExercise(profile, rng);
+            int correctIndex = ex.Options.FindIndex(o => o.IsCorrect);
+            Assert.True(correctIndex >= 0 && correctIndex < ex.Options.Count);
+
+            // Verificar atajos secuenciales 1..N
+            for (int k = 0; k < ex.Options.Count; k++)
+            {
+                Assert.Equal((k + 1).ToString(), ex.Options[k].AccessibleKeyShortcut);
+            }
+
+            if (correctIndex == 0) option1Count++;
+            else if (correctIndex == 1) option2Count++;
+            else if (correctIndex == 2) option3Count++;
+        }
+
+        // Cada posición debe aparecer de forma distribuida (sin sesgo fijo a la opción 2)
+        Assert.True(option1Count >= 15, $"Opción 1 apareció {option1Count} veces, se esperaba >= 15");
+        Assert.True(option2Count >= 15, $"Opción 2 apareció {option2Count} veces, se esperaba >= 15");
+        Assert.True(option3Count >= 15, $"Opción 3 apareció {option3Count} veces, se esperaba >= 15");
+    }
 }
+

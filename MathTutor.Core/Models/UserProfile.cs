@@ -76,7 +76,55 @@ public class UserProfile
     public string Name { get; set; } = "Pequeño Matemático";
     public int Age { get; set; } = 5;
 
-    public DisabilityType Disability { get; set; } = DisabilityType.None;
+    private DisabilityType _disability = DisabilityType.None;
+
+    /// <summary>
+    /// Tipo de discapacidad primaria (mantiene retrocompatibilidad con código existente).
+    /// Se sincroniza automáticamente con la lista de discapacidades múltiples.
+    /// </summary>
+    public DisabilityType Disability
+    {
+        get => _disability;
+        set
+        {
+            _disability = value;
+            if (value != DisabilityType.None)
+            {
+                if (!Disabilities.Contains(value))
+                {
+                    Disabilities.Add(value);
+                }
+            }
+            else if (Disabilities.Count <= 1)
+            {
+                Disabilities.Clear();
+            }
+        }
+    }
+
+    private List<DisabilityType> _disabilities = new();
+
+    /// <summary>
+    /// Lista de discapacidades o condiciones seleccionadas para soporte de comorbilidad e interseccionalidad.
+    /// </summary>
+    public List<DisabilityType> Disabilities
+    {
+        get => _disabilities;
+        set => _disabilities = value != null ? value.Distinct().ToList() : new List<DisabilityType>();
+    }
+
+    /// <summary>
+    /// Determina si el alumno presenta una discapacidad o condición específica.
+    /// </summary>
+    public bool HasDisability(DisabilityType type)
+    {
+        if (type == DisabilityType.None)
+        {
+            return Disabilities.Count == 0 || (Disabilities.Count == 1 && Disabilities[0] == DisabilityType.None);
+        }
+        return Disabilities.Contains(type) || Disability == type;
+    }
+
     public DisabilitySeverity Severity { get; set; } = DisabilitySeverity.Mild;
     public AcademicLevel CurrentLevel { get; set; } = AcademicLevel.Kindergarten;
     public RegionalContext Region { get; set; } = RegionalContext.Mexico;
@@ -119,69 +167,87 @@ public class UserProfile
 
     /// <summary>
     /// Aplica automáticamente la configuración inicial recomendada de accesibilidad
-    /// de acuerdo con la caracterización de discapacidad y edad ingresada.
+    /// de acuerdo con la caracterización de discapacidad (incluyendo selecciones múltiples / comorbilidad) y edad.
     /// </summary>
     public void ApplyRecommendedAccessibilityDefaults()
     {
-        switch (Disability)
+        var activeDisabilities = Disabilities.Where(d => d != DisabilityType.None).Distinct().ToList();
+        if (activeDisabilities.Count == 0 && Disability != DisabilityType.None)
         {
-            case DisabilityType.Visual:
+            activeDisabilities.Add(Disability);
+        }
+
+        if (activeDisabilities.Count == 0)
+        {
+            // Neurotípico
+            Preferences.Theme = HighContrastTheme.DefaultPlayful;
+            Preferences.SimplifyLanguage = false;
+            Preferences.ReduceOptionsCount = false;
+            Preferences.SpeechRate = 0;
+            if (Age <= 6)
+            {
                 Preferences.EnableVoiceSynthesis = true;
-                Preferences.ScreenReaderAnnouncements = true;
                 Preferences.PlayAudioCues = true;
-                if (Severity >= DisabilitySeverity.Moderate)
-                {
-                    Preferences.Theme = HighContrastTheme.HighContrastDark;
-                    Preferences.FontSize = FontSizeLevel.ExtraLarge;
-                }
-                else
-                {
+                Preferences.FontSize = FontSizeLevel.Large;
+            }
+            return;
+        }
+
+        foreach (var dis in activeDisabilities)
+        {
+            switch (dis)
+            {
+                case DisabilityType.Visual:
+                    Preferences.EnableVoiceSynthesis = true;
+                    Preferences.ScreenReaderAnnouncements = true;
+                    Preferences.PlayAudioCues = true;
+                    if (Severity >= DisabilitySeverity.Moderate)
+                    {
+                        Preferences.Theme = HighContrastTheme.HighContrastDark;
+                        Preferences.FontSize = FontSizeLevel.ExtraLarge;
+                    }
+                    else
+                    {
+                        Preferences.FontSize = FontSizeLevel.Large;
+                    }
+                    break;
+
+                case DisabilityType.Hearing:
+                    if (!activeDisabilities.Contains(DisabilityType.Visual))
+                    {
+                        Preferences.EnableVoiceSynthesis = false;
+                        Preferences.ScreenReaderAnnouncements = false;
+                        Preferences.PlayAudioCues = false;
+                    }
                     Preferences.FontSize = FontSizeLevel.Large;
-                }
-                break;
+                    break;
 
-            case DisabilityType.Hearing:
-                Preferences.EnableVoiceSynthesis = false; // El usuario no la oye, se prioriza lo visual
-                Preferences.ScreenReaderAnnouncements = false;
-                Preferences.PlayAudioCues = false;
-                Preferences.Theme = HighContrastTheme.DefaultPlayful;
-                Preferences.FontSize = FontSizeLevel.Large;
-                break;
+                case DisabilityType.Motor:
+                    Preferences.SimplifiedKeyboardNavigation = true;
+                    Preferences.FontSize = FontSizeLevel.Large;
+                    Preferences.UnlimitedTime = true;
+                    break;
 
-            case DisabilityType.Motor:
-                Preferences.SimplifiedKeyboardNavigation = true;
-                Preferences.FontSize = FontSizeLevel.Large; // Botones más grandes para facilitar clic o interacción
-                Preferences.UnlimitedTime = true;
-                break;
-
-            case DisabilityType.Intellectual:
-                Preferences.SimplifyLanguage = true;
-                Preferences.ReduceOptionsCount = true;
-                Preferences.SpeechRate = -2; // Habla más pausada y clara
-                Preferences.EnableVoiceSynthesis = true;
-                Preferences.PlayAudioCues = true;
-                Preferences.FontSize = FontSizeLevel.Large;
-                Preferences.UnlimitedTime = true;
-                break;
-
-            case DisabilityType.Neurodivergent:
-                Preferences.Theme = HighContrastTheme.LowSensory; // Colores suaves y amables
-                Preferences.PlayAudioCues = true;
-                Preferences.SimplifyLanguage = false;
-                Preferences.SpeechRate = -1;
-                Preferences.UnlimitedTime = true;
-                break;
-
-            case DisabilityType.None:
-            default:
-                // Si tiene entre 3 y 5 años (Jardín de niños), la síntesis de voz es vital porque aún están aprendiendo a leer
-                if (Age <= 6)
-                {
+                case DisabilityType.Intellectual:
+                    Preferences.SimplifyLanguage = true;
+                    Preferences.ReduceOptionsCount = true;
+                    Preferences.SpeechRate = -2;
                     Preferences.EnableVoiceSynthesis = true;
                     Preferences.PlayAudioCues = true;
                     Preferences.FontSize = FontSizeLevel.Large;
-                }
-                break;
+                    Preferences.UnlimitedTime = true;
+                    break;
+
+                case DisabilityType.Neurodivergent:
+                    if (!activeDisabilities.Contains(DisabilityType.Visual) || Severity < DisabilitySeverity.Moderate)
+                    {
+                        Preferences.Theme = HighContrastTheme.LowSensory;
+                    }
+                    Preferences.PlayAudioCues = true;
+                    Preferences.SpeechRate = -1;
+                    Preferences.UnlimitedTime = true;
+                    break;
+            }
         }
     }
 }

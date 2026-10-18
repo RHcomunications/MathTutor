@@ -131,17 +131,45 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Tipo de Discapacidad:"
+                                <TextBlock Text="Condición o Discapacidad (Selección múltiple / Comorbilidad):"
                                            FontSize="{DynamicResource AppBaseFontSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource AppTextPrimaryBrush}"
-                                           Margin="0,0,0,4"/>
-                                <ComboBox x:Name="CmbDisabilityType"
+                                           Margin="0,0,0,6"/>
+                                <CheckBox x:Name="ChkDisabilityVisual"
+                                          Content="👁️ Discapacidad Visual (Ceguera o Baja Visión)"
                                           FontSize="{DynamicResource AppBaseFontSize}"
-                                          MinHeight="48"
-                                          Padding="10,6"
-                                          AutomationProperties.Name="Tipo de discapacidad presentada"
-                                          SelectionChanged="CmbDisabilityType_SelectionChanged"
+                                          Margin="0,3"
+                                          AutomationProperties.Name="Discapacidad Visual, Ceguera o Baja Visión"
+                                          Click="ChkDisability_Changed"
+                                          GotFocus="Control_GotFocus"/>
+                                <CheckBox x:Name="ChkDisabilityHearing"
+                                          Content="👂 Discapacidad Auditiva (Hipoacusia o Sordera)"
+                                          FontSize="{DynamicResource AppBaseFontSize}"
+                                          Margin="0,3"
+                                          AutomationProperties.Name="Discapacidad Auditiva, Hipoacusia o Sordera"
+                                          Click="ChkDisability_Changed"
+                                          GotFocus="Control_GotFocus"/>
+                                <CheckBox x:Name="ChkDisabilityMotor"
+                                          Content="🖐️ Discapacidad Motriz (Dificultad motora fina)"
+                                          FontSize="{DynamicResource AppBaseFontSize}"
+                                          Margin="0,3"
+                                          AutomationProperties.Name="Discapacidad Motriz, Dificultad motora fina"
+                                          Click="ChkDisability_Changed"
+                                          GotFocus="Control_GotFocus"/>
+                                <CheckBox x:Name="ChkDisabilityIntellectual"
+                                          Content="🧠 Discapacidad Intelectual / Cognitiva"
+                                          FontSize="{DynamicResource AppBaseFontSize}"
+                                          Margin="0,3"
+                                          AutomationProperties.Name="Discapacidad Intelectual o Cognitiva"
+                                          Click="ChkDisability_Changed"
+                                          GotFocus="Control_GotFocus"/>
+                                <CheckBox x:Name="ChkDisabilityNeurodivergent"
+                                          Content="🌈 Neurodivergente (TDAH o Espectro Autista)"
+                                          FontSize="{DynamicResource AppBaseFontSize}"
+                                          Margin="0,3"
+                                          AutomationProperties.Name="Neurodivergente, TDAH o Espectro Autista"
+                                          Click="ChkDisability_Changed"
                                           GotFocus="Control_GotFocus"/>
                             </StackPanel>
 

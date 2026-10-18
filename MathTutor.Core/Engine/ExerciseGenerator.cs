@@ -537,6 +537,7 @@ public class ExerciseGenerator
             SpeechFeedback = $"Aunque {eq.d2} pedazos son más pequeños que {eq.d1}, tomar {eq.n2} de ellos cubre exactamente el mismo tamaño que {eq.n1}/{eq.d1}."
         });
 
+        ShuffleOptions(ex, rng);
         return ex;
     }
 
@@ -2570,10 +2571,33 @@ public class ExerciseGenerator
                 _ => GenerateCountingExercise(profile, rng)
             };
 
+            ShuffleOptions(ex, rng);
             list.Add(ex);
         }
 
         return list;
+    }
+
+    /// <summary>
+    /// Aleatoriza el orden de las opciones de respuesta utilizando el algoritmo Fisher-Yates
+    /// para eliminar el sesgo de posición (la respuesta correcta ya no queda siempre fija en la opción 2),
+    /// y reasigna los atajos de teclado del 1 al N de forma secuencial.
+    /// </summary>
+    public static void ShuffleOptions(Exercise ex, Random? rng = null)
+    {
+        if (ex.Options.Count <= 1) return;
+        rng ??= Random.Shared;
+
+        for (int i = ex.Options.Count - 1; i > 0; i--)
+        {
+            int j = rng.Next(i + 1);
+            (ex.Options[i], ex.Options[j]) = (ex.Options[j], ex.Options[i]);
+        }
+
+        for (int i = 0; i < ex.Options.Count; i++)
+        {
+            ex.Options[i].AccessibleKeyShortcut = (i + 1).ToString();
+        }
     }
 
     private static void BuildOptions(Exercise ex, int correctValue, int min, int max, string unitLabel, Random rng)
@@ -2589,11 +2613,11 @@ public class ExerciseGenerator
         if (candidate2 != correctValue) values.Add(candidate2);
         if (values.Count < 3) values.Add(candidate3);
 
-        var sortedValues = values.OrderBy(v => v).ToList();
+        var listValues = values.ToList();
 
-        for (int i = 0; i < sortedValues.Count; i++)
+        for (int i = 0; i < listValues.Count; i++)
         {
-            int val = sortedValues[i];
+            int val = listValues[i];
             bool isCorrect = (val == correctValue);
             string label = string.IsNullOrWhiteSpace(unitLabel) ? val.ToString() : $"{val} {unitLabel}";
             string shortcut = (i + 1).ToString();
@@ -2610,6 +2634,9 @@ public class ExerciseGenerator
                     : BuildDiagnosticWrongFeedback(ex, val, correctValue, label)
             });
         }
+
+        // Aleatorizar opciones para eliminar el sesgo de posición
+        ShuffleOptions(ex, rng);
     }
 
     private static string BuildDiagnosticWrongFeedback(Exercise ex, int selectedValue, int correctValue, string label)

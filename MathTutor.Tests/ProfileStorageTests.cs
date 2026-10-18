@@ -43,6 +43,7 @@ public class ProfileStorageTests : IDisposable
         profile.Preferences.SimplifyLanguage = true;
         profile.Preferences.EnableVoiceSynthesis = true;
         profile.CompletedLessonIds.Add("kinder_counting_01");
+        profile.Disabilities.Add(DisabilityType.Visual);
 
         _storage.Save(profile);
 
@@ -53,6 +54,9 @@ public class ProfileStorageTests : IDisposable
         Assert.Equal("Sofía Exploradora", loaded.Name);
         Assert.Equal(6, loaded.Age);
         Assert.Equal(DisabilityType.Intellectual, loaded.Disability);
+        Assert.Equal(2, loaded.Disabilities.Count);
+        Assert.Contains(DisabilityType.Intellectual, loaded.Disabilities);
+        Assert.Contains(DisabilityType.Visual, loaded.Disabilities);
         Assert.Equal(DisabilitySeverity.Moderate, loaded.Severity);
         Assert.Equal(AcademicLevel.EarlyElementary, loaded.CurrentLevel);
         Assert.Equal(15, loaded.StarsTotal);

@@ -39,19 +39,23 @@ public partial class CurriculumMenuView : UserControl
     {
         var profile = _acc.CurrentProfile;
 
-        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disability);
+        var allowedLevels = profile.Disabilities.Count > 0
+            ? AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disabilities)
+            : AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disability);
         if (!allowedLevels.Contains(profile.CurrentLevel))
         {
             profile.CurrentLevel = AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
         }
 
         TxtWelcomeUser.Text = $"¡Hola, {profile.Name}! Elige tu aventura";
-        TxtUserSummary.Text = $"Edad: {profile.Age} años | Nivel: {GetAcademicLevelName(profile.CurrentLevel)} | Condición: {GetDisabilityName(profile.Disability)}";
+        TxtUserSummary.Text = $"Edad: {profile.Age} años | Nivel: {GetAcademicLevelName(profile.CurrentLevel)} | Condición: {GetDisabilitySummary(profile)}";
         TxtStarsCount.Text = profile.StarsTotal.ToString();
         TxtStreakCount.Text = profile.CurrentStreak.ToString();
 
         // Tarea 6 y Tarea 12: Filtrar las misiones permitidas para la edad y condición del alumno
-        var allowedTopics = _curriculum.GetTopicsForAge(profile.Age, profile.Disability);
+        var allowedTopics = profile.Disabilities.Count > 0
+            ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities)
+            : _curriculum.GetTopicsForAge(profile.Age, profile.Disability);
         // Priorizar las misiones del nivel actual del alumno arriba, manteniendo el orden pedagógico en el resto
         var orderedTopics = allowedTopics
             .OrderByDescending(t => t.Level == profile.CurrentLevel)
@@ -185,6 +189,15 @@ public partial class CurriculumMenuView : UserControl
         AcademicLevel.ProgrammingFoundations => "Fundamentos de Programación y Algoritmos",
         _ => "General"
     };
+
+    private static string GetDisabilitySummary(UserProfile profile)
+    {
+        if (profile.Disabilities.Count > 0)
+        {
+            return string.Join(" + ", profile.Disabilities.Select(GetDisabilityName));
+        }
+        return GetDisabilityName(profile.Disability);
+    }
 
     private static string GetDisabilityName(DisabilityType type) => type switch
     {

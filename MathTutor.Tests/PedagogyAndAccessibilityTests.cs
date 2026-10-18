@@ -647,4 +647,94 @@ public class PedagogyAndAccessibilityTests
         Assert.Contains(AcademicLevel.UpperElementary, age14Intellectual);
         Assert.Contains(AcademicLevel.SecondarySecondGrade, age14Intellectual);
     }
+
+    [Fact]
+    public void UserProfile_SupportsMultipleDisabilities_AndCombinesAdaptationsSimultaneously()
+    {
+        var profile = new UserProfile
+        {
+            Age = 10,
+            Disabilities = { DisabilityType.Visual, DisabilityType.Neurodivergent },
+            Severity = DisabilitySeverity.Moderate
+        };
+
+        profile.ApplyRecommendedAccessibilityDefaults();
+
+        // Ambas adaptaciones deben activarse simultáneamente
+        Assert.True(profile.HasDisability(DisabilityType.Visual));
+        Assert.True(profile.HasDisability(DisabilityType.Neurodivergent));
+        Assert.False(profile.HasDisability(DisabilityType.Hearing));
+
+        // Adaptaciones de ceguera/baja visión:
+        Assert.True(profile.Preferences.ScreenReaderAnnouncements);
+        Assert.True(profile.Preferences.EnableVoiceSynthesis);
+        Assert.Equal(FontSizeLevel.ExtraLarge, profile.Preferences.FontSize);
+
+        // Adaptaciones de TEA / neurodivergencia:
+        Assert.Equal(-1, profile.Preferences.SpeechRate);
+        Assert.True(profile.Preferences.UnlimitedTime);
+
+        // Caso de comorbilidad Intelectual + Motriz
+        var profile2 = new UserProfile
+        {
+            Age = 14,
+            Disabilities = { DisabilityType.Intellectual, DisabilityType.Motor }
+        };
+        profile2.ApplyRecommendedAccessibilityDefaults();
+
+        Assert.True(profile2.Preferences.SimplifyLanguage);
+        Assert.True(profile2.Preferences.ReduceOptionsCount);
+        Assert.True(profile2.Preferences.SimplifiedKeyboardNavigation);
+
+        // Los niveles escolares deben incluir refuerzo pedagógico
+        var allowed = AdaptiveEngine.GetAllowedLevelsForAge(profile2.Age, profile2.Disabilities);
+        Assert.Contains(AcademicLevel.Kindergarten, allowed);
+        Assert.Contains(AcademicLevel.EarlyElementary, allowed);
+    }
+
+    [Fact]
+    public void BuildOptionsAnnouncement_FormatsExplicitOptionsAndKeyInstructionsAccurately()
+    {
+        var options = new List<ExerciseOption>
+        {
+            new ExerciseOption { Id = "1", Label = "3 manzanas", Value = 3, IsCorrect = false },
+            new ExerciseOption { Id = "2", Label = "4 manzanas", Value = 4, IsCorrect = true },
+            new ExerciseOption { Id = "3", Label = "5 manzanas", Value = 5, IsCorrect = false }
+        };
+
+        string announcement = AdaptiveEngine.BuildOptionsAnnouncement(options);
+        Assert.Equal("Opción 1: 3 manzanas. Opción 2: 4 manzanas. Opción 3: 5 manzanas. Presiona 1, 2 o 3 para responder.", announcement);
+
+        var twoOptions = options.Take(2).ToList();
+        string twoAnnounce = AdaptiveEngine.BuildOptionsAnnouncement(twoOptions);
+        Assert.Equal("Opción 1: 3 manzanas. Opción 2: 4 manzanas. Presiona 1 o 2 para responder.", twoAnnounce);
+    }
+
+    [Fact]
+    public void All45Topics_SupportStepByStepInteractiveLessonStructure_WithNarrativeConceptAndGuidedExample()
+    {
+        var topics = _curriculum.GetAllTopics();
+        Assert.Equal(45, topics.Count);
+
+        foreach (var topic in topics)
+        {
+            // Paso 1: Historia y narrativa
+            Assert.False(string.IsNullOrWhiteSpace(topic.NarrativeIntro), $"El tema {topic.Id} carece de narrativa introductoria.");
+
+            // Paso 2: Concepto clave y principios
+            Assert.False(string.IsNullOrWhiteSpace(topic.CoreConceptExplanation), $"El tema {topic.Id} carece de explicación del concepto.");
+            Assert.NotEmpty(topic.PrinciplesAddressed);
+
+            // Paso 3: Reto y pistas guiadas
+            if (topic.Exercises.Count > 0)
+            {
+                var sample = topic.Exercises[0];
+                Assert.False(string.IsNullOrWhiteSpace(sample.FirstHint), $"El ejercicio base de {topic.Id} carece de FirstHint.");
+                Assert.False(string.IsNullOrWhiteSpace(sample.SecondHintDetailed), $"El ejercicio base de {topic.Id} carece de SecondHintDetailed.");
+                Assert.False(string.IsNullOrWhiteSpace(sample.ExplanationOfSuccess), $"El ejercicio base de {topic.Id} carece de ExplanationOfSuccess.");
+            }
+        }
+    }
 }
+
+

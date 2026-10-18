@@ -75,13 +75,23 @@ public class CurriculumService
     }
 
     /// <summary>
+    /// Devuelve las misiones pedagógicas permitidas según la edad y condiciones múltiples del alumno (comorbilidad).
+    /// </summary>
+    public List<PedagogicalTopic> GetTopicsForAge(int age, IEnumerable<DisabilityType> disabilities)
+    {
+        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(age, disabilities);
+        return GetAllTopics()
+            .FindAll(t => allowedLevels.Contains(t.Level));
+    }
+
+    /// <summary>
     /// Obtiene la siguiente misión recomendada tras completar <paramref name="currentTopicId"/> (Tarea 7 y Tarea 10).
     /// Busca dentro de los niveles permitidos para la edad del alumno y devuelve null si ya completó todas las misiones de su etapa.
     /// </summary>
     public PedagogicalTopic? GetNextTopic(string currentTopicId, UserProfile? profile = null)
     {
         var topics = profile != null
-            ? GetTopicsForAge(profile.Age, profile.Disability)
+            ? (profile.Disabilities.Count > 0 ? GetTopicsForAge(profile.Age, profile.Disabilities) : GetTopicsForAge(profile.Age, profile.Disability))
             : GetAllTopics();
 
         if (topics.Count == 0)

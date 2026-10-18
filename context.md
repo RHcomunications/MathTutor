@@ -45,10 +45,10 @@ MathTutor.slnx
 │       ├── MissionCompletedDialog.xaml / .cs (Diálogo modal accesible al completar una misión: Siguiente Misión [Enter] o Volver al Mapa [Escape])
 │       └── RealmMapView.xaml / .cs           (Mapa del Reino Matemágico con ListBox navegable por flechas en Estaciones y en la Sala de Trofeos)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 108 pruebas)
-    ├── ExerciseGeneratorTests.cs         (61 pruebas de generación procedimental, rangos adaptativos y no-colisión de opciones)
-    ├── PedagogyAndAccessibilityTests.cs  (43 pruebas de cobertura curricular, validación por edad/discapacidad, ejemplo guiado y motor adaptativo)
-    ├── ProfileStorageTests.cs            (2 pruebas de serialización/deserialización JSON de perfiles)
+└── MathTutor.Tests (net8.0 - Suite Automatizada xUnit con 112 pruebas)
+    ├── ExerciseGeneratorTests.cs         (62 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
+    ├── PedagogyAndAccessibilityTests.cs  (46 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
+    ├── ProfileStorageTests.cs            (2 pruebas de serialización/deserialización JSON de perfiles con comorbilidad)
     └── RewardServiceTests.cs             (2 pruebas integrales de las 45 estaciones y desbloqueo de las 46 insignias)
 ```
 
@@ -371,6 +371,24 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 12. ✅ **Tarea 12 (Flexibilidad Pedagógica en `GetAllowedLevelsForAge` para 12 Años y Discapacidad Intelectual)**:
     - Habilitado `SecondaryFirstGrade` a partir de los 12 años y añadido el parámetro opcional `DisabilityType` en `GetAllowedLevelsForAge` y `GetTopicsForAge` para incluir siempre los niveles base de refuerzo (`Kindergarten` y Primaria) cuando el alumno tiene `DisabilityType.Intellectual`.
 
+### Fase 3 — Feedback de Usuario y Pruebas de Usabilidad (Mejoras 1 a 4)
+13. ✅ **Mejora 1 (Tutorial y Lección Interactiva Paso a Paso — Wizard/Stepper)**:
+    - Transformada la vista [`LessonView.xaml`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/LessonView.xaml) y [`LessonView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/LessonView.xaml.cs) en un flujo guiado interactivo de 3 pasos (Paso 1: Historia con Cosmo, Paso 2: El Secreto Matemático, Paso 3: Ejemplo Guiado y Reto).
+    - Eliminada la lectura corrida que causaba fatiga auditiva: ahora se muestra y anuncia una sola tarjeta a la vez con instrucciones interactivas ("Presiona Enter o Espacio para continuar...").
+    - Navegación bidireccional mediante teclas de dirección (`Flecha Izquierda` / `Backspace` para retroceder, `Enter` / `Espacio` / `Flecha Derecha` para avanzar) y `F1` para repetir el paso actual.
+    - La transición al minijuego práctico únicamente se habilita al alcanzar el último paso.
+14. ✅ **Mejora 2 (Soporte para Discapacidades Múltiples — Comorbilidad e Interseccionalidad)**:
+    - Añadida la propiedad `Disabilities` (`List<DisabilityType>`) y el método `HasDisability(...)` en [`UserProfile.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.Core/Models/UserProfile.cs), manteniendo la propiedad `Disability` sincronizada como fachada de retrocompatibilidad.
+    - En [`ProfileSetupView.xaml`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/ProfileSetupView.xaml), sustituido el `ComboBox` de selección única por casillas de verificación (`CheckBox`) accesibles e independientes.
+    - Adaptaciones simultáneas y acumulativas activadas en `ApplyRecommendedAccessibilityDefaults()` (por ejemplo, Ceguera + TEA o Intelectual + Motriz aplican al unísono tamaño de fuente, voz, lectura de pantalla, simplificación y paleta sensorial).
+    - Adaptados [`AdaptiveEngine.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.Core/Engine/AdaptiveEngine.cs), [`CurriculumService.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.Core/Engine/CurriculumService.cs), [`CurriculumMenuView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs) y [`RealmMapView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/RealmMapView.xaml.cs) para aceptar colecciones de discapacidades.
+15. ✅ **Mejora 3 (Anuncio Completo de Opciones en los Retos para TTS y Lector de Pantalla)**:
+    - Implementado `AdaptiveEngine.BuildOptionsAnnouncement` y conectado en [`MiniGameView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/MiniGameView.xaml.cs) tanto al iniciar un ejercicio como al presionar `F1` (Repetir).
+    - Anuncia explícitamente el enunciado y todas las opciones disponibles con sus atajos numéricos: `"{Pregunta}. Opción 1: {Opcion1}. Opción 2: {Opcion2}. Opción 3: {Opcion3}. Presiona 1, 2 o 3 para responder."` evitando que el alumno tenga que explorar a ciegas.
+16. ✅ **Mejora 4 (Aleatorización de Opciones para Eliminar el Sesgo de Posición)**:
+    - Implementado el algoritmo Fisher-Yates en `ExerciseGenerator.ShuffleOptions` y en `BuildOptions` dentro de [`ExerciseGenerator.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.Core/Engine/ExerciseGenerator.cs).
+    - Reindexa los atajos accesibles del 1 al N tras barajar, eliminando el sesgo en el que la respuesta correcta caía siempre en la opción 2 (tecla 2) y distribuyéndola equitativamente entre las opciones 1, 2 y 3.
+
 ---
 
 ## 5. Comandos de Verificación, Empaquetado y Limpieza Obligatoria para Contribuidores
@@ -385,7 +403,7 @@ Get-ChildItem -Path . -Include *.zip -File -Recurse -Force | Remove-Item -Force
 # 2. Compilar toda la solución en modo Release (0 advertencias permitidas)
 dotnet build -c Release --nologo /p:TreatWarningsAsErrors=true
 
-# 3. Ejecutar las 108 pruebas unitarias automatizadas sobre la compilación Release
+# 3. Ejecutar las 112 pruebas unitarias automatizadas sobre la compilación Release
 dotnet test -c Release --nologo --no-build
 
 # 4. Eliminar directorios intermedios (obj) conservando únicamente bin/Release de la última release

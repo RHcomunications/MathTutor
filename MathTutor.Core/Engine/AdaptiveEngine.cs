@@ -83,6 +83,15 @@ public class AdaptiveEngine
     }
 
     /// <summary>
+    /// Devuelve los niveles escolares permitidos considerando una colección de discapacidades múltiples (comorbilidad).
+    /// </summary>
+    public static IReadOnlyList<AcademicLevel> GetAllowedLevelsForAge(int age, IEnumerable<DisabilityType> disabilities)
+    {
+        bool hasIntellectual = disabilities != null && disabilities.Contains(DisabilityType.Intellectual);
+        return GetAllowedLevelsForAge(age, hasIntellectual ? DisabilityType.Intellectual : DisabilityType.None);
+    }
+
+    /// <summary>
     /// Sugiere el nivel escolar inicial óptimo dentro de los niveles permitidos para la edad indicada.
     /// </summary>
     public static AcademicLevel GetRecommendedLevelForAge(int age) => age switch
@@ -203,5 +212,32 @@ public class AdaptiveEngine
                 profile.CurrentStreak = Math.Max(0, profile.CurrentStreak - 1);
             }
         }
+    }
+
+    /// <summary>
+    /// Construye la cadena del anuncio accesible detallando cada opción de respuesta para TTS y lector de pantalla (Mejora 3).
+    /// Formato: "Opción 1: {Opcion1}. Opción 2: {Opcion2}. Opción 3: {Opcion3}. Presiona 1, 2 o 3 para responder."
+    /// </summary>
+    public static string BuildOptionsAnnouncement(IReadOnlyList<ExerciseOption> options)
+    {
+        if (options == null || options.Count == 0) return string.Empty;
+
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < options.Count; i++)
+        {
+            var opt = options[i];
+            sb.Append($"Opción {i + 1}: {opt.Label}. ");
+        }
+
+        string instruction = options.Count switch
+        {
+            1 => "Presiona 1 para responder.",
+            2 => "Presiona 1 o 2 para responder.",
+            3 => "Presiona 1, 2 o 3 para responder.",
+            _ => $"Presiona del 1 al {options.Count} para responder."
+        };
+        sb.Append(instruction);
+
+        return sb.ToString().Trim();
     }
 }

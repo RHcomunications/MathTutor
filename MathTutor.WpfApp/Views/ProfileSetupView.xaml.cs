@@ -53,15 +53,6 @@ public partial class ProfileSetupView : UserControl
         CmbRegion.Items.Add(new ComboBoxItem { Content = "Perú (Soles S/ y Céntimos - Bodega)", Tag = RegionalContext.Peru });
         CmbRegion.Items.Add(new ComboBoxItem { Content = "Chile (Pesos $ - Almacén)", Tag = RegionalContext.Chile });
 
-        // Tipos de discapacidad
-        CmbDisabilityType.Items.Clear();
-        CmbDisabilityType.Items.Add(new ComboBoxItem { Content = "Sin discapacidad (Neurotípico)", Tag = DisabilityType.None });
-        CmbDisabilityType.Items.Add(new ComboBoxItem { Content = "Discapacidad Visual (Ceguera o Baja Visión)", Tag = DisabilityType.Visual });
-        CmbDisabilityType.Items.Add(new ComboBoxItem { Content = "Discapacidad Auditiva (Hipoacusia o Sordera)", Tag = DisabilityType.Hearing });
-        CmbDisabilityType.Items.Add(new ComboBoxItem { Content = "Discapacidad Motriz (Dificultad motora fina)", Tag = DisabilityType.Motor });
-        CmbDisabilityType.Items.Add(new ComboBoxItem { Content = "Discapacidad Intelectual / Cognitiva", Tag = DisabilityType.Intellectual });
-        CmbDisabilityType.Items.Add(new ComboBoxItem { Content = "Neurodivergente (TDAH o Espectro Autista)", Tag = DisabilityType.Neurodivergent });
-
         // Severidad
         CmbDisabilitySeverity.Items.Clear();
         CmbDisabilitySeverity.Items.Add(new ComboBoxItem { Content = "Leve", Tag = DisabilitySeverity.Mild });
@@ -85,7 +76,10 @@ public partial class ProfileSetupView : UserControl
 
     private void PopulateAcademicLevelsForAge(int age)
     {
-        var allowedLevels = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(age, _acc.CurrentProfile.Disability);
+        var profile = _acc.CurrentProfile;
+        var allowedLevels = profile.Disabilities.Count > 0
+            ? MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(age, profile.Disabilities)
+            : MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(age, profile.Disability);
         CmbAcademicLevel.Items.Clear();
 
         foreach (var level in allowedLevels)
@@ -122,7 +116,9 @@ public partial class ProfileSetupView : UserControl
         SelectComboByTag(CmbAge, profile.Age);
         PopulateAcademicLevelsForAge(profile.Age);
 
-        var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disability);
+        var allowed = profile.Disabilities.Count > 0
+            ? MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disabilities)
+            : MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disability);
         if (!System.Linq.Enumerable.Contains(allowed, profile.CurrentLevel))
         {
             profile.CurrentLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
@@ -130,7 +126,15 @@ public partial class ProfileSetupView : UserControl
 
         SelectComboByTag(CmbAcademicLevel, profile.CurrentLevel);
         SelectComboByTag(CmbRegion, profile.Region);
-        SelectComboByTag(CmbDisabilityType, profile.Disability);
+
+        _isInitializing = true;
+        ChkDisabilityVisual.IsChecked = profile.HasDisability(DisabilityType.Visual);
+        ChkDisabilityHearing.IsChecked = profile.HasDisability(DisabilityType.Hearing);
+        ChkDisabilityMotor.IsChecked = profile.HasDisability(DisabilityType.Motor);
+        ChkDisabilityIntellectual.IsChecked = profile.HasDisability(DisabilityType.Intellectual);
+        ChkDisabilityNeurodivergent.IsChecked = profile.HasDisability(DisabilityType.Neurodivergent);
+        _isInitializing = false;
+
         SelectComboByTag(CmbDisabilitySeverity, profile.Severity);
         SelectComboByTag(CmbTheme, profile.Preferences.Theme);
         SelectComboByTag(CmbFontSize, profile.Preferences.FontSize);
@@ -167,28 +171,40 @@ public partial class ProfileSetupView : UserControl
         _isInitializing = false;
     }
 
-    private void CmbDisabilityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void ChkDisability_Changed(object sender, RoutedEventArgs e)
     {
         if (_isInitializing) return;
-        if (CmbDisabilityType.SelectedItem is ComboBoxItem item && item.Tag is DisabilityType dis)
+
+        var profile = _acc.CurrentProfile;
+        profile.Disabilities.Clear();
+
+        if (ChkDisabilityVisual.IsChecked == true) profile.Disabilities.Add(DisabilityType.Visual);
+        if (ChkDisabilityHearing.IsChecked == true) profile.Disabilities.Add(DisabilityType.Hearing);
+        if (ChkDisabilityMotor.IsChecked == true) profile.Disabilities.Add(DisabilityType.Motor);
+        if (ChkDisabilityIntellectual.IsChecked == true) profile.Disabilities.Add(DisabilityType.Intellectual);
+        if (ChkDisabilityNeurodivergent.IsChecked == true) profile.Disabilities.Add(DisabilityType.Neurodivergent);
+
+        profile.Disability = profile.Disabilities.Count > 0 ? profile.Disabilities[0] : DisabilityType.None;
+        profile.ApplyRecommendedAccessibilityDefaults();
+
+        _isInitializing = true;
+        PopulateAcademicLevelsForAge(profile.Age);
+        var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(profile.Age, profile.Disabilities);
+        if (!System.Linq.Enumerable.Contains(allowed, profile.CurrentLevel))
         {
-            _acc.CurrentProfile.Disability = dis;
-            _acc.CurrentProfile.ApplyRecommendedAccessibilityDefaults();
-
-            _isInitializing = true;
-            PopulateAcademicLevelsForAge(_acc.CurrentProfile.Age);
-            var allowed = MathTutor.Core.Engine.AdaptiveEngine.GetAllowedLevelsForAge(_acc.CurrentProfile.Age, dis);
-            if (!System.Linq.Enumerable.Contains(allowed, _acc.CurrentProfile.CurrentLevel))
-            {
-                _acc.CurrentProfile.CurrentLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(_acc.CurrentProfile.Age);
-            }
-            SelectComboByTag(CmbAcademicLevel, _acc.CurrentProfile.CurrentLevel);
-            _isInitializing = false;
-
-            SyncAccessibilityControlsFromProfile();
-
-            _acc.Announce($"Seleccionado: {item.Content}. Opciones de accesibilidad adaptadas automáticamente.");
+            profile.CurrentLevel = MathTutor.Core.Engine.AdaptiveEngine.GetRecommendedLevelForAge(profile.Age);
         }
+        SelectComboByTag(CmbAcademicLevel, profile.CurrentLevel);
+        _isInitializing = false;
+
+        SyncAccessibilityControlsFromProfile();
+        _acc.ApplyTheme(profile.Preferences.Theme);
+        _acc.ApplyFontSize(profile.Preferences.FontSize);
+
+        string summary = profile.Disabilities.Count > 0
+            ? string.Join(", ", profile.Disabilities.Select(d => d.ToString()))
+            : "Sin discapacidad";
+        _acc.Announce($"Condiciones actualizadas: {summary}. Opciones de accesibilidad adaptadas simultáneamente.");
     }
 
     private void CmbDisabilitySeverity_SelectionChanged(object sender, SelectionChangedEventArgs e)
