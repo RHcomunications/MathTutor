@@ -45,7 +45,7 @@ MathTutor.slnx
 │       ├── MissionCompletedDialog.xaml / .cs (Diálogo modal accesible al completar una misión: Siguiente Misión [Enter] o Volver al Mapa [Escape])
 │       └── RealmMapView.xaml / .cs           (Mapa del Reino Matemágico con ListBox navegable por flechas en Estaciones y en la Sala de Trofeos)
 │
-└── MathTutor.Tests (net8.0 - Suite Automatizada xUnit con 112 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 112 pruebas)
     ├── ExerciseGeneratorTests.cs         (62 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
     ├── PedagogyAndAccessibilityTests.cs  (46 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
     ├── ProfileStorageTests.cs            (2 pruebas de serialización/deserialización JSON de perfiles con comorbilidad)
