@@ -14,6 +14,9 @@
         <SolidColorBrush x:Key="AppFocusBorderBrush" Color="#FF7800"/>
         <SolidColorBrush x:Key="AppBorderBrush" Color="#D2DCF0"/>
         <SolidColorBrush x:Key="AppSuccessBrush" Color="#0F8C46"/>
+        <SolidColorBrush x:Key="AppOnAccentBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="AppOnSuccessBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="AppErrorBrush" Color="#B00020"/>
 
         <!-- Escala de tipografía adaptable -->
         <sys:Double x:Key="AppBaseFontSize" xmlns:sys="clr-namespace:System;assembly=mscorlib">18</sys:Double>
@@ -41,7 +44,7 @@
         <Style x:Key="AccessibleActionButton" TargetType="Button">
             <Setter Property="FocusVisualStyle" Value="{StaticResource AccessibleFocusVisual}"/>
             <Setter Property="Background" Value="{DynamicResource AppAccentBrush}"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppOnAccentBrush}"/>
             <Setter Property="FontSize" Value="{DynamicResource AppBaseFontSize}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding" Value="16,12"/>

@@ -41,7 +41,7 @@
                 </StackPanel>
 
                 <!-- Botones de Acceso Rápido / Atajos -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <WrapPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Button x:Name="BtnNavMenu"
                             Content="🏠 Menú (Esc)"
                             Style="{StaticResource AccessibleActionButton}"
@@ -118,7 +118,7 @@
                             Margin="4,0"
                             AutomationProperties.Name="Repetir última instrucción en el lector de pantalla. Tecla F1"
                             Click="BtnHelpVoice_Click"/>
-                </StackPanel>
+                </WrapPanel>
 
                 <!-- Marcador de Progreso Rápido -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
@@ -159,7 +159,7 @@
                 <TextBlock Grid.Column="1"
                            x:Name="TxtLiveAnnouncement"
                            Text="Listo para aprender jugando."
-                           FontSize="14"
+                           FontSize="{DynamicResource AppBaseFontSize}"
                            Foreground="{DynamicResource AppTextSecondaryBrush}"
                            TextTrimming="CharacterEllipsis"
                            VerticalAlignment="Center"

@@ -194,6 +194,9 @@ public class AccessibilityManager
                 SetResource("AppFocusBorderBrush", new SolidColorBrush(Color.FromRgb(0, 255, 255))); // Cyan brillante
                 SetResource("AppBorderBrush", new SolidColorBrush(Color.FromRgb(255, 255, 0)));
                 SetResource("AppSuccessBrush", new SolidColorBrush(Color.FromRgb(50, 255, 50)));
+                SetResource("AppOnAccentBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
+                SetResource("AppOnSuccessBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
+                SetResource("AppErrorBrush", new SolidColorBrush(Color.FromRgb(255, 90, 90)));
                 break;
 
             case HighContrastTheme.HighContrastLight:
@@ -207,6 +210,9 @@ public class AccessibilityManager
                 SetResource("AppFocusBorderBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
                 SetResource("AppBorderBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
                 SetResource("AppSuccessBrush", new SolidColorBrush(Color.FromRgb(0, 140, 0)));
+                SetResource("AppOnAccentBrush", new SolidColorBrush(Color.FromRgb(255, 255, 255)));
+                SetResource("AppOnSuccessBrush", new SolidColorBrush(Color.FromRgb(255, 255, 255)));
+                SetResource("AppErrorBrush", new SolidColorBrush(Color.FromRgb(180, 0, 0)));
                 break;
 
             case HighContrastTheme.LowSensory:
@@ -220,6 +226,9 @@ public class AccessibilityManager
                 SetResource("AppFocusBorderBrush", new SolidColorBrush(Color.FromRgb(255, 140, 0)));
                 SetResource("AppBorderBrush", new SolidColorBrush(Color.FromRgb(180, 200, 220)));
                 SetResource("AppSuccessBrush", new SolidColorBrush(Color.FromRgb(46, 139, 87)));
+                SetResource("AppOnAccentBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
+                SetResource("AppOnSuccessBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
+                SetResource("AppErrorBrush", new SolidColorBrush(Color.FromRgb(150, 0, 0)));
                 break;
 
             case HighContrastTheme.DefaultPlayful:
@@ -234,6 +243,9 @@ public class AccessibilityManager
                 SetResource("AppFocusBorderBrush", new SolidColorBrush(Color.FromRgb(255, 120, 0)));
                 SetResource("AppBorderBrush", new SolidColorBrush(Color.FromRgb(210, 220, 240)));
                 SetResource("AppSuccessBrush", new SolidColorBrush(Color.FromRgb(15, 140, 70)));
+                SetResource("AppOnAccentBrush", new SolidColorBrush(Color.FromRgb(255, 255, 255)));
+                SetResource("AppOnSuccessBrush", new SolidColorBrush(Color.FromRgb(255, 255, 255)));
+                SetResource("AppErrorBrush", new SolidColorBrush(Color.FromRgb(176, 0, 32)));
                 break;
         }
 

@@ -90,7 +90,7 @@
 
                 <!-- Campo: País y Contexto Cultural (Latinoamérica) -->
                 <StackPanel Margin="0,0,0,16">
-                    <TextBlock Text="3b. País y Moneda (Adaptación Cultural de Ejemplos)"
+                    <TextBlock Text="4. País y Moneda (Adaptación Cultural de Ejemplos)"
                                FontSize="{DynamicResource AppBaseFontSize}"
                                FontWeight="Bold"
                                Foreground="{DynamicResource AppTextPrimaryBrush}"
@@ -112,7 +112,7 @@
                         Padding="16"
                         Margin="0,8,0,20">
                     <StackPanel>
-                        <TextBlock Text="4. Caracterización de Discapacidad o Condición del Alumno"
+                        <TextBlock Text="5. Caracterización de Discapacidad o Condición del Alumno"
                                    FontSize="{DynamicResource AppSubHeaderFontSize}"
                                    FontWeight="Bold"
                                    Foreground="{DynamicResource AppAccentBrush}"
@@ -234,7 +234,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="5. Esquema de Contraste (WCAG)"
+                        <TextBlock Text="6. Esquema de Contraste (WCAG)"
                                    FontSize="{DynamicResource AppBaseFontSize}"
                                    FontWeight="Bold"
                                    Foreground="{DynamicResource AppTextPrimaryBrush}"
@@ -249,7 +249,7 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="6. Tamaño de Letra"
+                        <TextBlock Text="7. Tamaño de Letra"
                                    FontSize="{DynamicResource AppBaseFontSize}"
                                    FontWeight="Bold"
                                    Foreground="{DynamicResource AppTextPrimaryBrush}"
@@ -273,6 +273,21 @@
                         AutomationProperties.Name="Guardar perfil y comenzar la aventura matemática"
                         AutomationProperties.HelpText="Presiona Enter o Espacio para guardar tu perfil e ir al menú de misiones"
                         Click="BtnSaveAndStart_Click"
+                        GotFocus="Control_GotFocus"/>
+
+                <!-- Volver sin guardar (solo si ya existe un perfil guardado) -->
+                <Button x:Name="BtnCancel"
+                        Content="⬅ Volver al Menú sin Guardar"
+                        Style="{StaticResource AccessibleActionButton}"
+                        Background="{DynamicResource AppSurfaceBrush}"
+                        Foreground="{DynamicResource AppTextPrimaryBrush}"
+                        FontSize="{DynamicResource AppBaseFontSize}"
+                        Height="56"
+                        Margin="0,12,0,0"
+                        Visibility="Collapsed"
+                        AutomationProperties.Name="Volver al menú sin guardar los cambios"
+                        AutomationProperties.HelpText="Descarta los cambios de esta pantalla y regresa al menú de misiones"
+                        Click="BtnCancel_Click"
                         GotFocus="Control_GotFocus"/>
             </StackPanel>
         </Border>

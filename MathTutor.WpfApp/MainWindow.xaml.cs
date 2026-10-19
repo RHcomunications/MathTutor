@@ -45,6 +45,13 @@ public partial class MainWindow : Window
             _menuView.RefreshData();
         };
 
+        _profileView.CancelRequested += () =>
+        {
+            UpdateTopStatus();
+            NavigateTo(_menuView);
+            _menuView.RefreshData();
+        };
+
         _menuView.TopicSelected += OpenTopicLesson;
 
         _menuView.RealmMapRequested += () =>

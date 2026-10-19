@@ -178,13 +178,13 @@ Generador procedimental parametrizado que produce ejercicios infinitos y libres 
 - **TargetFramework**: `net10.0-windows`, `UseWPF=true`, `Nullable=enable`, `ImplicitUsings=enable`.
 - Referencia de proyecto únicamente a `MathTutor.Core.csproj` (sin `System.Speech` ni dependencias externas).
 
-#### `MathTutor.WpfApp/App.xaml` (140 líneas) y `App.xaml.cs`
+#### `MathTutor.WpfApp/App.xaml` (143 líneas) y `App.xaml.cs`
 Define los recursos globales dinámicos y estilos accesibles WCAG 2.2:
-- **Brushes dinámicos**: `AppBackgroundBrush`, `AppSurfaceBrush`, `AppCardBrush`, `AppTextPrimaryBrush`, `AppTextSecondaryBrush`, `AppAccentBrush`, `AppFocusBorderBrush`, `AppBorderBrush`, `AppSuccessBrush`.
+- **Brushes dinámicos**: `AppBackgroundBrush`, `AppSurfaceBrush`, `AppCardBrush`, `AppTextPrimaryBrush`, `AppTextSecondaryBrush`, `AppAccentBrush`, `AppFocusBorderBrush`, `AppBorderBrush`, `AppSuccessBrush`, `AppOnAccentBrush` (texto sobre fondo de acento), `AppOnSuccessBrush` (texto sobre éxito) y `AppErrorBrush` (opciones incorrectas).
 - **Escalas tipográficas dinámicas**: `AppBaseFontSize` (18), `AppSubHeaderFontSize` (22), `AppHeaderFontSize` (28), `AppTitleFontSize` (36).
 - **Estilos**:
   - `AccessibleFocusVisual`: Rectángulo punteado de **4px de grosor** (`StrokeThickness="4"`) con `AppFocusBorderBrush` (cumple WCAG 2.4.7 y 2.4.11).
-  - `AccessibleActionButton`: Botón de acción accesible con `MinHeight="52"`, bordes redondeados y `FocusVisualStyle`.
+  - `AccessibleActionButton`: Botón de acción accesible con `MinHeight="52"`, bordes redondeados, `FocusVisualStyle` y `Foreground="{DynamicResource AppOnAccentBrush}"` para garantizar contraste AA/AAA también en los cuatro temas.
   - `AccessibleGameOptionButton`: Botón grande de opción de minijuego (`MinHeight="75"`, `MinWidth="140"`) que resalta su borde al recibir el foco de teclado (`IsKeyboardFocused`).
   - `AccessibleCard`: Contenedor visual de tarjetas con borde de 2px y padding de 20px.
   - `AccessibleReadOnlyTextBox`: Estilo de `TextBox` (`IsReadOnly="True"`, `IsReadOnlyCaretVisible="True"`, fondo transparente, sin bordes) que permite a los usuarios de NVDA, JAWS y Narrador navegar con `Tab` e inspeccionar textos, ecuaciones y código línea por línea o carácter por carácter con las flechas.
@@ -210,7 +210,7 @@ Sintetizador acústico procedural en memoria (cero archivos `.wav` externos):
   - `PlayHintTone()`: Intervalo cálido La4–Do#5 (`440, 554 Hz`) para pistas u orientación.
   - `PlayNavigationClick()`: Pulso corto de `880 Hz` (`35 ms`) al cambiar de foco.
 
-#### `MathTutor.WpfApp/Services/AccessibilityManager.cs` (291 líneas)
+#### `MathTutor.WpfApp/Services/AccessibilityManager.cs` (303 líneas)
 Singleton central (`AccessibilityManager.Instance`) que coordina:
 - Instancias de `CurrentProfile`, `Speech` (`SpeechService`), `Audio` (`AccessibleAudioCueService`) y `Storage` (`ProfileStorageService`).
 - Propiedades de canal desacopladas (Tarea 5): `IsInternalAudioEnabled` y `IsScreenReaderIntegrationEnabled`.
@@ -219,32 +219,35 @@ Singleton central (`AccessibilityManager.Instance`) que coordina:
   - `ApplyProfile(UserProfile)`, `SaveCurrentProfile()`, `LoadSavedProfile()`.
   - `Announce(string message, bool speak = true, bool playTone = false)`.
   - `AnnounceAssertive(string message)` (Tarea 4): Emite un anuncio inmediato e ininterrumpible hacia el lector de pantalla activo.
-  - `CycleTheme()` (tecla `F3`): Alterna entre `DefaultPlayful`, `HighContrastDark`, `HighContrastLight` y `LowSensory`, actualizando los `SolidColorBrush` en `Application.Current.Resources`.
+  - `CycleTheme()` (tecla `F3`): Alterna entre `DefaultPlayful`, `HighContrastDark`, `HighContrastLight` y `LowSensory`, actualizando los `SolidColorBrush` en `Application.Current.Resources`. Cada tema define además `AppOnAccentBrush`, `AppOnSuccessBrush` y `AppErrorBrush` para que el texto sobre acento/éxito y las marcas de error mantengan contraste AA/AAA (p. ej., negro sobre amarillo/verde brillante en alto contraste oscuro).
   - `CycleFontSize()` (tecla `F4`): Alterna entre `Normal` (18pt), `Large` (23pt), `ExtraLarge` (28pt) y `Huge` (34pt).
   - `ToggleSpeech()` (tecla `F2`, Tarea 5): Conmuta exclusivamente el audio interno del juego (`IsInternalAudioEnabled` / `Audio.Enabled`) mientras mantiene siempre activa la salida hacia NVDA, JAWS o Narrador.
 
-#### `MathTutor.WpfApp/MainWindow.xaml` (170 líneas) y `MainWindow.xaml.cs` (318 líneas)
+#### `MathTutor.WpfApp/MainWindow.xaml` (170 líneas) y `MainWindow.xaml.cs` (325 líneas)
 Ventana principal y contenedor de navegación:
-- **Barra Superior Global**: Botones accesibles para Menú (`Esc`), Mapa (`F6`), Perfil (`F5`), Contraste (`F3`), Letra (`F4`), Audio Interno (`F2`), Repetir (`F1`) y contador de estrellas (`TxtTopStars`).
+- **Barra Superior Global**: Botones accesibles para Menú (`Esc`), Mapa (`F6`), Perfil (`F5`), Contraste (`F3`), Letra (`F4`), Audio Interno (`F2`), Repetir (`F1`) y contador de estrellas (`TxtTopStars`). Los botones se agrupan en un `WrapPanel` para reorganizarse en varias filas sin recortarse en ventanas estrechas o con tipografía grande.
 - **Host Central**: `<ContentControl x:Name="MainContentHost"/>` que aloja dinámicamente una de las 5 vistas (`_profileView`, `_menuView`, `_lessonView`, `_gameView`, `_mapView`).
 - **Foco Inicial Automático (`NavigateTo`, Tarea 1)**: Tras montar cualquier vista en `MainContentHost`, despacha `FocusInitialElement()` en `DispatcherPriority.Loaded` (`Focus()` + `Keyboard.Focus(...)`) antes de emitir el anuncio de bienvenida.
 - **Transición Modal Posmisión (`_gameView.MissionCompleted`, Tarea 7)**: Al finalizar una misión, resuelve la siguiente misión con `_curriculum.GetNextTopic(...)`, abre `MissionCompletedDialog` modal y navega según la elección del alumno (`NextMission`, `RepeatMission` o `ReturnToMenu`).
-- **Barra Inferior de Región en Vivo UIA**: `<TextBlock x:Name="TxtLiveAnnouncement" AutomationProperties.LiveSetting="Assertive"/>`.
+- **Barra Inferior de Región en Vivo UIA**: `<TextBlock x:Name="TxtLiveAnnouncement" AutomationProperties.LiveSetting="Assertive"/>` con tipografía dinámica (`AppBaseFontSize`), de modo que escala con `F4`.
 - **Método `RaiseLiveRegionAnnouncement(string message, bool immediate = false)`**:
   - Usa `DispatcherPriority.Normal` cuando `immediate = true` (anuncios asertivos de error/diagnóstico) o `DispatcherPriority.ApplicationIdle` en navegaciones de vista.
   - Alterna un espacio de ancho cero (`\u200B`) al final del texto y dispara explícitamente `RaisePropertyChangedEvent(AutomationElementIdentifiers.NameProperty, ...)` y `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)`.
 
-#### `MathTutor.WpfApp/Views/ProfileSetupView.xaml` (280 líneas) y `ProfileSetupView.xaml.cs` (324 líneas)
+#### `MathTutor.WpfApp/Views/ProfileSetupView.xaml` (295 líneas) y `ProfileSetupView.xaml.cs` (344 líneas)
 Vista de caracterización inicial del alumno (`F5`):
 - Controles: `TxtName` (nombre/apodo), `CmbAge` (3 a 18 años), `CmbAcademicLevel` (filtrado dinámicamente según la edad), `CmbRegion` (México, Colombia, Argentina, Perú, Chile), `CmbDisabilityType` (6 tipos), `CmbDisabilitySeverity` (Leve, Moderada, Severa), `ChkVoiceSynthesis`, `ChkAudioCues`, `ChkSimplifyLanguage`, `CmbTheme`, `CmbFontSize` y `BtnSaveAndStart`.
 - **Método `PopulateAcademicLevelsForAge(int age, AcademicLevel? preferredLevel = null)`** (Tarea 6): Filtra los niveles mostrados en `CmbAcademicLevel` invocando `AdaptiveEngine.GetAllowedLevelsForAge(age)` y selecciona `GetRecommendedLevelForAge(age)` si el nivel anterior ya no aplica.
 - **Método `FocusInitialElement()`** (Tarea 1): Posiciona el foco físico y lógico en `TxtName` al abrir la vista.
+- **Coherencia de severidad:** `CmbDisabilitySeverity` se deshabilita cuando no hay ninguna condición marcada (`Disabilities.Count == 0`), ya que el grado no aplica en ese caso.
+- **Volver sin guardar (`BtnCancel`):** solo visible si ya existe un perfil guardado (`Storage.Load() != null`); al pulsarlo restaura el snapshot de disco con `ApplyProfile(...)`, lo vuelve a guardar, revierte tema/fuente/audio y emite `CancelRequested`, conectado en `MainWindow` para regresar al menú.
 
-#### `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` (173 líneas) y `CurriculumMenuView.xaml.cs` (212 líneas)
+#### `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` (182 líneas) y `CurriculumMenuView.xaml.cs` (212 líneas)
 Menú principal de misiones (`Esc`):
 - Muestra el saludo personalizado, resumen de nivel y condición, contador de estrellas (`TxtStarsCount`), racha (`TxtStreakCount`), botón `BtnOpenRealmMap` y el listado de misiones filtradas por la edad del alumno (`_curriculum.GetTopicsForAge(profile.Age)`, Tarea 6).
 - **Navegación con Flechas (`ListBox ItemsTopics`, Tarea 2)**: Sustituye el antiguo `ItemsControl` por un `ListBox` accesible con `KeyboardNavigation.DirectionalNavigation="Cycle"`, `IsSynchronizedWithCurrentItem="True"`, borde de foco de 4px (`AccessibleFocusVisual`) y soporte para `Enter` y `Espacio` (`ItemsTopics_PreviewKeyDown`).
 - **Etiquetas Limpias sin Emojis (`TopicDisplayItem`, Tarea 3)**: `AutomationProperties.Name` sigue el formato estricto `"{Estado}: {NombreMision}"` (`"Misión recomendada: ..."`, `"Misión completada: ..."`, `"Misión disponible: ..."`) y `AutomationProperties.HelpText="Presiona Enter o Espacio para comenzar."`.
+- **Retroalimentación de selección:** el borde de la tarjeta pasa a `AppAccentBrush` y 3px cuando su `ListBoxItem` está seleccionado, además del foco visible de 4px.
 - **Método `FocusInitialElement()`** (Tarea 1): Enfoca directamente el primer `ListBoxItem` de la lista de misiones.
 
 #### `MathTutor.WpfApp/Views/LessonView.xaml` (267 líneas) y `LessonView.xaml.cs` (212 líneas)
@@ -253,26 +256,31 @@ Pantalla pedagógica previa a cada minijuego:
 - `TxtNarrativeStory`, `TxtCoreConcept` y `TxtGuidedExample` usan `AccessibleReadOnlyTextBox` para permitir lectura con cursores en NVDA/JAWS/Narrador.
 - **Método `FocusInitialElement()`** (Tarea 1): Posiciona el foco inicial en `BtnStartGame` (`Focus()` + `Keyboard.Focus(...)`).
 
-#### `MathTutor.WpfApp/Views/MiniGameView.xaml` (224 líneas) y `MiniGameView.xaml.cs` (422 líneas)
+#### `MathTutor.WpfApp/Views/MiniGameView.xaml` (237 líneas) y `MiniGameView.xaml.cs` (455 líneas)
 Motor interactivo del minijuego:
 - Muestra el progreso (`Reto X de Y`), el enunciado adaptado (`TxtInstruction`), el panel de objetos manipulables/explorables (`PanelItemsGroupA` y `PanelItemsGroupB`), el banner de pistas diagnósticas (`BorderHintBanner` / `TxtHintMessage`), el panel de opciones de respuesta (`PanelOptions` con atajos `1`, `2`, `3`) y el banner de éxito (`BorderSuccessBanner` / `TxtSuccessExplanation` / `BtnNextExercise`).
 - **Evaluación Diagnóstica (`EvaluateAnswer`, Tarea 4)**:
-  - Si la opción es incorrecta: toca `_acc.Audio.PlayErrorChord()`, marca visualmente el botón probado con `"✗ "` y opacidad `0.72` (sin mover el foco para no interrumpir al lector), despliega `BorderHintBanner` con `option.SpeechFeedback` + la pista escalonada (`FirstHint` o `SecondHintDetailed`) y emite `_acc.AnnounceAssertive($"Incorrecto. {feedbackMessage}")`.
-  - Si la opción es correcta: registra el intento en `AdaptiveEngine`, toca `PlaySuccessChord()`, muestra la explicación del triunfo y enfoca `BtnNextExercise` con `Focus()` + `Keyboard.Focus(...)`.
+  - Si la opción es incorrecta: toca `_acc.Audio.PlayErrorChord()`, marca visualmente el botón probado con `"✗ "` y `AppErrorBrush` (sin reducir la opacidad, para no bajar el contraste), despliega `BorderHintBanner` con `option.SpeechFeedback` + la pista escalonada (`FirstHint` o `SecondHintDetailed`) y emite `_acc.AnnounceAssertive($"Incorrecto. {feedbackMessage}")`. El conjunto `_wrongOptions` impide volver a evaluar la misma opción y, si se reintenta, reanuncia la pista vigente.
+  - Si la opción es correcta: registra el intento en `AdaptiveEngine`, activa `_answerLocked` (ignora clics y teclas numéricas posteriores), toca `PlaySuccessChord()`, muestra la explicación del triunfo, enfoca `BtnNextExercise` y desplaza el banner a la vista con `BringIntoView()`.
+- **Conteo idempotente:** `_countedItemButtons` evita que pulsar dos veces el mismo objeto manipulable infle el contador; cada objeto distinto cuenta una sola vez.
+- **Teclado y navegación:** `F1` repite la instrucción en cualquier estado, `Escape` regresa a la lección (coherente con el botón "Volver") y `1`–`4` seleccionan opciones solo mientras el reto está activo. Los banners de pista y éxito se traen al viewport (`BringIntoView`).
+- **Barra de progreso (`BarExerciseProgress`):** `ProgressBar` accesible expuesta como `RangeValue`, con `Maximum = total de retos` y `Value = reto actual`, actualizada en `LoadExerciseAtCurrentIndex`.
 
-#### `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml` (85 líneas) y `MissionCompletedDialog.xaml.cs` (118 líneas)
+#### `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml` (85 líneas) y `MissionCompletedDialog.xaml.cs` (119 líneas)
 Diálogo modal accesible al completar una misión (Tarea 7 y Tarea 10):
 - Muestra el encabezado de celebración (`TxtCompletedHeader`), el mensaje de felicitación de Cosmo (`TxtCongratulationMessage` con `AccessibleReadOnlyTextBox`), la instrucción de transición (`TxtTransitionPrompt`), dos botones accesibles y una región en vivo propia (`TxtDialogLiveRegion`):
-  - `BtnNextMission` (`IsDefault="True"`, tecla `Enter`): **"Siguiente Misión: [Título]"** (o **"Volver al Menú de Misiones"** si `_nextTopic == null`), recibe el foco automático (`Focus()` + `Keyboard.Focus(...)`) al abrirse el diálogo.
-  - `BtnBackToMap` (`IsCancel="True"`, tecla `Escape`): **"Volver al Mapa del Reino (Escape)"**.
+  - `BtnNextMission` (`IsDefault="True"`, tecla `Enter`): **"Siguiente Misión: [Título]"** (o **"Volver al Mapa del Reino"** si `_nextTopic == null`, que es a donde realmente navega), recibe el foco automático (`Focus()` + `Keyboard.Focus(...)`) al abrirse el diálogo.
+  - `BtnBackToMap` (`IsCancel="True"`, tecla `Escape`): **"Volver al Mapa del Reino (Escape)"**; se oculta cuando no hay siguiente misión para no duplicar la acción.
 - Al cargarse, emite el anuncio asertivo después de estabilizar el foco en `DispatcherPriority.ApplicationIdle`.
 
-#### `MathTutor.WpfApp/Views/RealmMapView.xaml` (241 líneas) y `RealmMapView.xaml.cs` (225 líneas)
+#### `MathTutor.WpfApp/Views/RealmMapView.xaml` (260 líneas) y `RealmMapView.xaml.cs` (252 líneas)
 Mapa del Reino Matemágico y Sala de Trofeos (`F6`):
 - Filtra las estaciones e insignias mostradas según los niveles permitidos para la edad y condición del alumno (`_curriculum.GetTopicsForAge(profile.Age, profile.Disability)`, Tarea 6 y Tarea 12).
 - **Navegación con Flechas en Estaciones (`ListBox ItemsStations`, Tarea 2)**: Sustituye el `ItemsControl` por un `ListBox` accesible con `KeyboardNavigation.DirectionalNavigation="Cycle"`, `IsSynchronizedWithCurrentItem="True"` y activación con `Enter` o `Espacio`.
 - **Etiquetas Limpias sin Emojis (`RealmStationDisplayItem`, Tarea 3)**: `AutomationProperties.Name` usa el formato `"{Estado}: {NombreEstacion}"` sin emojis y `AutomationProperties.HelpText="Presiona Enter o Espacio para comenzar."`.
 - **Sala de Trofeos Navegable por Teclado (`ListBox ItemsBadges`, Tarea 11)**: Convierte la cuadrícula de las **46 insignias** en un `ListBox` accesible con `WrapPanel`, `KeyboardNavigation.DirectionalNavigation="Cycle"`, `KeyboardNavigation.TabNavigation="Once"`, foco de 4px (`AccessibleFocusVisual`) y propiedad limpia `AccessibleBadgeName` (`"Trofeo desbloqueado: {Title}. {Description}"` / `"Trofeo bloqueado: {Title}. {Description}"`).
+- **Reacción al cambio de tema:** se suscribe a `AccessibilityManager.ThemeChanged` y repinta las listas con `_isRepainting` (conserva la estación/insignia seleccionada, restaura el foco y omite el anuncio), evitando que las tarjetas de insignias conserven colores del tema anterior y queden ilegibles.
+- **Selección visible:** las tarjetas de estación (borde de 4px con `AppAccentBrush`) y de insignia (4px con `AppFocusBorderBrush`) resaltan cuando su `ListBoxItem` está seleccionado.
 
 ---
 
@@ -365,7 +373,7 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 9. ✅ **Tarea 9 (Alineación de Etiquetas XAML con el Desacoplamiento de `F2`)**:
    - Actualizadas las etiquetas visuales y `AutomationProperties.Name` de `BtnToggleSpeech` (`"🔊 Sonidos (F2)"`) en `MainWindow.xaml` y `ChkVoiceSynthesis` en `ProfileSetupView.xaml` para reflejar que controlan los sonidos internos del juego mientras el lector de pantalla permanece siempre activo.
 10. ✅ **Tarea 10 (Resolución de Fin de Etapa en `CurriculumService.GetNextTopic`)**:
-    - `GetNextTopic` devuelve `null` cuando el alumno completa todas las misiones disponibles en su etapa de edad, permitiendo que `MissionCompletedDialog` active el mensaje de etapa superada y el botón **"Volver al Menú de Misiones"**.
+    - `GetNextTopic` devuelve `null` cuando el alumno completa todas las misiones disponibles en su etapa de edad, permitiendo que `MissionCompletedDialog` active el mensaje de etapa superada y el botón **"Volver al Mapa del Reino"**.
 11. ✅ **Tarea 11 (Sala de Trofeos `ItemsBadges` Navegable por Teclado y Flechas)**:
     - Convertido `ItemsBadges` en `RealmMapView.xaml` / `.xaml.cs` en un `ListBox` accesible con `WrapPanel`, navegación con flechas, foco de 4px y etiqueta limpia `AccessibleBadgeName` (`"Trofeo desbloqueado: ..."` / `"Trofeo bloqueado: ..."`).
 12. ✅ **Tarea 12 (Flexibilidad Pedagógica en `GetAllowedLevelsForAge` para 12 Años y Discapacidad Intelectual)**:

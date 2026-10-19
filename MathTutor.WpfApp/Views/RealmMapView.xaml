@@ -93,8 +93,17 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Style="{StaticResource AccessibleCard}"
-                                BorderBrush="{DynamicResource AppBorderBrush}">
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource AccessibleCard}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AppAccentBrush}"/>
+                                            <Setter Property="BorderThickness" Value="4"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -206,8 +215,17 @@
                                 Padding="16"
                                 CornerRadius="12"
                                 Background="{Binding BadgeBackgroundBrush}"
-                                BorderBrush="{Binding BadgeBorderBrush}"
-                                BorderThickness="2">
+                                BorderBrush="{Binding BadgeBorderBrush}">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="2"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                            <Setter Property="BorderThickness" Value="4"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                             <StackPanel HorizontalAlignment="Center">
                                 <TextBlock Text="{Binding IconEmoji}"
                                            FontSize="42"
@@ -221,13 +239,13 @@
                                            TextWrapping="Wrap"
                                            Margin="0,0,0,4"/>
                                 <TextBlock Text="{Binding Description}"
-                                           FontSize="14"
+                                           FontSize="{DynamicResource AppBaseFontSize}"
                                            Foreground="{DynamicResource AppTextSecondaryBrush}"
                                            TextAlignment="Center"
                                            TextWrapping="Wrap"
                                            Margin="0,0,0,8"/>
                                 <TextBlock Text="{Binding UnlockStatusText}"
-                                           FontSize="13"
+                                           FontSize="{DynamicResource AppBaseFontSize}"
                                            FontWeight="Bold"
                                            Foreground="{Binding UnlockStatusBrush}"
                                            HorizontalAlignment="Center"/>

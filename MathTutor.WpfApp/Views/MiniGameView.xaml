@@ -67,6 +67,19 @@
                 </Grid>
             </Border>
 
+            <!-- Barra de progreso visual de retos (expuesta como RangeValue a UIA) -->
+            <ProgressBar x:Name="BarExerciseProgress"
+                         Height="16"
+                         Margin="0,0,0,16"
+                         Minimum="0"
+                         Maximum="1"
+                         Value="0"
+                         Foreground="{DynamicResource AppAccentBrush}"
+                         Background="{DynamicResource AppCardBrush}"
+                         BorderBrush="{DynamicResource AppBorderBrush}"
+                         AutomationProperties.Name="Progreso de retos de la misión"
+                         AutomationProperties.HelpText="Indica en qué reto vas dentro de la misión."/>
+
             <!-- Tarjeta de Instrucción Principal -->
             <Border Background="{DynamicResource AppSurfaceBrush}"
                     BorderBrush="{DynamicResource AppBorderBrush}"
@@ -191,7 +204,7 @@
                         <TextBlock Text="¡EXTRAORDINARIO! ¡LO LOGRASTE!"
                                    FontSize="{DynamicResource AppHeaderFontSize}"
                                    FontWeight="Bold"
-                                   Foreground="#FFFFFF"
+                                   Foreground="{DynamicResource AppOnSuccessBrush}"
                                    VerticalAlignment="Center"/>
                         <TextBlock Text="⭐" FontSize="36" Margin="8,0,0,0"/>
                     </StackPanel>
@@ -200,7 +213,7 @@
                              Style="{StaticResource AccessibleReadOnlyTextBox}"
                              Text="Explicación del éxito..."
                              FontSize="{DynamicResource AppSubHeaderFontSize}"
-                             Foreground="#FFFFFF"
+                             Foreground="{DynamicResource AppOnSuccessBrush}"
                              TextAlignment="Center"
                              Margin="0,0,0,16"
                              AutomationProperties.Name="Explicación de Respuesta Correcta"/>

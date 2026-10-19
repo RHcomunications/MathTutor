@@ -40,6 +40,7 @@ public partial class RealmMapView : UserControl
     private readonly AccessibilityManager _acc = AccessibilityManager.Instance;
     private readonly RewardService _rewards = new();
     private readonly MathTutor.Core.Engine.CurriculumService _curriculum = new();
+    private bool _isRepainting;
 
     public event Action<string>? StationSelected;
     public event Action? BackToMenuRequested;
@@ -47,10 +48,29 @@ public partial class RealmMapView : UserControl
     public RealmMapView()
     {
         InitializeComponent();
+        _acc.ThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged()
+    {
+        if (!IsLoaded) return;
+
+        _isRepainting = true;
+        try
+        {
+            RefreshMap();
+        }
+        finally
+        {
+            _isRepainting = false;
+        }
     }
 
     public void RefreshMap()
     {
+        int previousStationIndex = ItemsStations.SelectedIndex;
+        int previousBadgeIndex = ItemsBadges.SelectedIndex;
+
         var profile = _acc.CurrentProfile;
         var topics = profile.Disabilities.Count > 0
             ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities)
@@ -118,7 +138,9 @@ public partial class RealmMapView : UserControl
 
         if (stationDisplayList.Count > 0)
         {
-            ItemsStations.SelectedIndex = recommendedIndex;
+            ItemsStations.SelectedIndex = _isRepainting && previousStationIndex >= 0 && previousStationIndex < stationDisplayList.Count
+                ? previousStationIndex
+                : recommendedIndex;
         }
 
         // Insignias del reino (Tarea 11: Etiqueta accesible limpia sin emojis para el lector de pantalla)
@@ -146,7 +168,9 @@ public partial class RealmMapView : UserControl
         ItemsBadges.ItemsSource = badgeDisplayList;
         if (badgeDisplayList.Count > 0)
         {
-            ItemsBadges.SelectedIndex = 0;
+            ItemsBadges.SelectedIndex = _isRepainting && previousBadgeIndex >= 0 && previousBadgeIndex < badgeDisplayList.Count
+                ? previousBadgeIndex
+                : 0;
         }
 
         // Tarea 1 y Tarea 2: Posicionar el foco en la estación recomendada al abrir el mapa
@@ -155,7 +179,10 @@ public partial class RealmMapView : UserControl
             FocusSelectedStationItem();
         });
 
-        _acc.Announce($"Mapa del Reino Matemágico. Has desbloqueado {unlockedCount} de {badges.Count} trofeos. Usa las flechas arriba y abajo para explorar las estaciones, presiona Enter para comenzar, o Tab para revisar tu sala de trofeos.", speak: true, playTone: true);
+        if (!_isRepainting)
+        {
+            _acc.Announce($"Mapa del Reino Matemágico. Has desbloqueado {unlockedCount} de {badges.Count} trofeos. Usa las flechas arriba y abajo para explorar las estaciones, presiona Enter para comenzar, o Tab para revisar tu sala de trofeos.", speak: true, playTone: true);
+        }
     }
 
     public void FocusSelectedStationItem()
@@ -194,7 +221,7 @@ public partial class RealmMapView : UserControl
 
     private void ItemsStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (IsLoaded && ItemsStations.SelectedItem is RealmStationDisplayItem)
+        if (IsLoaded && !_isRepainting && ItemsStations.SelectedItem is RealmStationDisplayItem)
         {
             _acc.Audio.PlayNavigationClick();
         }
@@ -202,7 +229,7 @@ public partial class RealmMapView : UserControl
 
     private void ItemsBadges_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (IsLoaded && ItemsBadges.SelectedItem is BadgeDisplayItem)
+        if (IsLoaded && !_isRepainting && ItemsBadges.SelectedItem is BadgeDisplayItem)
         {
             _acc.Audio.PlayNavigationClick();
         }

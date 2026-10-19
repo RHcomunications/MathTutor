@@ -5,6 +5,7 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.WpfApp.Services;
@@ -23,6 +24,9 @@ public partial class MiniGameView : UserControl
     private int _hintStep = 0;
     private int _countedItemsCount = 0;
     private List<ExerciseOption> _currentOptions = new();
+    private readonly HashSet<Button> _countedItemButtons = new();
+    private readonly HashSet<ExerciseOption> _wrongOptions = new();
+    private bool _answerLocked;
 
     public event Action? BackToLessonRequested;
     public event Action<PedagogicalTopic>? MissionCompleted;
@@ -52,6 +56,9 @@ public partial class MiniGameView : UserControl
         _attemptsCount = 0;
         _hintStep = 0;
         _countedItemsCount = 0;
+        _answerLocked = false;
+        _countedItemButtons.Clear();
+        _wrongOptions.Clear();
 
         BorderSuccessBanner.Visibility = Visibility.Collapsed;
         BorderHintBanner.Visibility = Visibility.Collapsed;
@@ -61,6 +68,9 @@ public partial class MiniGameView : UserControl
 
         TxtExerciseTitle.Text = _currentExercise.Title;
         TxtProgressCounter.Text = $"Reto {_exerciseIndex + 1} de {_topic.Exercises.Count}";
+        BarExerciseProgress.Maximum = Math.Max(1, _topic.Exercises.Count);
+        BarExerciseProgress.Value = _exerciseIndex + 1;
+        AutomationProperties.SetName(BarExerciseProgress, $"Progreso: reto {_exerciseIndex + 1} de {_topic.Exercises.Count}");
 
         string adaptedInstruction = _adaptive.GetAdaptedInstruction(_currentExercise, profile);
         TxtInstruction.Text = adaptedInstruction;
@@ -168,12 +178,12 @@ public partial class MiniGameView : UserControl
         var label = new TextBlock
         {
             Text = isSymbolicAdvanced ? item.Name : $"#{displayOrder}",
-            FontSize = 16,
             FontWeight = FontWeights.Bold,
-            Foreground = (Brush)FindResource("AppTextSecondaryBrush"),
             HorizontalAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(0, 4, 0, 0)
         };
+        label.SetResourceReference(TextBlock.FontSizeProperty, "AppBaseFontSize");
+        label.SetResourceReference(TextBlock.ForegroundProperty, "AppTextSecondaryBrush");
 
         stack.Children.Add(emoji);
         stack.Children.Add(label);
@@ -192,12 +202,15 @@ public partial class MiniGameView : UserControl
 
         btn.Click += (s, e) =>
         {
+            if (_countedItemButtons.Contains(btn)) return;
+            _countedItemButtons.Add(btn);
+
             _countedItemsCount++;
             _acc.Audio.PlayNote(item.MusicalPitchHz, 300);
 
             // Resaltar visualmente que ya fue explorado/contado
-            btn.Background = (Brush)FindResource("AppCardBrush");
-            label.Foreground = (Brush)FindResource("AppSuccessBrush");
+            btn.SetResourceReference(Control.BackgroundProperty, "AppCardBrush");
+            label.SetResourceReference(TextBlock.ForegroundProperty, "AppSuccessBrush");
             label.Text = isSymbolicAdvanced ? $"✓ {item.Name}" : $"✓ #{displayOrder}";
 
             int totalItems = (_currentExercise?.ItemsGroupA.Count ?? 0) + (_currentExercise?.ItemsGroupB.Count ?? 0);
@@ -267,13 +280,19 @@ public partial class MiniGameView : UserControl
 
     private void EvaluateAnswer(ExerciseOption option)
     {
-        if (_currentExercise == null) return;
+        if (_currentExercise == null || _answerLocked) return;
+        if (_wrongOptions.Contains(option))
+        {
+            _acc.AnnounceAssertive($"Ya probaste esta opción. {TxtHintMessage.Text}");
+            return;
+        }
         _attemptsCount++;
 
         var profile = _acc.CurrentProfile;
 
         if (option.IsCorrect)
         {
+            _answerLocked = true;
             _adaptive.RecordAttempt(profile, _currentExercise, isCorrect: true, _attemptsCount);
             _acc.Audio.PlaySuccessChord();
 
@@ -286,12 +305,14 @@ public partial class MiniGameView : UserControl
 
             BtnNextExercise.Focus();
             Keyboard.Focus(BtnNextExercise);
+            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => BorderSuccessBanner.BringIntoView());
 
             string announceMsg = $"¡Extraordinario! Respuesta correcta. {TxtSuccessExplanation.Text}. Presiona Enter para avanzar.";
             _acc.AnnounceAssertive(announceMsg);
         }
         else
         {
+            _wrongOptions.Add(option);
             _adaptive.RecordAttempt(profile, _currentExercise, isCorrect: false, _attemptsCount);
 
             // Tarea 4: Efecto de audio procedural PCM de error diagnóstico
@@ -307,7 +328,7 @@ public partial class MiniGameView : UserControl
                     {
                         optBtn.Content = $"✗ {currentText}";
                     }
-                    optBtn.Opacity = 0.72;
+                    optBtn.SetResourceReference(Control.BorderBrushProperty, "AppErrorBrush");
                 }
             }
 
@@ -320,6 +341,7 @@ public partial class MiniGameView : UserControl
 
             string feedbackMessage = $"{option.SpeechFeedback} {hintLabel} de Cosmo: {hint}";
             TxtHintMessage.Text = $"Incorrecto. Cosmo te explica por qué no es {option.Label}:\n• {option.SpeechFeedback}\n• {hintLabel}: {hint}";
+            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => BorderHintBanner.BringIntoView());
 
             // Tarea 4: Anuncio asertivo prioritario e inmediato hacia el lector de pantalla
             _acc.AnnounceAssertive($"Incorrecto. {feedbackMessage}");
@@ -328,21 +350,31 @@ public partial class MiniGameView : UserControl
 
     private void MiniGameView_KeyDown(object sender, KeyEventArgs e)
     {
+        // F1: Repetir instrucción (disponible en cualquier estado)
+        if (e.Key == Key.F1)
+        {
+            e.Handled = true;
+            RepeatExerciseInstruction();
+            return;
+        }
+
+        // Escape: volver a la explicación de la lección (coherente con el botón "Volver")
+        if (e.Key == Key.Escape)
+        {
+            e.Handled = true;
+            _acc.Audio.PlayNavigationClick();
+            BackToLessonRequested?.Invoke();
+            return;
+        }
+
         if (BorderSuccessBanner.Visibility == Visibility.Visible)
         {
             if (e.Key == Key.Enter || e.Key == Key.Space)
             {
                 e.Handled = true;
                 BtnNextExercise_Click(this, new RoutedEventArgs());
-                return;
             }
-        }
-
-        // F1: Repetir instrucción
-        if (e.Key == Key.F1)
-        {
-            e.Handled = true;
-            RepeatExerciseInstruction();
+            // Tras acertar, se ignoran las teclas numéricas para no evaluar otra opción.
             return;
         }
 
@@ -387,7 +419,7 @@ public partial class MiniGameView : UserControl
 
     private void BtnHint_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentExercise == null) return;
+        if (_currentExercise == null || _answerLocked) return;
         _hintStep++;
         BorderHintBanner.Visibility = Visibility.Visible;
 
@@ -396,6 +428,7 @@ public partial class MiniGameView : UserControl
         string hint = showDetailed ? _currentExercise.SecondHintDetailed : _currentExercise.FirstHint;
 
         TxtHintMessage.Text = $"💡 {hintLabel} de Cosmo: {hint}";
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => BorderHintBanner.BringIntoView());
         _acc.Audio.PlayHintTone();
         _acc.Announce($"{hintLabel} de Cosmo: {hint}", speak: true);
     }

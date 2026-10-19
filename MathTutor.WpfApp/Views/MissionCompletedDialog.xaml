@@ -52,7 +52,7 @@
                     IsDefault="True"
                     Style="{StaticResource AccessibleActionButton}"
                     Background="{DynamicResource AppSuccessBrush}"
-                    Foreground="#FFFFFF"
+                    Foreground="{DynamicResource AppOnSuccessBrush}"
                     FontSize="{DynamicResource AppSubHeaderFontSize}"
                     MinHeight="64"
                     Margin="0,0,0,12"
@@ -75,7 +75,7 @@
             <!-- Región en Vivo del Diálogo Modal para NVDA, JAWS y Narrador -->
             <TextBlock x:Name="TxtDialogLiveRegion"
                        Text=""
-                       FontSize="12"
+                       FontSize="{DynamicResource AppBaseFontSize}"
                        Foreground="{DynamicResource AppTextSecondaryBrush}"
                        Margin="0,10,0,0"
                        TextTrimming="CharacterEllipsis"

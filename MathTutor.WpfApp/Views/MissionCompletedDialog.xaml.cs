@@ -41,10 +41,11 @@ public partial class MissionCompletedDialog : Window
         }
         else
         {
-            const string finishLabel = "Volver al Menú de Misiones";
+            const string finishLabel = "Volver al Mapa del Reino";
             BtnNextMission.Content = finishLabel;
             AutomationProperties.SetName(BtnNextMission, finishLabel);
             TxtTransitionPrompt.Text = "¡Completaste todas las misiones de esta etapa! Presiona Enter o Escape para volver al Mapa del Reino.";
+            BtnBackToMap.Visibility = Visibility.Collapsed;
         }
 
         Loaded += MissionCompletedDialog_Loaded;

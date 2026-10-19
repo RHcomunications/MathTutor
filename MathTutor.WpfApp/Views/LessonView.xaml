@@ -88,7 +88,7 @@
                             VerticalAlignment="Top">
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="🦉" FontSize="50" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Cosmo" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppAccentBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Cosmo" FontWeight="Bold" FontSize="{DynamicResource AppBaseFontSize}" Foreground="{DynamicResource AppAccentBrush}" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 

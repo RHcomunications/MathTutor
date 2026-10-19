@@ -10,7 +10,9 @@ public partial class ProfileSetupView : UserControl
 {
     private readonly AccessibilityManager _acc = AccessibilityManager.Instance;
     private bool _isInitializing = true;
+    private UserProfile? _snapshot;
     public event Action? ProfileSavedAndReady;
+    public event Action? CancelRequested;
 
     public ProfileSetupView()
     {
@@ -24,6 +26,10 @@ public partial class ProfileSetupView : UserControl
         PopulateDropdowns();
         LoadCurrentProfileData();
         _isInitializing = false;
+
+        // Snapshot del último perfil guardado para poder descartar cambios al volver.
+        _snapshot = _acc.Storage.Load();
+        BtnCancel.Visibility = _snapshot != null ? Visibility.Visible : Visibility.Collapsed;
 
         // Tarea 1: Poner el foco real de teclado en el primer control interactivo antes de anunciar
         TxtName.Focus();
@@ -135,6 +141,7 @@ public partial class ProfileSetupView : UserControl
         ChkDisabilityNeurodivergent.IsChecked = profile.HasDisability(DisabilityType.Neurodivergent);
         _isInitializing = false;
 
+        CmbDisabilitySeverity.IsEnabled = profile.Disabilities.Count > 0;
         SelectComboByTag(CmbDisabilitySeverity, profile.Severity);
         SelectComboByTag(CmbTheme, profile.Preferences.Theme);
         SelectComboByTag(CmbFontSize, profile.Preferences.FontSize);
@@ -185,6 +192,7 @@ public partial class ProfileSetupView : UserControl
         if (ChkDisabilityNeurodivergent.IsChecked == true) profile.Disabilities.Add(DisabilityType.Neurodivergent);
 
         profile.Disability = profile.Disabilities.Count > 0 ? profile.Disabilities[0] : DisabilityType.None;
+        CmbDisabilitySeverity.IsEnabled = profile.Disabilities.Count > 0;
         profile.ApplyRecommendedAccessibilityDefaults();
 
         _isInitializing = true;
@@ -320,5 +328,17 @@ public partial class ProfileSetupView : UserControl
         _acc.Audio.PlaySuccessChord();
         _acc.Announce($"¡Perfil guardado, {_acc.CurrentProfile.Name}! Entrando al Reino Matemágico...", speak: true);
         ProfileSavedAndReady?.Invoke();
+    }
+
+    private void BtnCancel_Click(object sender, RoutedEventArgs e)
+    {
+        if (_snapshot != null)
+        {
+            _acc.ApplyProfile(_snapshot);
+            _acc.SaveCurrentProfile();
+        }
+
+        _acc.Audio.PlayNavigationClick();
+        CancelRequested?.Invoke();
     }
 }
