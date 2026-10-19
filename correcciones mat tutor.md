@@ -5,7 +5,7 @@
 ---
 
 ## 📌 Tarea 1: Foco Inicial Automático y Anuncio de Entrada al Iniciar
-* **Componente / Archivo:** `MathTutor.WpfApp/Views/MainWindow.xaml`, `MainWindow.xaml.cs` (o vista principal inicial).
+* **Componente / Archivo:** `MathTutor.WpfApp/MainWindow.xaml`, `MainWindow.xaml.cs` (vista principal inicial).
 * **Comportamiento Actual:** Al abrir la aplicación, suena el audio de fondo, pero el foco no se posiciona en ningún elemento interactivo. Los lectores de pantalla (NVDA/JAWS/Narrador) no anuncian nada y las flechas no responden hasta presionar `Tab`.
 * **Comportamiento Esperado:** Al finalizar el evento `Loaded`, el foco de teclado debe asignarse automáticamente al primer elemento interactivo y se debe emitir un anuncio de voz/UIA de bienvenida.
 * **Instrucciones de Implementación:**
@@ -18,7 +18,7 @@
          Keyboard.Focus(PrimaryMenuButton);
 
          // Disparar anuncio de accesibilidad
-         AccessibilityService.Announce("Bienvenido a MathTutor. Presiona Tab para navegar por las opciones.");
+         AccessibilityManager.Instance.Announce("Bienvenido a MathTutor. Presiona Tab para navegar por las opciones.");
      };
      ```
   2. Verificar que `AutomationProperties.Name` del primer elemento lea claramente la instrucción de inicio.
@@ -26,7 +26,7 @@
 ---
 
 ## 📌 Tarea 2: Navegación Direccional (Flechas) y Maquetación de la Lista de Misiones
-* **Componente / Archivo:** `MathTutor.WpfApp/Views/MissionMapView.xaml`, `MissionMapViewModel.cs`.
+* **Componente / Archivo:** `MathTutor.WpfApp/Views/CurriculumMenuView.xaml`, `CurriculumMenuView.xaml.cs` (y `RealmMapView.xaml`).
 * **Comportamiento Actual:** Las misiones se muestran en grupos pequeños de 2 o 3, requiriendo presionar la tecla `Tab` repetidamente. Las teclas de flecha no permiten cambiar de misión de manera fluida.
 * **Comportamiento Esperado:** El listado de misiones debe comportarse como una lista accesible con navegación nativa por teclas de dirección (`Flecha Arriba` / `Flecha Abajo` / `Flecha Izquierda` / `Flecha Derecha`).
 * **Instrucciones de Implementación:**
@@ -37,7 +37,7 @@
 ---
 
 ## 📌 Tarea 3: Estandarización de Etiquetas Accesibles (`AutomationProperties`)
-* **Componente / Archivo:** `MathTutor.WpfApp/Controls/MissionCardControl.xaml`, plantillas de botones de misión.
+* **Componente / Archivo:** `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` y `RealmMapView.xaml` (plantillas accesibles de misión y estación).
 * **Comportamiento Actual:** El texto leído por los lectores es redundante y confuso (ejemplo: *"🚀 Entrar a Jugar: El Sendero del Retorno... 🧭 Misión Disponible para Explorar botón Presiona para iniciar esta lección lúdica"*).
 * **Comportamiento Esperado:** El lector de pantalla debe enunciar un nombre corto y descriptivo del estado y título, dejando las instrucciones para el campo de ayuda.
 * **Instrucciones de Implementación:**
@@ -51,7 +51,7 @@
 ---
 
 ## 📌 Tarea 4: Retroalimentación Sonora y Anuncio en Respuestas Incorrectas
-* **Componente / Archivo:** `MathTutor.WpfApp/ViewModels/QuizViewModel.cs`, `AccessibilityService.cs`.
+* **Componente / Archivo:** `MathTutor.WpfApp/Views/MiniGameView.xaml.cs`, `MathTutor.WpfApp/Services/AccessibilityManager.cs`.
 * **Comportamiento Actual:** Al seleccionar una opción incorrecta dentro de un ejercicio, el juego no emite ningún anuncio de voz para el lector de pantalla.
 * **Comportamiento Esperado:** Ante una respuesta incorrecta, se debe notificar inmediatamente al usuario mediante voz y sonido diagnósticos sobre el error cometido y la orientación para corregirlo.
 * **Instrucciones de Implementación:**
@@ -73,7 +73,7 @@
 ---
 
 ## 📌 Tarea 5: Desacoplamiento de la Síntesis Interna (`F2`) vs. Lectores de Pantalla Externos
-* **Componente / Archivo:** `MathTutor.WpfApp/Services/AccessibilityService.cs`, `TTSManager.cs`.
+* **Componente / Archivo:** `MathTutor.WpfApp/Services/AccessibilityManager.cs`, `MathTutor.WpfApp/Services/SpeechService.cs`.
 * **Comportamiento Actual:** Desactivar la síntesis de voz del juego (tecla `F2`) interrumpe o apaga parcialmente los anuncios hacia NVDA, JAWS o Narrador.
 * **Comportamiento Esperado:** La tecla `F2` debe conmutar **únicamente** la voz/efectos de audio internos del juego (Canal A). El canal de comunicación con los lectores de pantalla del sistema (Canal B) debe permanecer siempre activo.
 * **Instrucciones de Implementación:**
@@ -98,7 +98,7 @@
 ---
 
 ## 📌 Tarea 6: Validación Adaptativa de Edad vs. Nivel Escolar y Misiones
-* **Componente / Archivo:** `MathTutor.Core/Services/AdaptiveEngine.cs`, `MathTutor.WpfApp/ViewModels/ProfileViewModel.cs`.
+* **Componente / Archivo:** `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml.cs`.
 * **Comportamiento Actual:** Un usuario de 3 o 5 años puede seleccionar o ver disponibles niveles avanzados como "Fundamentos de Programación y Algoritmos" o niveles de Secundaria/Preparatoria.
 * **Comportamiento Esperado:** El nivel escolar y los objetivos de aprendizaje deben ajustarse automáticamente en función de la edad seleccionada en la caracterización.
 * **Instrucciones de Implementación:**
@@ -118,7 +118,7 @@
 ---
 
 ## 📌 Tarea 7: Diálogo de Transición al Completar una Misión
-* **Componente / Archivo:** `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml`, `QuizViewModel.cs`.
+* **Componente / Archivo:** `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml`, `MissionCompletedDialog.xaml.cs` y `MiniGameView.xaml.cs`.
 * **Comportamiento Actual:** Al terminar un nivel, el usuario vuelve a la lista de misiones y debe navegar manualmente para buscar el siguiente nivel.
 * **Comportamiento Esperado:** Al superar un nivel, debe aparecer un diálogo modal accesible que anuncie el logro y pregunte si se desea continuar a la siguiente misión o regresar al mapa.
 * **Instrucciones de Implementación:**
@@ -186,32 +186,32 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
 ## 🛠️ CORRECCIONES Y MEJORAS DE ACCESIBILIDAD Y TUTORIAL INTERACTIVO
 
 ### 1. Tutorial y Lección Interactiva Paso a Paso (Sin Lectura Continua "De Corrido")
-- **Ubicación:** `MathTutor.WpfApp/Views/LessonView.xaml` y `ViewModels/LessonViewModel.cs`.
+- **Ubicación:** `MathTutor.WpfApp/Views/LessonView.xaml`, `MathTutor.WpfApp/Views/LessonView.xaml.cs` y `MathTutor.Core/Models/PedagogicalTopic.cs`.
 - **Problema:** Las lecciones y tutoriales muestran y leen todo el contenido de un solo tirón (título, historia, situación, pasos y atajos). Esto genera fatiga auditiva, sobrecarga cognitiva y le resta interactividad al juego.
 - **Instrucciones de Implementación:**
-  1. Transformar el modelo de la lección/tutorial en un **flujo guiado paso a paso (Wizard/Stepper)** dentro del ViewModel.
+  1. Transformar el modelo de la lección/tutorial en un **flujo guiado paso a paso (Wizard/Stepper)** en `LessonView.xaml.cs`.
   2. Muestren y anuncien por voz **únicamente una tarjeta/paso a la vez**.
   3. En cada paso del tutorial, incluir una instrucción interactiva explícita (por ejemplo: *"Paso 1 de 3: {Explicación corta}. Presiona Enter o Espacio para continuar al siguiente paso."*).
   4. Permitir retroceder paso a paso con las flechas o la tecla `Backspace`.
   5. Una vez completados todos los pasos intermedios de la lección, habilitar la transición al reto o ejercicio práctico.
 
 ### 2. Soporte para Discapacidades Múltiples (Comorbilidad / Interseccionalidad)
-- **Ubicación:** `MathTutor.Core/Models/UserProfile.cs` y `MathTutor.WpfApp/ViewModels/ProfileViewModel.cs`.
+- **Ubicación:** `MathTutor.Core/Models/UserProfile.cs`, `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml` y `MathTutor.WpfApp/Views/ProfileSetupView.xaml.cs`.
 - **Problema:** En la pantalla de caracterización solo se permite seleccionar una única discapacidad, impidiendo configurar perfiles con múltiples necesidades (por ejemplo, Ceguera + TEA).
 - **Instrucciones de Implementación:**
   1. Modificar la propiedad `DisabilityType` en `UserProfile` para que admita selecciones múltiples (`List<DisabilityType>` o `[Flags] Enum`).
-  2. En `ProfileView.xaml`, reemplazar los controles de selección única por casillas de verificación (`CheckBox`) accesibles.
+  2. En `ProfileSetupView.xaml`, reemplazar los controles de selección única por casillas de verificación (`CheckBox`) accesibles.
   3. Asegurar que las adaptaciones (anuncios para lector de pantalla, paleta de baja estimulación sensorial y simplificación de lenguaje) se activen de forma simultánea cuando el usuario marque más de una opción.
 
 ### 3. Anuncio Completo de Opciones en los Retos (TTS y Lector de Pantalla)
-- **Ubicación:** `MathTutor.WpfApp/ViewModels/ChallengeViewModel.cs`.
+- **Ubicación:** `MathTutor.WpfApp/Views/MiniGameView.xaml`, `MathTutor.WpfApp/Views/MiniGameView.xaml.cs` y `MathTutor.Core/Engine/AdaptiveEngine.cs`.
 - **Problema:** Al iniciar un reto, la síntesis/lector lee la pregunta y la instrucción ("Elige usando 1, 2 o 3"), pero omite leer el contenido de cada opción, obligando al usuario a navegar por la interfaz para conocer las respuestas.
 - **Instrucciones de Implementación:**
   1. En el método de inicio de reto y en el comando asociado a la tecla `F1` (Repetir), construir la cadena del anuncio concatenando explícitamente las opciones:
      `"{Pregunta}. Opción 1: {Opcion1}. Opción 2: {Opcion2}. Opción 3: {Opcion3}. Presiona 1, 2 o 3 para responder."`
 
 ### 4. Aleatorización de Opciones para Eliminar el Sesgo de Posición
-- **Ubicación:** `MathTutor.Core/Generators/` (Generadores procedimentales de retos).
+- **Ubicación:** `MathTutor.Core/Engine/ExerciseGenerator.cs` (Generador procedimental de retos).
 - **Problema:** La respuesta correcta suele aparecer casi siempre en la opción 2 (tecla 2), haciendo que el juego se vuelva predecible.
 - **Instrucciones de Implementación:**
   1. En la fase final de generación de cada reto en `Core`, aplicar un algoritmo de aleatorización (*Fisher-Yates shuffle* o `OrderBy(x => Guid.NewGuid())`) a la lista de opciones.
@@ -249,3 +249,46 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
 
 - **Optimización de UI/UX:** Simplificar la navegación general de la interfaz para reducir la curva de aprendizaje.
 - **Voces e Interactividad para Infancia Temprana:** Evaluar a futuro la inclusión de voces caracterizadas y narrativas más interactivas para el nivel de Jardín de Niños.
+# AJUSTES DE ACCESIBILIDAD Y CORRECCIÓN DE BUGS EN MATHTUTOR (Fase de Pruebas de Campo) 🦉✨
+
+## Contexto
+Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han identificado 4 comportamientos críticos en la navegación por teclado, el flujo de misiones y la aleatorización de los ejercicios. Se requiere aplicar las siguientes soluciones en la arquitectura del proyecto.
+
+---
+
+### 1. Captura Global de Atajos Numéricos (`1`, `2`, `3`) en `MiniGameView`
+- **Ubicación:** `MathTutor.WpfApp/Views/MiniGameView.xaml` y `MathTutor.WpfApp/Views/MiniGameView.xaml.cs`.
+- **Problema:** Al iniciar un ejercicio, presionar las teclas `1`, `2` o `3` no selecciona las opciones de respuesta de inmediato. El usuario se ve obligado a presionar `Tab` repetidamente hasta alcanzar el botón de la opción.
+- **Instrucciones de Solución:**
+  1. En `MiniGameView.xaml.cs`, suscribirse al evento `PreviewKeyDown` de la vista o la ventana principal.
+  2. Detectar las teclas de los números del teclado principal (`Key.D1`, `Key.D2`, `Key.D3`) y del teclado numérico (`Key.NumPad1`, `Key.NumPad2`, `Key.NumPad3`).
+  3. Si el ejercicio está activo y no se ha bloqueado la respuesta (`!_answerLocked`), interceptar la tecla (`e.Handled = true`) e invocar directamente el método de selección de opción correspondiente (`SelectOptionByIndex(0)`, `SelectOptionByIndex(1)`, `SelectOptionByIndex(2)`).
+  4. Asegurar que al cargar la vista (`FocusInitialElement`), el foco de teclado principal permanezca en la vista para recibir eventos sin necesidad de tabular.
+
+---
+
+### 2. Carga y Desbloqueo Completo de la Lista de Misiones
+- **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` y `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`.
+- **Problema:** La lista de misiones solo muestra 1 misión (`"1 de 1"`, El Bosque Mágico). Al completarla, no se desbloquean ni se muestran en el listado las misiones subsecuentes de la etapa (Jardín de Niños / Primaria).
+- **Instrucciones de Solución:**
+  1. En `CurriculumService.GetTopicsForAge`, revisar la consulta LINQ/filtro por `AcademicLevel` y asegurar que devuelva la colección completa de misiones asociadas al nivel y edad del usuario, y no un arreglo de un solo elemento.
+  2. En `RealmMapView` y `CurriculumMenuView`, verificar que la colección vinculada a la UI (`ItemsTopics`) cargue todas las misiones retornadas por el servicio del currículo.
+  3. Asegurar que al completar una misión y actualizar el perfil (`CompletedLessonIds`), el estado de la siguiente estación cambie a `Disponible` y permanezca visible en la lista.
+
+---
+
+### 3. Navegación Direccional por Flechas en `CurriculumMenuView`
+- **Ubicación:** `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` y `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`.
+- **Problema:** Las flechas arriba y abajo no mueven la selección entre los elementos del listado de misiones.
+- **Instrucciones de Solución:**
+  1. En `CurriculumMenuView.xaml`, verificar que el `ListBox` (`ItemsTopics`) tenga configurada la propiedad `KeyboardNavigation.DirectionalNavigation="Cycle"`.
+  2. En `CurriculumMenuView.xaml.cs`, dentro de `FocusInitialElement()`, forzar el foco directamente sobre el primer `ListBoxItem` del `ListBox` (`(ListBoxItem)ItemsTopics.ItemContainerGenerator.ContainerFromIndex(0)`), asegurando que el control procese las teclas de dirección nativas de WPF.
+
+---
+
+### 4. Barajado / Aleatorización Eficaz de las Opciones (`ExerciseGenerator`)
+- **Ubicación:** `MathTutor.Core/Engine/ExerciseGenerator.cs`.
+- **Problema:** Al reiniciar un ejercicio o volverlo a jugar, la respuesta correcta siempre queda posicionada en la Opción 2 (tecla `2`), haciendo el patrón predecible.
+- **Instrucciones de Solución:**
+  1. En el método `BuildOptions` (o al generar cada `Exercise`), aplicar un algoritmo de barajado (Fisher-Yates o `OrderBy(x => Random.Shared.Next())`) sobre la lista de opciones antes de asignarlas al ejercicio.
+  2. Después del barajado, reasignar dinámicamente las propiedades de atajo `AccessibleKeyShortcut` (`"1"`, `"2"`, `"3"`) y las etiquetas visuales de cada opción para garantizar que la respuesta correcta varíe uniformemente entre las posiciones 1, 2 y 3 en cada intento.
