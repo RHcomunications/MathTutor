@@ -240,6 +240,21 @@ public partial class MainWindow : Window
 
     private void MainWindow_KeyDown(object sender, KeyEventArgs e)
     {
+        if (ReferenceEquals(MainContentHost.Content, _gameView))
+        {
+            int optionIndex = -1;
+            if (e.Key == Key.D1 || e.Key == Key.NumPad1) optionIndex = 0;
+            else if (e.Key == Key.D2 || e.Key == Key.NumPad2) optionIndex = 1;
+            else if (e.Key == Key.D3 || e.Key == Key.NumPad3) optionIndex = 2;
+            else if (e.Key == Key.D4 || e.Key == Key.NumPad4) optionIndex = 3;
+
+            if (optionIndex >= 0 && _gameView.SelectOptionByIndex(optionIndex))
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+
         switch (e.Key)
         {
             case Key.F1:

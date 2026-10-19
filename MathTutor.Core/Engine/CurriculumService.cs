@@ -65,23 +65,41 @@ public class CurriculumService
     }
 
     /// <summary>
-    /// Devuelve las misiones pedagógicas permitidas según la edad y condición del alumno (Tarea 6 y Tarea 12).
+    /// Devuelve las misiones pedagógicas permitidas según la edad y condición del alumno (Tarea 6 y Tarea 12),
+    /// desbloqueando las misiones subsecuentes de la etapa cuando se completan las misiones del nivel actual.
     /// </summary>
-    public List<PedagogicalTopic> GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)
+    public List<PedagogicalTopic> GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None, IEnumerable<string>? completedLessonIds = null)
     {
-        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(age, disability);
+        var allowedLevels = new HashSet<AcademicLevel>(AdaptiveEngine.GetAllowedLevelsForAge(age, disability));
+        if (completedLessonIds != null)
+        {
+            var completedSet = new HashSet<string>(completedLessonIds);
+            var baseTopics = GetAllTopics().FindAll(t => allowedLevels.Contains(t.Level));
+            if (age >= 5 &&
+                (completedSet.Contains("kinder_counting_01") ||
+                 (baseTopics.Count > 0 && baseTopics.TrueForAll(t => completedSet.Contains(t.Id)))))
+            {
+                var allTopics = GetAllTopics();
+                int lastIdx = allTopics.FindLastIndex(t => allowedLevels.Contains(t.Level));
+                if (lastIdx >= 0 && lastIdx + 1 < allTopics.Count)
+                {
+                    allowedLevels.Add(allTopics[lastIdx + 1].Level);
+                }
+            }
+        }
+
         return GetAllTopics()
             .FindAll(t => allowedLevels.Contains(t.Level));
     }
 
     /// <summary>
-    /// Devuelve las misiones pedagógicas permitidas según la edad y condiciones múltiples del alumno (comorbilidad).
+    /// Devuelve las misiones pedagógicas permitidas según la edad y condiciones múltiples del alumno (comorbilidad),
+    /// desbloqueando las misiones subsecuentes de la etapa cuando se completan las misiones del nivel actual.
     /// </summary>
-    public List<PedagogicalTopic> GetTopicsForAge(int age, IEnumerable<DisabilityType> disabilities)
+    public List<PedagogicalTopic> GetTopicsForAge(int age, IEnumerable<DisabilityType> disabilities, IEnumerable<string>? completedLessonIds = null)
     {
-        var allowedLevels = AdaptiveEngine.GetAllowedLevelsForAge(age, disabilities);
-        return GetAllTopics()
-            .FindAll(t => allowedLevels.Contains(t.Level));
+        bool hasIntellectual = disabilities != null && System.Linq.Enumerable.Contains(disabilities, DisabilityType.Intellectual);
+        return GetTopicsForAge(age, hasIntellectual ? DisabilityType.Intellectual : DisabilityType.None, completedLessonIds);
     }
 
     /// <summary>
@@ -91,7 +109,9 @@ public class CurriculumService
     public PedagogicalTopic? GetNextTopic(string currentTopicId, UserProfile? profile = null)
     {
         var topics = profile != null
-            ? (profile.Disabilities.Count > 0 ? GetTopicsForAge(profile.Age, profile.Disabilities) : GetTopicsForAge(profile.Age, profile.Disability))
+            ? (profile.Disabilities.Count > 0 
+                ? GetTopicsForAge(profile.Age, profile.Disabilities, profile.CompletedLessonIds) 
+                : GetTopicsForAge(profile.Age, profile.Disability, profile.CompletedLessonIds))
             : GetAllTopics();
 
         if (topics.Count == 0)
@@ -149,6 +169,12 @@ public class CurriculumService
         if (remaining > 0)
         {
             result.AddRange(_generator.GenerateExercisesForTopic(topic.Id, profile, remaining));
+        }
+
+        // Aleatorizar las opciones para eliminar el sesgo de posición en cada reto cargado
+        foreach (var ex in result)
+        {
+            ExerciseGenerator.ShuffleOptions(ex);
         }
 
         return result;

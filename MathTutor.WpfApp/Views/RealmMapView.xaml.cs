@@ -73,8 +73,8 @@ public partial class RealmMapView : UserControl
 
         var profile = _acc.CurrentProfile;
         var topics = profile.Disabilities.Count > 0
-            ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities)
-            : _curriculum.GetTopicsForAge(profile.Age, profile.Disability);
+            ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities, profile.CompletedLessonIds)
+            : _curriculum.GetTopicsForAge(profile.Age, profile.Disability, profile.CompletedLessonIds);
         var allowedTopicIds = topics
             .Select(t => t.Id)
             .ToHashSet();

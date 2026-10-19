@@ -735,6 +735,59 @@ public class PedagogyAndAccessibilityTests
             }
         }
     }
+
+    [Fact]
+    public void CurriculumService_UnlocksSubsequentStageMissions_WhenBaseStageCompleted()
+    {
+        var profile = new UserProfile
+        {
+            Age = 5,
+            CompletedLessonIds = { "kinder_counting_01" }
+        };
+
+        // Antes de completar, solo incluye Kínder
+        var initialTopics = _curriculum.GetTopicsForAge(5);
+        Assert.Single(initialTopics);
+        Assert.Equal("kinder_counting_01", initialTopics[0].Id);
+
+        // Tras completar, incluye misiones de la siguiente etapa (Primaria Inicial)
+        var unlockedTopics = _curriculum.GetTopicsForAge(5, DisabilityType.None, profile.CompletedLessonIds);
+        Assert.True(unlockedTopics.Count > 1);
+        Assert.Contains(unlockedTopics, t => t.Level == AcademicLevel.EarlyElementary);
+
+        // GetNextTopic avanza hacia la primera misión de primaria
+        var nextTopic = _curriculum.GetNextTopic("kinder_counting_01", profile);
+        Assert.NotNull(nextTopic);
+        Assert.Equal("elem_addition_01", nextTopic.Id);
+    }
+
+    [Fact]
+    public void CurriculumService_GenerateAdaptiveExercises_ShufflesCuratedFirstExerciseOptions()
+    {
+        var profile = new UserProfile { Age = 7, CurrentLevel = AcademicLevel.EarlyElementary };
+        var topic = _curriculum.GetAllTopics().Find(t => t.Id == "elem_addition_01")!;
+        int option1Count = 0;
+        int option2Count = 0;
+        int option3Count = 0;
+
+        for (int i = 0; i < 60; i++)
+        {
+            var exercises = _curriculum.GenerateAdaptiveExercises(topic, profile, count: 1);
+            Assert.NotEmpty(exercises);
+            var firstEx = exercises[0];
+            int correctIdx = firstEx.Options.FindIndex(o => o.IsCorrect);
+            Assert.True(correctIdx >= 0 && correctIdx < firstEx.Options.Count);
+
+            if (correctIdx == 0) option1Count++;
+            else if (correctIdx == 1) option2Count++;
+            else if (correctIdx == 2) option3Count++;
+        }
+
+        // La respuesta correcta debe distribuirse entre las posiciones en vez de estar siempre fija en la 2
+        Assert.True(option1Count > 0, "La opción correcta nunca cayó en la posición 1");
+        Assert.True(option2Count > 0, "La opción correcta nunca cayó en la posición 2");
+        Assert.True(option3Count > 0, "La opción correcta nunca cayó en la posición 3");
+    }
 }
 
 

@@ -45,9 +45,9 @@ MathTutor.slnx
 │       ├── MissionCompletedDialog.xaml / .cs (Diálogo modal accesible al completar una misión: Siguiente Misión [Enter] o Volver al Mapa [Escape])
 │       └── RealmMapView.xaml / .cs           (Mapa del Reino Matemágico con ListBox navegable por flechas en Estaciones y en la Sala de Trofeos)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 112 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 114 pruebas)
     ├── ExerciseGeneratorTests.cs         (59 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
-    ├── PedagogyAndAccessibilityTests.cs  (49 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
+    ├── PedagogyAndAccessibilityTests.cs  (51 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
     ├── ProfileStorageTests.cs            (2 pruebas de serialización/deserialización JSON de perfiles con comorbilidad)
     └── RewardServiceTests.cs             (2 pruebas integrales de las 45 estaciones y desbloqueo de las 46 insignias)
 ```
@@ -396,6 +396,18 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 16. ✅ **Mejora 4 (Aleatorización de Opciones para Eliminar el Sesgo de Posición)**:
     - Implementado el algoritmo Fisher-Yates en `ExerciseGenerator.ShuffleOptions` y en `BuildOptions` dentro de [`ExerciseGenerator.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.Core/Engine/ExerciseGenerator.cs).
     - Reindexa los atajos accesibles del 1 al N tras barajar, eliminando el sesgo en el que la respuesta correcta caía siempre en la opción 2 (tecla 2) y distribuyéndola equitativamente entre las opciones 1, 2 y 3.
+
+### Fase 4 — Ajustes de Accesibilidad y Pruebas de Campo
+17. ✅ **Captura Global de Atajos Numéricos (`1`, `2`, `3`) en `MiniGameView`**:
+    - Método `SelectOptionByIndex` y foco estabilizado con `DispatcherPriority.Loaded` en `MiniGameView.xaml.cs`.
+    - En `MainWindow.xaml.cs`, interceptación y delegación global de `Key.D1..D4` y `Key.NumPad1..NumPad4` hacia `_gameView` si está activo, permitiendo responder retos inmediatamente sin tabular.
+18. ✅ **Carga y Desbloqueo Continuo de la Lista de Misiones (`CurriculumService`)**:
+    - Parámetro `completedLessonIds` integrado en `CurriculumService.GetTopicsForAge` y `GetNextTopic`.
+    - Al completar las misiones base de Kínder (o del nivel actual), los alumnos de 5+ años desbloquean de forma automática las misiones de Primaria Inicial (`EarlyElementary`), avanzando sin bloqueos en el currículo.
+19. ✅ **Navegación Direccional por Flechas en `CurriculumMenuView`**:
+    - Método `FocusInitialElement()` y gestión asíncrona de generación de contenedores (`ItemContainerGenerator.StatusChanged`) para posicionar el foco físico directamente sobre el primer `ListBoxItem`, habilitando de inmediato la navegación nativa con flechas arriba/abajo.
+20. ✅ **Aleatorización Completa en Retos Curados (`CurriculumService.GenerateAdaptiveExercises`)**:
+    - Aplicación de `ShuffleOptions` a todos los ejercicios retornados, incluyendo el ejercicio modelo inicial de cada lección, garantizando la alternancia equitativa de la opción correcta en cualquier intento.
 
 ---
 

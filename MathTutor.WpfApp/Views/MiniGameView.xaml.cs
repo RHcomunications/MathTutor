@@ -81,17 +81,11 @@ public partial class MiniGameView : UserControl
         // Renderizar opciones adaptativas
         RenderOptions();
 
-        // Tarea 1: Poner el foco real de teclado en el primer botón de opción interactivo (o en el contenedor) antes del anuncio
-        if (PanelOptions.Children.Count > 0 && PanelOptions.Children[0] is Button firstOptionBtn)
+        // Tarea 1: Poner el foco real de teclado en el primer botón de opción interactivo antes del anuncio
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, () =>
         {
-            firstOptionBtn.Focus();
-            Keyboard.Focus(firstOptionBtn);
-        }
-        else
-        {
-            Focus();
-            Keyboard.Focus(this);
-        }
+            FocusInitialElement();
+        });
 
         // Anuncio inicial accesible al lector de pantalla del sistema (NVDA, JAWS o Narrador) con opciones completas (Mejora 3)
         string optionsSpeech = BuildOptionsAnnouncement(_currentOptions);
@@ -385,11 +379,41 @@ public partial class MiniGameView : UserControl
         else if (e.Key == Key.D3 || e.Key == Key.NumPad3) selectedIndex = 2;
         else if (e.Key == Key.D4 || e.Key == Key.NumPad4) selectedIndex = 3;
 
-        if (selectedIndex >= 0 && selectedIndex < _currentOptions.Count)
+        if (selectedIndex >= 0)
         {
-            e.Handled = true;
-            EvaluateAnswer(_currentOptions[selectedIndex]);
+            if (SelectOptionByIndex(selectedIndex))
+            {
+                e.Handled = true;
+            }
         }
+    }
+
+    public void FocusInitialElement()
+    {
+        if (PanelOptions.Children.Count > 0 && PanelOptions.Children[0] is Button firstOptionBtn)
+        {
+            firstOptionBtn.Focus();
+            Keyboard.Focus(firstOptionBtn);
+        }
+        else
+        {
+            Focus();
+            Keyboard.Focus(this);
+        }
+    }
+
+    public bool SelectOptionByIndex(int index)
+    {
+        if (_answerLocked || BorderSuccessBanner.Visibility == Visibility.Visible)
+            return false;
+
+        if (index >= 0 && index < _currentOptions.Count)
+        {
+            EvaluateAnswer(_currentOptions[index]);
+            return true;
+        }
+
+        return false;
     }
 
     public void RepeatExerciseInstruction()

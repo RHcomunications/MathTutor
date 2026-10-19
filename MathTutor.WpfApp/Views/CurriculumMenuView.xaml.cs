@@ -52,10 +52,10 @@ public partial class CurriculumMenuView : UserControl
         TxtStarsCount.Text = profile.StarsTotal.ToString();
         TxtStreakCount.Text = profile.CurrentStreak.ToString();
 
-        // Tarea 6 y Tarea 12: Filtrar las misiones permitidas para la edad y condición del alumno
+        // Tarea 6 y Tarea 12: Filtrar las misiones permitidas para la edad y condición del alumno y desbloquear subsecuentes
         var allowedTopics = profile.Disabilities.Count > 0
-            ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities)
-            : _curriculum.GetTopicsForAge(profile.Age, profile.Disability);
+            ? _curriculum.GetTopicsForAge(profile.Age, profile.Disabilities, profile.CompletedLessonIds)
+            : _curriculum.GetTopicsForAge(profile.Age, profile.Disability, profile.CompletedLessonIds);
         // Priorizar las misiones del nivel actual del alumno arriba, manteniendo el orden pedagógico en el resto
         var orderedTopics = allowedTopics
             .OrderByDescending(t => t.Level == profile.CurrentLevel)
@@ -117,6 +117,8 @@ public partial class CurriculumMenuView : UserControl
         _acc.Announce($"Bienvenido a MathTutor, {profile.Name}. Menú de misiones para {GetAcademicLevelName(profile.CurrentLevel)}. Tienes {profile.StarsTotal} estrellas y {completedCount} de {allowedTopics.Count} misiones completadas. Usa las flechas arriba y abajo para elegir misión y presiona Enter para comenzar.", speak: true, playTone: true);
     }
 
+    public void FocusInitialElement() => FocusFirstMissionItem();
+
     public void FocusFirstMissionItem()
     {
         if (ItemsTopics.Items.Count > 0)
@@ -130,6 +132,24 @@ public partial class CurriculumMenuView : UserControl
             {
                 firstItem.Focus();
                 System.Windows.Input.Keyboard.Focus(firstItem);
+                return;
+            }
+            else
+            {
+                EventHandler statusHandler = null!;
+                statusHandler = (s, e) =>
+                {
+                    if (ItemsTopics.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
+                    {
+                        ItemsTopics.ItemContainerGenerator.StatusChanged -= statusHandler;
+                        if (ItemsTopics.ItemContainerGenerator.ContainerFromIndex(ItemsTopics.SelectedIndex) is ListBoxItem generatedItem)
+                        {
+                            generatedItem.Focus();
+                            System.Windows.Input.Keyboard.Focus(generatedItem);
+                        }
+                    }
+                };
+                ItemsTopics.ItemContainerGenerator.StatusChanged += statusHandler;
                 return;
             }
         }

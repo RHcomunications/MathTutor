@@ -89,7 +89,7 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build -c Release
 
-# Ejecutar las 112 pruebas unitarias automatizadas
+# Ejecutar las 114 pruebas unitarias automatizadas
 dotnet test -c Release
 
 # Iniciar la aplicación interactiva
