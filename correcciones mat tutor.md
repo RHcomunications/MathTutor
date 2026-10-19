@@ -292,3 +292,29 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Instrucciones de Solución:**
   1. En el método `BuildOptions` (o al generar cada `Exercise`), aplicar un algoritmo de barajado (Fisher-Yates o `OrderBy(x => Random.Shared.Next())`) sobre la lista de opciones antes de asignarlas al ejercicio.
   2. Después del barajado, reasignar dinámicamente las propiedades de atajo `AccessibleKeyShortcut` (`"1"`, `"2"`, `"3"`) y las etiquetas visuales de cada opción para garantizar que la respuesta correcta varíe uniformemente entre las posiciones 1, 2 y 3 en cada intento.
+
+---
+
+# ✅ REGISTRO DE CORRECCIONES REALIZADAS — Release `v1.5.0`
+
+> **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **114/114 pruebas unitarias** superadas. Publicado como release `v1.5.0`.
+
+### 1. Captura Global de Atajos Numéricos (`1`, `2`, `3`) en `MiniGameView`
+- **Corrección:** Implementado `SelectOptionByIndex` y estabilizado el foco inicial con `DispatcherPriority.Loaded` en `MiniGameView.xaml.cs`. En `MainWindow.xaml.cs`, interceptación y delegación global de `Key.D1..D4` y `Key.NumPad1..NumPad4` hacia `_gameView` si está activo, permitiendo responder retos inmediatamente sin necesidad de presionar `Tab`.
+- **Ubicación:** `MathTutor.WpfApp/Views/MiniGameView.xaml.cs`, `MathTutor.WpfApp/MainWindow.xaml.cs`.
+- **Criterio de verificación:** Atajos `1`–`4` responden al instante al cargar cualquier reto.
+
+### 2. Carga y Desbloqueo Continuo de la Lista de Misiones
+- **Corrección:** Integrado el parámetro `completedLessonIds` en `CurriculumService.GetTopicsForAge` y `GetNextTopic`. Al completar las misiones base de Kínder (o del nivel actual), los alumnos de 5+ años desbloquean automáticamente las misiones de Primaria Inicial (`EarlyElementary`), permitiendo continuar el sendero del aprendizaje sin bloqueos en el currículo.
+- **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`, `MathTutor.WpfApp/Views/RealmMapView.xaml.cs`.
+- **Criterio de verificación:** Prueba unitaria `CurriculumService_UnlocksSubsequentStageMissions_WhenBaseStageCompleted`.
+
+### 3. Navegación Direccional por Flechas en `CurriculumMenuView`
+- **Corrección:** Añadido `FocusInitialElement()` y gestión asíncrona de generación de contenedores (`ItemContainerGenerator.StatusChanged`) para posicionar el foco físico directamente sobre el primer `ListBoxItem`, habilitando de inmediato la navegación nativa con flechas arriba/abajo.
+- **Ubicación:** `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`.
+- **Criterio de verificación:** Al ingresar al menú, presionar `Flecha Abajo` o `Flecha Arriba` mueve inmediatamente la selección entre las tarjetas de misión.
+
+### 4. Barajado / Aleatorización Eficaz en Retos Curados
+- **Corrección:** Aplicación de `ShuffleOptions` a todos los ejercicios retornados por `CurriculumService.GenerateAdaptiveExercises`, incluyendo el ejercicio modelo inicial de cada lección, garantizando la alternancia equitativa de la opción correcta en cualquier intento.
+- **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`.
+- **Criterio de verificación:** Prueba unitaria `CurriculumService_GenerateAdaptiveExercises_ShufflesCuratedFirstExerciseOptions`.

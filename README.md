@@ -81,7 +81,7 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.4.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.5.0`)
 
 Desde la terminal en esta carpeta:
 
