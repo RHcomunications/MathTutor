@@ -1,7 +1,7 @@
 # Tutor de Matemáticas Accesible (MathTutor) 🦉✨
 **100% Accesible | Conforme a WCAG 2.2 / DUA | Basado en el Juego | Adaptado a México y Latinoamérica**
 
-Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significativo, inclusivo y sin barreras, abarcando desde **Jardín de Niños (3 a 5 años)**, **Primaria Completa (1º a 6º grado)**, **Secundaria Completa (1º a 3º grado)** y **Educación Media Superior / Preparatoria (1º a 3º grado)** hasta **Pensamiento Computacional y Programación Inclusiva**.
+Desarrollado en **C# (.NET 10 / WPF y WinUI 3)** para el aprendizaje matemático significativo, inclusivo y sin barreras, abarcando desde **Jardín de Niños (3 a 5 años)**, **Primaria Completa (1º a 6º grado)**, **Secundaria Completa (1º a 3º grado)** y **Educación Media Superior / Preparatoria (1º a 3º grado)** hasta **Pensamiento Computacional y Programación Inclusiva**.
 
 ---
 
@@ -81,7 +81,7 @@ Desarrollado en **C# (.NET 10 / WPF)** para el aprendizaje matemático significa
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.5.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.6.0`)
 
 Desde la terminal en esta carpeta:
 
@@ -92,7 +92,10 @@ dotnet build -c Release
 # Ejecutar las 114 pruebas unitarias automatizadas
 dotnet test -c Release
 
-# Iniciar la aplicación interactiva
+# Iniciar la aplicación WPF
 dotnet run --project MathTutor.WpfApp/MathTutor.WpfApp.csproj -c Release
+
+# Iniciar la aplicación WinUI 3
+dotnet run --project MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 ```
 

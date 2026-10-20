@@ -318,3 +318,24 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Aplicación de `ShuffleOptions` a todos los ejercicios retornados por `CurriculumService.GenerateAdaptiveExercises`, incluyendo el ejercicio modelo inicial de cada lección, garantizando la alternancia equitativa de la opción correcta en cualquier intento.
 - **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`.
 - **Criterio de verificación:** Prueba unitaria `CurriculumService_GenerateAdaptiveExercises_ShufflesCuratedFirstExerciseOptions`.
+
+---
+
+# ✅ REGISTRO DE CORRECCIONES REALIZADAS — Release `v1.6.0`
+
+> **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **114/114 pruebas unitarias** superadas. Publicado como release `v1.6.0`.
+
+### 1. Migración funcional a WinUI 3
+- **Corrección:** Añadido el proyecto `MathTutor.WinUI` con paridad de perfil, menú de misiones, mapa del reino, lecciones, minijuego, diálogo de misión y atajos globales. La solución conserva WPF y permite compilar ambas interfaces.
+- **Ubicación:** `MathTutor.WinUI/`, `MathTutor.slnx`.
+- **Criterio de verificación:** Build `Release` 0/0 y flujo E2E completo (lección, 3 ejercicios, diálogo de misión y regreso al mapa).
+
+### 2. Accesibilidad para lectores de pantalla
+- **Corrección:** Eliminados los anuncios duplicados al retirar `LiveSetting` de la región viva y usar `RaiseNotificationEvent`; añadidos nombres accesibles contextuales a botones de misión/estación, encabezados, contadores y controles; corregidos contrastes de bordes, éxito y foco.
+- **Ubicación:** `MathTutor.WinUI/MainWindow.xaml.cs`, `MathTutor.WinUI/Services/`, `MathTutor.WinUI/Views/`, `MathTutor.WinUI/App.xaml`.
+- **Criterio de verificación:** Inspección UIA de nombres, encabezados, botones y contadores; smoke test de cambio de tamaño de letra y navegación por teclado.
+
+### 3. Alto contraste del sistema y tamaños mínimos
+- **Corrección:** Sincronización con `AccessibilitySettings.HighContrast`, conservación de la preferencia del usuario al desactivar el alto contraste y sustitución de `Height` fijos por `MinHeight` para evitar recortes con fuentes grandes.
+- **Ubicación:** `MathTutor.WinUI/MainWindow.xaml.cs`, `MathTutor.WinUI/Services/AccessibilityManager.cs`, vistas XAML.
+- **Criterio de verificación:** Compilación estricta y revisión de recursos/foco por tema.
