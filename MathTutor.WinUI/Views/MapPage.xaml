@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MathTutor.WinUI.Views.MapPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MathTutor.WinUI.Views"
+    Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24" MaxWidth="920" HorizontalAlignment="Center" Spacing="12">
+            <Border Style="{StaticResource AccessibleCard}" Margin="0,0,0,8">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="BtnBackToMenu"
+                            Grid.Column="0"
+                            Content="⬅ Volver al Menú"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{ThemeResource AppSurfaceBrush}"
+                            Foreground="{ThemeResource AppTextPrimaryBrush}"
+                            MinHeight="48"
+                            MinWidth="140"
+                            AutomationProperties.Name="Volver al menú principal de lecciones"
+                            Click="BtnBackToMenu_Click" />
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="🗺️ Mapa del Reino Matemágico"
+                                   FontSize="{ThemeResource AppHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level1" />
+                        <TextBlock Text="Sigue el sendero, supera las estaciones y colecciona todas las insignias."
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Border Grid.Column="2"
+                            Background="{ThemeResource AppSurfaceBrush}"
+                            BorderBrush="{ThemeResource AppBorderBrush}"
+                            BorderThickness="2"
+                            CornerRadius="10"
+                            Padding="12,8"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                            <TextBlock Text="🏅" FontSize="22" VerticalAlignment="Center" AutomationProperties.AccessibilityView="Raw" />
+                            <TextBlock x:Name="TxtBadgesUnlockedCount"
+                                       Text="0/0"
+                                       FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       AutomationProperties.Name="0 de 0 insignias desbloqueadas" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <TextBlock Text="🏰 Estaciones del Sendero de Aventuras (Usa las flechas Arriba/Abajo y Enter):"
+                       FontSize="{ThemeResource AppSubHeaderFontSize}"
+                       FontWeight="Bold"
+                       Foreground="{ThemeResource AppAccentBrush}"
+                       Margin="4,0,0,0"
+                       TextWrapping="Wrap"
+                       AutomationProperties.HeadingLevel="Level2" />
+
+            <ListView x:Name="ItemsStations"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      HorizontalContentAlignment="Stretch"
+                      SelectionMode="Single"
+                      IsItemClickEnabled="False"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      AutomationProperties.Name="Lista de estaciones del Mapa del Reino"
+                      AutomationProperties.HelpText="Usa las flechas arriba y abajo para cambiar de estación y presiona Enter o Espacio para comenzar."
+                      SelectionChanged="ItemsStations_SelectionChanged">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0,0,0,14" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:StationDisplayItem">
+                        <Border Style="{StaticResource AccessibleCard}">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0"
+                                        Background="{ThemeResource AppSurfaceBrush}"
+                                        BorderBrush="{ThemeResource AppBorderBrush}"
+                                        BorderThickness="2"
+                                        CornerRadius="14"
+                                        Width="75"
+                                        Height="75"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind LandmarkEmoji}"
+                                               FontSize="36"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{x:Bind StationNumberPrefix}"
+                                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource AppAccentBrush}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{x:Bind Name}"
+                                                   FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <TextBlock Text="{x:Bind Description}"
+                                               FontSize="{ThemeResource AppBaseFontSize}"
+                                               Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+
+                                    <TextBlock Text="{x:Bind StatusText}"
+                                               FontSize="{ThemeResource AppBaseFontSize}"
+                                               FontWeight="SemiBold"
+                                               Foreground="{x:Bind StatusBrush}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <Button Grid.Column="2"
+                                        Content="🚀 Explorar"
+                                        AutomationProperties.Name="{x:Bind ActionButtonAccessibleName}"
+                                        Style="{StaticResource AccessibleActionButton}"
+                                        VerticalAlignment="Center"
+                                        MinWidth="130"
+                                        MinHeight="54"
+                                        Tag="{x:Bind TopicId}"
+                                        IsTabStop="False"
+                                        Click="BtnStation_Click" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <TextBlock Text="🏅 Sala de Trofeos e Insignias del Reino (Usa Tab y las flechas para explorar tus medallas):"
+                       FontSize="{ThemeResource AppSubHeaderFontSize}"
+                       FontWeight="Bold"
+                       Foreground="{ThemeResource AppAccentBrush}"
+                       Margin="4,16,0,0"
+                       TextWrapping="Wrap"
+                       AutomationProperties.HeadingLevel="Level2" />
+
+            <ListView x:Name="ItemsBadges"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      SelectionMode="Single"
+                      IsItemClickEnabled="False"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      AutomationProperties.Name="Sala de trofeos e insignias del Reino"
+                      AutomationProperties.HelpText="Usa las flechas para explorar tus insignias desbloqueadas y por descubrir."
+                      SelectionChanged="ItemsBadges_SelectionChanged">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="8" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:BadgeDisplayItem">
+                            <Border Width="260"
+                                Padding="16"
+                                CornerRadius="12"
+                                Background="{x:Bind BadgeBackgroundBrush}"
+                                BorderBrush="{x:Bind BadgeBorderBrush}"
+                                BorderThickness="2">
+                            <StackPanel HorizontalAlignment="Center" Spacing="4">
+                                <TextBlock Text="{x:Bind IconEmoji}"
+                                           FontSize="42"
+                                           HorizontalAlignment="Center"
+                                           AutomationProperties.AccessibilityView="Raw" />
+                                <TextBlock Text="{x:Bind Title}"
+                                           FontSize="{ThemeResource AppBaseFontSize}"
+                                           FontWeight="Bold"
+                                           Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="{x:Bind Description}"
+                                           FontSize="{ThemeResource AppBaseFontSize}"
+                                           Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="{x:Bind UnlockStatusText}"
+                                           FontSize="{ThemeResource AppBaseFontSize}"
+                                           FontWeight="Bold"
+                                           Foreground="{x:Bind UnlockStatusBrush}"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

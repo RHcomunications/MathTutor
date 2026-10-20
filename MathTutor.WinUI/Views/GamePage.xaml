@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MathTutor.WinUI.Views.GamePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MathTutor.WinUI.Views"
+    Background="Transparent"
+    KeyDown="Page_KeyDown">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24" MaxWidth="900" HorizontalAlignment="Center" Spacing="16">
+            <Border Style="{StaticResource AccessibleCard}">
+                <Grid ColumnSpacing="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="BtnBackToLesson"
+                            Grid.Column="0"
+                            Content="⬅ Volver"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{ThemeResource AppSurfaceBrush}"
+                            Foreground="{ThemeResource AppTextPrimaryBrush}"
+                            MinHeight="44"
+                            MinWidth="100"
+                            AutomationProperties.Name="Volver a la explicación de la lección"
+                            Click="BtnBackToLesson_Click" />
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock x:Name="TxtExerciseTitle"
+                                   Text="Título del Desafío"
+                                   FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level1" />
+                        <TextBlock x:Name="TxtProgressCounter"
+                                   Text="Reto 1 de 3"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   Foreground="{ThemeResource AppAccentBrush}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Button x:Name="BtnHint"
+                                Content="💡 Pista"
+                                Style="{StaticResource AccessibleActionButton}"
+                                Background="{ThemeResource AppSurfaceBrush}"
+                                Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                MinHeight="44"
+                                MinWidth="100"
+                                AutomationProperties.Name="Pedir una pista a Cosmo"
+                                Click="BtnHint_Click" />
+
+                        <Button x:Name="BtnRepeatInstruction"
+                                Content="🔊 Repetir (F1)"
+                                Style="{StaticResource AccessibleActionButton}"
+                                Background="{ThemeResource AppSurfaceBrush}"
+                                Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                MinHeight="44"
+                                MinWidth="130"
+                                AutomationProperties.Name="Repetir la pregunta en voz alta"
+                                Click="BtnRepeatInstruction_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <ProgressBar x:Name="BarExerciseProgress"
+                         Height="16"
+                         Minimum="0"
+                         Maximum="1"
+                         Value="0"
+                         Foreground="{ThemeResource AppAccentBrush}"
+                         Background="{ThemeResource AppCardBrush}"
+                         BorderBrush="{ThemeResource AppBorderBrush}"
+                         AutomationProperties.Name="Progreso de retos de la misión"
+                         AutomationProperties.HelpText="Indica en qué reto vas dentro de la misión." />
+
+            <Border Background="{ThemeResource AppSurfaceBrush}"
+                    BorderBrush="{ThemeResource AppBorderBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="20">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Text="🦉" FontSize="44" VerticalAlignment="Top" />
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="Reto de Cosmo:"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   AutomationProperties.HeadingLevel="Level2" />
+                        <TextBox x:Name="TxtInstruction"
+                                 Style="{StaticResource AccessibleReadOnlyTextBox}"
+                                 Text="Enunciado de la instrucción adaptada..."
+                                 FontSize="{ThemeResource AppHeaderFontSize}"
+                                 Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                 AutomationProperties.Name="Enunciado del Reto de Cosmo" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border x:Name="BorderManipulables"
+                    Background="{ThemeResource AppCardBrush}"
+                    BorderBrush="{ThemeResource AppBorderBrush}"
+                    BorderThickness="2"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="12">
+                    <TextBlock x:Name="TxtManipulablesPrompt"
+                               Text="Toca o selecciona cada objeto para contarlo y escuchar su nota mágica:"
+                               FontSize="{ThemeResource AppBaseFontSize}"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource AppTextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+
+                    <ItemsRepeater x:Name="ItemsGroupA" HorizontalAlignment="Center">
+                        <ItemsRepeater.Layout>
+                            <UniformGridLayout MinItemWidth="95"
+                                               MinItemHeight="85"
+                                               MinRowSpacing="12"
+                                               MinColumnSpacing="12"
+                                               ItemsStretch="Fill" />
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="local:GameItemView">
+                                <Button Style="{StaticResource AccessibleGameOptionButton}"
+                                        Tag="{x:Bind}"
+                                        Click="Item_Click"
+                                        AutomationProperties.Name="{x:Bind AccessibleName}"
+                                        AutomationProperties.HelpText="{x:Bind HelpText}">
+                                    <StackPanel HorizontalAlignment="Center" Spacing="4">
+                                        <TextBlock Text="{x:Bind EmojiSymbol}"
+                                                   FontSize="38"
+                                                   HorizontalAlignment="Center" />
+                                        <TextBlock Text="{x:Bind Label}"
+                                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   TextAlignment="Center"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+
+                    <StackPanel x:Name="PanelGroupBSeparator" Visibility="Collapsed" Spacing="8">
+                        <TextBlock Text="➕ Agregamos este grupo:"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   HorizontalAlignment="Center" />
+                        <ItemsRepeater x:Name="ItemsGroupB" HorizontalAlignment="Center">
+                            <ItemsRepeater.Layout>
+                                <UniformGridLayout MinItemWidth="95"
+                                                   MinItemHeight="85"
+                                                   MinRowSpacing="12"
+                                                   MinColumnSpacing="12"
+                                                   ItemsStretch="Fill" />
+                            </ItemsRepeater.Layout>
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="local:GameItemView">
+                                    <Button Style="{StaticResource AccessibleGameOptionButton}"
+                                            Tag="{x:Bind}"
+                                            Click="Item_Click"
+                                            AutomationProperties.Name="{x:Bind AccessibleName}"
+                                            AutomationProperties.HelpText="{x:Bind HelpText}">
+                                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                                            <TextBlock Text="{x:Bind EmojiSymbol}"
+                                                       FontSize="38"
+                                                       HorizontalAlignment="Center" />
+                                            <TextBlock Text="{x:Bind Label}"
+                                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                                       FontWeight="Bold"
+                                                       Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       TextAlignment="Center"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="BorderHintBanner"
+                    Background="{ThemeResource AppSurfaceBrush}"
+                    BorderBrush="{ThemeResource AppAccentBrush}"
+                    BorderThickness="2"
+                    CornerRadius="12"
+                    Padding="16"
+                    Visibility="Collapsed">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="💡" FontSize="32" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="1"
+                             x:Name="TxtHintMessage"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Pista adaptada..."
+                             FontSize="{ThemeResource AppBaseFontSize}"
+                             Foreground="{ThemeResource AppTextPrimaryBrush}"
+                             VerticalAlignment="Center"
+                             AutomationProperties.Name="Pista y Retroalimentación de Cosmo" />
+                </Grid>
+            </Border>
+
+            <Border Background="{ThemeResource AppSurfaceBrush}"
+                    BorderBrush="{ThemeResource AppBorderBrush}"
+                    BorderThickness="2"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Selecciona tu respuesta (o presiona la tecla de número correspondiente en el teclado):"
+                               FontSize="{ThemeResource AppBaseFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource AppTextSecondaryBrush}"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               AutomationProperties.HeadingLevel="Level2" />
+
+                    <ItemsRepeater x:Name="ItemsOptions" HorizontalAlignment="Center">
+                        <ItemsRepeater.Layout>
+                            <UniformGridLayout MinItemWidth="170"
+                                               MinItemHeight="70"
+                                               MinRowSpacing="12"
+                                               MinColumnSpacing="12"
+                                               ItemsStretch="Fill" />
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="local:GameOptionView">
+                                <Button Style="{StaticResource AccessibleGameOptionButton}"
+                                        Content="{x:Bind ButtonText}"
+                                        Tag="{x:Bind}"
+                                        Click="Option_Click"
+                                        AutomationProperties.Name="{x:Bind AccessibleName}"
+                                        AutomationProperties.HelpText="{x:Bind HelpText}" />
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="BorderSuccessBanner"
+                    Background="{ThemeResource AppSuccessBrush}"
+                    BorderBrush="{ThemeResource AppOnSuccessBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="20"
+                    Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center" Spacing="8">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                        <TextBlock Text="⭐" FontSize="36" VerticalAlignment="Center" />
+                        <TextBlock Text="¡EXTRAORDINARIO! ¡LO LOGRASTE!"
+                                   FontSize="{ThemeResource AppHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppOnSuccessBrush}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level2" />
+                        <TextBlock Text="⭐" FontSize="36" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <TextBox x:Name="TxtSuccessExplanation"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Explicación del éxito..."
+                             FontSize="{ThemeResource AppSubHeaderFontSize}"
+                             Foreground="{ThemeResource AppOnSuccessBrush}"
+                             TextAlignment="Center"
+                             AutomationProperties.Name="Explicación de Respuesta Correcta" />
+
+                    <Button x:Name="BtnNextExercise"
+                            Content="🌟 Siguiente Reto Mágico (Enter)"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{ThemeResource AppSurfaceBrush}"
+                            Foreground="{ThemeResource AppTextPrimaryBrush}"
+                            BorderBrush="{ThemeResource AppAccentBrush}"
+                            BorderThickness="3"
+                            MinHeight="60"
+                            MinWidth="240"
+                            FontSize="{ThemeResource AppSubHeaderFontSize}"
+                            AutomationProperties.Name="Avanzar al siguiente ejercicio"
+                            Click="BtnNextExercise_Click" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

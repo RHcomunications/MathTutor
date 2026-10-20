@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MathTutor.WinUI.Views.MenuPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <ListView x:Name="ItemsTopics"
+              Padding="24"
+              MaxWidth="980"
+              HorizontalAlignment="Center"
+              SelectionMode="Single"
+              AutomationProperties.Name="Lista de misiones de aprendizaje disponibles"
+              AutomationProperties.HelpText="Usa las flechas arriba y abajo para cambiar de misión y presiona Enter o Espacio para comenzar."
+              SelectionChanged="ItemsTopics_SelectionChanged">
+        <ListView.Header>
+            <StackPanel Margin="0,0,0,12">
+                <Border Style="{StaticResource AccessibleCard}" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock x:Name="TxtWelcomeUser"
+                                       Text="¡Hola, Aventurero! Elige tu próxima misión"
+                                       FontSize="{ThemeResource AppHeaderFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                       TextWrapping="Wrap"
+                                       AutomationProperties.HeadingLevel="Level1" />
+                            <TextBlock x:Name="TxtUserSummary"
+                                       Text="Nivel actual: Jardín de Niños"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Margin="16,0,0,0">
+                            <Border Background="{ThemeResource AppSurfaceBrush}"
+                                    BorderBrush="{ThemeResource AppBorderBrush}"
+                                    BorderThickness="2"
+                                    CornerRadius="10"
+                                    Padding="12,8"
+                                    Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="⭐" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0" AutomationProperties.AccessibilityView="Raw" />
+                                    <TextBlock x:Name="TxtStarsCount"
+                                               Text="0"
+                                               FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                               VerticalAlignment="Center"
+                                               AutomationProperties.Name="0 estrellas" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="{ThemeResource AppSurfaceBrush}"
+                                    BorderBrush="{ThemeResource AppBorderBrush}"
+                                    BorderThickness="2"
+                                    CornerRadius="10"
+                                    Padding="12,8"
+                                    Margin="0,0,10,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🔥" FontSize="26" VerticalAlignment="Center" Margin="0,0,6,0" AutomationProperties.AccessibilityView="Raw" />
+                                    <TextBlock x:Name="TxtStreakCount"
+                                               Text="0"
+                                               FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                               FontWeight="Bold"
+                                               Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                               VerticalAlignment="Center"
+                                               AutomationProperties.Name="0 días de racha" />
+                                </StackPanel>
+                            </Border>
+
+                            <Button x:Name="BtnOpenRealmMap"
+                                    Content="🗺️ Ver Mapa"
+                                    Style="{StaticResource AccessibleActionButton}"
+                                    Background="{ThemeResource AppSurfaceBrush}"
+                                    Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                    MinHeight="48"
+                                    Padding="12,6"
+                                    AutomationProperties.Name="Abrir el mapa del reino matemático y ver tus trofeos"
+                                    Click="BtnOpenRealmMap_Click" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="Misiones de Aprendizaje Disponibles (Usa las flechas Arriba/Abajo y Enter):"
+                           FontSize="{ThemeResource AppSubHeaderFontSize}"
+                           FontWeight="Bold"
+                           Foreground="{ThemeResource AppAccentBrush}"
+                           Margin="4,0,0,12"
+                           TextWrapping="Wrap"
+                           AutomationProperties.HeadingLevel="Level2" />
+            </StackPanel>
+        </ListView.Header>
+
+        <ListView.ItemContainerStyle>
+            <Style TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0,0,0,16" />
+                <Setter Property="UseSystemFocusVisuals" Value="True" />
+            </Style>
+        </ListView.ItemContainerStyle>
+
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <Border Style="{StaticResource AccessibleCard}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <TextBlock Text="{Binding StatusBadgeText}"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AppAccentBrush}"
+                                       Margin="0,0,0,4"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding LevelDescription}"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AppAccentBrush}"
+                                       Margin="0,4,0,6"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding ConceptSnippet}"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8" />
+                            <TextBlock Text="{Binding PrinciplesSnippet}"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                       FontStyle="Italic"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Content="{Binding ActionButtonLabel}"
+                                AutomationProperties.Name="{Binding AccessibleActionName}"
+                                Style="{StaticResource AccessibleActionButton}"
+                                VerticalAlignment="Center"
+                                MinWidth="160"
+                                MinHeight="60"
+                                Tag="{Binding TopicId}"
+                                IsTabStop="False"
+                                Click="BtnEnterTopic_Click" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</Page>

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="MathTutor.WinUI.Views.LessonPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent"
+    KeyDown="Page_KeyDown">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24" MaxWidth="850" HorizontalAlignment="Center" Spacing="16">
+            <Border Style="{StaticResource AccessibleCard}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="BtnBackToMenu"
+                            Grid.Column="0"
+                            Content="⬅ Menú"
+                            Style="{StaticResource AccessibleActionButton}"
+                            Background="{ThemeResource AppSurfaceBrush}"
+                            Foreground="{ThemeResource AppTextPrimaryBrush}"
+                            MinHeight="48"
+                            MinWidth="100"
+                            AutomationProperties.Name="Volver al menú de aventuras"
+                            Click="BtnBackToMenu_Click" />
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock x:Name="TxtLessonTitle"
+                                   Text="Título de la Lección"
+                                   FontSize="{ThemeResource AppHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level1" />
+                        <TextBlock x:Name="TxtStepIndicator"
+                                   Text="Paso 1 de 3: Historia de la Misión"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Border Grid.Column="2"
+                            Background="{ThemeResource AppSurfaceBrush}"
+                            BorderBrush="{ThemeResource AppBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,6"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="Enter: Avanzar | Flechas: Retroceder"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Border x:Name="CardStep1"
+                    Background="{ThemeResource AppSurfaceBrush}"
+                    BorderBrush="{ThemeResource AppAccentBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="24"
+                    Visibility="Visible">
+                <Grid ColumnSpacing="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0"
+                            Background="{ThemeResource AppCardBrush}"
+                            BorderBrush="{ThemeResource AppAccentBrush}"
+                            BorderThickness="2"
+                            CornerRadius="20"
+                            Width="110"
+                            Height="110"
+                            VerticalAlignment="Top">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="2">
+                            <TextBlock Text="🦉" FontSize="50" HorizontalAlignment="Center" />
+                            <TextBlock Text="Cosmo"
+                                       FontWeight="Bold"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       Foreground="{ThemeResource AppAccentBrush}"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="8">
+                        <Border Background="{ThemeResource AppCardBrush}"
+                                CornerRadius="6"
+                                Padding="8,4"
+                                HorizontalAlignment="Left">
+                            <TextBlock Text="📖 PASO 1 DE 3: HISTORIA DE LA MISIÓN"
+                                       FontSize="{ThemeResource AppBaseFontSize}"
+                                       FontWeight="Bold"
+                                       Foreground="{ThemeResource AppAccentBrush}"
+                                       TextWrapping="Wrap"
+                                       AutomationProperties.HeadingLevel="Level2" />
+                        </Border>
+                        <TextBox x:Name="TxtNarrativeStory"
+                                 Style="{StaticResource AccessibleReadOnlyTextBox}"
+                                 Text="Historia introductoria de Cosmo..."
+                                 FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                 Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                 AutomationProperties.Name="Historia de la Misión" />
+                        <TextBlock Text="👉 Presiona Enter o Espacio para continuar al Secreto Matemático."
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   FontWeight="SemiBold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border x:Name="CardStep2"
+                    Background="{ThemeResource AppCardBrush}"
+                    BorderBrush="{ThemeResource AppAccentBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="24"
+                    Visibility="Collapsed">
+                <StackPanel Spacing="10">
+                    <Border Background="{ThemeResource AppSurfaceBrush}"
+                            CornerRadius="6"
+                            Padding="8,4"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="✨ PASO 2 DE 3: EL SECRETO MATEMÁTICO"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level2" />
+                    </Border>
+
+                    <TextBox x:Name="TxtCoreConcept"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Explicación del concepto..."
+                             FontSize="{ThemeResource AppSubHeaderFontSize}"
+                             Foreground="{ThemeResource AppTextPrimaryBrush}"
+                             AutomationProperties.Name="Explicación del Secreto Matemático" />
+
+                    <TextBlock Text="Principios que dominarás en este juego:"
+                               FontSize="{ThemeResource AppBaseFontSize}"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource AppTextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                    <ItemsControl x:Name="ItemsPrinciples">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{ThemeResource AppSurfaceBrush}"
+                                        BorderBrush="{ThemeResource AppBorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="10,6"
+                                        Margin="0,3">
+                                    <TextBlock Text="{Binding}"
+                                               FontSize="{ThemeResource AppBaseFontSize}"
+                                               Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                               TextWrapping="Wrap" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="👉 Presiona Enter o Espacio para ver el Ejemplo Guiado, o Flecha Izquierda para volver a la Historia."
+                               FontSize="{ThemeResource AppBaseFontSize}"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource AppAccentBrush}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="CardStep3"
+                    Background="{ThemeResource AppSurfaceBrush}"
+                    BorderBrush="{ThemeResource AppAccentBrush}"
+                    BorderThickness="3"
+                    CornerRadius="16"
+                    Padding="24"
+                    Visibility="Collapsed">
+                <StackPanel Spacing="10">
+                    <Border Background="{ThemeResource AppCardBrush}"
+                            CornerRadius="6"
+                            Padding="8,4"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="📝 PASO 3 DE 3: EJEMPLO GUIADO PASO A PASO"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level2" />
+                    </Border>
+
+                    <TextBox x:Name="TxtGuidedExample"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Ejemplo resuelto paso a paso..."
+                             FontSize="{ThemeResource AppBaseFontSize}"
+                             Foreground="{ThemeResource AppTextPrimaryBrush}"
+                             AutomationProperties.Name="Ejemplo Guiado Paso a Paso con Cosmo" />
+
+                    <TextBlock Text="🎉 ¡Has completado la lección preparatoria! Presiona Enter para iniciar el reto lúdico o Flecha Izquierda para repasar."
+                               FontSize="{ThemeResource AppBaseFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource AppAccentBrush}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        x:Name="BtnPreviousStep"
+                        Content="⬅ Anterior"
+                        Style="{StaticResource AccessibleActionButton}"
+                        Background="{ThemeResource AppSurfaceBrush}"
+                        Foreground="{ThemeResource AppTextPrimaryBrush}"
+                        MinHeight="64"
+                        FontSize="{ThemeResource AppSubHeaderFontSize}"
+                        AutomationProperties.Name="Volver al paso anterior de la lección"
+                        IsEnabled="False"
+                        Click="BtnPreviousStep_Click" />
+
+                <Button Grid.Column="1"
+                        x:Name="BtnRepeatVoice"
+                        Content="🔊 Escuchar Paso (F1)"
+                        Style="{StaticResource AccessibleActionButton}"
+                        Background="{ThemeResource AppSurfaceBrush}"
+                        Foreground="{ThemeResource AppTextPrimaryBrush}"
+                        MinHeight="64"
+                        FontSize="{ThemeResource AppSubHeaderFontSize}"
+                        AutomationProperties.Name="Escuchar la explicación del paso actual"
+                        Click="BtnRepeatVoice_Click" />
+
+                <Button Grid.Column="2"
+                        x:Name="BtnNextOrStart"
+                        Content="➡ Siguiente Paso (Enter)"
+                        Style="{StaticResource AccessibleActionButton}"
+                        MinHeight="64"
+                        FontSize="{ThemeResource AppSubHeaderFontSize}"
+                        AutomationProperties.Name="Avanzar al siguiente paso de la lección"
+                        Click="BtnNextOrStart_Click" />
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

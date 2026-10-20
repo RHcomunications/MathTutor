@@ -2,4 +2,5 @@
   <Project Path="MathTutor.Core/MathTutor.Core.csproj" />
   <Project Path="MathTutor.Tests/MathTutor.Tests.csproj" />
   <Project Path="MathTutor.WpfApp/MathTutor.WpfApp.csproj" />
+  <Project Path="MathTutor.WinUI/MathTutor.WinUI.csproj" />
 </Solution>
