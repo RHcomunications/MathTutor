@@ -82,7 +82,7 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.7.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.8.0`)
 
 Desde la terminal en esta carpeta:
 
@@ -96,11 +96,11 @@ dotnet test -c Release
 # Iniciar la aplicación WinUI 3
 dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 
-# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.7.0-Windows.zip)
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.8.0-Windows.zip)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.7.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.8.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo

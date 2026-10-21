@@ -395,3 +395,19 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Añadido `LEEME.txt` en lenguaje sencillo para familias, docentes y estudiantes, con instalación, primeros pasos, teclas, accesibilidad, privacidad y solución de problemas. Se integra en el ZIP y se adjunta como archivo independiente en la release.
 - **Ubicación:** `LEEME.txt`, release `v1.7.0`.
 - **Criterio de verificación:** Guía descargable, integrada en el paquete y sin terminología de programación.
+
+---
+
+# REGISTRO DE CORRECCIONES REALIZADAS - Release `v1.8.0`
+
+> **Estado:** Implementado y verificado. Build `Release` sin advertencias y **114/114 pruebas unitarias** superadas. Publicado como release `v1.8.0` (`https://github.com/RHcomunications/MathTutor/releases/tag/v1.8.0`).
+
+### 1. Actualización de versión
+- **Corrección:** La versión de `MathTutor.Core`, `MathTutor.WinUI` y del paquete se actualizó a `1.8.0`.
+- **Ubicación:** `src/MathTutor.Core/MathTutor.Core.csproj`, `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `LEEME.txt`, `README.md`.
+- **Criterio de verificación:** El ZIP generado se llama `MathTutor-v1.8.0-Windows.zip` y la aplicación inicia desde la carpeta extraída.
+
+### 2. Paquete por carpetas
+- **Corrección:** Se conserva el paquete con `MathTutor.exe` en la raíz, `libs/` con la aplicación y sus bibliotecas, `modules/` con los `.winmd` y `LEEME.txt`. El ejecutable de la raíz es un lanzador que inicia `libs/MathTutor.exe`.
+- **Ubicación:** `scripts/publish-winui.ps1`, `scripts/launcher/MathTutorLauncher.cs`.
+- **Criterio de verificación:** ZIP con lanzador, `libs/MathTutor.exe`, `libs/MathTutor.pri`, módulos y aplicación iniciada correctamente.
