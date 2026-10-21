@@ -407,6 +407,6 @@ dotnet test -c Release --nologo --no-build
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-winui.ps1
 
 # 5. Conservar únicamente el ZIP de la release vigente
-Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.6.0-winui3-win-x64.zip' } | Remove-Item -Force
+Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.7.0-winui3-win-x64.zip' } | Remove-Item -Force
 ```
 

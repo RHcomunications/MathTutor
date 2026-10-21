@@ -359,3 +359,24 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Movidos `MathTutor.Core` y `MathTutor.WinUI` a `src/`, y `MathTutor.Tests` a `tests/`; soluciones, referencias, script de publicación y documentación actualizados.
 - **Ubicación:** `src/`, `tests/`, `MathTutor.sln`, `MathTutor.slnx`, `tests/MathTutor.Tests/MathTutor.Tests.csproj`, `README.md`, `context.md`.
 - **Criterio de verificación:** Build 0/0, 114/114 pruebas y publicación self-contained con `.pri` desde la nueva ruta.
+
+---
+
+# ✅ REGISTRO DE CORRECCIONES REALIZADAS — Release `v1.7.0`
+
+> **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **114/114 pruebas unitarias** superadas.
+
+### 1. Consolidación definitiva en WinUI 3
+- **Corrección:** Retirado `MathTutor.WpfApp`; la solución, la documentación y la publicación quedan enfocadas en una sola interfaz mantenida.
+- **Ubicación:** `MathTutor.sln`, `MathTutor.slnx`, `README.md`, `context.md`.
+- **Criterio de verificación:** Build estricto 0/0, 114/114 pruebas y arranque del paquete WinUI.
+
+### 2. Estructura de repositorio y artefactos
+- **Corrección:** Fuentes en `src/`, pruebas en `tests/` y salidas centralizadas en `artifacts/` mediante `Directory.Build.props`; publicación reproducible con `scripts/publish-winui.ps1`.
+- **Ubicación:** `src/`, `tests/`, `Directory.Build.props`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** Los proyectos no generan `bin/` ni `obj/` propios; el ZIP release incluye `.pri` y la app inicia.
+
+### 3. Retos sin fuga de respuesta
+- **Corrección:** El anuncio del reto ya no incluye la descripción de escena que revelaba el resultado esperado; se añadió un repaso visible del secreto matemático en la misma pantalla.
+- **Ubicación:** `src/MathTutor.WinUI/Views/GamePage.xaml`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`.
+- **Criterio de verificación:** UIA sin “Resultado esperado”, repaso legible y flujo E2E completo.
