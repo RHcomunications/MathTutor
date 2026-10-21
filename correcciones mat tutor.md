@@ -387,7 +387,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Criterio de verificación:** UIA sin “Resultado esperado”, repaso legible y flujo E2E completo.
 
 ### 4. Paquete de release fácil de usar
-- **Corrección:** La publicación se genera como un solo ejecutable; el ZIP contiene una carpeta `MathTutor-v1.7.0` con `MathTutor.WinUI.exe`, `MathTutor.WinUI.pri` y `LEEME.txt`, en lugar de cientos de archivos sueltos. Se retiraron los archivos `.pdb` del paquete.
+- **Corrección:** La publicación se genera como un solo ejecutable; el ZIP contiene una carpeta `MathTutor-v1.7.0` con `MathTutor.exe`, `MathTutor.pri` y `LEEME.txt`, en lugar de cientos de archivos sueltos. Se retiraron los archivos `.pdb` del paquete.
 - **Ubicación:** `scripts/publish-winui.ps1`, `README.md`, `context.md`.
 - **Criterio de verificación:** ZIP con tres archivos, `.pri` presente, `LEEME.txt` presente y aplicación iniciada desde la carpeta extraída.
 

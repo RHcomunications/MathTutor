@@ -61,9 +61,9 @@ finally {
     Pop-Location
 }
 
-$priPath = Join-Path $publishDir 'MathTutor.WinUI.pri'
+$priPath = Join-Path $publishDir 'MathTutor.pri'
 if (-not (Test-Path $priPath)) {
-    throw "La publicación no contiene MathTutor.WinUI.pri: $publishDir"
+    throw "La publicación no contiene MathTutor.pri: $publishDir"
 }
 
 Get-ChildItem $publishDir -File |
@@ -71,7 +71,7 @@ Get-ChildItem $publishDir -File |
     Copy-Item -Destination $packageDir -Force
 Copy-Item -LiteralPath $guidePath -Destination (Join-Path $packageDir 'LEEME.txt') -Force
 
-foreach ($required in @('MathTutor.WinUI.exe', 'MathTutor.WinUI.pri', 'LEEME.txt')) {
+foreach ($required in @('MathTutor.exe', 'MathTutor.pri', 'LEEME.txt')) {
     if (-not (Test-Path (Join-Path $packageDir $required))) {
         throw "El paquete no contiene $required"
     }
@@ -90,7 +90,7 @@ try {
 finally {
     $zip.Dispose()
 }
-foreach ($required in @('MathTutor.WinUI.exe', 'MathTutor.WinUI.pri', 'LEEME.txt')) {
+foreach ($required in @('MathTutor.exe', 'MathTutor.pri', 'LEEME.txt')) {
     $entry = "MathTutor-v$Version\$required"
     if ($entries -notcontains $entry) {
         throw "El ZIP no contiene $entry"

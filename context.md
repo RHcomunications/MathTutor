@@ -80,7 +80,7 @@ MathTutor.slnx
 |---|---|
 | `MathTutor.slnx` | Archivo de solución XML moderno de .NET que agrupa los tres proyectos: `MathTutor.Core`, `MathTutor.WinUI` y `MathTutor.Tests`. |
 | `Directory.Build.props` | Centraliza las salidas de todos los proyectos en `artifacts/` mediante `UseArtifactsOutput` y `ArtifactsPath`; evita `bin/` y `obj/` dentro de cada proyecto. |
-| `scripts/publish-winui.ps1` | Publica WinUI 3 en un solo ejecutable para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.WinUI.pri`, integra `LEEME.txt`, arma la carpeta `MathTutor-v$Version` y genera `artifacts/releases/MathTutor-v$Version-Windows.zip`. |
+| `scripts/publish-winui.ps1` | Publica WinUI 3 en un solo ejecutable para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.pri`, integra `LEEME.txt`, arma la carpeta `MathTutor-v$Version` y genera `artifacts/releases/MathTutor-v$Version-Windows.zip`. |
 | `artifacts/` | Directorio ignorado por Git con salidas centralizadas: `bin/`, `obj/`, `publish/`, `package/` y `releases/`. |
 | `CLAUDE.md` | Directrices de ingeniería de software basadas en los principios de Andrej Karpathy: (1) Pensar antes de codificar, (2) Simplicidad primero (sin sobreingeniería), (3) Cambios quirúrgicos y (4) Ejecución orientada a objetivos verificables con pruebas. |
 | `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 45 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
@@ -200,7 +200,8 @@ Generador procedimental parametrizado que produce ejercicios infinitos y libres 
 - **TargetFramework**: `net10.0-windows10.0.19041.0`, `TargetPlatformMinVersion=10.0.17763.0`, `UseWinUI=true`, `Nullable=enable`, `ImplicitUsings=enable`.
 - Aplicación de escritorio sin empaquetar (`WindowsPackageType=None`, `EnableMsixTooling=false`) con `WindowsAppSDKSelfContained=true`.
 - Referencia de proyecto únicamente a `MathTutor.Core.csproj`; icono `Assets/AppIcon.ico` y manifiesto `app.manifest`.
-- El target `CopyPriToPublishDirectory` copia `MathTutor.WinUI.pri` al directorio de publicación; sin él, el ejecutable publicado falla al iniciar.
+- `AssemblyName=MathTutor`: el ejecutable publicado es `MathTutor.exe` y el recurso es `MathTutor.pri`, más fácil de reconocer para el usuario final.
+- El target `CopyPriToPublishDirectory` copia `MathTutor.pri` al directorio de publicación; sin él, el ejecutable publicado falla al iniciar.
 - La publicación de release usa un solo ejecutable (`PublishSingleFile`, extracción de bibliotecas nativas y compresión) desde `scripts/publish-winui.ps1`; el paquete final conserva únicamente el ejecutable, `.pri` y `LEEME.txt`.
 
 #### `src/MathTutor.WinUI/App.xaml` y `App.xaml.cs`
@@ -408,7 +409,7 @@ dotnet build -c Release --nologo /p:TreatWarningsAsErrors=true
 # 3. Ejecutar las 114 pruebas unitarias automatizadas sobre la compilación Release
 dotnet test -c Release --nologo --no-build
 
-# 4. Publicar y empaquetar WinUI 3 (verifica MathTutor.WinUI.pri)
+# 4. Publicar y empaquetar WinUI 3 (verifica MathTutor.pri)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-winui.ps1
 
 # 5. Conservar únicamente el ZIP de la release vigente

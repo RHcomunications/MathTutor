@@ -51,7 +51,7 @@ CÓMO ABRIRLO
 
 3. Abre la carpeta que se creó.
 
-4. Haz doble clic en MathTutor.WinUI.exe. Es el único
+4. Haz doble clic en MathTutor.exe. Es el único
    programa de la carpeta y está junto a esta guía.
 
 5. Si Windows muestra un aviso de seguridad, elige
@@ -154,7 +154,7 @@ SI ALGO NO FUNCIONA
 
 No se abre el programa:
 - Comprueba que extrajiste la carpeta completa.
-- Abre MathTutor.WinUI.exe desde la carpeta extraída.
+- Abre MathTutor.exe desde la carpeta extraída.
 - Reinicia la computadora e inténtalo de nuevo.
 - Si aparece un aviso de Windows, revisa que hayas descargado
   el archivo desde esta página oficial.
