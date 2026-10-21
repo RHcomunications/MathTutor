@@ -1,7 +1,7 @@
 # Tutor de Matemáticas Accesible (MathTutor) 🦉✨
 **100% Accesible | Conforme a WCAG 2.2 / DUA | Basado en el Juego | Adaptado a México y Latinoamérica**
 
-Desarrollado en **C# (.NET 10 / WPF y WinUI 3)** para el aprendizaje matemático significativo, inclusivo y sin barreras, abarcando desde **Jardín de Niños (3 a 5 años)**, **Primaria Completa (1º a 6º grado)**, **Secundaria Completa (1º a 3º grado)** y **Educación Media Superior / Preparatoria (1º a 3º grado)** hasta **Pensamiento Computacional y Programación Inclusiva**.
+Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático significativo, inclusivo y sin barreras, abarcando desde **Jardín de Niños (3 a 5 años)**, **Primaria Completa (1º a 6º grado)**, **Secundaria Completa (1º a 3º grado)** y **Educación Media Superior / Preparatoria (1º a 3º grado)** hasta **Pensamiento Computacional y Programación Inclusiva**.
 
 ---
 
@@ -30,9 +30,10 @@ Desarrollado en **C# (.NET 10 / WPF y WinUI 3)** para el aprendizaje matemático
   - **Adaptación Cultural Latinoamericana (`RegionalContext`)**: Configurable por país (**México, Colombia, Argentina, Perú, Chile**), adaptando dinámicamente monedas (`pesos` / `soles`, `centavos` / `céntimos`) y vocabulario cotidiano (`tiendita`, `tienda de barrio`, `kiosco`, `bodega`, `almacén`).
   - **Adaptación Automática del Lenguaje**: Si se indica discapacidad intelectual o edad temprana, el motor adaptativo simplifica el vocabulario, acorta los enunciados y reduce la cantidad de distractores/opciones sin sesgo de posición para evitar la sobrecarga cognitiva.
   - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
+  - **Repaso Sin Abandonar el Reto**: La pantalla del ejercicio mantiene visible el secreto matemático para releerlo, y el anuncio del reto no revela el resultado esperado.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WpfApp` (servicios de accesibilidad, audio WAV en memoria, interfaz XAML) y `MathTutor.Tests` (suite automatizada de 112 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 114 pruebas unitarias xUnit).
 
 ---
 
@@ -92,10 +93,20 @@ dotnet build -c Release
 # Ejecutar las 114 pruebas unitarias automatizadas
 dotnet test -c Release
 
-# Iniciar la aplicación WPF
-dotnet run --project MathTutor.WpfApp/MathTutor.WpfApp.csproj -c Release
-
 # Iniciar la aplicación WinUI 3
-dotnet run --project MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
+dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
+
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.6.0-winui3-win-x64.zip)
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
+```
+
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias.
+
+```text
+src/MathTutor.Core/    Dominio, currículo y motor adaptativo
+src/MathTutor.WinUI/   Aplicación WinUI 3
+tests/MathTutor.Tests/ Suite xUnit
+scripts/               Publicación y empaquetado
+artifacts/             Salidas de compilación y releases (ignorado por Git)
 ```
 

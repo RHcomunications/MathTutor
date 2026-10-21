@@ -133,6 +133,7 @@ public sealed partial class GamePage : Page
 
         string adaptedInstruction = _adaptive.GetAdaptedInstruction(_currentExercise, profile);
         TxtInstruction.Text = adaptedInstruction;
+        TxtReviewExplanation.Text = _adaptive.GetAdaptedConceptExplanation(_topic, profile);
 
         RenderManipulableItems();
         RenderOptions();
@@ -141,10 +142,6 @@ public sealed partial class GamePage : Page
 
         string optionsSpeech = BuildOptionsAnnouncement(_currentOptions);
         string fullSpeech = $"{_currentExercise.Title}. {adaptedInstruction}.";
-        if (profile.HasDisability(DisabilityType.Visual) && !string.IsNullOrWhiteSpace(_currentExercise.ScreenReaderDescription))
-        {
-            fullSpeech += $" Descripción de la escena: {_currentExercise.ScreenReaderDescription}.";
-        }
         if (!string.IsNullOrEmpty(optionsSpeech))
         {
             fullSpeech += $" {optionsSpeech}";

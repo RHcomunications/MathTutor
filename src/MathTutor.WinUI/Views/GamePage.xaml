@@ -106,6 +106,27 @@
                 </Grid>
             </Border>
 
+            <Border Background="{ThemeResource AppCardBrush}"
+                    BorderBrush="{ThemeResource AppBorderBrush}"
+                    BorderThickness="2"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Repaso: el secreto matemático"
+                               FontSize="{ThemeResource AppBaseFontSize}"
+                               FontWeight="Bold"
+                               Foreground="{ThemeResource AppAccentBrush}"
+                               TextWrapping="Wrap"
+                               AutomationProperties.HeadingLevel="Level2" />
+                    <TextBox x:Name="TxtReviewExplanation"
+                             Style="{StaticResource AccessibleReadOnlyTextBox}"
+                             Text="Explicación del concepto..."
+                             FontSize="{ThemeResource AppBaseFontSize}"
+                             Foreground="{ThemeResource AppTextPrimaryBrush}"
+                             AutomationProperties.Name="Repaso de la explicación de la lección" />
+                </StackPanel>
+            </Border>
+
             <Border x:Name="BorderManipulables"
                     Background="{ThemeResource AppCardBrush}"
                     BorderBrush="{ThemeResource AppBorderBrush}"

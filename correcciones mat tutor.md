@@ -98,7 +98,7 @@
 ---
 
 ## 📌 Tarea 6: Validación Adaptativa de Edad vs. Nivel Escolar y Misiones
-* **Componente / Archivo:** `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml.cs`.
+* **Componente / Archivo:** `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml.cs`.
 * **Comportamiento Actual:** Un usuario de 3 o 5 años puede seleccionar o ver disponibles niveles avanzados como "Fundamentos de Programación y Algoritmos" o niveles de Secundaria/Preparatoria.
 * **Comportamiento Esperado:** El nivel escolar y los objetivos de aprendizaje deben ajustarse automáticamente en función de la edad seleccionada en la caracterización.
 * **Instrucciones de Implementación:**
@@ -150,7 +150,7 @@
 ---
 
 ## 📌 Tarea 10: Resolución de Fin de Etapa en `CurriculumService.GetNextTopic`
-* **Componente / Archivo:** `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml.cs`.
+* **Componente / Archivo:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/MissionCompletedDialog.xaml.cs`.
 * **Comportamiento Detectado en Auditoría:** Al completar todas las misiones disponibles dentro de un rango de edad (por ejemplo, `kinder_counting_01` entre los 3 y 5 años), `GetNextTopic` hacía fallback a `topics[0]`, sugiriendo repetir la misma misión como *"Siguiente Misión"* en lugar de notificar que se completaron todas las misiones de la etapa.
 * **Comportamiento Esperado:** Cuando no exista una misión siguiente en la secuencia ni otra misión pendiente en el rango de edad del alumno, `GetNextTopic` debe devolver `null` para que `MissionCompletedDialog` felicite al alumno por completar toda su etapa y muestre **"Volver al Menú de Misiones"**.
 
@@ -164,7 +164,7 @@
 ---
 
 ## 📌 Tarea 12: Flexibilidad Pedagógica en `GetAllowedLevelsForAge` (12 Años en 1º de Secundaria y Discapacidad Intelectual)
-* **Componente / Archivo:** `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.Core/Engine/CurriculumService.cs`, vistas de perfil, menú y mapa.
+* **Componente / Archivo:** `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `src/MathTutor.Core/Engine/CurriculumService.cs`, vistas de perfil, menú y mapa.
 * **Comportamiento Detectado en Auditoría:**
   1. Un alumno de 12 años que ya cursa `1º de Secundaria (12 a 13 años)` no veía disponible `SecondaryFirstGrade` en su selector.
   2. Un alumno de 13 a 15 años con `DisabilityType.Intellectual` solo veía misiones de Secundaria, sin poder repasar niveles base de Preescolar o Primaria si necesitaba refuerzo pedagógico.
@@ -186,7 +186,7 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
 ## 🛠️ CORRECCIONES Y MEJORAS DE ACCESIBILIDAD Y TUTORIAL INTERACTIVO
 
 ### 1. Tutorial y Lección Interactiva Paso a Paso (Sin Lectura Continua "De Corrido")
-- **Ubicación:** `MathTutor.WpfApp/Views/LessonView.xaml`, `MathTutor.WpfApp/Views/LessonView.xaml.cs` y `MathTutor.Core/Models/PedagogicalTopic.cs`.
+- **Ubicación:** `MathTutor.WpfApp/Views/LessonView.xaml`, `MathTutor.WpfApp/Views/LessonView.xaml.cs` y `src/MathTutor.Core/Models/PedagogicalTopic.cs`.
 - **Problema:** Las lecciones y tutoriales muestran y leen todo el contenido de un solo tirón (título, historia, situación, pasos y atajos). Esto genera fatiga auditiva, sobrecarga cognitiva y le resta interactividad al juego.
 - **Instrucciones de Implementación:**
   1. Transformar el modelo de la lección/tutorial en un **flujo guiado paso a paso (Wizard/Stepper)** en `LessonView.xaml.cs`.
@@ -196,7 +196,7 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
   5. Una vez completados todos los pasos intermedios de la lección, habilitar la transición al reto o ejercicio práctico.
 
 ### 2. Soporte para Discapacidades Múltiples (Comorbilidad / Interseccionalidad)
-- **Ubicación:** `MathTutor.Core/Models/UserProfile.cs`, `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml` y `MathTutor.WpfApp/Views/ProfileSetupView.xaml.cs`.
+- **Ubicación:** `src/MathTutor.Core/Models/UserProfile.cs`, `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.WpfApp/Views/ProfileSetupView.xaml` y `MathTutor.WpfApp/Views/ProfileSetupView.xaml.cs`.
 - **Problema:** En la pantalla de caracterización solo se permite seleccionar una única discapacidad, impidiendo configurar perfiles con múltiples necesidades (por ejemplo, Ceguera + TEA).
 - **Instrucciones de Implementación:**
   1. Modificar la propiedad `DisabilityType` en `UserProfile` para que admita selecciones múltiples (`List<DisabilityType>` o `[Flags] Enum`).
@@ -204,14 +204,14 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
   3. Asegurar que las adaptaciones (anuncios para lector de pantalla, paleta de baja estimulación sensorial y simplificación de lenguaje) se activen de forma simultánea cuando el usuario marque más de una opción.
 
 ### 3. Anuncio Completo de Opciones en los Retos (TTS y Lector de Pantalla)
-- **Ubicación:** `MathTutor.WpfApp/Views/MiniGameView.xaml`, `MathTutor.WpfApp/Views/MiniGameView.xaml.cs` y `MathTutor.Core/Engine/AdaptiveEngine.cs`.
+- **Ubicación:** `MathTutor.WpfApp/Views/MiniGameView.xaml`, `MathTutor.WpfApp/Views/MiniGameView.xaml.cs` y `src/MathTutor.Core/Engine/AdaptiveEngine.cs`.
 - **Problema:** Al iniciar un reto, la síntesis/lector lee la pregunta y la instrucción ("Elige usando 1, 2 o 3"), pero omite leer el contenido de cada opción, obligando al usuario a navegar por la interfaz para conocer las respuestas.
 - **Instrucciones de Implementación:**
   1. En el método de inicio de reto y en el comando asociado a la tecla `F1` (Repetir), construir la cadena del anuncio concatenando explícitamente las opciones:
      `"{Pregunta}. Opción 1: {Opcion1}. Opción 2: {Opcion2}. Opción 3: {Opcion3}. Presiona 1, 2 o 3 para responder."`
 
 ### 4. Aleatorización de Opciones para Eliminar el Sesgo de Posición
-- **Ubicación:** `MathTutor.Core/Engine/ExerciseGenerator.cs` (Generador procedimental de retos).
+- **Ubicación:** `src/MathTutor.Core/Engine/ExerciseGenerator.cs` (Generador procedimental de retos).
 - **Problema:** La respuesta correcta suele aparecer casi siempre en la opción 2 (tecla 2), haciendo que el juego se vuelva predecible.
 - **Instrucciones de Implementación:**
   1. En la fase final de generación de cada reto en `Core`, aplicar un algoritmo de aleatorización (*Fisher-Yates shuffle* o `OrderBy(x => Guid.NewGuid())`) a la lista de opciones.
@@ -225,12 +225,12 @@ Se requiere implementar los siguientes ajustes de accesibilidad, lógica de jueg
 
 ### 1. Migración de la solución a .NET 10
 - **Corrección:** Los tres proyectos (`MathTutor.Core`, `MathTutor.WpfApp`, `MathTutor.Tests`) abandonan `net8.0` y se unifican en `net10.0` / `net10.0-windows`.
-- **Ubicación:** `MathTutor.Core/MathTutor.Core.csproj`, `MathTutor.WpfApp/MathTutor.WpfApp.csproj`, `MathTutor.Tests/MathTutor.Tests.csproj`.
+- **Ubicación:** `src/MathTutor.Core/MathTutor.Core.csproj`, `MathTutor.WpfApp/MathTutor.WpfApp.csproj`, `tests/MathTutor.Tests/MathTutor.Tests.csproj`.
 - **Criterio de verificación:** `dotnet build MathTutor.slnx -c Release /p:TreatWarningsAsErrors=true` → 0 advertencias / 0 errores.
 
 ### 2. Refactor de comorbilidad en los motores (`HasDisability`)
 - **Corrección:** Sustituidas las comparaciones de discapacidad única (`profile.Disability == DisabilityType.Intellectual`) por el predicado de comorbilidad `profile.HasDisability(DisabilityType.Intellectual)`, de modo que las adaptaciones (rango numérico reducido, lenguaje simplificado y reducción de opciones) también se apliquen cuando la discapacidad intelectual coexiste con otras en `UserProfile.Disabilities`.
-- **Ubicación:** `MathTutor.Core/Engine/AdaptiveEngine.cs`, `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.Core/Engine/ExerciseGenerator.cs`.
+- **Ubicación:** `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `src/MathTutor.Core/Engine/CurriculumService.cs`, `src/MathTutor.Core/Engine/ExerciseGenerator.cs`.
 - **Criterio de verificación:** Suite de 112 pruebas (incluye `UserProfile_SupportsMultipleDisabilities_AndCombinesAdaptationsSimultaneously`).
 
 ### 3. Limpieza de variable sin uso en la lección
@@ -268,7 +268,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 ---
 
 ### 2. Carga y Desbloqueo Completo de la Lista de Misiones
-- **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` y `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`.
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml` y `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`.
 - **Problema:** La lista de misiones solo muestra 1 misión (`"1 de 1"`, El Bosque Mágico). Al completarla, no se desbloquean ni se muestran en el listado las misiones subsecuentes de la etapa (Jardín de Niños / Primaria).
 - **Instrucciones de Solución:**
   1. En `CurriculumService.GetTopicsForAge`, revisar la consulta LINQ/filtro por `AcademicLevel` y asegurar que devuelva la colección completa de misiones asociadas al nivel y edad del usuario, y no un arreglo de un solo elemento.
@@ -287,7 +287,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 ---
 
 ### 4. Barajado / Aleatorización Eficaz de las Opciones (`ExerciseGenerator`)
-- **Ubicación:** `MathTutor.Core/Engine/ExerciseGenerator.cs`.
+- **Ubicación:** `src/MathTutor.Core/Engine/ExerciseGenerator.cs`.
 - **Problema:** Al reiniciar un ejercicio o volverlo a jugar, la respuesta correcta siempre queda posicionada en la Opción 2 (tecla `2`), haciendo el patrón predecible.
 - **Instrucciones de Solución:**
   1. En el método `BuildOptions` (o al generar cada `Exercise`), aplicar un algoritmo de barajado (Fisher-Yates o `OrderBy(x => Random.Shared.Next())`) sobre la lista de opciones antes de asignarlas al ejercicio.
@@ -306,7 +306,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 
 ### 2. Carga y Desbloqueo Continuo de la Lista de Misiones
 - **Corrección:** Integrado el parámetro `completedLessonIds` en `CurriculumService.GetTopicsForAge` y `GetNextTopic`. Al completar las misiones base de Kínder (o del nivel actual), los alumnos de 5+ años desbloquean automáticamente las misiones de Primaria Inicial (`EarlyElementary`), permitiendo continuar el sendero del aprendizaje sin bloqueos en el currículo.
-- **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`, `MathTutor.WpfApp/Views/RealmMapView.xaml.cs`.
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs`, `MathTutor.WpfApp/Views/RealmMapView.xaml.cs`.
 - **Criterio de verificación:** Prueba unitaria `CurriculumService_UnlocksSubsequentStageMissions_WhenBaseStageCompleted`.
 
 ### 3. Navegación Direccional por Flechas en `CurriculumMenuView`
@@ -316,7 +316,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 
 ### 4. Barajado / Aleatorización Eficaz en Retos Curados
 - **Corrección:** Aplicación de `ShuffleOptions` a todos los ejercicios retornados por `CurriculumService.GenerateAdaptiveExercises`, incluyendo el ejercicio modelo inicial de cada lección, garantizando la alternancia equitativa de la opción correcta en cualquier intento.
-- **Ubicación:** `MathTutor.Core/Engine/CurriculumService.cs`.
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`.
 - **Criterio de verificación:** Prueba unitaria `CurriculumService_GenerateAdaptiveExercises_ShufflesCuratedFirstExerciseOptions`.
 
 ---
@@ -326,16 +326,36 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 > **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **114/114 pruebas unitarias** superadas. Publicado como release `v1.6.0`.
 
 ### 1. Migración funcional a WinUI 3
-- **Corrección:** Añadido el proyecto `MathTutor.WinUI` con paridad de perfil, menú de misiones, mapa del reino, lecciones, minijuego, diálogo de misión y atajos globales. La solución conserva WPF y permite compilar ambas interfaces.
-- **Ubicación:** `MathTutor.WinUI/`, `MathTutor.slnx`.
+- **Corrección:** Añadido el proyecto `MathTutor.WinUI` con paridad de perfil, menú de misiones, mapa del reino, lecciones, minijuego, diálogo de misión y atajos globales. Tras publicar la release, WPF se retiró de la solución para dejar una sola interfaz mantenida.
+- **Ubicación:** `src/MathTutor.WinUI/`, `MathTutor.slnx`.
 - **Criterio de verificación:** Build `Release` 0/0 y flujo E2E completo (lección, 3 ejercicios, diálogo de misión y regreso al mapa).
 
 ### 2. Accesibilidad para lectores de pantalla
 - **Corrección:** Eliminados los anuncios duplicados al retirar `LiveSetting` de la región viva y usar `RaiseNotificationEvent`; añadidos nombres accesibles contextuales a botones de misión/estación, encabezados, contadores y controles; corregidos contrastes de bordes, éxito y foco.
-- **Ubicación:** `MathTutor.WinUI/MainWindow.xaml.cs`, `MathTutor.WinUI/Services/`, `MathTutor.WinUI/Views/`, `MathTutor.WinUI/App.xaml`.
+- **Ubicación:** `src/MathTutor.WinUI/MainWindow.xaml.cs`, `src/MathTutor.WinUI/Services/`, `src/MathTutor.WinUI/Views/`, `src/MathTutor.WinUI/App.xaml`.
 - **Criterio de verificación:** Inspección UIA de nombres, encabezados, botones y contadores; smoke test de cambio de tamaño de letra y navegación por teclado.
 
 ### 3. Alto contraste del sistema y tamaños mínimos
 - **Corrección:** Sincronización con `AccessibilitySettings.HighContrast`, conservación de la preferencia del usuario al desactivar el alto contraste y sustitución de `Height` fijos por `MinHeight` para evitar recortes con fuentes grandes.
-- **Ubicación:** `MathTutor.WinUI/MainWindow.xaml.cs`, `MathTutor.WinUI/Services/AccessibilityManager.cs`, vistas XAML.
+- **Ubicación:** `src/MathTutor.WinUI/MainWindow.xaml.cs`, `src/MathTutor.WinUI/Services/AccessibilityManager.cs`, vistas XAML.
 - **Criterio de verificación:** Compilación estricta y revisión de recursos/foco por tema.
+
+### 4. Limpieza posterior a la release
+- **Corrección:** Retirado `MathTutor.WpfApp` de la solución, del README y de la documentación técnica vigente; la suite y el dominio compartido permanecen sin cambios.
+- **Ubicación:** `MathTutor.sln`, `MathTutor.slnx`, `README.md`, `context.md`.
+- **Criterio de verificación:** Build estricto 0/0 y 114/114 pruebas tras eliminar el proyecto.
+
+### 5. Repaso en el reto y sin fuga de respuesta
+- **Corrección:** El reto ya no narra la descripción de escena que incluía el resultado esperado; en su lugar muestra un repaso visible del secreto matemático para releerlo sin abandonar la pantalla.
+- **Ubicación:** `src/MathTutor.WinUI/Views/GamePage.xaml`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`, `context.md`.
+- **Criterio de verificación:** Inspección UIA sin coincidencias de “Resultado esperado”, repaso legible presente y flujo E2E completo con 114/114 pruebas.
+
+### 6. Salidas de compilación centralizadas
+- **Corrección:** Añadido `Directory.Build.props` para que todos los proyectos escriban en `artifacts/` (`bin`, `obj`, `publish`, `releases`); los directorios de proyecto quedan libres de `bin/` y `obj/`.
+- **Ubicación:** `Directory.Build.props`, `scripts/publish-winui.ps1`, `.gitignore`, `README.md`, `context.md`.
+- **Criterio de verificación:** Build 0/0, 114/114 pruebas, publicación con `.pri`, ZIP en `artifacts/releases/` y ejecutable iniciado correctamente.
+
+### 7. Estructura de fuentes `src/` y `tests/`
+- **Corrección:** Movidos `MathTutor.Core` y `MathTutor.WinUI` a `src/`, y `MathTutor.Tests` a `tests/`; soluciones, referencias, script de publicación y documentación actualizados.
+- **Ubicación:** `src/`, `tests/`, `MathTutor.sln`, `MathTutor.slnx`, `tests/MathTutor.Tests/MathTutor.Tests.csproj`, `README.md`, `context.md`.
+- **Criterio de verificación:** Build 0/0, 114/114 pruebas y publicación self-contained con `.pri` desde la nueva ruta.

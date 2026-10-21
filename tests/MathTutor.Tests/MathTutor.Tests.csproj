@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MathTutor.Core\MathTutor.Core.csproj" />
+    <ProjectReference Include="..\..\src\MathTutor.Core\MathTutor.Core.csproj" />
   </ItemGroup>
 
 </Project>
