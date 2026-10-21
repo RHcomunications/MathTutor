@@ -37,7 +37,6 @@ $packageRoot = Join-Path $root 'artifacts\package'
 $packageDir = Join-Path $packageRoot "MathTutor-v$Version"
 $libsDir = Join-Path $packageDir 'libs'
 $modulesDir = Join-Path $packageDir 'modules'
-$symbolsDir = Join-Path $packageDir 'symbols'
 $releaseDir = Join-Path $root 'artifacts\releases'
 $zipPath = Join-Path $releaseDir "MathTutor-v$Version-Windows.zip"
 $launcherPath = Join-Path $packageDir 'MathTutor.exe'
@@ -50,7 +49,6 @@ foreach ($dir in @($publishDir, $packageDir)) {
 New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
 New-Item -ItemType Directory -Path $libsDir -Force | Out-Null
 New-Item -ItemType Directory -Path $modulesDir -Force | Out-Null
-New-Item -ItemType Directory -Path $symbolsDir -Force | Out-Null
 New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
 
 Push-Location $root
@@ -76,7 +74,7 @@ if (-not (Test-Path $priPath)) {
 
 Copy-Item -Path (Join-Path $publishDir '*') -Destination $libsDir -Recurse -Force
 Get-ChildItem $libsDir -File -Filter '*.winmd' | Move-Item -Destination $modulesDir
-Get-ChildItem $libsDir -File -Filter '*.pdb' | Move-Item -Destination $symbolsDir
+Get-ChildItem $libsDir -File -Filter '*.pdb' | Remove-Item -Force
 Copy-Item -LiteralPath $guidePath -Destination (Join-Path $packageDir 'LEEME.txt') -Force
 
 $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
