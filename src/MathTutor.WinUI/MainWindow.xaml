@@ -58,50 +58,26 @@
                                AutomationProperties.HeadingLevel="Level1" />
                 </StackPanel>
 
-                <CommandBar x:Name="TopCommandBar"
-                            Grid.Column="1"
-                            Background="Transparent"
-                            AutomationProperties.Name="Navegación y accesibilidad"
-                            DefaultLabelPosition="Right"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            IsDynamicOverflowEnabled="True">
-                    <AppBarButton Label="Menú (Esc)" Click="BtnNavMenu_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE80F;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                    <AppBarButton Label="Mapa (F6)" Click="BtnNavMap_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE707;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                    <AppBarButton Label="Perfil (F5)" Click="BtnNavProfile_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE77B;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                    <AppBarButton Label="Contraste (F3)" Click="BtnToggleContrast_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE790;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                    <AppBarButton Label="Letra (F4)" Click="BtnToggleFont_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE8D2;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                    <AppBarButton Label="Sonidos (F2)" Click="BtnToggleSpeech_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE767;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                    <AppBarButton Label="Repetir (F1)" Click="BtnHelpVoice_Click">
-                        <AppBarButton.Icon>
-                            <FontIcon Glyph="&#xE897;" />
-                        </AppBarButton.Icon>
-                    </AppBarButton>
-                </CommandBar>
+                <DropDownButton Grid.Column="1"
+                                Content="Opciones del juego"
+                                AutomationProperties.Name="Opciones del juego"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                    <DropDownButton.Flyout>
+                        <MenuFlyout AutomationProperties.Name="Opciones del juego">
+                            <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Menú (Esc)" Click="BtnNavMenu_Click" />
+                            <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Mapa (F6)" Click="BtnNavMap_Click" />
+                            <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Perfil (F5)" Click="BtnNavProfile_Click" />
+                            <MenuFlyoutSubItem GotFocus="MenuItem_GotFocus" Text="Opciones de accesibilidad"
+                                               AutomationProperties.Name="Opciones de accesibilidad">
+                                <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Contraste (F3)" Click="BtnToggleContrast_Click" />
+                                <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Letra (F4)" Click="BtnToggleFont_Click" />
+                                <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Sonidos (F2)" Click="BtnToggleSpeech_Click" />
+                                <MenuFlyoutItem GotFocus="MenuItem_GotFocus" Text="Repetir (F1)" Click="BtnHelpVoice_Click" />
+                            </MenuFlyoutSubItem>
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
 
                 <Border Grid.Column="2"
                         Background="{ThemeResource AppCardBrush}"

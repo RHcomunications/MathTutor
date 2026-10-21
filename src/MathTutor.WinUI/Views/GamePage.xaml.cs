@@ -47,7 +47,7 @@ public sealed class GameOptionView
         : $"[{Shortcut}]  {Option.Label}";
 
     public string AccessibleName => $"Opción {Shortcut}: {Option.Label}";
-    public string HelpText => $"Presiona la tecla {Shortcut} o Enter para elegir esta respuesta";
+    public string HelpText => $"Usa las flechas arriba y abajo para recorrer las respuestas. Presiona la tecla {Shortcut} o Enter para elegir esta respuesta";
 }
 
 public sealed partial class GamePage : Page
@@ -72,6 +72,7 @@ public sealed partial class GamePage : Page
     public GamePage()
     {
         InitializeComponent();
+        ItemsOptions.PreviewKeyDown += ItemsOptions_PreviewKeyDown;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -349,6 +350,31 @@ public sealed partial class GamePage : Page
         });
 
         _acc.AnnounceAssertive($"Incorrecto. {feedbackMessage}");
+    }
+
+    private void ItemsOptions_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key is not (VirtualKey.Up or VirtualKey.Down or VirtualKey.Left or VirtualKey.Right))
+            return;
+
+        e.Handled = true;
+        if (_answerLocked || _successVisible || e.Key is VirtualKey.Left or VirtualKey.Right)
+            return;
+
+        var focused = FocusManager.GetFocusedElement(XamlRoot);
+        for (int i = 0; i < _currentOptions.Count; i++)
+        {
+            if (!ReferenceEquals(ItemsOptions.TryGetElement(i), focused))
+                continue;
+
+            int next = Math.Clamp(i + (e.Key == VirtualKey.Down ? 1 : -1), 0, _currentOptions.Count - 1);
+            if (next != i && ItemsOptions.GetOrCreateElement(next) is Button option &&
+                option.Focus(FocusState.Keyboard))
+            {
+                _acc.Audio.PlayNavigationClick();
+            }
+            return;
+        }
     }
 
     private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
