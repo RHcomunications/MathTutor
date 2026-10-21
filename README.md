@@ -100,7 +100,7 @@ dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.7.0` con un solo programa, su archivo de recursos y `LEEME.txt`, sin cientos de archivos sueltos.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.7.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, una carpeta `modules/` con los módulos `.winmd` y una carpeta `symbols/` con los símbolos de diagnóstico. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo

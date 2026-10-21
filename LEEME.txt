@@ -51,8 +51,13 @@ CÓMO ABRIRLO
 
 3. Abre la carpeta que se creó.
 
-4. Haz doble clic en MathTutor.exe. Es el único
-   programa de la carpeta y está junto a esta guía.
+4. Haz doble clic en MathTutor.exe, el que está
+   junto a esta guía.
+
+Verás una carpeta llamada libs. Contiene las piezas
+internas del programa. No la muevas ni la borres: el
+programa necesita que todas las carpetas permanezcan
+juntas.
 
 5. Si Windows muestra un aviso de seguridad, elige
    "Más información" y después "Ejecutar de todas formas".
@@ -155,6 +160,8 @@ SI ALGO NO FUNCIONA
 No se abre el programa:
 - Comprueba que extrajiste la carpeta completa.
 - Abre MathTutor.exe desde la carpeta extraída.
+- No muevas MathTutor.exe fuera de su carpeta ni borres
+  la carpeta libs.
 - Reinicia la computadora e inténtalo de nuevo.
 - Si aparece un aviso de Windows, revisa que hayas descargado
   el archivo desde esta página oficial.
