@@ -96,17 +96,18 @@ dotnet test -c Release
 # Iniciar la aplicación WinUI 3
 dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 
-# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.7.0-winui3-win-x64.zip)
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.7.0-Windows.zip)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.7.0` con un solo programa, su archivo de recursos y `LEEME.txt`, sin cientos de archivos sueltos.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo
 src/MathTutor.WinUI/   Aplicación WinUI 3
 tests/MathTutor.Tests/ Suite xUnit
 scripts/               Publicación y empaquetado
+LEEME.txt              Guía para familias, docentes y estudiantes
 artifacts/             Salidas de compilación y releases (ignorado por Git)
 ```
 

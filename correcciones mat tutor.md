@@ -1,6 +1,9 @@
 # 🛠️ Especificación Técnica para Agentes de Código (Antigravity / OpenCode)
-**Proyecto:** MathTutor (C# .NET 10 / WPF)  
+**Proyecto:** MathTutor (C# .NET 10 / WinUI 3)
+
 **Objetivo:** Corrección de errores de accesibilidad WCAG 2.2 / DUA, usabilidad de teclado y reglas de negocio adaptativas.
+
+**Nota histórica:** Las tareas y fases anteriores a `v1.6.0` describen la implementación original en WPF, retirada en `v1.7.0`. La aplicación vigente está en `src/MathTutor.WinUI`.
 
 ---
 
@@ -174,6 +177,8 @@
 # INSTRUCCIONES DE ACCESIBILIDAD Y UI/UX PARA AGENTES DE CÓDIGO (MathTutor - Feedback de Usuario) 🦉✨
 
 ## Contexto del Proyecto
+> **Nota histórica:** esta fase describe la implementación original en WPF. La versión vigente usa WinUI 3, con fuentes en `src/` y pruebas en `tests/`.
+
 **MathTutor** es una aplicación en **C# (.NET 10 / WPF)** estructurada en tres proyectos:
 - `MathTutor.Core`: Dominio, motor adaptativo, perfiles y generador procedimental.
 - `MathTutor.WpfApp`: Interfaz XAML, servicios de accesibilidad (UIA / NVDA / JAWS) y audio.
@@ -364,7 +369,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 
 # ✅ REGISTRO DE CORRECCIONES REALIZADAS — Release `v1.7.0`
 
-> **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **114/114 pruebas unitarias** superadas.
+> **Estado:** Implementado y verificado. Build `Release` con `TreatWarningsAsErrors` sin advertencias y **114/114 pruebas unitarias** superadas. Publicado como release `v1.7.0` (`https://github.com/RHcomunications/MathTutor/releases/tag/v1.7.0`).
 
 ### 1. Consolidación definitiva en WinUI 3
 - **Corrección:** Retirado `MathTutor.WpfApp`; la solución, la documentación y la publicación quedan enfocadas en una sola interfaz mantenida.
@@ -380,3 +385,13 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** El anuncio del reto ya no incluye la descripción de escena que revelaba el resultado esperado; se añadió un repaso visible del secreto matemático en la misma pantalla.
 - **Ubicación:** `src/MathTutor.WinUI/Views/GamePage.xaml`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`.
 - **Criterio de verificación:** UIA sin “Resultado esperado”, repaso legible y flujo E2E completo.
+
+### 4. Paquete de release fácil de usar
+- **Corrección:** La publicación se genera como un solo ejecutable; el ZIP contiene una carpeta `MathTutor-v1.7.0` con `MathTutor.WinUI.exe`, `MathTutor.WinUI.pri` y `LEEME.txt`, en lugar de cientos de archivos sueltos. Se retiraron los archivos `.pdb` del paquete.
+- **Ubicación:** `scripts/publish-winui.ps1`, `README.md`, `context.md`.
+- **Criterio de verificación:** ZIP con tres archivos, `.pri` presente, `LEEME.txt` presente y aplicación iniciada desde la carpeta extraída.
+
+### 5. Guía para usuarios finales
+- **Corrección:** Añadido `LEEME.txt` en lenguaje sencillo para familias, docentes y estudiantes, con instalación, primeros pasos, teclas, accesibilidad, privacidad y solución de problemas. Se integra en el ZIP y se adjunta como archivo independiente en la release.
+- **Ubicación:** `LEEME.txt`, release `v1.7.0`.
+- **Criterio de verificación:** Guía descargable, integrada en el paquete y sin terminología de programación.

@@ -1,0 +1,202 @@
+MATH TUTOR ACCESIBLE
+Guía para familias, docentes y estudiantes
+Versión 1.7.0 - Octubre de 2026
+
+============================================================
+QUÉ ES MATH TUTOR
+============================================================
+
+Math Tutor es un programa para aprender matemáticas jugando.
+Acompaña al estudiante con explicaciones claras, ejemplos,
+pistas y retos adaptados a su edad y a sus necesidades.
+
+Incluye actividades desde jardín de niños hasta preparatoria,
+además de pensamiento computacional y programación inclusiva.
+
+No es un examen ni una carrera contra el reloj. El estudiante
+puede avanzar a su propio ritmo, repetir, escuchar de nuevo y
+consultar el secreto matemático cuando lo necesite.
+
+============================================================
+PARA QUIÉN ES
+============================================================
+
+- Estudiantes que quieren practicar matemáticas.
+- Docentes que buscan una actividad guiada para el aula.
+- Familias que acompañan el aprendizaje en casa.
+- Estudiantes que usan lector de pantalla, teclado, letra
+  grande, alto contraste o sonidos de apoyo.
+
+============================================================
+QUÉ NECESITAS
+============================================================
+
+- Una computadora con Windows 10 u 11.
+- Bocinas o audífonos, si quieres escuchar los sonidos.
+- Un lector de pantalla, si lo usas normalmente.
+- Tiempo para leer o escuchar las instrucciones.
+
+No necesitas crear una cuenta, conectarte a internet ni pagar
+nada para usar el programa.
+
+============================================================
+CÓMO ABRIRLO
+============================================================
+
+1. Descarga el archivo MathTutor-v1.7.0-Windows.zip
+   desde la página de esta versión.
+
+2. Haz clic derecho sobre el archivo descargado y elige
+   "Extraer todo" o "Descomprimir".
+
+3. Abre la carpeta que se creó.
+
+4. Haz doble clic en MathTutor.WinUI.exe. Es el único
+   programa de la carpeta y está junto a esta guía.
+
+5. Si Windows muestra un aviso de seguridad, elige
+   "Más información" y después "Ejecutar de todas formas".
+   Hazlo solo si descargaste el archivo desde esta página
+   oficial.
+
+Consejo: no abras el programa desde dentro del archivo
+comprimido. Primero extrae la carpeta completa. No necesitas
+buscar entre cientos de archivos ni instalar nada más.
+
+============================================================
+PRIMEROS PASOS
+============================================================
+
+1. La primera vez, el programa te pedirá crear un perfil.
+   Puedes escribir el nombre del estudiante, su edad, su
+   nivel escolar y sus preferencias de acceso.
+
+2. Elige una misión. Si no sabes por dónde empezar, usa la
+   misión recomendada.
+
+3. Lee o escucha la historia, el secreto matemático y el
+   ejemplo guiado.
+
+4. Responde el reto con las teclas 1, 2 o 3, o con el mouse.
+
+5. Si necesitas volver a leer algo, usa F1. El secreto
+   matemático también queda visible durante el reto.
+
+Puedes cambiar el perfil cuando quieras con la tecla F5.
+
+============================================================
+TECLAS ÚTILES
+============================================================
+
+F1    Repetir la última instrucción o explicación.
+F2    Encender o apagar los sonidos del juego.
+F3    Cambiar el contraste de la pantalla.
+F4    Cambiar el tamaño de la letra.
+F5    Abrir el perfil del estudiante.
+F6    Abrir el mapa de misiones e insignias.
+Esc   Volver al menú principal.
+1, 2, 3  Responder la opción correspondiente.
+Enter o Espacio  Iniciar una misión o continuar.
+Flechas  Moverse entre misiones y estaciones.
+
+============================================================
+ACCESIBILIDAD
+============================================================
+
+Math Tutor está pensado para usarse de distintas maneras:
+
+- Se puede manejar solo con el teclado.
+- Funciona con Narrador de Windows, NVDA y JAWS.
+- Tiene opciones de alto contraste y letra grande.
+- No tiene límites de tiempo.
+- Los sonidos del juego se pueden apagar sin apagar la voz
+  del lector de pantalla.
+- Las instrucciones y los resultados se pueden escuchar.
+- El secreto matemático se puede consultar durante el reto.
+
+Si usas lector de pantalla, enciéndelo antes de abrir el
+programa para que los anuncios estén disponibles desde el
+primer momento.
+
+============================================================
+CONSEJOS PARA DOCENTES Y FAMILIAS
+============================================================
+
+- Acompaña la primera sesión. Ayuda a completar el perfil y a
+  elegir una misión adecuada.
+- Permite que el estudiante lea o escuche a su ritmo. No hay
+  prisa.
+- Pídele que explique el secreto matemático con sus propias
+  palabras antes de responder.
+- Si se equivoca, usa F1 para repetir la explicación y
+  conversen sobre la pista.
+- Ajusta la letra con F4 y el contraste con F3 si la pantalla
+  resulta incómoda.
+- Si el estudiante usa lector de pantalla, practiquen juntos
+  las teclas F1, F5 y F6.
+- Celebra el esfuerzo y el proceso, no solo las respuestas
+  correctas.
+
+============================================================
+PRIVACIDAD
+============================================================
+
+- El programa no pide una cuenta.
+- No muestra anuncios.
+- No necesita internet para funcionar.
+- El perfil y el avance se guardan en esta computadora.
+- La información no se comparte automáticamente con otras
+  personas o servicios.
+
+============================================================
+SI ALGO NO FUNCIONA
+============================================================
+
+No se abre el programa:
+- Comprueba que extrajiste la carpeta completa.
+- Abre MathTutor.WinUI.exe desde la carpeta extraída.
+- Reinicia la computadora e inténtalo de nuevo.
+- Si aparece un aviso de Windows, revisa que hayas descargado
+  el archivo desde esta página oficial.
+
+No se escucha nada:
+- Revisa el volumen de la computadora.
+- Presiona F2 para activar los sonidos del juego.
+- Si usas lector de pantalla, comprueba que esté encendido.
+
+La letra es muy pequeña:
+- Presiona F4 varias veces para elegir un tamaño mayor.
+
+La pantalla se ve con poco contraste:
+- Presiona F3 para cambiar el tema de contraste.
+
+No encuentro una misión:
+- Presiona F6 para abrir el mapa.
+- Presiona Esc para volver al menú principal.
+
+No sé qué hacer:
+- Presiona F1 para escuchar o leer la instrucción otra vez.
+- Consulta el secreto matemático que aparece en la pantalla.
+
+============================================================
+NOVEDADES DE ESTA VERSIÓN
+============================================================
+
+- Hay una sola forma de abrir el programa, más sencilla.
+- El secreto matemático permanece a la vista durante el reto.
+- La lectura en voz alta ya no revela la respuesta antes de
+  tiempo.
+- Se retiraron elementos que no se usaban para que la
+  experiencia sea más clara.
+
+============================================================
+GRACIAS
+============================================================
+
+Gracias por acompañar a niñas, niños y jóvenes en su
+aprendizaje. Math Tutor busca que cada estudiante se sienta
+capaz, escuchado y libre de aprender a su manera.
+
+MathTutor Accesible
+Versión 1.7.0
+Octubre de 2026

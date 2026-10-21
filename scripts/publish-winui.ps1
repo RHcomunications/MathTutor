@@ -11,8 +11,12 @@ $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $project = Join-Path $root 'src\MathTutor.WinUI\MathTutor.WinUI.csproj'
+$guidePath = Join-Path $root 'LEEME.txt'
 if (-not (Test-Path $project)) {
     throw "No se encontró el proyecto WinUI: $project"
+}
+if (-not (Test-Path $guidePath)) {
+    throw "No se encontró la guía para usuarios: $guidePath"
 }
 
 if (-not $Version) {
@@ -24,18 +28,31 @@ if (-not $Version) {
 }
 
 $publishDir = Join-Path $root "artifacts\publish\MathTutor.WinUI\$($Configuration.ToLower())-$Runtime"
+$packageRoot = Join-Path $root 'artifacts\package'
+$packageDir = Join-Path $packageRoot "MathTutor-v$Version"
 $releaseDir = Join-Path $root 'artifacts\releases'
-$zipPath = Join-Path $releaseDir "MathTutor-v$Version-winui3-$Runtime.zip"
+$zipPath = Join-Path $releaseDir "MathTutor-v$Version-Windows.zip"
 
-if (Test-Path $publishDir) {
-    Remove-Item $publishDir -Recurse -Force
+foreach ($dir in @($publishDir, $packageDir)) {
+    if (Test-Path $dir) {
+        Remove-Item $dir -Recurse -Force
+    }
 }
 New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
+New-Item -ItemType Directory -Path $packageDir -Force | Out-Null
 New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
 
 Push-Location $root
 try {
-    & dotnet publish $project -c $Configuration -r $Runtime --self-contained true -p:Version=$Version -o $publishDir
+    & dotnet publish $project -c $Configuration -r $Runtime --self-contained true `
+        -p:Version=$Version `
+        -p:PublishSingleFile=true `
+        -p:IncludeNativeLibrariesForSelfExtract=true `
+        -p:EnableCompressionInSingleFile=true `
+        -p:EnableMsixTooling=true `
+        -p:DebugType=None `
+        -p:DebugSymbols=false `
+        -o $publishDir
     if ($LASTEXITCODE -ne 0) {
         throw "dotnet publish falló con código $LASTEXITCODE"
     }
@@ -49,13 +66,39 @@ if (-not (Test-Path $priPath)) {
     throw "La publicación no contiene MathTutor.WinUI.pri: $publishDir"
 }
 
+Get-ChildItem $publishDir -File |
+    Where-Object { $_.Extension -ne '.pdb' } |
+    Copy-Item -Destination $packageDir -Force
+Copy-Item -LiteralPath $guidePath -Destination (Join-Path $packageDir 'LEEME.txt') -Force
+
+foreach ($required in @('MathTutor.WinUI.exe', 'MathTutor.WinUI.pri', 'LEEME.txt')) {
+    if (-not (Test-Path (Join-Path $packageDir $required))) {
+        throw "El paquete no contiene $required"
+    }
+}
+
 if (Test-Path $zipPath) {
     Remove-Item $zipPath -Force
 }
-Compress-Archive -Path (Join-Path $publishDir '*') -DestinationPath $zipPath -CompressionLevel Optimal -Force
+Compress-Archive -Path $packageDir -DestinationPath $zipPath -CompressionLevel Optimal -Force
 
-$fileCount = (Get-ChildItem $publishDir -Recurse -File).Count
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$zip = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+try {
+    $entries = $zip.Entries.FullName
+}
+finally {
+    $zip.Dispose()
+}
+foreach ($required in @('MathTutor.WinUI.exe', 'MathTutor.WinUI.pri', 'LEEME.txt')) {
+    $entry = "MathTutor-v$Version\$required"
+    if ($entries -notcontains $entry) {
+        throw "El ZIP no contiene $entry"
+    }
+}
+
+$fileCount = (Get-ChildItem $packageDir -Recurse -File).Count
 $zipSize = [math]::Round((Get-Item $zipPath).Length / 1MB, 1)
-Write-Output "Publicación: $publishDir"
-Write-Output "Archivos: $fileCount | .pri: presente"
+Write-Output "Paquete: $packageDir"
+Write-Output "Archivos: $fileCount | .pri: presente | LEEME.txt: presente"
 Write-Output "ZIP: $zipPath ($zipSize MB)"

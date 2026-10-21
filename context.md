@@ -68,6 +68,7 @@ MathTutor.slnx
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
 ├── Directory.Build.props     Salidas centralizadas en artifacts/
 ├── MathTutor.sln / .slnx     Soluciones de Visual Studio / .NET
+├── LEEME.txt                 Guía para familias, docentes y estudiantes
 └── README.md, context.md, correcciones mat tutor.md, CLAUDE.md
 ```
 
@@ -79,11 +80,12 @@ MathTutor.slnx
 |---|---|
 | `MathTutor.slnx` | Archivo de solución XML moderno de .NET que agrupa los tres proyectos: `MathTutor.Core`, `MathTutor.WinUI` y `MathTutor.Tests`. |
 | `Directory.Build.props` | Centraliza las salidas de todos los proyectos en `artifacts/` mediante `UseArtifactsOutput` y `ArtifactsPath`; evita `bin/` y `obj/` dentro de cada proyecto. |
-| `scripts/publish-winui.ps1` | Publica WinUI 3 self-contained para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.WinUI.pri` y genera el ZIP en `artifacts/releases/`. |
-| `artifacts/` | Directorio ignorado por Git con salidas centralizadas: `bin/`, `obj/`, `publish/` y `releases/`. |
+| `scripts/publish-winui.ps1` | Publica WinUI 3 en un solo ejecutable para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.WinUI.pri`, integra `LEEME.txt`, arma la carpeta `MathTutor-v$Version` y genera `artifacts/releases/MathTutor-v$Version-Windows.zip`. |
+| `artifacts/` | Directorio ignorado por Git con salidas centralizadas: `bin/`, `obj/`, `publish/`, `package/` y `releases/`. |
 | `CLAUDE.md` | Directrices de ingeniería de software basadas en los principios de Andrej Karpathy: (1) Pensar antes de codificar, (2) Simplicidad primero (sin sobreingeniería), (3) Cambios quirúrgicos y (4) Ejecución orientada a objetivos verificables con pruebas. |
 | `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 45 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
-| `correcciones mat tutor.md` | Especificación técnica de las 12 mejoras de accesibilidad y reglas de negocio adaptativas (Fase 1: Tareas 1–7 y Fase 2 de Auditoría: Tareas 8–12; 100% implementadas y verificadas). |
+| `LEEME.txt` | Guía en texto plano para familias, docentes y estudiantes: instalación, primeros pasos, teclas, accesibilidad, privacidad, consejos y solución de problemas. Se integra en el paquete de release junto al ejecutable. |
+| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.7.0`. |
 | `context.md` | **(Este archivo)** Documento vivo de contexto técnico archivo por archivo para contribuidores y agentes de código. |
 | `.gitignore` | Reglas de exclusión de Git para artefactos de compilación (`artifacts/`, `bin/`, `obj/`, `.vs/`, paquetes temporales). |
 | `.engram/config.json` | Configuración del proyecto `mathtutor` para la memoria persistente Engram. |
@@ -199,6 +201,7 @@ Generador procedimental parametrizado que produce ejercicios infinitos y libres 
 - Aplicación de escritorio sin empaquetar (`WindowsPackageType=None`, `EnableMsixTooling=false`) con `WindowsAppSDKSelfContained=true`.
 - Referencia de proyecto únicamente a `MathTutor.Core.csproj`; icono `Assets/AppIcon.ico` y manifiesto `app.manifest`.
 - El target `CopyPriToPublishDirectory` copia `MathTutor.WinUI.pri` al directorio de publicación; sin él, el ejecutable publicado falla al iniciar.
+- La publicación de release usa un solo ejecutable (`PublishSingleFile`, extracción de bibliotecas nativas y compresión) desde `scripts/publish-winui.ps1`; el paquete final conserva únicamente el ejecutable, `.pri` y `LEEME.txt`.
 
 #### `src/MathTutor.WinUI/App.xaml` y `App.xaml.cs`
 Define los recursos globales dinámicos y estilos accesibles WCAG 2.2:
@@ -327,6 +330,8 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 
 ## 4. Registro de las 12 Correcciones Implementadas (`correcciones mat tutor.md` — Fase 1 y Fase 2)
 
+> **Nota histórica:** las fases 1 a 4 describen la implementación original en WPF, retirada en `v1.7.0`. La interfaz vigente y sus equivalentes están en `src/MathTutor.WinUI`, descritos en las secciones 2.3 y 2.4.
+
 Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/Users/artik/Documents/antigravity/math%20tutor/correcciones%20mat%20tutor.md) se encuentran implementadas y verificadas:
 
 ### Fase 1 (Tareas 1 a 7)
@@ -407,6 +412,6 @@ dotnet test -c Release --nologo --no-build
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-winui.ps1
 
 # 5. Conservar únicamente el ZIP de la release vigente
-Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.7.0-winui3-win-x64.zip' } | Remove-Item -Force
+Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.7.0-Windows.zip' } | Remove-Item -Force
 ```
 
