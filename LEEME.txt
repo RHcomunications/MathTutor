@@ -89,6 +89,18 @@ PRIMEROS PASOS
 
 Puedes cambiar el perfil cuando quieras con la tecla F5.
 
+El botón "Opciones del juego" abre un menú. Muévete con
+flecha arriba o abajo y elige con Enter. En "Opciones de
+accesibilidad" están Contraste, Letra, Sonidos y Repetir.
+Escape cierra el menú. También puedes usar F1 a F6.
+
+En la sala de trofeos, las insignias se agrupan por nivel.
+Cada grupo indica cuántos trofeos desbloqueaste y cuántos hay.
+Flecha derecha expande un grupo; flecha izquierda lo contrae.
+Arriba y abajo recorren los grupos y sus trofeos visibles.
+Los desbloqueados aparecen primero dentro de cada grupo.
+El juego recuerda qué grupos dejaste abiertos o cerrados.
+
 ============================================================
 TECLAS ÚTILES
 ============================================================
@@ -102,7 +114,8 @@ F6    Abrir el mapa de misiones e insignias.
 Esc   Volver al menú principal.
 1, 2, 3  Responder la opción correspondiente.
 Enter o Espacio  Iniciar una misión o continuar.
-Flechas  Moverse entre misiones y estaciones.
+Flechas arriba y abajo  Moverse entre misiones, estaciones
+                       y respuestas; recorrer los pasos de la lección.
 
 ============================================================
 ACCESIBILIDAD

@@ -67,6 +67,8 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
 
 ## ⌨️ Atajos de Teclado Globales de Accesibilidad
 
+El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para recorrerlo y **Enter** para elegir. Dentro de **Opciones de accesibilidad** encontrarás Contraste, Letra, Sonidos y Repetir. **Escape** cierra el menú; los atajos F1–F6 siguen disponibles.
+
 | Tecla | Acción |
 |---|---|
 | **F1** | Repetir en voz alta la última instrucción o explicación |
@@ -75,7 +77,7 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
 | **F4** | Cambiar cíclicamente el tamaño de letra (Estándar, Grande, Muy Grande, Gigante) |
 | **F5** | Abrir la pantalla de caracterización y perfil del alumno |
 | **F6** | Abrir el Mapa del Reino y Medallero de Insignias (45 estaciones) |
-| **Flechas (↑ ↓ ← →)** | Navegar misión por misión en el menú principal y en el Mapa del Reino |
+| **Flechas (↑ ↓)** | Recorrer las misiones, las estaciones del mapa y las respuestas de opción múltiple; avanzar o retroceder entre pasos de la lección |
 | **Escape** | Volver al menú principal de aventuras (o cerrar el diálogo al terminar una misión) |
 | **1, 2, 3** | Responder directamente la opción correspondiente en el minijuego |
 | **Enter / Espacio** | Iniciar misión seleccionada o avanzar a la siguiente misión tras completar un nivel |

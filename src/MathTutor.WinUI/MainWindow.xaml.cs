@@ -79,7 +79,6 @@ public sealed partial class MainWindow : Window
 
         UpdateTopStatus();
         ApplySystemHighContrast();
-        DispatcherQueue.TryEnqueue(SetOverflowButtonName);
 
         if (hasSavedProfile)
         {
@@ -150,32 +149,6 @@ public sealed partial class MainWindow : Window
             !scheme.Contains("#2", StringComparison.OrdinalIgnoreCase);
 
         _acc.ApplySystemHighContrast(highContrast, useDarkScheme);
-    }
-
-    private void SetOverflowButtonName()
-    {
-        if (FindDescendantByName(TopCommandBar, "MoreButton") is Button overflowButton)
-        {
-            AutomationProperties.SetName(overflowButton, "Más opciones de navegación y accesibilidad");
-            AutomationProperties.SetHelpText(overflowButton, "Muestra las acciones que no caben en la barra.");
-        }
-    }
-
-    private static DependencyObject? FindDescendantByName(DependencyObject parent, string name)
-    {
-        int count = VisualTreeHelper.GetChildrenCount(parent);
-        for (int i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, i);
-            if (child is FrameworkElement element && element.Name == name)
-                return child;
-
-            var match = FindDescendantByName(child, name);
-            if (match is not null)
-                return match;
-        }
-
-        return null;
     }
 
     private void OnProfileCompleted()
@@ -532,6 +505,14 @@ public sealed partial class MainWindow : Window
 
         args.Handled = true;
         OpenMenu();
+    }
+
+    private void MenuItem_GotFocus(object sender, RoutedEventArgs e)
+    {
+        if (ReferenceEquals(sender, e.OriginalSource))
+        {
+            _acc.Audio.PlayNavigationClick();
+        }
     }
 
     private void BtnNavMenu_Click(object sender, RoutedEventArgs e) => OpenMenu();

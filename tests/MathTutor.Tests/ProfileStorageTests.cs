@@ -69,6 +69,33 @@ public class ProfileStorageTests : IDisposable
         Assert.Contains("kinder_counting_01", loaded.CompletedLessonIds);
     }
 
+    [Fact]
+    public void SaveAndLoad_PreservesExpandedAndCollapsedBadgeGroups()
+    {
+        var profile = new UserProfile();
+        profile.Preferences.BadgeGroupExpansion["Kindergarten"] = true;
+        profile.Preferences.BadgeGroupExpansion["general"] = false;
+
+        _storage.Save(profile);
+        var loaded = _storage.Load();
+
+        Assert.NotNull(loaded);
+        Assert.True(loaded.Preferences.BadgeGroupExpansion["Kindergarten"]);
+        Assert.False(loaded.Preferences.BadgeGroupExpansion["general"]);
+    }
+
+    [Fact]
+    public void Load_OlderProfileWithoutBadgeGroups_UsesEmptyExpansionState()
+    {
+        File.WriteAllText(_testFilePath, "{\"Preferences\":{\"FontSize\":\"ExtraLarge\"}}");
+
+        var loaded = _storage.Load();
+
+        Assert.NotNull(loaded);
+        Assert.Empty(loaded.Preferences.BadgeGroupExpansion);
+        Assert.Equal(FontSizeLevel.ExtraLarge, loaded.Preferences.FontSize);
+    }
+
     public void Dispose()
     {
         try

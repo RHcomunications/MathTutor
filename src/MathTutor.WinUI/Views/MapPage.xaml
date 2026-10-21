@@ -164,66 +164,53 @@
                        TextWrapping="Wrap"
                        AutomationProperties.HeadingLevel="Level2" />
 
-            <ListView x:Name="ItemsBadges"
+            <TreeView x:Name="ItemsBadges"
                       Background="Transparent"
-                      BorderThickness="0"
                       SelectionMode="Single"
-                      IsItemClickEnabled="False"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                      AutomationProperties.Name="Sala de trofeos e insignias del Reino"
-                      AutomationProperties.HelpText="Usa las flechas para explorar tus insignias desbloqueadas y por descubrir."
+                      CanDragItems="False"
+                      CanReorderItems="False"
+                      AutomationProperties.Name="Sala de trofeos por nivel educativo"
+                      AutomationProperties.HelpText="Usa arriba y abajo para recorrer los grupos y trofeos, derecha para expandir e izquierda para contraer."
+                      Expanding="ItemsBadges_Expanding"
+                      Collapsed="ItemsBadges_Collapsed"
                       SelectionChanged="ItemsBadges_SelectionChanged">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="4" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="8" />
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:BadgeDisplayItem">
-                            <Border Width="260"
+                <TreeView.ItemTemplate>
+                    <DataTemplate>
+                        <TreeViewItem AutomationProperties.Name="{Binding Content.AccessibleBadgeName}">
+                            <Border MinWidth="260"
                                 Padding="16"
                                 CornerRadius="12"
-                                Background="{x:Bind BadgeBackgroundBrush}"
-                                BorderBrush="{x:Bind BadgeBorderBrush}"
+                                Background="{Binding Content.BadgeBackgroundBrush}"
+                                BorderBrush="{Binding Content.BadgeBorderBrush}"
                                 BorderThickness="2">
                             <StackPanel HorizontalAlignment="Center" Spacing="4">
-                                <TextBlock Text="{x:Bind IconEmoji}"
+                                <TextBlock Text="{Binding Content.IconEmoji}"
                                            FontSize="42"
                                            HorizontalAlignment="Center"
                                            AutomationProperties.AccessibilityView="Raw" />
-                                <TextBlock Text="{x:Bind Title}"
+                                <TextBlock Text="{Binding Content.Title}"
                                            FontSize="{ThemeResource AppBaseFontSize}"
                                            FontWeight="Bold"
                                            Foreground="{ThemeResource AppTextPrimaryBrush}"
                                            TextAlignment="Center"
                                            TextWrapping="Wrap" />
-                                <TextBlock Text="{x:Bind Description}"
+                                <TextBlock Text="{Binding Content.Description}"
                                            FontSize="{ThemeResource AppBaseFontSize}"
                                            Foreground="{ThemeResource AppTextSecondaryBrush}"
                                            TextAlignment="Center"
                                            TextWrapping="Wrap" />
-                                <TextBlock Text="{x:Bind UnlockStatusText}"
+                                <TextBlock Text="{Binding Content.UnlockStatusText}"
                                            FontSize="{ThemeResource AppBaseFontSize}"
                                            FontWeight="Bold"
-                                           Foreground="{x:Bind UnlockStatusBrush}"
+                                           Foreground="{Binding Content.UnlockStatusBrush}"
                                            HorizontalAlignment="Center"
                                            TextAlignment="Center" />
                             </StackPanel>
                         </Border>
+                        </TreeViewItem>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </TreeView.ItemTemplate>
+            </TreeView>
         </StackPanel>
     </ScrollViewer>
 </Page>

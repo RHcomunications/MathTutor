@@ -5,6 +5,7 @@ using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.Core.Services;
 using MathTutor.WinUI.Services;
+using MathTutor.WinUI.Navigation;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -31,6 +32,9 @@ public sealed class StationDisplayItem
 
 public sealed class BadgeDisplayItem
 {
+    public string Id { get; init; } = string.Empty;
+    public string GroupKey { get; init; } = string.Empty;
+    public bool IsUnlocked { get; init; }
     public string Title { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public string IconEmoji { get; init; } = "🏅";
@@ -47,13 +51,14 @@ public sealed partial class MapPage : Page
     private readonly RewardService _rewards = new();
     private readonly CurriculumService _curriculum = new();
     private bool _isRepainting;
+    private bool _isBuildingBadges;
 
     public MapPage()
     {
         InitializeComponent();
+        ItemsStations.PreviewKeyDown += VerticalListNavigation.OnPreviewKeyDown;
         ItemsStations.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(ItemsStations_KeyDown), handledEventsToo: true);
         ItemsStations.ContainerContentChanging += ItemsStations_ContainerContentChanging;
-        ItemsBadges.ContainerContentChanging += ItemsBadges_ContainerContentChanging;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -87,7 +92,7 @@ public sealed partial class MapPage : Page
     public void RefreshMap()
     {
         int previousStationIndex = ItemsStations.SelectedIndex;
-        int previousBadgeIndex = ItemsBadges.SelectedIndex;
+        string? previousBadgeId = (ItemsBadges.SelectedNode?.Content as BadgeDisplayItem)?.Id;
 
         var profile = _acc.CurrentProfile;
         var topics = profile.Disabilities.Count > 0
@@ -171,6 +176,8 @@ public sealed partial class MapPage : Page
 
             badgeDisplayList.Add(new BadgeDisplayItem
             {
+                Id = b.Id,
+                IsUnlocked = b.IsUnlocked,
                 Title = b.Title,
                 Description = b.Description,
                 IconEmoji = b.IsUnlocked ? b.IconEmoji : "🔒",
@@ -182,12 +189,55 @@ public sealed partial class MapPage : Page
             });
         }
 
-        ItemsBadges.ItemsSource = badgeDisplayList;
-        if (badgeDisplayList.Count > 0)
+        var topicLevels = topics.ToDictionary(t => t.Id, t => t.Level);
+        var badgeGroups = badges.GroupBy(b => topicLevels.TryGetValue(b.AssociatedTopicId, out var level)
+            ? level.ToString() : "general");
+        var displayById = badgeDisplayList.ToDictionary(b => b.Id);
+        _isBuildingBadges = true;
+        try
         {
-            ItemsBadges.SelectedIndex = _isRepainting && previousBadgeIndex >= 0 && previousBadgeIndex < badgeDisplayList.Count
-                ? previousBadgeIndex
-                : 0;
+            ItemsBadges.RootNodes.Clear();
+            foreach (var group in badgeGroups)
+            {
+                string title = Enum.TryParse<AcademicLevel>(group.Key, out var level)
+                    ? MenuPage.GetAcademicLevelName(level) : "Logros generales";
+                string progress = $"Desbloqueaste {group.Count(b => b.IsUnlocked)} trofeos de {group.Count()}";
+                var groupNode = new TreeViewNode
+                {
+                    Content = new BadgeDisplayItem
+                    {
+                        Id = "group_" + group.Key,
+                        GroupKey = group.Key,
+                        Title = title,
+                        UnlockStatusText = progress,
+                        AccessibleBadgeName = $"{title}. {progress}",
+                        BadgeBackgroundBrush = ResourceBrush("AppSurfaceBrush"),
+                        BadgeBorderBrush = ResourceBrush("AppBorderBrush"),
+                        UnlockStatusBrush = ResourceBrush("AppTextPrimaryBrush")
+                    }
+                };
+                foreach (var badge in group.OrderByDescending(b => b.IsUnlocked))
+                {
+                    var node = new TreeViewNode { Content = displayById[badge.Id] };
+                    groupNode.Children.Add(node);
+                }
+                groupNode.IsExpanded = profile.Preferences.BadgeGroupExpansion.TryGetValue(group.Key, out bool expanded)
+                    && expanded;
+                ItemsBadges.RootNodes.Add(groupNode);
+                if (_isRepainting)
+                {
+                    var selected = groupNode.Children.FirstOrDefault(n =>
+                        (n.Content as BadgeDisplayItem)?.Id == previousBadgeId);
+                    if (selected is not null && groupNode.IsExpanded)
+                        ItemsBadges.SelectedNode = selected;
+                    else if (((BadgeDisplayItem)groupNode.Content).Id == previousBadgeId)
+                        ItemsBadges.SelectedNode = groupNode;
+                }
+            }
+        }
+        finally
+        {
+            _isBuildingBadges = false;
         }
 
         DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, FocusSelectedStationItem);
@@ -231,12 +281,19 @@ public sealed partial class MapPage : Page
         }
     }
 
-    private void ItemsBadges_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+    private void ItemsBadges_Expanding(TreeView sender, TreeViewExpandingEventArgs args)
+        => SaveBadgeGroupExpansion(args.Node, true);
+
+    private void ItemsBadges_Collapsed(TreeView sender, TreeViewCollapsedEventArgs args)
+        => SaveBadgeGroupExpansion(args.Node, false);
+
+    private void SaveBadgeGroupExpansion(TreeViewNode node, bool expanded)
     {
-        if (args.ItemContainer is ListViewItem container && args.Item is BadgeDisplayItem item)
-        {
-            AutomationProperties.SetName(container, item.AccessibleBadgeName);
-        }
+        if (_isBuildingBadges || node.Content is not BadgeDisplayItem group || string.IsNullOrEmpty(group.GroupKey))
+            return;
+
+        _acc.CurrentProfile.Preferences.BadgeGroupExpansion[group.GroupKey] = expanded;
+        _acc.SaveCurrentProfile();
     }
 
     private void ItemsStations_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -264,9 +321,9 @@ public sealed partial class MapPage : Page
         }
     }
 
-    private void ItemsBadges_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void ItemsBadges_SelectionChanged(TreeView sender, TreeViewSelectionChangedEventArgs e)
     {
-        if (IsLoaded && !_isRepainting && ItemsBadges.SelectedItem is BadgeDisplayItem)
+        if (IsLoaded && !_isRepainting && !_isBuildingBadges && ItemsBadges.SelectedNode is not null)
         {
             _acc.Audio.PlayNavigationClick();
         }

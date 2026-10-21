@@ -9,6 +9,9 @@ namespace MathTutor.Core.Models;
 /// </summary>
 public class AccessibilityPreferences
 {
+    /// <summary>Estado expandido o contraído de cada grupo de trofeos.</summary>
+    public Dictionary<string, bool> BadgeGroupExpansion { get; set; } = new();
+
     /// <summary>
     /// Habilita la síntesis de voz propia (TTS) que lee en voz alta cada instrucción, botón y evento.
     /// </summary>

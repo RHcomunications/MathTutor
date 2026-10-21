@@ -1,6 +1,7 @@
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.WinUI.Services;
+using MathTutor.WinUI.Navigation;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -32,6 +33,7 @@ public sealed partial class MenuPage : Page
     public MenuPage()
     {
         InitializeComponent();
+        ItemsTopics.PreviewKeyDown += VerticalListNavigation.OnPreviewKeyDown;
         ItemsTopics.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(ItemsTopics_KeyDown), handledEventsToo: true);
         ItemsTopics.ContainerContentChanging += ItemsTopics_ContainerContentChanging;
     }
@@ -208,7 +210,7 @@ public sealed partial class MenuPage : Page
         App.Navigation.RequestMap();
     }
 
-    private static string GetAcademicLevelName(AcademicLevel level) => level switch
+    internal static string GetAcademicLevelName(AcademicLevel level) => level switch
     {
         AcademicLevel.Kindergarten => "Jardín de Niños (3 a 5 años)",
         AcademicLevel.EarlyElementary => "Primaria Baja (1º y 2º - 6 a 8 años)",

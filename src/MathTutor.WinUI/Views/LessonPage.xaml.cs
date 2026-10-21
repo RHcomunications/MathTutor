@@ -169,7 +169,7 @@ public sealed partial class LessonPage : Page
             return;
         }
 
-        if (e.Key is VirtualKey.Left or VirtualKey.Back or VirtualKey.Up)
+        if (e.Key is VirtualKey.Back or VirtualKey.Up)
         {
             if (_currentStep > 1)
             {
@@ -179,7 +179,7 @@ public sealed partial class LessonPage : Page
             return;
         }
 
-        if (e.Key is VirtualKey.Right or VirtualKey.Down)
+        if (e.Key == VirtualKey.Down)
         {
             if (_currentStep < TotalSteps)
             {
