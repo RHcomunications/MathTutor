@@ -14,7 +14,7 @@ public class CurriculumService
 
     public List<PedagogicalTopic> GetAllTopics()
     {
-        return new List<PedagogicalTopic>
+        var topics = new List<PedagogicalTopic>
         {
             BuildKindergartenCountingTopic(),
             BuildAdditionAndPropertiesTopic(),
@@ -62,6 +62,9 @@ public class CurriculumService
             BuildProgrammingGameCoordinatesTopic(),
             BuildProgrammingAssistiveAITopic()
         };
+
+        topics.InsertRange(1, KindergartenCurriculum.BuildTopics());
+        return topics;
     }
 
     /// <summary>
@@ -74,10 +77,12 @@ public class CurriculumService
         if (completedLessonIds != null)
         {
             var completedSet = new HashSet<string>(completedLessonIds);
-            var baseTopics = GetAllTopics().FindAll(t => allowedLevels.Contains(t.Level));
+            var baseTopics = GetAllTopics().FindAll(t =>
+                allowedLevels.Contains(t.Level) &&
+                (age >= 16 || (age >= t.TargetAgeMin && age <= t.TargetAgeMax)));
             if (age >= 5 &&
-                (completedSet.Contains("kinder_counting_01") ||
-                 (baseTopics.Count > 0 && baseTopics.TrueForAll(t => completedSet.Contains(t.Id)))))
+                baseTopics.Count > 0 &&
+                baseTopics.TrueForAll(t => completedSet.Contains(t.Id)))
             {
                 var allTopics = GetAllTopics();
                 int lastIdx = allTopics.FindLastIndex(t => allowedLevels.Contains(t.Level));
@@ -89,7 +94,9 @@ public class CurriculumService
         }
 
         return GetAllTopics()
-            .FindAll(t => allowedLevels.Contains(t.Level));
+            .FindAll(t =>
+                allowedLevels.Contains(t.Level) &&
+                (age >= 16 || (age >= t.TargetAgeMin && age <= t.TargetAgeMax)));
     }
 
     /// <summary>
@@ -120,9 +127,15 @@ public class CurriculumService
         }
 
         int idx = topics.FindIndex(t => t.Id == currentTopicId);
-        if (idx >= 0 && idx + 1 < topics.Count)
+        if (idx >= 0)
         {
-            return topics[idx + 1];
+            var next = topics
+                .Skip(idx + 1)
+                .FirstOrDefault(t => profile == null || !profile.CompletedLessonIds.Contains(t.Id));
+            if (next != null)
+            {
+                return next;
+            }
         }
 
         if (profile != null)
@@ -161,8 +174,24 @@ public class CurriculumService
 
         if (templateTopic != null && templateTopic.Exercises.Count > 0)
         {
-            // Reto 1: Ejercicio base curado que ejemplifica directamente la explicación de la lección
-            result.Add(templateTopic.Exercises[0]);
+            IEnumerable<Exercise> curated = templateTopic.Exercises;
+
+            // En jardín de niños, el tema contiene retos por banda de edad:
+            // se eligen los que corresponden a la edad real del alumno.
+            if (topic.Level == AcademicLevel.Kindergarten)
+            {
+                curated = curated
+                    .Where(e => profile.Age >= e.TargetAgeMin && profile.Age <= e.TargetAgeMax)
+                    .OrderByDescending(e => e.TargetAgeMin)
+                    .ThenByDescending(e => e.TargetAgeMax);
+
+                if (!curated.Any())
+                {
+                    curated = templateTopic.Exercises;
+                }
+            }
+
+            result.AddRange(curated.Take(count));
         }
 
         int remaining = count - result.Count;
@@ -190,6 +219,8 @@ public class CurriculumService
             Id = "kinder_counting_01",
             Title = "El Bosque Mágico: Cuenta con Cosmo",
             Level = AcademicLevel.Kindergarten,
+            TargetAgeMin = 3,
+            TargetAgeMax = 5,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¡Hola! Soy Cosmo, el búho del bosque. Hoy vamos a contar manzanas, piedras y tesoros. ¿Me acompañas?",
             NarrativeIntroSimplified = "¡Hola! Soy Cosmo. Vamos a contar cosas del bosque. ¡Vamos a jugar!",
@@ -301,8 +332,219 @@ public class CurriculumService
         ex3.Options.Add(new ExerciseOption { Id = "opt3", Label = "3 tesoros", Value = 3, IsCorrect = false, SpeechFeedback = "Contaste sólo algunos. Contemos todos juntos.", AccessibleKeyShortcut = "3" });
 
         topic.Exercises.Add(ex3);
+        AddKindergartenAgeBands(topic);
 
         return topic;
+    }
+
+    /// <summary>
+    /// Añade retos por banda de edad al tema de conteo de jardín de niños:
+    /// 3-4 años (contar hasta 2 y orden 1-3), 4-5 años (contar hasta 4 y comparar)
+    /// y 5-6 años (orden 1-5, juntar 2+3 y contar hasta 7).
+    /// </summary>
+    private static void AddKindergartenAgeBands(PedagogicalTopic topic)
+    {
+        var ex4 = new Exercise
+        {
+            Id = "count_ex_04",
+            Title = "Dos Estrellas en el Cielo",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 3,
+            TargetAgeMax = 4,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 2,
+            StandardInstruction = "Mira las estrellas. Toca cada una y cuenta. ¿Cuántas estrellas hay?",
+            SimplifiedInstruction = "Toca cada estrella. ¿Cuántas hay?",
+            ScreenReaderDescription = "Hay estrellas en el cielo. Cuéntalas una a una.",
+            FirstHint = "Toca la primera estrella. Luego la segunda.",
+            SecondHintDetailed = "Cuenta: una, dos. Hay 2 estrellas.",
+            ExplanationOfSuccess = "¡Muy bien! Hay 2 estrellas.",
+            SimplifiedFirstHint = "Toca una estrella. Luego la otra.",
+            SimplifiedSecondHint = "Cuenta: una, dos.",
+            SimplifiedExplanationOfSuccess = "¡Muy bien! Hay 2 estrellas."
+        };
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "s1", Name = "Estrella 1", EmojiSymbol = "⭐", AccessibleDescription = "Primera estrella", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "s2", Name = "Estrella 2", EmojiSymbol = "⭐", AccessibleDescription = "Segunda estrella", OrderIndex = 2, MusicalPitchHz = Frequencies[1] });
+        ex4.Options.Add(new ExerciseOption { Id = "opt1", Label = "1 estrella", Value = 1, IsCorrect = false, SpeechFeedback = "Hay otra estrella. Cuenta las dos.", AccessibleKeyShortcut = "1" });
+        ex4.Options.Add(new ExerciseOption { Id = "opt2", Label = "2 estrellas", Value = 2, IsCorrect = true, SpeechFeedback = "¡Sí! Hay 2 estrellas.", AccessibleKeyShortcut = "2" });
+        ex4.Options.Add(new ExerciseOption { Id = "opt3", Label = "3 estrellas", Value = 3, IsCorrect = false, SpeechFeedback = "Solo hay dos estrellas.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex4);
+
+        var ex5 = new Exercise
+        {
+            Id = "count_ex_05",
+            Title = "El Camino de Tres Piedras",
+            GameType = GamePlayType.OrderSequence,
+            TargetAgeMin = 3,
+            TargetAgeMax = 4,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 3,
+            StandardInstruction = "Las piedras dicen: 1, 2... ¿Qué número sigue?",
+            SimplifiedInstruction = "Las piedras dicen: 1, 2... ¿Qué número sigue?",
+            ScreenReaderDescription = "Tres piedras en el camino. Una está vacía.",
+            FirstHint = "Después del 2 viene el 3.",
+            SecondHintDetailed = "Cuenta: uno, dos, tres.",
+            ExplanationOfSuccess = "¡Bien! El 3 sigue después del 2.",
+            SimplifiedFirstHint = "Después del 2 viene el 3.",
+            SimplifiedSecondHint = "Cuenta: uno, dos, tres.",
+            SimplifiedExplanationOfSuccess = "¡Bien! El 3 sigue después del 2."
+        };
+        ex5.ItemsGroupA.Add(new ManipulableItem { Id = "k1", Name = "Piedra 1", EmojiSymbol = "🪨 1", AccessibleDescription = "Piedra con el número 1", OrderIndex = 1, MusicalPitchHz = Frequencies[0], IsCounted = true });
+        ex5.ItemsGroupA.Add(new ManipulableItem { Id = "k2", Name = "Piedra 2", EmojiSymbol = "🪨 2", AccessibleDescription = "Piedra con el número 2", OrderIndex = 2, MusicalPitchHz = Frequencies[1], IsCounted = true });
+        ex5.ItemsGroupA.Add(new ManipulableItem { Id = "k3", Name = "Piedra ?", EmojiSymbol = "❓", AccessibleDescription = "Piedra vacía esperando un número", OrderIndex = 3, MusicalPitchHz = Frequencies[2] });
+        ex5.Options.Add(new ExerciseOption { Id = "opt1", Label = "2", Value = 2, IsCorrect = false, SpeechFeedback = "El 2 ya está. Busca el que sigue.", AccessibleKeyShortcut = "1" });
+        ex5.Options.Add(new ExerciseOption { Id = "opt2", Label = "3", Value = 3, IsCorrect = true, SpeechFeedback = "¡Sí! Después del 2 viene el 3.", AccessibleKeyShortcut = "2" });
+        ex5.Options.Add(new ExerciseOption { Id = "opt3", Label = "4", Value = 4, IsCorrect = false, SpeechFeedback = "El 4 viene después del 3.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex5);
+
+        var ex6 = new Exercise
+        {
+            Id = "count_ex_06",
+            Title = "Las Cuatro Campanas",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 4,
+            TargetAgeMax = 5,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 4,
+            StandardInstruction = "Toca cada campana y cuenta. ¿Cuántas campanas hay?",
+            SimplifiedInstruction = "Toca cada campana. ¿Cuántas hay?",
+            ScreenReaderDescription = "Hay campanas en la mesa. Cuéntalas una a una.",
+            FirstHint = "Toca una campana y di un número. Sigue con la siguiente.",
+            SecondHintDetailed = "Cuenta: una, dos, tres, cuatro. Hay 4 campanas.",
+            ExplanationOfSuccess = "¡Muy bien! Hay 4 campanas.",
+            SimplifiedFirstHint = "Toca cada campana una vez.",
+            SimplifiedSecondHint = "Cuenta: una, dos, tres, cuatro.",
+            SimplifiedExplanationOfSuccess = "¡Muy bien! Hay 4 campanas."
+        };
+        for (int i = 0; i < 4; i++)
+        {
+            ex6.ItemsGroupA.Add(new ManipulableItem { Id = $"b{i + 1}", Name = $"Campana {i + 1}", EmojiSymbol = "🔔", AccessibleDescription = $"Campana número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i] });
+        }
+        ex6.Options.Add(new ExerciseOption { Id = "opt1", Label = "3 campanas", Value = 3, IsCorrect = false, SpeechFeedback = "Falta una campana por contar.", AccessibleKeyShortcut = "1" });
+        ex6.Options.Add(new ExerciseOption { Id = "opt2", Label = "4 campanas", Value = 4, IsCorrect = true, SpeechFeedback = "¡Sí! Hay 4 campanas.", AccessibleKeyShortcut = "2" });
+        ex6.Options.Add(new ExerciseOption { Id = "opt3", Label = "5 campanas", Value = 5, IsCorrect = false, SpeechFeedback = "Solo hay cuatro campanas.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex6);
+
+        var ex7 = new Exercise
+        {
+            Id = "count_ex_07",
+            Title = "¿Dónde Hay Más Manzanas?",
+            GameType = GamePlayType.Comparison,
+            TargetAgeMin = 4,
+            TargetAgeMax = 5,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 4,
+            StandardInstruction = "Mira los dos grupos. ¿En cuál hay más manzanas?",
+            SimplifiedInstruction = "¿Dónde hay más manzanas?",
+            ScreenReaderDescription = "Dos grupos de manzanas. Compara cuál tiene más.",
+            FirstHint = "Cuenta las manzanas de cada grupo.",
+            SecondHintDetailed = "Un grupo tiene 3 y el otro tiene 4. El de 4 tiene más.",
+            ExplanationOfSuccess = "¡Bien! El grupo de 4 tiene más manzanas.",
+            SimplifiedFirstHint = "Cuenta las manzanas de cada grupo.",
+            SimplifiedSecondHint = "El grupo de 4 tiene más.",
+            SimplifiedExplanationOfSuccess = "¡Bien! El grupo de 4 tiene más."
+        };
+        for (int i = 0; i < 3; i++)
+        {
+            ex7.ItemsGroupA.Add(new ManipulableItem { Id = $"a{i + 1}", Name = $"Manzana {i + 1}", EmojiSymbol = "🍎", AccessibleDescription = $"Manzana del grupo A número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i] });
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            ex7.ItemsGroupB.Add(new ManipulableItem { Id = $"b{i + 1}", Name = $"Manzana {i + 1}", EmojiSymbol = "🍎", AccessibleDescription = $"Manzana del grupo B número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i] });
+        }
+        ex7.Options.Add(new ExerciseOption { Id = "opt1", Label = "3 manzanas", Value = 3, IsCorrect = false, SpeechFeedback = "Ese grupo tiene menos.", AccessibleKeyShortcut = "1" });
+        ex7.Options.Add(new ExerciseOption { Id = "opt2", Label = "4 manzanas", Value = 4, IsCorrect = true, SpeechFeedback = "¡Sí! 4 es más que 3.", AccessibleKeyShortcut = "2" });
+        ex7.Options.Add(new ExerciseOption { Id = "opt3", Label = "Igual", Value = 0, IsCorrect = false, SpeechFeedback = "Los grupos no tienen la misma cantidad.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex7);
+
+        var ex8 = new Exercise
+        {
+            Id = "count_ex_08",
+            Title = "El Río de los Cinco Números",
+            GameType = GamePlayType.OrderSequence,
+            TargetAgeMin = 5,
+            TargetAgeMax = 6,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 5,
+            StandardInstruction = "Las piedras dicen: 1, 2, 3, 4... ¿Qué número sigue?",
+            SimplifiedInstruction = "Las piedras dicen: 1, 2, 3, 4... ¿Qué número sigue?",
+            ScreenReaderDescription = "Cinco piedras en el río. La última está vacía.",
+            FirstHint = "Después del 4 viene el 5.",
+            SecondHintDetailed = "Cuenta: uno, dos, tres, cuatro, cinco.",
+            ExplanationOfSuccess = "¡Bien! El 5 sigue después del 4.",
+            SimplifiedFirstHint = "Después del 4 viene el 5.",
+            SimplifiedSecondHint = "Cuenta: uno, dos, tres, cuatro, cinco.",
+            SimplifiedExplanationOfSuccess = "¡Bien! El 5 sigue después del 4."
+        };
+        for (int i = 1; i <= 4; i++)
+        {
+            ex8.ItemsGroupA.Add(new ManipulableItem { Id = $"r{i}", Name = $"Piedra {i}", EmojiSymbol = $"🪨 {i}", AccessibleDescription = $"Piedra con el número {i}", OrderIndex = i, MusicalPitchHz = Frequencies[i - 1], IsCounted = true });
+        }
+        ex8.ItemsGroupA.Add(new ManipulableItem { Id = "r5", Name = "Piedra ?", EmojiSymbol = "❓", AccessibleDescription = "Piedra vacía esperando un número", OrderIndex = 5, MusicalPitchHz = Frequencies[4] });
+        ex8.Options.Add(new ExerciseOption { Id = "opt1", Label = "4", Value = 4, IsCorrect = false, SpeechFeedback = "El 4 ya está. Busca el que sigue.", AccessibleKeyShortcut = "1" });
+        ex8.Options.Add(new ExerciseOption { Id = "opt2", Label = "5", Value = 5, IsCorrect = true, SpeechFeedback = "¡Sí! Después del 4 viene el 5.", AccessibleKeyShortcut = "2" });
+        ex8.Options.Add(new ExerciseOption { Id = "opt3", Label = "6", Value = 6, IsCorrect = false, SpeechFeedback = "El 6 viene después del 5.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex8);
+
+        var ex9 = new Exercise
+        {
+            Id = "count_ex_09",
+            Title = "La Cesta de Manzanas",
+            GameType = GamePlayType.AdditionCombine,
+            TargetAgeMin = 5,
+            TargetAgeMax = 6,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 5,
+            StandardInstruction = "Hay 2 manzanas en una cesta y 3 en otra. ¿Cuántas manzanas hay en total?",
+            SimplifiedInstruction = "Hay 2 manzanas y 3 manzanas. ¿Cuántas hay en total?",
+            ScreenReaderDescription = "Dos grupos de manzanas que se juntan en una cesta.",
+            FirstHint = "Cuenta todas las manzanas: 1, 2, 3, 4, 5.",
+            SecondHintDetailed = "2 manzanas más 3 manzanas son 5 manzanas.",
+            ExplanationOfSuccess = "¡Muy bien! 2 y 3 son 5 manzanas.",
+            SimplifiedFirstHint = "Cuenta todas las manzanas.",
+            SimplifiedSecondHint = "2 y 3 son 5.",
+            SimplifiedExplanationOfSuccess = "¡Muy bien! Hay 5 manzanas."
+        };
+        for (int i = 0; i < 2; i++)
+        {
+            ex9.ItemsGroupA.Add(new ManipulableItem { Id = $"c{i + 1}", Name = $"Manzana {i + 1}", EmojiSymbol = "🍎", AccessibleDescription = $"Manzana de la primera cesta número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i] });
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            ex9.ItemsGroupB.Add(new ManipulableItem { Id = $"d{i + 1}", Name = $"Manzana {i + 1}", EmojiSymbol = "🍎", AccessibleDescription = $"Manzana de la segunda cesta número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i + 2] });
+        }
+        ex9.Options.Add(new ExerciseOption { Id = "opt1", Label = "4 manzanas", Value = 4, IsCorrect = false, SpeechFeedback = "Cuenta una manzana más.", AccessibleKeyShortcut = "1" });
+        ex9.Options.Add(new ExerciseOption { Id = "opt2", Label = "5 manzanas", Value = 5, IsCorrect = true, SpeechFeedback = "¡Sí! 2 y 3 son 5.", AccessibleKeyShortcut = "2" });
+        ex9.Options.Add(new ExerciseOption { Id = "opt3", Label = "6 manzanas", Value = 6, IsCorrect = false, SpeechFeedback = "Son menos de seis.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex9);
+
+        var ex10 = new Exercise
+        {
+            Id = "count_ex_10",
+            Title = "Siete Tesoros del Bosque",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 5,
+            TargetAgeMax = 6,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = 7,
+            StandardInstruction = "Toca cada tesoro y cuenta. ¿Cuántos tesoros hay?",
+            SimplifiedInstruction = "Toca cada tesoro. ¿Cuántos hay?",
+            ScreenReaderDescription = "Hay varios tesoros en el bosque. Cuéntalos todos.",
+            FirstHint = "Toca cada tesoro una vez y di un número.",
+            SecondHintDetailed = "Cuenta: 1, 2, 3, 4, 5, 6, 7. Hay 7 tesoros.",
+            ExplanationOfSuccess = "¡Muy bien! Hay 7 tesoros.",
+            SimplifiedFirstHint = "Toca cada tesoro una vez.",
+            SimplifiedSecondHint = "Cuenta: 1, 2, 3, 4, 5, 6, 7.",
+            SimplifiedExplanationOfSuccess = "¡Muy bien! Hay 7 tesoros."
+        };
+        for (int i = 0; i < 7; i++)
+        {
+            ex10.ItemsGroupA.Add(new ManipulableItem { Id = $"t{i + 1}", Name = $"Tesoro {i + 1}", EmojiSymbol = i % 2 == 0 ? "💎" : "⭐", AccessibleDescription = $"Tesoro número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i % Frequencies.Length] });
+        }
+        ex10.Options.Add(new ExerciseOption { Id = "opt1", Label = "6 tesoros", Value = 6, IsCorrect = false, SpeechFeedback = "Falta un tesoro por contar.", AccessibleKeyShortcut = "1" });
+        ex10.Options.Add(new ExerciseOption { Id = "opt2", Label = "7 tesoros", Value = 7, IsCorrect = true, SpeechFeedback = "¡Sí! Hay 7 tesoros.", AccessibleKeyShortcut = "2" });
+        ex10.Options.Add(new ExerciseOption { Id = "opt3", Label = "8 tesoros", Value = 8, IsCorrect = false, SpeechFeedback = "Solo hay siete tesoros.", AccessibleKeyShortcut = "3" });
+        topic.Exercises.Add(ex10);
     }
 
     /// <summary>

@@ -475,7 +475,7 @@ public class PedagogyAndAccessibilityTests
         var profile = new UserProfile
         {
             Disability = DisabilityType.Intellectual,
-            Severity = DisabilitySeverity.Moderate
+            Support = { IntellectualSupport = IntellectualSupportLevel.Limited }
         };
         profile.ApplyRecommendedAccessibilityDefaults();
 
@@ -524,7 +524,9 @@ public class PedagogyAndAccessibilityTests
     [Fact]
     public void Kindergarten_ChildFacingText_HasNoTechnicalTerms()
     {
-        var topic = _curriculum.GetAllTopics().First(t => t.Id == "kinder_counting_01");
+        var topics = _curriculum.GetAllTopics().Where(t => t.Level == AcademicLevel.Kindergarten).ToList();
+        Assert.NotEmpty(topics);
+
         var banned = new[]
         {
             "cardinalidad",
@@ -537,40 +539,182 @@ public class PedagogyAndAccessibilityTests
             "coleccion"
         };
 
-        var texts = new List<string>
+        foreach (var topic in topics)
         {
-            topic.Title,
-            topic.NarrativeIntro,
-            topic.NarrativeIntroSimplified,
-            topic.CoreConceptExplanation,
-            topic.CoreConceptSimplified,
-            topic.CongratulationMessage
-        };
-
-        foreach (var exercise in topic.Exercises)
-        {
-            texts.Add(exercise.Title);
-            texts.Add(exercise.StandardInstruction);
-            texts.Add(exercise.SimplifiedInstruction);
-            texts.Add(exercise.FirstHint);
-            texts.Add(exercise.SecondHintDetailed);
-            texts.Add(exercise.ExplanationOfSuccess);
-            texts.Add(exercise.SimplifiedFirstHint);
-            texts.Add(exercise.SimplifiedSecondHint);
-            texts.Add(exercise.SimplifiedExplanationOfSuccess);
-            texts.AddRange(exercise.Options.Select(o => o.Label));
-            texts.AddRange(exercise.Options.Select(o => o.SpeechFeedback));
-        }
-
-        foreach (var text in texts.Where(t => !string.IsNullOrWhiteSpace(t)))
-        {
-            foreach (var term in banned)
+            var texts = new List<string>
             {
-                Assert.False(
-                    text.Contains(term, StringComparison.OrdinalIgnoreCase),
-                    $"El texto de jardín contiene el término técnico '{term}': {text}");
+                topic.Title,
+                topic.NarrativeIntro,
+                topic.NarrativeIntroSimplified,
+                topic.CoreConceptExplanation,
+                topic.CoreConceptSimplified,
+                topic.CongratulationMessage
+            };
+
+            foreach (var exercise in topic.Exercises)
+            {
+                texts.Add(exercise.Title);
+                texts.Add(exercise.StandardInstruction);
+                texts.Add(exercise.SimplifiedInstruction);
+                texts.Add(exercise.FirstHint);
+                texts.Add(exercise.SecondHintDetailed);
+                texts.Add(exercise.ExplanationOfSuccess);
+                texts.Add(exercise.SimplifiedFirstHint);
+                texts.Add(exercise.SimplifiedSecondHint);
+                texts.Add(exercise.SimplifiedExplanationOfSuccess);
+                texts.AddRange(exercise.Options.Select(o => o.Label));
+                texts.AddRange(exercise.Options.Select(o => o.SpeechFeedback));
+            }
+
+            foreach (var text in texts.Where(t => !string.IsNullOrWhiteSpace(t)))
+            {
+                foreach (var term in banned)
+                {
+                    Assert.False(
+                        text.Contains(term, StringComparison.OrdinalIgnoreCase),
+                        $"El texto de jardín contiene el término técnico '{term}': {text}");
+                }
             }
         }
+    }
+
+
+    [Fact]
+    public void Kindergarten_AllExercises_HavePlayfulEarlyVariants()
+    {
+        var topics = _curriculum.GetAllTopics().Where(t => t.Level == AcademicLevel.Kindergarten).ToList();
+        Assert.NotEmpty(topics);
+
+        foreach (var exercise in topics.SelectMany(t => t.Exercises))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(exercise.SimplifiedInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(exercise.SimplifiedFirstHint));
+            Assert.False(string.IsNullOrWhiteSpace(exercise.SimplifiedSecondHint));
+            Assert.False(string.IsNullOrWhiteSpace(exercise.SimplifiedExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void PlayfulEarlyText_UsesShortSentences()
+    {
+        var topics = _curriculum.GetAllTopics().Where(t => t.Level == AcademicLevel.Kindergarten).ToList();
+        Assert.NotEmpty(topics);
+
+        var texts = new List<string>();
+        foreach (var topic in topics)
+        {
+            texts.Add(topic.NarrativeIntroSimplified);
+            texts.Add(topic.CoreConceptSimplified);
+            texts.AddRange(topic.Exercises.SelectMany(e => new[]
+            {
+                e.SimplifiedInstruction,
+                e.SimplifiedFirstHint,
+                e.SimplifiedSecondHint,
+                e.SimplifiedExplanationOfSuccess
+            }));
+        }
+
+        foreach (var sentence in texts
+            .Where(t => !string.IsNullOrWhiteSpace(t))
+            .SelectMany(t => t.Split(new[] { '.', '?', '!' }, StringSplitOptions.RemoveEmptyEntries)))
+        {
+            int wordCount = sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+            Assert.True(wordCount <= 16, $"Frase demasiado larga para 3-5 años ({wordCount} palabras): {sentence.Trim()}");
+        }
+    }
+
+    [Fact]
+    public void Kindergarten_HasAgeBandedExercises_AndSelectsByAge()
+    {
+        var topic = _curriculum.GetAllTopics().First(t => t.Id == "kinder_counting_01");
+
+        Assert.Equal(3, topic.TargetAgeMin);
+        Assert.Equal(5, topic.TargetAgeMax);
+        Assert.True(topic.Exercises.Count >= 9);
+
+        foreach (int age in new[] { 3, 4, 5 })
+        {
+            var profile = new UserProfile { Age = age, CurrentLevel = AcademicLevel.Kindergarten };
+            var exercises = _curriculum.GenerateAdaptiveExercises(topic, profile, count: 3);
+
+            Assert.Equal(3, exercises.Count);
+            Assert.All(exercises, exercise => Assert.InRange(age, exercise.TargetAgeMin, exercise.TargetAgeMax));
+        }
+    }
+
+    [Fact]
+    public void Kindergarten_HasNineAdditionalTopics_WithAtLeastFiveExercises()
+    {
+        var topics = _curriculum.GetAllTopics()
+            .Where(t => t.Level == AcademicLevel.Kindergarten)
+            .ToList();
+
+        Assert.Equal(10, topics.Count);
+        Assert.Equal(9, topics.Count(t => t.Id != "kinder_counting_01"));
+        Assert.All(topics, topic =>
+        {
+            Assert.InRange(topic.Exercises.Count, 5, 10);
+            Assert.InRange(topic.TargetAgeMin, 3, 5);
+            Assert.InRange(topic.TargetAgeMax, 4, 6);
+            Assert.True(topic.TargetAgeMin < topic.TargetAgeMax);
+        });
+    }
+
+    [Fact]
+    public void Kindergarten_InteractiveCounting_CountsEveryVisibleItem()
+    {
+        var exercises = _curriculum.GetAllTopics()
+            .Where(t => t.Level == AcademicLevel.Kindergarten)
+            .SelectMany(t => t.Exercises)
+            .Where(e => e.GameType == GamePlayType.InteractiveCounting);
+
+        Assert.All(exercises, exercise =>
+            Assert.Equal(
+                exercise.ItemsGroupA.Count + exercise.ItemsGroupB.Count,
+                exercise.ExpectedResult));
+    }
+
+    [Fact]
+    public void Kindergarten_CoversEveryAgeBand_WithAtLeastThreeTopics()
+    {
+        foreach (int age in new[] { 3, 4, 5 })
+        {
+            var topics = _curriculum.GetTopicsForAge(age);
+            Assert.True(topics.Count >= 3, $"La edad {age} solo tiene {topics.Count} temas de jardín.");
+            Assert.All(topics, t => Assert.Equal(AcademicLevel.Kindergarten, t.Level));
+        }
+    }
+
+    [Fact]
+    public void Kindergarten_UsesAllCuratedExercisesBeforeGeneratingVariants()
+    {
+        foreach (int age in new[] { 3, 4, 5 })
+        {
+            foreach (var topic in _curriculum.GetTopicsForAge(age))
+            {
+                var profile = new UserProfile { Age = age, CurrentLevel = AcademicLevel.Kindergarten };
+                var curatedIds = topic.Exercises
+                    .Where(e => age >= e.TargetAgeMin && age <= e.TargetAgeMax)
+                    .Select(e => e.Id)
+                    .ToHashSet();
+
+                var exercises = _curriculum.GenerateAdaptiveExercises(topic, profile, count: 3);
+
+                Assert.Equal(3, exercises.Count);
+                Assert.All(exercises, exercise => Assert.Contains(exercise.Id, curatedIds));
+            }
+        }
+    }
+
+    [Fact]
+    public void GenerateAdaptiveExercises_UsesCuratedExercisesBeforeGenerated()
+    {
+        var topic = _curriculum.GetAllTopics().First(t => t.Id == "elem_addition_01");
+        var profile = new UserProfile { Age = 7, CurrentLevel = AcademicLevel.EarlyElementary };
+
+        var exercises = _curriculum.GenerateAdaptiveExercises(topic, profile, count: 3);
+
+        Assert.Equal(topic.Exercises.Take(3).Select(e => e.Id), exercises.Select(e => e.Id));
     }
 
 
@@ -580,7 +724,7 @@ public class PedagogyAndAccessibilityTests
         var profile = new UserProfile
         {
             Disability = DisabilityType.Visual,
-            Severity = DisabilitySeverity.Severe
+            Support = { VisualFunction = VisualFunctionalLevel.Blindness }
         };
         profile.ApplyRecommendedAccessibilityDefaults();
 
@@ -592,11 +736,39 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
-    public void UserProfile_Neurodivergent_SetsLowSensoryTheme()
+    public void UserProfile_AutismSupportLevelAndAdhdPresentation_ShapeSuggestionsSeparately()
+    {
+        var autism = new UserProfile
+        {
+            Age = 10,
+            Disability = DisabilityType.Autism,
+            Support = { AutismSupport = AutismSupportLevel.Level2 }
+        };
+        autism.ApplyRecommendedAccessibilityDefaults();
+
+        Assert.Equal(HighContrastTheme.LowSensory, autism.Preferences.Theme);
+        Assert.True(autism.Preferences.ReduceOptionsCount);
+
+        var adhd = new UserProfile
+        {
+            Age = 10,
+            Disability = DisabilityType.ADHD,
+            Support = { AdhdPresentation = AdhdPresentation.Combined }
+        };
+        adhd.ApplyRecommendedAccessibilityDefaults();
+
+        Assert.Equal(HighContrastTheme.LowSensory, adhd.Preferences.Theme);
+        Assert.True(adhd.Preferences.ReduceOptionsCount);
+        Assert.True(adhd.Preferences.UnlimitedTime);
+    }
+
+    [Fact]
+    public void UserProfile_Autism_SetsLowSensoryTheme()
     {
         var profile = new UserProfile
         {
-            Disability = DisabilityType.Neurodivergent
+            Disability = DisabilityType.Autism,
+            Support = { AutismSupport = AutismSupportLevel.Level1 }
         };
         profile.ApplyRecommendedAccessibilityDefaults();
 
@@ -702,11 +874,12 @@ public class PedagogyAndAccessibilityTests
     [Fact]
     public void CurriculumService_GetNextTopic_ReturnsNullWhenAllStageMissionsCompleted()
     {
-        var profile = new UserProfile
+        var age4Topics = _curriculum.GetTopicsForAge(4);
+        var profile = new UserProfile { Age = 4 };
+        foreach (var topic in age4Topics)
         {
-            Age = 4,
-            CompletedLessonIds = { "kinder_counting_01" }
-        };
+            profile.CompletedLessonIds.Add(topic.Id);
+        }
 
         var nextAfterKinder = _curriculum.GetNextTopic("kinder_counting_01", profile);
         Assert.Null(nextAfterKinder);
@@ -735,15 +908,19 @@ public class PedagogyAndAccessibilityTests
         var profile = new UserProfile
         {
             Age = 10,
-            Disabilities = { DisabilityType.Visual, DisabilityType.Neurodivergent },
-            Severity = DisabilitySeverity.Moderate
+            Disabilities = { DisabilityType.Visual, DisabilityType.Autism },
+            Support =
+            {
+                VisualFunction = VisualFunctionalLevel.LowVision,
+                AutismSupport = AutismSupportLevel.Level1
+            }
         };
 
         profile.ApplyRecommendedAccessibilityDefaults();
 
         // Ambas adaptaciones deben activarse simultáneamente
         Assert.True(profile.HasDisability(DisabilityType.Visual));
-        Assert.True(profile.HasDisability(DisabilityType.Neurodivergent));
+        Assert.True(profile.HasDisability(DisabilityType.Autism));
         Assert.False(profile.HasDisability(DisabilityType.Hearing));
 
         // Adaptaciones de ceguera/baja visión:
@@ -792,10 +969,10 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
-    public void All45Topics_SupportStepByStepInteractiveLessonStructure_WithNarrativeConceptAndGuidedExample()
+    public void AllCurriculumTopics_SupportStepByStepInteractiveLessonStructure_WithNarrativeConceptAndGuidedExample()
     {
         var topics = _curriculum.GetAllTopics();
-        Assert.Equal(45, topics.Count);
+        Assert.Equal(54, topics.Count);
 
         foreach (var topic in topics)
         {
@@ -820,23 +997,36 @@ public class PedagogyAndAccessibilityTests
     [Fact]
     public void CurriculumService_UnlocksSubsequentStageMissions_WhenBaseStageCompleted()
     {
-        var profile = new UserProfile
-        {
-            Age = 5,
-            CompletedLessonIds = { "kinder_counting_01" }
-        };
+        var profile = new UserProfile { Age = 5 };
 
-        // Antes de completar, solo incluye Kínder
+        // Antes de completar, solo incluye las misiones de Kínder para su edad
         var initialTopics = _curriculum.GetTopicsForAge(5);
-        Assert.Single(initialTopics);
+        Assert.Equal(8, initialTopics.Count);
+        Assert.All(initialTopics, t => Assert.Equal(AcademicLevel.Kindergarten, t.Level));
         Assert.Equal("kinder_counting_01", initialTopics[0].Id);
 
-        // Tras completar, incluye misiones de la siguiente etapa (Primaria Inicial)
+        // Completar solo conteo no salta a Primaria: desbloquea el resto de Kínder
+        profile.CompletedLessonIds.Add("kinder_counting_01");
+        var afterCounting = _curriculum.GetTopicsForAge(5, DisabilityType.None, profile.CompletedLessonIds);
+        Assert.DoesNotContain(afterCounting, t => t.Level == AcademicLevel.EarlyElementary);
+        Assert.True(afterCounting.Count > 1);
+
+        var nextKindergartenTopic = _curriculum.GetNextTopic("kinder_counting_01", profile);
+        Assert.NotNull(nextKindergartenTopic);
+        Assert.Equal(AcademicLevel.Kindergarten, nextKindergartenTopic.Level);
+
+        // Al completar todo Kínder, se desbloquea Primaria Inicial
+        foreach (var topic in initialTopics)
+        {
+            if (!profile.CompletedLessonIds.Contains(topic.Id))
+            {
+                profile.CompletedLessonIds.Add(topic.Id);
+            }
+        }
+
         var unlockedTopics = _curriculum.GetTopicsForAge(5, DisabilityType.None, profile.CompletedLessonIds);
-        Assert.True(unlockedTopics.Count > 1);
         Assert.Contains(unlockedTopics, t => t.Level == AcademicLevel.EarlyElementary);
 
-        // GetNextTopic avanza hacia la primera misión de primaria
         var nextTopic = _curriculum.GetNextTopic("kinder_counting_01", profile);
         Assert.NotNull(nextTopic);
         Assert.Equal("elem_addition_01", nextTopic.Id);

@@ -25,6 +25,87 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_shapes",
+                Title = "Amigo de las Formas",
+                Description = "Reconociste círculos, cuadrados y triángulos en el jardín.",
+                IconEmoji = "🔵",
+                AssociatedTopicId = "kinder_shapes_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_positions",
+                Title = "Explorador de Lugares",
+                Description = "Aprendiste a mirar arriba, abajo, dentro y fuera.",
+                IconEmoji = "🐰",
+                AssociatedTopicId = "kinder_positions_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_stories",
+                Title = "Cuentacuentos Numérico",
+                Description = "Contaste personajes y objetos en tus cuentos favoritos.",
+                IconEmoji = "📖",
+                AssociatedTopicId = "kinder_stories_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_patterns",
+                Title = "Ritmo Mágico",
+                Description = "Seguiste colores, formas y sonidos que se repiten.",
+                IconEmoji = "🎵",
+                AssociatedTopicId = "kinder_patterns_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_sorting",
+                Title = "Organizador del Jardín",
+                Description = "Agrupaste cosas por color, forma y tamaño.",
+                IconEmoji = "🧺",
+                AssociatedTopicId = "kinder_sorting_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_music",
+                Title = "Tambor de la Banda",
+                Description = "Contaste sonidos y seguiste el compás de la música.",
+                IconEmoji = "🥁",
+                AssociatedTopicId = "kinder_music_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_count_to_ten",
+                Title = "Contador hasta Diez",
+                Description = "Contaste hasta diez peces, flores y estrellas.",
+                IconEmoji = "🔟",
+                AssociatedTopicId = "kinder_count_to_10_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_add_subtract",
+                Title = "Amigo de Juntar y Quitar",
+                Description = "Juntaste y quitaste objetos para resolver historias.",
+                IconEmoji = "🍐",
+                AssociatedTopicId = "kinder_add_sub_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_measure",
+                Title = "Medidor Curioso",
+                Description = "Comparamos largo, corto, pesado y ligero.",
+                IconEmoji = "📏",
+                AssociatedTopicId = "kinder_measure_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_addition",
                 Title = "Alquimista de la Suma",
                 Description = "Descubriste la conmutatividad, asociatividad y el poder del cero.",
@@ -466,6 +547,87 @@ public class RewardService
             },
             new()
             {
+                Id = "station_kinder_shapes",
+                Name = "El Jardín de las Formas",
+                Description = "Un jardín lleno de círculos, cuadrados y triángulos.",
+                LandmarkEmoji = "🔵",
+                TopicId = "kinder_shapes_01",
+                OrderIndex = 2
+            },
+            new()
+            {
+                Id = "station_kinder_positions",
+                Name = "El Escondite de Nico",
+                Description = "Un lugar para mirar arriba, abajo, dentro y fuera.",
+                LandmarkEmoji = "🐰",
+                TopicId = "kinder_positions_01",
+                OrderIndex = 3
+            },
+            new()
+            {
+                Id = "station_kinder_stories",
+                Name = "La Carpa de los Cuentos",
+                Description = "El escenario donde los cuentos tienen números.",
+                LandmarkEmoji = "📖",
+                TopicId = "kinder_stories_01",
+                OrderIndex = 4
+            },
+            new()
+            {
+                Id = "station_kinder_patterns",
+                Name = "La Pista del Ritmo",
+                Description = "Un camino de colores, formas y sonidos que se repiten.",
+                LandmarkEmoji = "🎵",
+                TopicId = "kinder_patterns_01",
+                OrderIndex = 5
+            },
+            new()
+            {
+                Id = "station_kinder_sorting",
+                Name = "La Mesa de Pancho",
+                Description = "El taller donde cada cosa encuentra su lugar.",
+                LandmarkEmoji = "🧺",
+                TopicId = "kinder_sorting_01",
+                OrderIndex = 6
+            },
+            new()
+            {
+                Id = "station_kinder_music",
+                Name = "La Banda de Tito",
+                Description = "El escenario donde se cuentan tambores, campanas y palmadas.",
+                LandmarkEmoji = "🥁",
+                TopicId = "kinder_music_01",
+                OrderIndex = 7
+            },
+            new()
+            {
+                Id = "station_kinder_count_to_ten",
+                Name = "El Estanque hasta Diez",
+                Description = "Un estanque para contar peces, flores y estrellas hasta diez.",
+                LandmarkEmoji = "🐟",
+                TopicId = "kinder_count_to_10_01",
+                OrderIndex = 8
+            },
+            new()
+            {
+                Id = "station_kinder_add_subtract",
+                Name = "La Cesta de Ada",
+                Description = "El lugar donde se juntan y se quitan cosas.",
+                LandmarkEmoji = "🍐",
+                TopicId = "kinder_add_sub_01",
+                OrderIndex = 9
+            },
+            new()
+            {
+                Id = "station_kinder_measure",
+                Name = "El Taller de Milo",
+                Description = "Un taller para medir, comparar y ordenar.",
+                LandmarkEmoji = "📏",
+                TopicId = "kinder_measure_01",
+                OrderIndex = 10
+            },
+            new()
+            {
                 Id = "station_2",
                 Name = "El Castillo de la Suma",
                 Description = "La fortaleza donde los números se unen y celebran sus propiedades.",
@@ -861,6 +1023,11 @@ public class RewardService
                 OrderIndex = 45
             }
         };
+
+        for (int i = 0; i < stations.Count; i++)
+        {
+            stations[i].OrderIndex = i + 1;
+        }
 
         bool foundCurrent = false;
 

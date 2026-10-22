@@ -8,7 +8,7 @@
 
 ## 1. Visión General y Arquitectura de la Solución
 
-**MathTutor Accesible** es una plataforma educativa e inclusiva desarrollada en **C# (.NET 10 / WinUI 3)**, 100% conforme a **WCAG 2.2 (Niveles AA y AAA)** y **Diseño Universal para el Aprendizaje (DUA)**. Cubre un currículo completo de **45 estaciones de aprendizaje (16 objetivos pedagógicos)** desde **Jardín de Niños (3 años)**, **Primaria (1º a 6º)**, **Secundaria (1º a 3º)** y **Preparatoria / Bachillerato (1º a 3º)** hasta **Pensamiento Computacional y Programación Inclusiva (Módulos 1, 2 y 3)**.
+**MathTutor Accesible** es una plataforma educativa e inclusiva desarrollada en **C# (.NET 10 / WinUI 3)**, 100% conforme a **WCAG 2.2 (Niveles AA y AAA)** y **Diseño Universal para el Aprendizaje (DUA)**. Cubre un currículo completo de **54 estaciones de aprendizaje (16 objetivos pedagógicos)** desde **Jardín de Niños (3 años)**, **Primaria (1º a 6º)**, **Secundaria (1º a 3º)** y **Preparatoria / Bachillerato (1º a 3º)** hasta **Pensamiento Computacional y Programación Inclusiva (Módulos 1, 2 y 3)**.
 
 ### Diagrama de Arquitectura Modular
 
@@ -17,18 +17,18 @@ MathTutor.slnx
 │
 ├── MathTutor.Core (net10.0 - Biblioteca de Dominio Pura, sin dependencias de UI)
 │   ├── Models/
-│   │   ├── Enums.cs               (DisabilityType, DisabilitySeverity, AcademicLevel, RegionalContext, HighContrastTheme, FontSizeLevel, AnswerResult)
+│   │   ├── Enums.cs               (DisabilityType, AutismSupportLevel, AdhdPresentation, IntellectualSupportLevel, AcademicLevel, RegionalContext, HighContrastTheme, FontSizeLevel, AnswerResult)
 │   │   ├── UserProfile.cs         (AccessibilityPreferences + UserProfile + propiedades culturales LATAM + ApplyRecommendedAccessibilityDefaults)
 │   │   ├── Exercise.cs            (GamePlayType [53 mecánicas], ManipulableItem, ExerciseOption, Exercise)
 │   │   ├── PedagogicalTopic.cs    (Modelo de lección: narrativa, concepto, principios, lista de ejercicios)
 │   │   └── Badge.cs               (Badge y RealmStation para el Mapa del Reino Matemágico)
 │   ├── Engine/
 │   │   ├── AdaptiveEngine.cs      (Validación Edad vs. Nivel Escolar, adaptación de lenguaje, reducción cognitiva y estrellas/racha)
-│   │   ├── CurriculumService.cs   (Catálogo de las 45 lecciones, filtrado por edad GetTopicsForAge, GetNextTopic y generación adaptativa)
-│   │   └── ExerciseGenerator.cs   (Generador procedimental parametrizado para las 45 estaciones con distractores diagnósticos)
+│   │   ├── CurriculumService.cs   (Catálogo de las 54 lecciones, filtrado por edad GetTopicsForAge, GetNextTopic y generación adaptativa)
+│   │   └── ExerciseGenerator.cs   (Generador procedimental parametrizado para las 54 estaciones con distractores diagnósticos)
 │   └── Services/
 │       ├── ProfileStorageService.cs (Persistencia JSON en %LocalAppData%/MathTutor/user_profile.json)
-│       └── RewardService.cs       (46 insignias y 45 estaciones conectadas al progreso del alumno)
+│       └── RewardService.cs       (55 insignias y 54 estaciones conectadas al progreso del alumno)
 │
 ├── MathTutor.WinUI (net10.0-windows10.0.19041.0 - Cliente Escritorio WinUI 3 Accesible)
 │   ├── App.xaml / App.xaml.cs     (Diccionario de recursos dinámicos WCAG, estilos de foco, botones y controles accesibles)
@@ -46,11 +46,11 @@ MathTutor.slnx
 │       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo con celdas de 170 px, pistas, respuestas con ↑/↓ y retroalimentación)
 │       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 116 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 134 pruebas)
     ├── ExerciseGeneratorTests.cs         (59 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
     ├── PedagogyAndAccessibilityTests.cs  (51 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
     ├── ProfileStorageTests.cs            (4 pruebas de serialización/deserialización JSON, incluida la expansión de grupos de trofeos)
-    └── RewardServiceTests.cs             (2 pruebas integrales de las 45 estaciones y desbloqueo de las 46 insignias)
+    └── RewardServiceTests.cs             (2 pruebas integrales de las 54 estaciones y desbloqueo de las 55 insignias)
 ```
 
 ---
@@ -63,7 +63,7 @@ MathTutor.slnx
 │   ├── MathTutor.Core/       Biblioteca de dominio, currículo, motor adaptativo y almacenamiento
 │   └── MathTutor.WinUI/      Aplicación WinUI 3, navegación, servicios y vistas
 ├── tests/
-│   └── MathTutor.Tests/      Suite xUnit de 116 pruebas
+│   └── MathTutor.Tests/      Suite xUnit de 134 pruebas
 ├── scripts/
 │   └── publish-winui.ps1     Publicación y empaquetado de la release
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
@@ -84,9 +84,11 @@ MathTutor.slnx
 | `scripts/publish-winui.ps1` | Publica WinUI 3 para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.pri`, organiza la aplicación en `libs/`, los módulos `.winmd` en `modules/`, integra `LEEME.txt`, compila el lanzador `MathTutor.exe`, arma la carpeta `MathTutor-v$Version` y genera `artifacts/releases/MathTutor-v$Version-Windows.zip`. |
 | `artifacts/` | Directorio ignorado por Git con salidas centralizadas: `bin/`, `obj/`, `publish/`, `package/` y `releases/`. |
 | `CLAUDE.md` | Directrices de ingeniería de software basadas en los principios de Andrej Karpathy: (1) Pensar antes de codificar, (2) Simplicidad primero (sin sobreingeniería), (3) Cambios quirúrgicos y (4) Ejecución orientada a objetivos verificables con pruebas. |
-| `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 45 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
+| `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 54 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
 | `LEEME.txt` | Guía en texto plano para familias, docentes y estudiantes: instalación, primeros pasos, teclas, accesibilidad, privacidad, consejos y solución de problemas. Se integra en el paquete de release junto al ejecutable. |
-| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.9.1`. |
+| `PRIVACIDAD.md` | Aviso de privacidad para familias: datos guardados, finalidad, ubicación local, exportación, borrado y contacto. También se copia al paquete de release y se puede leer desde el perfil. |
+| `BIBLIOGRAFIA.md` | Referencias y criterios del modelo de apoyos: DSM-5-TR, AAIDD, ICF, CDPD, WCAG 2.2, DUA y principios del conteo. |
+| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.10.0`. |
 | `context.md` | **(Este archivo)** Documento vivo de contexto técnico archivo por archivo para contribuidores y agentes de código. |
 | `.gitignore` | Reglas de exclusión de Git para artefactos de compilación (`artifacts/`, `bin/`, `obj/`, `.vs/`, paquetes temporales). |
 | `.engram/config.json` | Configuración del proyecto `mathtutor` para la memoria persistente Engram. |
@@ -99,17 +101,18 @@ MathTutor.slnx
 - **TargetFramework**: `net10.0`, `ImplicitUsings=enable`, `Nullable=enable`.
 - **Dependencias**: Cero paquetes NuGet externos (100% BCL estándar de .NET para máxima portabilidad y velocidad de compilación).
 
-#### `src/MathTutor.Core/Models/Enums.cs` (89 líneas)
+#### `src/MathTutor.Core/Models/Enums.cs` (159 líneas)
 Define las enumeraciones fundamentales del dominio:
-1. **`DisabilityType`**:
-   - `None = 0` (Neurotípico)
-   - `Visual = 1` (Ceguera o Baja Visión)
-   - `Hearing = 2` (Hipoacusia o Sordera)
-   - `Motor = 3` (Dificultad motora fina / movilidad reducida)
-   - `Intellectual = 4` (Discapacidad intelectual / cognitiva)
-   - `Neurodivergent = 5` (TDAH / Espectro Autista)
-2. **`DisabilitySeverity`**: `Mild = 1` (Leve), `Moderate = 2` (Moderada), `Severe = 3` (Severa).
-3. **`AcademicLevel`**:
+1. **`DisabilityType`** (condiciones múltiples; ya no se usa una severidad genérica):
+   - `None = 0`, `Visual = 1`, `Hearing = 2`, `Motor = 3`, `Intellectual = 4`.
+   - `Neurodivergent = 5` es un valor heredado que se migra a `Autism` + `ADHD` al cargar perfiles antiguos.
+   - `Autism = 6`, `ADHD = 7`.
+2. **`AutismSupportLevel`**: `NotApplicable = 0`, `Level1 = 1` (requiere apoyo), `Level2 = 2` (apoyo sustancial), `Level3 = 3` (apoyo muy sustancial).
+3. **`AdhdPresentation`**: `NotApplicable = 0`, inatenta, hiperactiva-impulsiva y combinada.
+4. **`IntellectualSupportLevel`**: `NotApplicable = 0`, intermitente, limitado, extenso y generalizado.
+5. **`VisualFunctionalLevel`**: baja visión y ceguera. **`AuditoryFunctionalLevel`**: hipoacusia y sordera. **`MotorFunctionalLevel`**: dificultades motoras finas, movilidad reducida y ausencia de uso de miembros superiores.
+6. **`LanguageRegister`**: registro lúdico temprano, simple, estándar y técnico.
+7. **`AcademicLevel`**:
    - `Kindergarten = 1` (3 a 5 años)
    - `EarlyElementary = 2` (1º y 2º Primaria — 6 a 8 años)
    - `MiddleElementary = 3` (3º y 4º Primaria — 9 a 10 años)
@@ -121,24 +124,31 @@ Define las enumeraciones fundamentales del dominio:
    - `HighSchoolFirstGrade = 9` (1º Preparatoria — 15 a 16 años)
    - `HighSchoolSecondGrade = 10` (2º Preparatoria — 16 a 17 años)
    - `HighSchoolThirdGrade = 11` (3º Preparatoria — 17 a 18 años)
-4. **`RegionalContext`**: `Mexico = 1`, `Colombia = 2`, `Argentina = 3`, `Peru = 4`, `Chile = 5`.
-5. **`HighContrastTheme`**: `DefaultPlayful = 0`, `HighContrastDark = 1` (Negro/Amarillo > 15:1), `HighContrastLight = 2` (Blanco/Negro > 21:1), `LowSensory = 3` (Pastel suave TEA/TDAH).
-6. **`FontSizeLevel`**: `Normal = 0` (18pt), `Large = 1` (23-24pt), `ExtraLarge = 2` (28-30pt), `Huge = 3` (34-36pt).
-7. **`AnswerResult`**: `None = 0`, `Correct = 1`, `NeedsGuidance = 2`, `Assisted = 3`.
+8. **`RegionalContext`**: `Mexico = 1`, `Colombia = 2`, `Argentina = 3`, `Peru = 4`, `Chile = 5`.
+9. **`HighContrastTheme`**: `DefaultPlayful = 0`, `HighContrastDark = 1` (Negro/Amarillo > 15:1), `HighContrastLight = 2` (Blanco/Negro > 21:1), `LowSensory = 3` (Pastel suave TEA/TDAH).
+10. **`FontSizeLevel`**: `Normal = 0` (18pt), `Large = 1` (23-24pt), `ExtraLarge = 2` (28-30pt), `Huge = 3` (34-36pt).
+11. **`AnswerResult`**: `None = 0`, `Correct = 1`, `NeedsGuidance = 2`, `Assisted = 3`.
 
-#### `src/MathTutor.Core/Models/UserProfile.cs` (253 líneas)
-Contiene dos clases clave:
+#### `src/MathTutor.Core/Models/UserProfile.cs` (402 líneas)
+Contiene tres clases clave:
 1. **`AccessibilityPreferences`**:
    - Propiedades persistibles: `EnableVoiceSynthesis`, `ScreenReaderAnnouncements`, `Theme`, `FontSize`, `SpeechRate`, `SpeechVolume`, `PlayAudioCues`, `SimplifyLanguage`, `ReduceOptionsCount`, `SimplifiedKeyboardNavigation`, `UnlimitedTime`.
-2. **`UserProfile`**:
-   - Datos del alumno: `Id`, `Name`, `Age`, `Disability`, `Severity`, `CurrentLevel`, `Region`, `Preferences`.
+   - `BadgeGroupExpansion` conserva los grupos de trofeos abiertos/cerrados.
+   - `ManualPreferenceKeys` registra las preferencias ajustadas a mano para que `ApplyRecommendedAccessibilityDefaults()` no las sobrescriba.
+2. **`SupportProfile`**:
+   - `AutismSupport`, `AdhdPresentation`, `IntellectualSupport`, `VisualFunction`, `AuditoryFunction` y `MotorFunction`.
+   - Describe apoyos y funcionamiento; no exige diagnóstico ni usa una severidad genérica.
+3. **`UserProfile`**:
+   - Datos del alumno: `Id`, `Name`, `Age`, `CurrentLevel`, `Region`, `Preferences`, `Disabilities`, `Support` y `ProfileVersion`.
+   - `ProfileVersion = 2` permite migrar perfiles antiguos: `Neurodivergent` se separa en `Autism` + `ADHD` y la severidad heredada se convierte en el apoyo correspondiente.
+   - La propiedad `Disability` se conserva por compatibilidad y devuelve la primera condición marcada.
    - Propiedades calculadas de localización cultural latinoamericana:
      - `CurrencyName`: `"soles"` para Perú; `"pesos"` para México, Colombia, Argentina y Chile.
      - `CurrencyFractionName`: `"céntimos"` para Perú; `"centavos"` para el resto.
      - `CurrencySymbol`: `"S/"` para Perú; `"$"` para el resto.
      - `StoreName`: `"tiendita"` (México), `"tienda de barrio"` (Colombia), `"kiosco"` (Argentina), `"bodega"` (Perú), `"almacén"` (Chile).
    - Gamificación: `StarsTotal`, `PointsTotal`, `CurrentStreak`, `CompletedLessonIds`, `CompletedExerciseIds`.
-   - Método **`ApplyRecommendedAccessibilityDefaults()`**: Configura automáticamente el tema de contraste, tamaño de fuente, simplificación de lenguaje y reducción de opciones según `Disability`, `Severity` y `Age`.
+   - Método **`ApplyRecommendedAccessibilityDefaults()`**: Configura tema de contraste, tamaño de fuente, simplificación, reducción de opciones y voz según la edad, las condiciones y el `SupportProfile`, respetando las preferencias marcadas como manuales.
 
 #### `src/MathTutor.Core/Models/Exercise.cs` (123 líneas)
 - **`GamePlayType` (Enum con 53 valores)**: Identifica la mecánica exacta de cada reto (desde `InteractiveCounting`, `OrderSequence`, `Comparison` hasta `CalculusDerivativeRate`, `CalculusIntegralArea`, `ProgrammingVariablesState`, `ProgrammingConditionalsIfElse`, `ProgrammingBooleanLogic`, `ProgrammingLoopsForWhile`, `ProgrammingArraysZeroIndex`, `ProgrammingFunctionsReturn`, `ProgrammingAlgorithmsSearch`, `ProgrammingGameCoordinates2D`, `ProgrammingAssistiveAIData`).
@@ -170,28 +180,31 @@ Motor de adaptación pedagógica y reglas de negocio por edad y condición:
   - Si `isCorrect == true`: incrementa `CurrentStreak`, otorga **3 estrellas** (primer intento), **2 estrellas** (segundo intento) o **1 estrella** (3+ intentos, premiando siempre la perseverancia), suma `starsEarned * 10` a `PointsTotal` y registra el `exercise.Id` en `CompletedExerciseIds`.
   - Si `isCorrect == false`: reduce suavemente `CurrentStreak` en 1 (sin castigo punitivo a cero).
 
-#### `src/MathTutor.Core/Engine/CurriculumService.cs` (2,799 líneas)
-Contiene el catálogo pedagógico completo de las **45 misiones** (`GetAllTopics()`), el filtrado adaptativo por edad/condición y el orquestador de ejercicios:
+#### `src/MathTutor.Core/Engine/KindergartenCurriculum.cs` (1,053 líneas)
+Contiene los **10 temas de jardín de niños** y sus 45 ejercicios curados. Los temas se organizan por banda de edad (3-4, 4-5 y 5-6) y cubren conteo, formas, posiciones, cuentos, patrones, clasificación, música, números hasta 10, suma/resta y medida.
+
+#### `src/MathTutor.Core/Engine/CurriculumService.cs` (3,076 líneas)
+Contiene el catálogo pedagógico completo de las **54 misiones** (`GetAllTopics()`), el filtrado adaptativo por edad/condición y el orquestador de ejercicios:
 - **`GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)`** (Tarea 6 y Tarea 12): Filtra `GetAllTopics()` devolviendo únicamente las misiones cuyos niveles pertenecen a `AdaptiveEngine.GetAllowedLevelsForAge(age, disability)`.
 - **`GetNextTopic(string currentTopicId, UserProfile? profile = null)`** (Tarea 7 y Tarea 10): Obtiene la siguiente misión secuencial o pendiente dentro del rango de edad del alumno tras completar `currentTopicId`, devolviendo `null` cuando el alumno ha completado todas las misiones de su etapa.
 - **`GenerateAdaptiveExercises(PedagogicalTopic topic, UserProfile profile, int count = 3)`**:
   - Si el alumno tiene `DisabilityType.Intellectual` o es un tema monetario con región distinta de México, genera los `count` ejercicios procedimentalmente con `ExerciseGenerator` para garantizar el rango numérico reducido y la moneda local (`soles`, `pesos`, `tiendita`, `kiosco`, `bodega`, `almacén`).
   - En caso estándar, conserva como **Reto 1** el ejercicio curado de la lección (`templateTopic.Exercises[0]`, que conecta directamente con el Ejemplo Guiado Paso a Paso) y genera procedimentalmente los retos restantes con `_generator.GenerateExercisesForTopic(topic.Id, profile, remaining)`.
 
-#### `src/MathTutor.Core/Engine/ExerciseGenerator.cs` (2,705 líneas)
-Generador procedimental parametrizado que produce ejercicios infinitos y libres de colisiones para las **45 estaciones**:
+#### `src/MathTutor.Core/Engine/ExerciseGenerator.cs` (2,710 líneas)
+Generador procedimental parametrizado que produce ejercicios infinitos y libres de colisiones para las **54 estaciones**:
 - **`GetTargetRange(UserProfile)`**: Ajusta el rango numérico a `(1, 3)` para discapacidad intelectual severa, `(1, 5)` para moderada/leve o Jardín de Niños, y `(1, 10)` para primaria inicial.
 - **46 métodos públicos de generación** (`GenerateCountingExercise`, `GenerateStableOrderExercise`, `GenerateAdditionCombineExercise`, ..., `GenerateProgrammingVariablesExercise`, `GenerateProgrammingConditionalsExercise`, `GenerateProgrammingBooleanLogicExercise`, `GenerateProgrammingLoopsExercise`, `GenerateProgrammingArraysExercise`, `GenerateProgrammingFunctionsExercise`, `GenerateProgrammingAlgorithmsSearchExercise`, `GenerateProgrammingGameCoordinatesExercise`, `GenerateProgrammingAssistiveAIExercise`) conectados en el despachador `GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)`.
 - **`BuildOptions(...)`**: Construye las opciones de respuesta garantizando valores únicos, barajado determinista/aleatorio sin sesgo de posición y **retroalimentación diagnóstica específica (`SpeechFeedback`)** en cada distractor (indicando si el número elegido es mayor o menor que el resultado correcto y qué paso revisar).
 
-#### `src/MathTutor.Core/Services/ProfileStorageService.cs` (81 líneas)
+#### `src/MathTutor.Core/Services/ProfileStorageService.cs` (215 líneas)
 - Gestiona la persistencia local del perfil en `%LocalAppData%\MathTutor\user_profile.json` usando `System.Text.Json` con `JsonStringEnumConverter`.
 - Permite inyectar una ruta personalizada en el constructor (`ProfileStorageService(string? customPath = null)`) para pruebas unitarias aisladas en archivos temporales.
-- Métodos: `Save(UserProfile)`, `Load()`, `Exists()`.
+- Métodos: `Save(UserProfile)`, `Load()`, `Exists()`, `Export(UserProfile, string)` y `Delete()`.
 
-#### `src/MathTutor.Core/Services/RewardService.cs` (889 líneas)
-- **`GetAllBadges(UserProfile)`**: Define y evalúa el estado de desbloqueo (`IsUnlocked`) de las **46 insignias** (45 insignias asociadas 1-a-1 a cada `TopicId` + 1 insignia especial `"badge_star_collector"` al acumular $\ge 15$ estrellas).
-- **`GetRealmStations(UserProfile)`**: Devuelve las **45 estaciones** del Mapa del Reino (`station_1` a `station_45`), marcando `IsCompleted = true` para las lecciones en `CompletedLessonIds` y asignando `IsCurrentStation = true` a la primera estación pendiente del sendero.
+#### `src/MathTutor.Core/Services/RewardService.cs` (1,056 líneas)
+- **`GetAllBadges(UserProfile)`**: Define y evalúa el estado de desbloqueo (`IsUnlocked`) de las **55 insignias** (54 insignias asociadas 1-a-1 a cada `TopicId` + 1 insignia especial `"badge_star_collector"` al acumular $\ge 15$ estrellas).
+- **`GetRealmStations(UserProfile)`**: Devuelve las **54 estaciones** del Mapa del Reino (`station_1` a `station_54`), marcando `IsCompleted = true` para las lecciones en `CompletedLessonIds` y asignando `IsCurrentStation = true` a la primera estación pendiente del sendero.
 
 ---
 
@@ -210,7 +223,7 @@ Define los recursos globales dinámicos y estilos accesibles WCAG 2.2:
 - **Brushes dinámicos**: `AppBackgroundBrush`, `AppSurfaceBrush`, `AppCardBrush`, `AppTextPrimaryBrush`, `AppTextSecondaryBrush`, `AppAccentBrush`, `AppFocusBorderBrush`, `AppBorderBrush`, `AppSuccessBrush`, `AppOnAccentBrush`, `AppOnSuccessBrush` y `AppErrorBrush`.
 - **Escalas tipográficas dinámicas**: `AppBaseFontSize` (18), `AppSubHeaderFontSize` (22), `AppHeaderFontSize` (28) y `AppTitleFontSize` (36).
 - **Estilos**: `AccessibleActionButton`, `AccessibleGameOptionButton`, `AccessibleCard` y `AccessibleReadOnlyTextBox` (texto de solo lectura navegable con el cursor del lector de pantalla).
-- `App.xaml.cs` crea y activa `MainWindow`; expone `App.Navigation` para que las páginas soliciten navegación.
+- `App.xaml.cs` crea y activa `MainWindow`, expone `App.MainAppWindow` (necesario para `FileSavePicker.InitializeWithWindow`) y `App.Navigation` para que las páginas soliciten navegación.
 
 #### `src/MathTutor.WinUI/MainWindow.xaml` y `MainWindow.xaml.cs`
 Ventana principal y shell de navegación:
@@ -249,7 +262,7 @@ Singleton central (`AccessibilityManager.Instance`) que coordina:
 - Temas `DefaultPlayful`, `HighContrastDark`, `HighContrastLight` y `LowSensory`, con recursos de foco, borde, éxito y texto sobre acento.
 
 #### `src/MathTutor.WinUI/Views/ProfilePage.xaml` y `ProfilePage.xaml.cs`
-Caracterización inicial del alumno (`F5`): nombre, edad, nivel escolar filtrado por edad, país/moneda, discapacidades múltiples, severidad, audio interno, pistas sonoras, lenguaje simplificado, tema y tamaño de letra. Valida edad/nivel, restaura el perfil guardado al cancelar y usa encabezados y nombres accesibles.
+Caracterización inicial del alumno (`F5`): nombre, edad, nivel escolar filtrado por edad, país/moneda, condiciones múltiples, apoyos de autismo/TDAH/intelectuales y descriptores funcionales de visión, audición y motricidad. Incluye audio interno, pistas sonoras, lenguaje simplificado, tema y tamaño de letra. La tarjeta de privacidad permite exportar perfil y progreso a JSON, borrar el perfil local y leer el aviso completo. Valida edad/nivel, restaura el perfil guardado al cancelar y usa encabezados y nombres accesibles.
 
 #### `src/MathTutor.WinUI/Views/MenuPage.xaml` y `MenuPage.xaml.cs`
 Menú principal de misiones (`Esc`): saludo, resumen del perfil, estrellas, racha y `ListView` de misiones filtradas por edad. Los elementos tienen nombres como “Misión recomendada: …” y los botones internos “Comenzar la misión: …” o “Volver a jugar: …”. Soporta `↑`/`↓` mediante `VerticalListNavigation`, `Enter` y `Espacio`.
@@ -271,22 +284,43 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 
 > **Nota de arquitectura:** el proyecto WPF (`MathTutor.WpfApp`) fue retirado después de consolidar la paridad funcional en WinUI 3. El historial de Git conserva su implementación y los registros de releases anteriores.
 
-### 2.4. Proyecto `MathTutor.Tests` (Suite de 116 Pruebas Unitarias Automatizadas)
+### 2.4. Proyecto `MathTutor.Tests` (Suite de 134 Pruebas Unitarias Automatizadas)
 
 | Archivo de Pruebas | Pruebas | Qué Verifica |
 |---|---|---|
 | `ExerciseGeneratorTests.cs` (1,053 líneas) | **59** | Verifica individualmente los métodos generadores de los 16 objetivos (desde conteo de Kinder hasta Cálculo e IA Asistiva), comprobando en bucles de 20 iteraciones con semilla determinista que `ExpectedResult` sea matemáticamente exacto, que exista exactamente una opción correcta, que no haya opciones duplicadas (`Distinct`), que los rangos se reduzcan para discapacidad intelectual y que la moneda/vocabulario cambie según `RegionalContext` (Perú `S/` vs. México `$`). |
-| `PedagogyAndAccessibilityTests.cs` (740 líneas) | **51** | Verifica que las 45 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica, además de probar `AdaptiveEngine.GetAllowedLevelsForAge` (incluyendo 12 años en 1º de Secundaria y refuerzo base en Discapacidad Intelectual), `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `UserProfile.ApplyRecommendedAccessibilityDefaults()`. |
-| `ProfileStorageTests.cs` (113 líneas) | **4** | Verifica que `ProfileStorageService` serialice y deserialice fielmente todos los campos de `UserProfile` y `AccessibilityPreferences` en disco usando archivos temporales aislados, incluido el estado expandido/contraído de los grupos de trofeos y la compatibilidad con perfiles antiguos sin esa propiedad. |
-| `RewardServiceTests.cs` (154 líneas) | **2** | Verifica el orden, `Id` y `TopicId` de las **45 estaciones** en `GetRealmStations` y la lógica de bloqueo/desbloqueo de las **46 insignias** en `GetAllBadges`. |
+| `PedagogyAndAccessibilityTests.cs` (1,064 líneas) | **63** | Verifica que las 54 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica. Incluye la cobertura de los 10 temas de jardín, el desbloqueo por edad, la invariante de que todo objeto visible en ejercicios de conteo se cuenta (`Kindergarten_InteractiveCounting_CountsEveryVisibleItem`) y pruebas de `AdaptiveEngine.GetAllowedLevelsForAge`, `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `ApplyRecommendedAccessibilityDefaults()`. |
+| `ProfileStorageTests.cs` (229 líneas) | **10** | Verifica serialización/deserialización de todos los campos, el estado de los grupos de trofeos, la migración de perfiles antiguos (`Neurodivergent`/severidad a `SupportProfile`), la exportación a una ruta elegida y el borrado del perfil con su valor de retorno. |
+| `RewardServiceTests.cs` (59 líneas) | **2** | Verifica el orden, `Id` y `TopicId` de las **54 estaciones** en `GetRealmStations` y la lógica de bloqueo/desbloqueo de las **55 insignias** en `GetAllBadges`. |
 
 ---
 
-## 3. Mapa Curricular Completo (45 Estaciones / 16 Objetivos)
+## 3. Mapa Curricular Completo (54 Estaciones / 16 Objetivos)
+
+> La tabla base conserva la numeración histórica de las 45 estaciones originales. La ampliación de jardín de la versión 1.10.0 añade 9 estaciones que se insertan después de `kinder_counting_01`; en la aplicación, las estaciones se renumeran por orden de la lista (`station_1` a `station_54`).
 
 | Estación | `TopicId` | Nivel (`AcademicLevel`) | `GamePlayType` Principal | Tema / Objetivo Pedagógico |
 |---|---|---|---|---|
 | 1 | `kinder_counting_01` | `Kindergarten` | `InteractiveCounting`, `OrderSequence`, `Comparison` | Obj. 1: Los 5 Principios del Conteo (Gelman y Gallistel) |
+
+### 3.1. Ampliación de Jardín de Niños v1.10.0 (9 estaciones nuevas)
+
+| Orden en jardín | `TopicId` | Edad | `GamePlayType` Principal | Tema |
+|---|---|---|---|---|
+| 2 | `kinder_shapes_01` | 3-4 | `InteractiveCounting`, `Comparison` | Formas básicas: círculo, cuadrado y triángulo |
+| 3 | `kinder_positions_01` | 3-4 | `InteractiveCounting`, `Comparison` | Posiciones: arriba/abajo, dentro/fuera, cerca/lejos |
+| 4 | `kinder_stories_01` | 3-5 | `InteractiveCounting` | Contar dentro de cuentos breves |
+| 5 | `kinder_patterns_01` | 4-5 | `OrderSequence` | Continuar patrones de color, forma y tamaño |
+| 6 | `kinder_sorting_01` | 4-5 | `Comparison`, `InteractiveCounting` | Clasificar por color, forma y tamaño |
+| 7 | `kinder_music_01` | 4-5 | `OrderSequence`, `InteractiveCounting` | Contar sonidos y palmadas |
+| 8 | `kinder_count_to_10_01` | 5-6 | `InteractiveCounting`, `OrderSequence`, `Comparison` | Contar y ordenar números hasta 10 |
+| 9 | `kinder_add_sub_01` | 5-6 | `AdditionCombine`, `SubtractionTakeAway` | Juntar y quitar con cantidades pequeñas |
+| 10 | `kinder_measure_01` | 5-6 | `Comparison`, `OrderSequence` | Comparar longitudes, pesos y capacidades |
+
+### 3.2. Estaciones base (numeración histórica)
+
+| Estación | `TopicId` | Nivel (`AcademicLevel`) | `GamePlayType` Principal | Tema / Objetivo Pedagógico |
+|---|---|---|---|---|
 | 2 | `elem_addition_01` | `EarlyElementary` | `AdditionCombine`, `CommutativePropertyDemo`, `AssociativePropertyDemo`, `ZeroNeutralProperty` | Obj. 2: Adición y sus Propiedades (1º y 2º Primaria) |
 | 3 | `elem_subtraction_01` | `EarlyElementary` | `SubtractionTakeAway`, `InverseRelation` | Obj. 2: Sustracción y Relación Inversa |
 | 4 | `elem_multiplication_01` | `EarlyElementary` | `MultiplicationArray` | Obj. 3: Multiplicación con Arreglos Rectangulares |
@@ -411,13 +445,13 @@ if (Test-Path artifacts) { Remove-Item artifacts -Recurse -Force }
 # 2. Compilar toda la solución en modo Release (0 advertencias permitidas)
 dotnet build MathTutor.slnx -c Release --nologo /p:TreatWarningsAsErrors=true
 
-# 3. Ejecutar las 116 pruebas unitarias automatizadas sobre la compilación Release
+# 3. Ejecutar las 134 pruebas unitarias automatizadas sobre la compilación Release
 dotnet test tests\MathTutor.Tests\MathTutor.Tests.csproj -c Release --nologo --no-build
 
 # 4. Publicar y empaquetar WinUI 3 (verifica MathTutor.pri)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-winui.ps1
 
 # 5. Conservar únicamente el ZIP de la release vigente
-Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.9.1-Windows.zip' } | Remove-Item -Force
+Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.10.0-Windows.zip' } | Remove-Item -Force
 ```
 

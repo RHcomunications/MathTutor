@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
@@ -6,11 +7,23 @@ using MathTutor.WinUI.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Windows.Storage.Pickers;
 
 namespace MathTutor.WinUI.Views;
 
 public sealed partial class ProfilePage : Page
 {
+    private const string PrivacyNoticeText =
+        "MathTutor funciona sin conexión y no recopila datos para publicidad ni análisis. " +
+        "El nombre, la edad, las condiciones o apoyos que decidas indicar y el progreso se guardan " +
+        "solo en este equipo, en %LocalAppData%\\MathTutor\\user_profile.json. " +
+        "No es obligatorio declarar un diagnóstico: puedes dejar todo sin marcar o elegir 'Sin especificar'. " +
+        "La aplicación no envía esta información a internet. " +
+        "Puedes exportar una copia en un archivo JSON o borrar el perfil desde esta pantalla. " +
+        "Al borrar el perfil se elimina el archivo local y se reinicia la caracterización; " +
+        "las copias que hayas exportado no se borran automáticamente. " +
+        "Si compartes el archivo exportado, revisa que no incluya datos que prefieras mantener privados.";
+
     private readonly AccessibilityManager _acc = AccessibilityManager.Instance;
     private bool _isInitializing = true;
     private UserProfile? _snapshot;
@@ -57,10 +70,7 @@ public sealed partial class ProfilePage : Page
         CmbRegion.Items.Add(new ComboBoxItem { Content = "Perú (Soles S/ y Céntimos - Bodega)", Tag = RegionalContext.Peru });
         CmbRegion.Items.Add(new ComboBoxItem { Content = "Chile (Pesos $ - Almacén)", Tag = RegionalContext.Chile });
 
-        CmbDisabilitySeverity.Items.Clear();
-        CmbDisabilitySeverity.Items.Add(new ComboBoxItem { Content = "Leve", Tag = DisabilitySeverity.Mild });
-        CmbDisabilitySeverity.Items.Add(new ComboBoxItem { Content = "Moderada", Tag = DisabilitySeverity.Moderate });
-        CmbDisabilitySeverity.Items.Add(new ComboBoxItem { Content = "Severa", Tag = DisabilitySeverity.Severe });
+        PopulateSupportDropdowns();
 
         CmbTheme.Items.Clear();
         CmbTheme.Items.Add(new ComboBoxItem { Content = "Colorido Lúdico (Estándar Infantil)", Tag = HighContrastTheme.DefaultPlayful });
@@ -73,6 +83,58 @@ public sealed partial class ProfilePage : Page
         CmbFontSize.Items.Add(new ComboBoxItem { Content = "Grande (23 pt)", Tag = FontSizeLevel.Large });
         CmbFontSize.Items.Add(new ComboBoxItem { Content = "Muy Grande (28 pt)", Tag = FontSizeLevel.ExtraLarge });
         CmbFontSize.Items.Add(new ComboBoxItem { Content = "Gigante (34 pt)", Tag = FontSizeLevel.Huge });
+    }
+
+    private void PopulateSupportDropdowns()
+    {
+        AddSupportItems(CmbAutismSupport,
+            ("Sin especificar", AutismSupportLevel.NotApplicable),
+            ("Nivel 1: requiere apoyo", AutismSupportLevel.Level1),
+            ("Nivel 2: requiere apoyo sustancial", AutismSupportLevel.Level2),
+            ("Nivel 3: requiere apoyo muy sustancial", AutismSupportLevel.Level3));
+
+        AddSupportItems(CmbAdhdPresentation,
+            ("Sin especificar", AdhdPresentation.NotApplicable),
+            ("Predominio inatento", AdhdPresentation.PredominantlyInattentive),
+            ("Predominio hiperactivo-impulsivo", AdhdPresentation.PredominantlyHyperactiveImpulsive),
+            ("Presentación combinada", AdhdPresentation.Combined));
+
+        AddSupportItems(CmbIntellectualSupport,
+            ("Sin especificar", IntellectualSupportLevel.NotApplicable),
+            ("Apoyo intermitente", IntellectualSupportLevel.Intermittent),
+            ("Apoyo limitado", IntellectualSupportLevel.Limited),
+            ("Apoyo extenso", IntellectualSupportLevel.Extensive),
+            ("Apoyo generalizado", IntellectualSupportLevel.Pervasive));
+
+        AddSupportItems(CmbVisualFunction,
+            ("Sin especificar", VisualFunctionalLevel.NotApplicable),
+            ("Baja visión", VisualFunctionalLevel.LowVision),
+            ("Ceguera", VisualFunctionalLevel.Blindness));
+
+        AddSupportItems(CmbAuditoryFunction,
+            ("Sin especificar", AuditoryFunctionalLevel.NotApplicable),
+            ("Hipoacusia", AuditoryFunctionalLevel.HardOfHearing),
+            ("Sordera", AuditoryFunctionalLevel.Deaf));
+
+        AddSupportItems(CmbMotorFunction,
+            ("Sin especificar", MotorFunctionalLevel.NotApplicable),
+            ("Dificultades motoras finas", MotorFunctionalLevel.FineMotorDifficulties),
+            ("Movilidad reducida", MotorFunctionalLevel.ReducedMobility),
+            ("Sin uso de extremidades superiores", MotorFunctionalLevel.NoUpperLimbUse));
+    }
+
+    private static void AddSupportItems<T>(ComboBox combo, params (string Label, T Value)[] items)
+    {
+        combo.Items.Clear();
+        foreach (var (label, value) in items)
+        {
+            combo.Items.Add(new ComboBoxItem { Content = label, Tag = value! });
+        }
+    }
+
+    private static T GetSelectedSupport<T>(ComboBox combo, T fallback)
+    {
+        return combo.SelectedItem is ComboBoxItem item && item.Tag is T value ? value : fallback;
     }
 
     private void PopulateAcademicLevelsForAge(int age)
@@ -128,22 +190,37 @@ public sealed partial class ProfilePage : Page
         SelectComboByTag(CmbAcademicLevel, profile.CurrentLevel);
         SelectComboByTag(CmbRegion, profile.Region);
 
-        _isInitializing = true;
         ChkDisabilityVisual.IsChecked = profile.HasDisability(DisabilityType.Visual);
         ChkDisabilityHearing.IsChecked = profile.HasDisability(DisabilityType.Hearing);
         ChkDisabilityMotor.IsChecked = profile.HasDisability(DisabilityType.Motor);
         ChkDisabilityIntellectual.IsChecked = profile.HasDisability(DisabilityType.Intellectual);
-        ChkDisabilityNeurodivergent.IsChecked = profile.HasDisability(DisabilityType.Neurodivergent);
-        _isInitializing = false;
+        ChkDisabilityAutism.IsChecked = profile.HasDisability(DisabilityType.Autism);
+        ChkDisabilityAdhd.IsChecked = profile.HasDisability(DisabilityType.ADHD);
 
-        CmbDisabilitySeverity.IsEnabled = profile.Disabilities.Count > 0;
-        SelectComboByTag(CmbDisabilitySeverity, profile.Severity);
+        UpdateSupportPanelsVisibility();
+        SelectComboByTag(CmbAutismSupport, profile.Support.AutismSupport);
+        SelectComboByTag(CmbAdhdPresentation, profile.Support.AdhdPresentation);
+        SelectComboByTag(CmbIntellectualSupport, profile.Support.IntellectualSupport);
+        SelectComboByTag(CmbVisualFunction, profile.Support.VisualFunction);
+        SelectComboByTag(CmbAuditoryFunction, profile.Support.AuditoryFunction);
+        SelectComboByTag(CmbMotorFunction, profile.Support.MotorFunction);
         SelectComboByTag(CmbTheme, profile.Preferences.Theme);
         SelectComboByTag(CmbFontSize, profile.Preferences.FontSize);
 
         ChkInternalAudio.IsChecked = profile.Preferences.EnableVoiceSynthesis;
+        ChkScreenReaderAnnouncements.IsChecked = profile.Preferences.ScreenReaderAnnouncements;
         ChkAudioCues.IsChecked = profile.Preferences.PlayAudioCues;
         ChkSimplifyLanguage.IsChecked = profile.Preferences.SimplifyLanguage;
+    }
+
+    private void UpdateSupportPanelsVisibility()
+    {
+        PnlAutismSupport.Visibility = ChkDisabilityAutism.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PnlAdhdPresentation.Visibility = ChkDisabilityAdhd.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PnlIntellectualSupport.Visibility = ChkDisabilityIntellectual.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PnlVisualFunction.Visibility = ChkDisabilityVisual.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PnlAuditoryFunction.Visibility = ChkDisabilityHearing.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PnlMotorFunction.Visibility = ChkDisabilityMotor.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static void SelectComboByTag(ComboBox combo, object tagValue)
@@ -166,11 +243,19 @@ public sealed partial class ProfilePage : Page
     private void SyncAccessibilityControlsFromProfile()
     {
         _isInitializing = true;
-        ChkInternalAudio.IsChecked = _acc.CurrentProfile.Preferences.EnableVoiceSynthesis;
-        ChkAudioCues.IsChecked = _acc.CurrentProfile.Preferences.PlayAudioCues;
-        ChkSimplifyLanguage.IsChecked = _acc.CurrentProfile.Preferences.SimplifyLanguage;
-        SelectComboByTag(CmbTheme, _acc.CurrentProfile.Preferences.Theme);
-        SelectComboByTag(CmbFontSize, _acc.CurrentProfile.Preferences.FontSize);
+        var profile = _acc.CurrentProfile;
+        ChkInternalAudio.IsChecked = profile.Preferences.EnableVoiceSynthesis;
+        ChkScreenReaderAnnouncements.IsChecked = profile.Preferences.ScreenReaderAnnouncements;
+        ChkAudioCues.IsChecked = profile.Preferences.PlayAudioCues;
+        ChkSimplifyLanguage.IsChecked = profile.Preferences.SimplifyLanguage;
+        SelectComboByTag(CmbTheme, profile.Preferences.Theme);
+        SelectComboByTag(CmbFontSize, profile.Preferences.FontSize);
+        SelectComboByTag(CmbAutismSupport, profile.Support.AutismSupport);
+        SelectComboByTag(CmbAdhdPresentation, profile.Support.AdhdPresentation);
+        SelectComboByTag(CmbIntellectualSupport, profile.Support.IntellectualSupport);
+        SelectComboByTag(CmbVisualFunction, profile.Support.VisualFunction);
+        SelectComboByTag(CmbAuditoryFunction, profile.Support.AuditoryFunction);
+        SelectComboByTag(CmbMotorFunction, profile.Support.MotorFunction);
         _isInitializing = false;
     }
 
@@ -185,10 +270,11 @@ public sealed partial class ProfilePage : Page
         if (ChkDisabilityHearing.IsChecked == true) profile.Disabilities.Add(DisabilityType.Hearing);
         if (ChkDisabilityMotor.IsChecked == true) profile.Disabilities.Add(DisabilityType.Motor);
         if (ChkDisabilityIntellectual.IsChecked == true) profile.Disabilities.Add(DisabilityType.Intellectual);
-        if (ChkDisabilityNeurodivergent.IsChecked == true) profile.Disabilities.Add(DisabilityType.Neurodivergent);
+        if (ChkDisabilityAutism.IsChecked == true) profile.Disabilities.Add(DisabilityType.Autism);
+        if (ChkDisabilityAdhd.IsChecked == true) profile.Disabilities.Add(DisabilityType.ADHD);
 
         profile.Disability = profile.Disabilities.Count > 0 ? profile.Disabilities[0] : DisabilityType.None;
-        CmbDisabilitySeverity.IsEnabled = profile.Disabilities.Count > 0;
+        UpdateSupportPanelsVisibility();
         profile.ApplyRecommendedAccessibilityDefaults();
 
         _isInitializing = true;
@@ -202,8 +288,7 @@ public sealed partial class ProfilePage : Page
         _isInitializing = false;
 
         SyncAccessibilityControlsFromProfile();
-        _acc.ApplyTheme(profile.Preferences.Theme);
-        _acc.ApplyFontSize(profile.Preferences.FontSize);
+        _acc.ApplyProfile(profile);
 
         string summary = profile.Disabilities.Count > 0
             ? string.Join(", ", profile.Disabilities.Select(d => d.ToString()))
@@ -211,17 +296,23 @@ public sealed partial class ProfilePage : Page
         _acc.Announce($"Condiciones actualizadas: {summary}. Opciones de accesibilidad adaptadas simultáneamente.");
     }
 
-    private void CmbDisabilitySeverity_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void SupportDescription_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (_isInitializing) return;
-        if (CmbDisabilitySeverity.SelectedItem is ComboBoxItem item && item.Tag is DisabilitySeverity sev)
-        {
-            _acc.CurrentProfile.Severity = sev;
-            _acc.CurrentProfile.ApplyRecommendedAccessibilityDefaults();
-            SyncAccessibilityControlsFromProfile();
 
-            _acc.Announce($"Severidad: {item.Content}. Ajustes de accesibilidad actualizados.");
-        }
+        var profile = _acc.CurrentProfile;
+        profile.Support.AutismSupport = GetSelectedSupport(CmbAutismSupport, AutismSupportLevel.NotApplicable);
+        profile.Support.AdhdPresentation = GetSelectedSupport(CmbAdhdPresentation, AdhdPresentation.NotApplicable);
+        profile.Support.IntellectualSupport = GetSelectedSupport(CmbIntellectualSupport, IntellectualSupportLevel.NotApplicable);
+        profile.Support.VisualFunction = GetSelectedSupport(CmbVisualFunction, VisualFunctionalLevel.NotApplicable);
+        profile.Support.AuditoryFunction = GetSelectedSupport(CmbAuditoryFunction, AuditoryFunctionalLevel.NotApplicable);
+        profile.Support.MotorFunction = GetSelectedSupport(CmbMotorFunction, MotorFunctionalLevel.NotApplicable);
+
+        profile.ApplyRecommendedAccessibilityDefaults();
+        SyncAccessibilityControlsFromProfile();
+        _acc.ApplyProfile(profile);
+
+        _acc.Announce("Apoyos actualizados. Las preferencias que ajustaste manualmente se conservan.");
     }
 
     private void CmbAge_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -267,6 +358,7 @@ public sealed partial class ProfilePage : Page
         if (_isInitializing) return;
         if (CmbTheme.SelectedItem is ComboBoxItem item && item.Tag is HighContrastTheme theme)
         {
+            _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.ThemePreference);
             _acc.ApplyTheme(theme);
         }
     }
@@ -276,6 +368,7 @@ public sealed partial class ProfilePage : Page
         if (_isInitializing) return;
         if (CmbFontSize.SelectedItem is ComboBoxItem item && item.Tag is FontSizeLevel font)
         {
+            _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.FontSizePreference);
             _acc.ApplyFontSize(font);
         }
     }
@@ -285,10 +378,20 @@ public sealed partial class ProfilePage : Page
         if (_isInitializing) return;
         bool enabled = ChkInternalAudio.IsChecked == true;
         _acc.CurrentProfile.Preferences.EnableVoiceSynthesis = enabled;
+        _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.VoiceSynthesisPreference);
         _acc.IsInternalAudioEnabled = enabled;
         _acc.Audio.Enabled = enabled;
-        _acc.IsScreenReaderIntegrationEnabled = true;
-        _acc.Announce(enabled ? "Audio interno habilitado. El lector de pantalla permanece activo." : "Audio interno deshabilitado. El lector de pantalla permanece activo.");
+        _acc.Announce(enabled ? "Audio interno habilitado." : "Audio interno deshabilitado.");
+    }
+
+    private void ChkScreenReaderAnnouncements_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializing) return;
+        bool enabled = ChkScreenReaderAnnouncements.IsChecked == true;
+        _acc.CurrentProfile.Preferences.ScreenReaderAnnouncements = enabled;
+        _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.ScreenReaderPreference);
+        _acc.IsScreenReaderIntegrationEnabled = enabled;
+        _acc.Announce(enabled ? "Anuncios para el lector de pantalla habilitados." : "Anuncios para el lector de pantalla deshabilitados.");
     }
 
     private void ChkAudioCues_Changed(object sender, RoutedEventArgs e)
@@ -296,6 +399,7 @@ public sealed partial class ProfilePage : Page
         if (_isInitializing) return;
         bool enabled = ChkAudioCues.IsChecked == true;
         _acc.CurrentProfile.Preferences.PlayAudioCues = enabled;
+        _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.AudioCuesPreference);
         _acc.Audio.MusicEnabled = enabled;
         if (enabled && _acc.Audio.Enabled)
         {
@@ -306,14 +410,118 @@ public sealed partial class ProfilePage : Page
     private void ChkSimplifyLanguage_Changed(object sender, RoutedEventArgs e)
     {
         if (_isInitializing) return;
-        _acc.CurrentProfile.Preferences.SimplifyLanguage = ChkSimplifyLanguage.IsChecked == true;
-        _acc.CurrentProfile.Preferences.ReduceOptionsCount = ChkSimplifyLanguage.IsChecked == true;
-        _acc.Announce(_acc.CurrentProfile.Preferences.SimplifyLanguage ? "Lenguaje simplificado activado" : "Lenguaje estándar activado");
+        bool enabled = ChkSimplifyLanguage.IsChecked == true;
+        _acc.CurrentProfile.Preferences.SimplifyLanguage = enabled;
+        _acc.CurrentProfile.Preferences.ReduceOptionsCount = enabled;
+        _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.SimplifyLanguagePreference);
+        _acc.CurrentProfile.Preferences.MarkManual(AccessibilityPreferences.ReduceOptionsPreference);
+        _acc.Announce(enabled ? "Lenguaje simplificado activado" : "Lenguaje estándar activado");
     }
 
     private void Control_GotFocus(object sender, RoutedEventArgs e)
     {
         _acc.Audio.PlayNavigationClick();
+    }
+
+    private async void BtnExportProfile_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            _acc.CurrentProfile.Name = string.IsNullOrWhiteSpace(TxtName.Text)
+                ? "Aventurero"
+                : TxtName.Text.Trim();
+
+            var picker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                SuggestedFileName = $"mathtutor_perfil_{DateTime.Now:yyyyMMdd}"
+            };
+            picker.FileTypeChoices.Add("Perfil MathTutor (JSON)", new List<string> { ".json" });
+
+            if (App.MainAppWindow is not null)
+            {
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainAppWindow);
+                WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+            }
+
+            var file = await picker.PickSaveFileAsync();
+            if (file is null)
+            {
+                _acc.Announce("Exportación cancelada.");
+                return;
+            }
+
+            _acc.Storage.Export(_acc.CurrentProfile, file.Path);
+            TxtPrivacyStatus.Text = $"Perfil exportado en: {file.Path}";
+            _acc.Audio.PlaySuccessChord();
+            _acc.Announce($"Perfil exportado correctamente en {file.Name}.", speak: true);
+        }
+        catch (Exception)
+        {
+            TxtPrivacyStatus.Text = "No se pudo exportar el perfil. Intenta guardarlo en Documentos.";
+            _acc.AnnounceAssertive("No se pudo exportar el perfil. Intenta guardarlo en la carpeta Documentos.");
+        }
+    }
+
+    private async void BtnDeleteProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = "¿Borrar el perfil de este equipo?",
+            Content = "Se borrarán el nombre, la edad, los apoyos y el progreso guardados localmente. " +
+                      "Las copias exportadas no se borran. Esta acción no se puede deshacer.",
+            PrimaryButtonText = "Sí, borrar perfil",
+            CloseButtonText = "Cancelar",
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        {
+            _acc.Announce("Borrado del perfil cancelado.");
+            return;
+        }
+
+        bool deleted = _acc.Storage.Delete();
+        _snapshot = null;
+        _acc.ApplyProfile(new UserProfile());
+
+        _isInitializing = true;
+        PopulateDropdowns();
+        LoadCurrentProfileData();
+        _isInitializing = false;
+
+        BtnCancel.Visibility = Visibility.Collapsed;
+        TxtPrivacyStatus.Text = deleted
+            ? "Perfil borrado de este equipo. Puedes crear uno nuevo cuando quieras."
+            : "No había un perfil guardado; se reinició la caracterización.";
+        _acc.Audio.PlaySuccessChord();
+        _acc.Announce(TxtPrivacyStatus.Text, speak: true);
+    }
+
+    private async void BtnPrivacyNotice_Click(object sender, RoutedEventArgs e)
+    {
+        var content = new ScrollViewer
+        {
+            Content = new TextBlock
+            {
+                Text = PrivacyNoticeText,
+                TextWrapping = TextWrapping.Wrap
+            },
+            MaxHeight = 420,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+        };
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = "Aviso de privacidad para familias",
+            Content = content,
+            CloseButtonText = "Entendido",
+            DefaultButton = ContentDialogButton.Close
+        };
+
+        await dialog.ShowAsync();
     }
 
     private void BtnSaveAndStart_Click(object sender, RoutedEventArgs e)

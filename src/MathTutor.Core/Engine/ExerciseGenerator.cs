@@ -32,10 +32,9 @@ public class ExerciseGenerator
     {
         if (profile.HasDisability(DisabilityType.Intellectual))
         {
-            return profile.Severity switch
+            return profile.Support.IntellectualSupport switch
             {
-                DisabilitySeverity.Severe => (1, 3),
-                DisabilitySeverity.Moderate => (1, 5),
+                IntellectualSupportLevel.Extensive or IntellectualSupportLevel.Pervasive => (1, 3),
                 _ => (1, 5)
             };
         }

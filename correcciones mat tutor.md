@@ -463,3 +463,34 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Versión de `MathTutor.Core`, `MathTutor.WinUI`, `README.md` y `LEEME.txt` actualizada a `1.9.1`; se mantiene el paquete con lanzador, `libs/`, `modules/` y guía.
 - **Ubicación:** `src/MathTutor.Core/MathTutor.Core.csproj`, `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `README.md`, `LEEME.txt`, `scripts/publish-winui.ps1`.
 - **Criterio de verificación:** ZIP `MathTutor-v1.9.1-Windows.zip` con lanzador, `libs/MathTutor.exe`, `MathTutor.pri`, 53 módulos, `LEEME.txt` y sin PDB.
+
+---
+
+# REGISTRO DE CORRECCIONES REALIZADAS - Release `v1.10.0`
+
+> **Estado:** Implementado y verificado. Build `Release` sin advertencias y **134/134 pruebas unitarias** superadas.
+
+### 1. Jardín de niños ampliado
+- **Corrección:** Se añadieron 9 temas de jardín (formas, posiciones, cuentos, patrones, clasificación, música, números hasta 10, suma/resta y medida) con 5 ejercicios curados cada uno. Jardín pasa de 1 a 10 temas y el currículo de 45 a 54 estaciones.
+- **Ubicación:** `src/MathTutor.Core/Engine/KindergartenCurriculum.cs`, `src/MathTutor.Core/Engine/CurriculumService.cs`, `src/MathTutor.Core/Services/RewardService.cs`.
+- **Criterio de verificación:** 54 estaciones y 55 insignias ordenadas; temas filtrados por edad; desbloqueo de primaria solo al completar todos los temas disponibles de jardín.
+
+### 2. Progresión y conteo
+- **Corrección:** `GetNextTopic` omite temas ya completados y devuelve `null` al terminar la etapa. Los ejercicios de conteo ya no muestran objetos que no se cuentan: se quitaron los distractores y la clasificación usa grupos de comparación. Se añadió la invariante `Kindergarten_InteractiveCounting_CountsEveryVisibleItem`.
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `src/MathTutor.Core/Engine/KindergartenCurriculum.cs`, `tests/MathTutor.Tests/PedagogyAndAccessibilityTests.cs`.
+- **Criterio de verificación:** 134/134 pruebas; el total visible coincide con `ExpectedResult` en todos los ejercicios de conteo.
+
+### 3. Perfil de apoyos
+- **Corrección:** El perfil describe apoyos en lugar de una severidad genérica: autismo niveles 1-3, TDAH por presentación, apoyos intelectuales intermitente/limitado/extenso/generalizado y descriptores funcionales de visión, audición y motricidad. Los perfiles antiguos se migran con `ProfileVersion = 2`. Las preferencias ajustadas a mano dejan de sobrescribirse.
+- **Ubicación:** `src/MathTutor.Core/Models/Enums.cs`, `src/MathTutor.Core/Models/UserProfile.cs`, `src/MathTutor.Core/Services/ProfileStorageService.cs`, `src/MathTutor.WinUI/Views/ProfilePage.xaml` y `.xaml.cs`.
+- **Criterio de verificación:** Perfiles antiguos con `Neurodivergent`/severidad cargan como autismo y TDAH; guardado, exportación y borrado cubiertos por pruebas.
+
+### 4. Privacidad y documentación
+- **Corrección:** Se añadió exportación del perfil a JSON, borrado del perfil local y lectura del aviso de privacidad desde la pantalla de perfil. Se incorporaron `PRIVACIDAD.md` y `BIBLIOGRAFIA.md` al repositorio y al paquete de release.
+- **Ubicación:** `src/MathTutor.Core/Services/ProfileStorageService.cs`, `src/MathTutor.WinUI/Views/ProfilePage.xaml` y `.xaml.cs`, `PRIVACIDAD.md`, `BIBLIOGRAFIA.md`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** El ZIP contiene `LEEME.txt`, `PRIVACIDAD.md` y `BIBLIOGRAFIA.md`; la app exporta, borra y muestra el aviso sin conexión.
+
+### 5. Versión y paquete
+- **Corrección:** Versión actualizada a `1.10.0` en el proyecto WinUI, `README.md` y `LEEME.txt`.
+- **Ubicación:** `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `README.md`, `LEEME.txt`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** ZIP `MathTutor-v1.10.0-Windows.zip` con lanzador, `libs/MathTutor.exe`, `MathTutor.pri`, módulos, guía, privacidad y bibliografía.

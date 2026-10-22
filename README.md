@@ -27,23 +27,27 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
   - **Sin Límites de Tiempo**: Aprendizaje respetuoso del ritmo de cada alumno (Pauta WCAG 2.2).
 
 - **Comprensible, Adaptable y Culturalmente Cercano**:
-  - **Caracterización Inicial del Usuario**: Se configura el tipo de discapacidad (**Visual, Auditiva, Motriz, Intelectual/Cognitiva, Neurodivergente, Sin discapacidad**) y su severidad (**Leve, Moderada, Severa**).
+  - **Caracterización Inicial del Usuario**: Se pueden indicar una o varias condiciones (**Visual, Auditiva, Motriz, Intelectual/Cognitiva, Autismo, TDAH**) y describir los apoyos que necesita el alumno, sin obligar a declarar un diagnóstico ni usar una severidad genérica. El perfil distingue niveles de apoyo autista 1-3, presentación del TDAH, apoyos intelectuales y descriptores funcionales de visión, audición y motricidad.
   - **Adaptación Cultural Latinoamericana (`RegionalContext`)**: Configurable por país (**México, Colombia, Argentina, Perú, Chile**), adaptando dinámicamente monedas (`pesos` / `soles`, `centavos` / `céntimos`) y vocabulario cotidiano (`tiendita`, `tienda de barrio`, `kiosco`, `bodega`, `almacén`).
   - **Adaptación Automática del Lenguaje**: Si se indica discapacidad intelectual o edad temprana, el motor adaptativo simplifica el vocabulario, acorta los enunciados y reduce la cantidad de distractores/opciones sin sesgo de posición para evitar la sobrecarga cognitiva.
-  - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
+  - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 54 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
   - **Repaso Sin Abandonar el Reto**: La pantalla del ejercicio mantiene visible el secreto matemático para releerlo, y el anuncio del reto no revela el resultado esperado.
   - **Sala de Trofeos Agrupada por Nivel**: Las insignias se organizan por nivel educativo, muestran el progreso de cada grupo, se expanden y contraen con las flechas y recuerdan su estado entre sesiones.
   - **Conteo sin Solapamientos**: Los objetos de conteo usan celdas de 170 px y se distribuyen en el ancho disponible para que los botones no se encimen.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 116 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 54 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 134 pruebas unitarias xUnit).
 
 ---
 
-## 🎮 Enfoque Pedagógico y Curricular (45 Estaciones / 16 Objetivos)
+## 🎮 Enfoque Pedagógico y Curricular (54 Estaciones / 16 Objetivos)
 
-### 1. Jardín de Niños (3 a 5 años — Objetivo 1): Los 5 Principios del Conteo (Gelman y Gallistel)
-1. **Correspondencia uno a uno, Orden estable, Cardinalidad, Abstracción e Irrelevancia del orden** guiados por **Cosmo el Búho Sabio**.
+### 1. Jardín de Niños (3 a 5 años — Objetivo 1): Conteo, Formas y Primeras Nociones
+1. **Conteo** (3 a 5 años): **Correspondencia uno a uno, Orden estable, Cardinalidad, Abstracción e Irrelevancia del orden** guiados por **Cosmo el Búho Sabio**.
+2. **Formas y posiciones** (3 a 4 años): círculos, cuadrados, triángulos, tamaño, arriba/abajo y dentro/fuera.
+3. **Cuentos, patrones, clasificación y música** (3 a 5 años): contar dentro de historias, continuar secuencias, agrupar por color, forma o tamaño, y contar sonidos.
+4. **Números hasta 10, suma/resta y medida** (5 a 6 años): contar hasta diez, juntar y quitar, comparar longitudes y pesos, y ordenar del primero al último.
+5. **Progresión por edad**: el menú filtra los temas según la edad y desbloquea el siguiente nivel solo cuando el alumno completa todos los temas de jardín disponibles para su edad.
 
 ### 2. Primaria Baja, Media y Alta (1º a 6º Grado — 6 a 12 años — Objetivos 2 a 6)
 - **Primaria Baja (1º y 2º)**: Adición (propiedades conmutativa, asociativa y elemento neutro $0$), Sustracción y relación inversa, Multiplicación con arreglos rectangulares.
@@ -60,7 +64,7 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
 - **2º de Preparatoria**: Secciones cónicas y ecuación de la circunferencia ($x^2 + y^2 = r^2$), Funciones periódicas y ondas senoidales ($y = A\operatorname{sen}(x)$), y Funciones exponenciales y logaritmo base 2 ($\log_2(n)$).
 - **3º de Preparatoria**: Cálculo diferencial y derivada como razón de cambio instantánea ($f'(t)$), Cálculo integral y área bajo la curva ($\int_a^b f(t)\,dt$), y Probabilidad y estadística descriptiva para ciencia de datos ($\bar{x}$).
 
-### 5. Pensamiento Computacional y Programación Inclusiva (Objetivos 13 a 16 — Estaciones 36 a 45)
+### 5. Pensamiento Computacional y Programación Inclusiva (Objetivos 13 a 16 — Estaciones 45 a 54)
 - **Semilla de Programación (Objetivo 13)**: Suma repetida y bucles de código (`REPETIR N VECES`).
 - **Módulo 1 de Programación (Objetivo 14)**: Variables, asignación y estado en memoria (`x = x + a`), Condicionales `SI / SI NO` (`if / else`), y Lógica Booleana con compuertas `Y (AND)`, `O (OR)` y `NO (NOT)`.
 - **Módulo 2 de Programación (Objetivo 15)**: Ciclos `PARA` (`for`) con variables acumuladoras, Arreglos (`Arrays`) e indexación basada en cero (`[0, 1, 2...]`), y Funciones modulares con parámetros y valor de retorno (`return`).
@@ -79,7 +83,7 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 | **F3** | Cambiar cíclicamente el esquema de contraste (Lúdico, Alto Contraste Oscuro, Claro, Baja Estimulación) |
 | **F4** | Cambiar cíclicamente el tamaño de letra (Estándar, Grande, Muy Grande, Gigante) |
 | **F5** | Abrir la pantalla de caracterización y perfil del alumno |
-| **F6** | Abrir el Mapa del Reino y Medallero de Insignias (45 estaciones) |
+| **F6** | Abrir el Mapa del Reino y Medallero de Insignias (54 estaciones) |
 | **Flechas (↑ ↓)** | Recorrer las misiones, las estaciones del mapa y las respuestas de opción múltiple; avanzar o retroceder entre pasos de la lección |
 | **Escape** | Volver al menú principal de aventuras (o cerrar el diálogo al terminar una misión) |
 | **1, 2, 3** | Responder directamente la opción correspondiente en el minijuego |
@@ -87,7 +91,15 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.9.1`)
+## 🔒 Privacidad y documentación pedagógica
+
+- [Aviso de privacidad para familias](PRIVACIDAD.md): qué datos guarda la app, dónde se almacenan y cómo exportar o borrar el perfil.
+- [Bibliografía y criterios del modelo de apoyos](BIBLIOGRAFIA.md): referencias sobre autismo, TDAH, discapacidad intelectual, funcionamiento y accesibilidad.
+- El perfil se guarda solo en `%LocalAppData%\MathTutor\user_profile.json`; la aplicación no usa telemetría ni envía datos a internet.
+
+---
+
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.10.0`)
 
 Desde la terminal en esta carpeta:
 
@@ -95,17 +107,17 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build MathTutor.slnx -c Release
 
-# Ejecutar las 116 pruebas unitarias automatizadas
+# Ejecutar las 134 pruebas unitarias automatizadas
 dotnet test tests/MathTutor.Tests/MathTutor.Tests.csproj -c Release
 
 # Iniciar la aplicación WinUI 3
 dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 
-# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.9.1-Windows.zip)
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.10.0-Windows.zip)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.9.1` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.10.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo

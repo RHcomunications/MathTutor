@@ -11,6 +11,8 @@ public class PedagogicalTopic
     public string Id { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public AcademicLevel Level { get; set; }
+    public int TargetAgeMin { get; set; } = 3;
+    public int TargetAgeMax { get; set; } = 18;
     public string CharacterName { get; set; } = "Cosmo el Búho Sabio";
     
     // Narrativa y explicación

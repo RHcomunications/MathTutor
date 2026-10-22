@@ -1,6 +1,6 @@
 MATH TUTOR ACCESIBLE
 Guía para familias, docentes y estudiantes
-Versión 1.9.1 - Octubre de 2026
+Versión 1.10.0 - Octubre de 2026
 
 ============================================================
 QUÉ ES MATH TUTOR
@@ -43,7 +43,7 @@ nada para usar el programa.
 CÓMO ABRIRLO
 ============================================================
 
-1. Descarga el archivo MathTutor-v1.9.1-Windows.zip
+1. Descarga el archivo MathTutor-v1.10.0-Windows.zip
    desde la página de esta versión.
 
 2. Haz clic derecho sobre el archivo descargado y elige
@@ -165,6 +165,12 @@ PRIVACIDAD
 - El perfil y el avance se guardan en esta computadora.
 - La información no se comparte automáticamente con otras
   personas o servicios.
+- No es obligatorio indicar un diagnóstico. Puedes dejar las
+  condiciones sin marcar o elegir "Sin especificar".
+- En la pantalla de perfil (F5) puedes exportar una copia de
+  tu perfil y progreso, o borrar el perfil de este equipo.
+- El aviso completo está en el archivo PRIVACIDAD.md y también
+  se puede leer desde la pantalla de perfil.
 
 ============================================================
 SI ALGO NO FUNCIONA
@@ -202,20 +208,20 @@ No sé qué hacer:
 NOVEDADES DE ESTA VERSIÓN
 ============================================================
 
-- La ventana del programa aparece al frente al abrirse,
-  después de cargar el perfil y la navegación inicial.
-- Los objetos de conteo tienen celdas más anchas y se
-  distribuyen mejor para que no se encimen.
-- El botón "Opciones del juego" reúne el menú, el mapa, el
-  perfil y los ajustes de accesibilidad en un solo lugar.
-- La sala de trofeos ahora agrupa las insignias por nivel y
-  muestra cuántas llevas de cada grupo. Flecha derecha
-  expande, flecha izquierda contrae y el programa recuerda
-  qué grupos dejaste abiertos.
-- Las flechas arriba y abajo recorren misiones, estaciones,
-  respuestas y pasos de la lección de forma más predecible.
-- El secreto matemático permanece a la vista durante el reto
-  y la lectura en voz alta no revela la respuesta.
+- Jardín de niños ahora tiene 10 temas organizados por edad:
+  formas, posiciones, cuentos, patrones, clasificación, música,
+  números hasta 10, suma/resta y medida.
+- El menú filtra los temas de jardín según la edad y desbloquea
+  el siguiente nivel solo cuando se completan todos los temas
+  disponibles para esa edad.
+- El perfil permite describir apoyos de autismo (niveles 1-3),
+  TDAH por presentación, apoyos intelectuales y necesidades
+  funcionales de visión, audición y motricidad, sin obligar a
+  declarar un diagnóstico.
+- Puedes exportar el perfil y el progreso, borrar el perfil del
+  equipo y leer el aviso de privacidad desde la misma pantalla.
+- Las preferencias ajustadas a mano ya no se sobrescriben
+  automáticamente al cambiar de condición.
 
 ============================================================
 GRACIAS
@@ -226,5 +232,5 @@ aprendizaje. Math Tutor busca que cada estudiante se sienta
 capaz, escuchado y libre de aprender a su manera.
 
 MathTutor Accesible
-Versión 1.9.1
+Versión 1.10.0
 Octubre de 2026

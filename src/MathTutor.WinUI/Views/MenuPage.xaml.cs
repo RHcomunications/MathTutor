@@ -85,7 +85,10 @@ public sealed partial class MenuPage : Page
                 concept = concept.Substring(0, 137) + "...";
             }
 
-            string principles = "Enseña: " + string.Join(" • ", t.PrinciplesAddressed.Take(3));
+            bool showPrinciples = AdaptiveEngine.GetLanguageRegister(profile) >= LanguageRegister.Standard;
+            string principles = showPrinciples
+                ? "Enseña: " + string.Join(" • ", t.PrinciplesAddressed.Take(3))
+                : string.Empty;
             bool isCompleted = profile.CompletedLessonIds.Contains(t.Id);
             bool isCurrentLevel = t.Level == profile.CurrentLevel;
 
@@ -242,6 +245,8 @@ public sealed partial class MenuPage : Page
         DisabilityType.Hearing => "Auditiva",
         DisabilityType.Motor => "Motriz",
         DisabilityType.Intellectual => "Intelectual",
+        DisabilityType.Autism => "Autismo",
+        DisabilityType.ADHD => "TDAH",
         DisabilityType.Neurodivergent => "Neurodivergente",
         _ => "Estándar"
     };

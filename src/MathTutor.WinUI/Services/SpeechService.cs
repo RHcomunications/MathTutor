@@ -33,7 +33,7 @@ public class SpeechService : IDisposable
 
     /// <summary>
     /// Canal B: Integración con el lector de pantalla del sistema (NVDA, JAWS, Narrador).
-    /// Permanece siempre activo (true por defecto) de forma independiente al audio interno (F2).
+    /// Activo por defecto y configurable de forma independiente al audio interno (F2).
     /// </summary>
     public bool IsScreenReaderIntegrationEnabled
     {

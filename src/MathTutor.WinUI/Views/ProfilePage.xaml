@@ -169,30 +169,105 @@
                                           AutomationProperties.Name="Discapacidad Intelectual o Cognitiva"
                                           Click="ChkDisability_Changed"
                                           GotFocus="Control_GotFocus" />
-                                <CheckBox x:Name="ChkDisabilityNeurodivergent"
-                                          Content="🌈 Neurodivergente (TDAH o Espectro Autista)"
+                                <CheckBox x:Name="ChkDisabilityAutism"
+                                          Content="🌈 Condición del Espectro Autista"
                                           FontSize="{ThemeResource AppBaseFontSize}"
                                           Margin="0,3"
-                                          AutomationProperties.Name="Neurodivergente, TDAH o Espectro Autista"
+                                          AutomationProperties.Name="Condición del Espectro Autista"
+                                          Click="ChkDisability_Changed"
+                                          GotFocus="Control_GotFocus" />
+                                <CheckBox x:Name="ChkDisabilityAdhd"
+                                          Content="⚡ TDAH (Déficit de Atención e Hiperactividad)"
+                                          FontSize="{ThemeResource AppBaseFontSize}"
+                                          Margin="0,3"
+                                          AutomationProperties.Name="TDAH, Déficit de Atención e Hiperactividad"
                                           Click="ChkDisability_Changed"
                                           GotFocus="Control_GotFocus" />
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Spacing="4">
-                                <TextBlock Text="Grado / Severidad:"
+                            <StackPanel Grid.Column="1" Spacing="8">
+                                <TextBlock Text="Apoyos y Descripción Funcional:"
                                            FontSize="{ThemeResource AppBaseFontSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{ThemeResource AppTextPrimaryBrush}"
                                            TextWrapping="Wrap"
                                            AutomationProperties.HeadingLevel="Level3" />
-                                <ComboBox x:Name="CmbDisabilitySeverity"
-                                          FontSize="{ThemeResource AppBaseFontSize}"
-                                          MinHeight="48"
-                                          Padding="10,6"
-                                          HorizontalAlignment="Stretch"
-                                          AutomationProperties.Name="Grado o severidad de la discapacidad"
-                                          SelectionChanged="CmbDisabilitySeverity_SelectionChanged"
-                                          GotFocus="Control_GotFocus" />
+                                <TextBlock Text="Elige el apoyo o la descripción que corresponde a cada condición. No hay un grado único de severidad."
+                                           FontSize="{ThemeResource AppBaseFontSize}"
+                                           Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                           TextWrapping="Wrap" />
+
+                                <StackPanel x:Name="PnlAutismSupport" Spacing="2" Visibility="Collapsed">
+                                    <TextBlock Text="Apoyo para autismo:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <ComboBox x:Name="CmbAutismSupport"
+                                              FontSize="{ThemeResource AppBaseFontSize}"
+                                              MinHeight="48"
+                                              Padding="10,6"
+                                              HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="Nivel de apoyo para autismo"
+                                              SelectionChanged="SupportDescription_Changed"
+                                              GotFocus="Control_GotFocus" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="PnlAdhdPresentation" Spacing="2" Visibility="Collapsed">
+                                    <TextBlock Text="Presentación del TDAH:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <ComboBox x:Name="CmbAdhdPresentation"
+                                              FontSize="{ThemeResource AppBaseFontSize}"
+                                              MinHeight="48"
+                                              Padding="10,6"
+                                              HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="Presentación predominante del TDAH"
+                                              SelectionChanged="SupportDescription_Changed"
+                                              GotFocus="Control_GotFocus" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="PnlIntellectualSupport" Spacing="2" Visibility="Collapsed">
+                                    <TextBlock Text="Apoyos para discapacidad intelectual:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <ComboBox x:Name="CmbIntellectualSupport"
+                                              FontSize="{ThemeResource AppBaseFontSize}"
+                                              MinHeight="48"
+                                              Padding="10,6"
+                                              HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="Nivel de apoyos para discapacidad intelectual"
+                                              SelectionChanged="SupportDescription_Changed"
+                                              GotFocus="Control_GotFocus" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="PnlVisualFunction" Spacing="2" Visibility="Collapsed">
+                                    <TextBlock Text="Descripción funcional visual:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <ComboBox x:Name="CmbVisualFunction"
+                                              FontSize="{ThemeResource AppBaseFontSize}"
+                                              MinHeight="48"
+                                              Padding="10,6"
+                                              HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="Descripción funcional de la visión"
+                                              SelectionChanged="SupportDescription_Changed"
+                                              GotFocus="Control_GotFocus" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="PnlAuditoryFunction" Spacing="2" Visibility="Collapsed">
+                                    <TextBlock Text="Descripción funcional auditiva:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <ComboBox x:Name="CmbAuditoryFunction"
+                                              FontSize="{ThemeResource AppBaseFontSize}"
+                                              MinHeight="48"
+                                              Padding="10,6"
+                                              HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="Descripción funcional de la audición"
+                                              SelectionChanged="SupportDescription_Changed"
+                                              GotFocus="Control_GotFocus" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="PnlMotorFunction" Spacing="2" Visibility="Collapsed">
+                                    <TextBlock Text="Descripción funcional motriz:" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <ComboBox x:Name="CmbMotorFunction"
+                                              FontSize="{ThemeResource AppBaseFontSize}"
+                                              MinHeight="48"
+                                              Padding="10,6"
+                                              HorizontalAlignment="Stretch"
+                                              AutomationProperties.Name="Descripción funcional de la motricidad"
+                                              SelectionChanged="SupportDescription_Changed"
+                                              GotFocus="Control_GotFocus" />
+                                </StackPanel>
                             </StackPanel>
                         </Grid>
 
@@ -205,12 +280,21 @@
                                    AutomationProperties.HeadingLevel="Level3" />
 
                         <CheckBox x:Name="ChkInternalAudio"
-                                  Content="Audio Interno del Juego: efectos y pistas sonoras (El lector de pantalla NVDA, JAWS o Narrador permanece siempre activo)"
+                                  Content="Audio Interno del Juego: efectos y pistas sonoras"
                                   FontSize="{ThemeResource AppBaseFontSize}"
                                   Margin="0,4"
-                                  AutomationProperties.Name="Audio interno del juego, efectos y pistas sonoras. El lector de pantalla del sistema permanece siempre activo"
+                                  AutomationProperties.Name="Audio interno del juego, efectos y pistas sonoras"
                                   Checked="ChkInternalAudio_Changed"
                                   Unchecked="ChkInternalAudio_Changed"
+                                  GotFocus="Control_GotFocus" />
+
+                        <CheckBox x:Name="ChkScreenReaderAnnouncements"
+                                  Content="Anuncios para el Lector de Pantalla Externo (NVDA, JAWS o Narrador)"
+                                  FontSize="{ThemeResource AppBaseFontSize}"
+                                  Margin="0,4"
+                                  AutomationProperties.Name="Anuncios para el lector de pantalla externo NVDA, JAWS o Narrador"
+                                  Checked="ChkScreenReaderAnnouncements_Changed"
+                                  Unchecked="ChkScreenReaderAnnouncements_Changed"
                                   GotFocus="Control_GotFocus" />
 
                         <CheckBox x:Name="ChkAudioCues"
@@ -230,6 +314,65 @@
                                   Checked="ChkSimplifyLanguage_Changed"
                                   Unchecked="ChkSimplifyLanguage_Changed"
                                   GotFocus="Control_GotFocus" />
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource AppSurfaceBrush}"
+                        BorderBrush="{ThemeResource AppBorderBrush}"
+                        BorderThickness="2"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="0,0,0,20">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Privacidad y Datos del Alumno"
+                                   FontSize="{ThemeResource AppSubHeaderFontSize}"
+                                   FontWeight="Bold"
+                                   Foreground="{ThemeResource AppAccentBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.HeadingLevel="Level2" />
+                        <TextBlock Text="No necesitas dar un diagnóstico para usar MathTutor. Si prefieres no decirlo, deja las condiciones sin marcar y los apoyos en 'Sin especificar'."
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="El nombre, la edad, los apoyos y el progreso se guardan solo en este equipo. La aplicación no envía datos a internet ni usa telemetría. Puedes exportar una copia o borrar el perfil cuando quieras."
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   Foreground="{ThemeResource AppTextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Button x:Name="BtnExportProfile"
+                                    Content="Exportar perfil y progreso"
+                                    Style="{StaticResource AccessibleActionButton}"
+                                    FontSize="{ThemeResource AppBaseFontSize}"
+                                    MinHeight="48"
+                                    AutomationProperties.Name="Exportar perfil y progreso a un archivo"
+                                    Click="BtnExportProfile_Click"
+                                    GotFocus="Control_GotFocus" />
+                            <Button x:Name="BtnDeleteProfile"
+                                    Content="Borrar perfil de este equipo"
+                                    Style="{StaticResource AccessibleActionButton}"
+                                    Background="{ThemeResource AppSurfaceBrush}"
+                                    Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                    FontSize="{ThemeResource AppBaseFontSize}"
+                                    MinHeight="48"
+                                    AutomationProperties.Name="Borrar el perfil guardado en este equipo"
+                                    Click="BtnDeleteProfile_Click"
+                                    GotFocus="Control_GotFocus" />
+                            <Button x:Name="BtnPrivacyNotice"
+                                    Content="Leer aviso de privacidad"
+                                    Style="{StaticResource AccessibleActionButton}"
+                                    Background="{ThemeResource AppSurfaceBrush}"
+                                    Foreground="{ThemeResource AppTextPrimaryBrush}"
+                                    FontSize="{ThemeResource AppBaseFontSize}"
+                                    MinHeight="48"
+                                    AutomationProperties.Name="Leer el aviso de privacidad"
+                                    Click="BtnPrivacyNotice_Click"
+                                    GotFocus="Control_GotFocus" />
+                        </StackPanel>
+                        <TextBlock x:Name="TxtPrivacyStatus"
+                                   FontSize="{ThemeResource AppBaseFontSize}"
+                                   Foreground="{ThemeResource AppSuccessBrush}"
+                                   TextWrapping="Wrap"
+                                   AutomationProperties.LiveSetting="Polite" />
                     </StackPanel>
                 </Border>
 

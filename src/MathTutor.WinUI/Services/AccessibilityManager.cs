@@ -32,7 +32,7 @@ public class AccessibilityManager
     public bool IsInternalAudioEnabled { get; set; } = true;
 
     /// <summary>
-    /// Canal B (Siempre activo por defecto): Comunicación nativa hacia lectores de pantalla externos (NVDA, JAWS, Narrador).
+    /// Canal B (activo por defecto, configurable): Comunicación nativa hacia lectores de pantalla externos (NVDA, JAWS, Narrador).
     /// </summary>
     public bool IsScreenReaderIntegrationEnabled
     {
@@ -55,8 +55,8 @@ public class AccessibilityManager
     {
         CurrentProfile = profile;
 
-        // Canal B: Siempre activo para garantizar que NVDA, JAWS y Narrador nunca queden mudos
-        IsScreenReaderIntegrationEnabled = true;
+        // Canal B: respeta la preferencia explícita del usuario.
+        IsScreenReaderIntegrationEnabled = profile.Preferences.ScreenReaderAnnouncements;
 
         // Canal A: Audio interno del juego (controlado por F2 / preferencias)
         IsInternalAudioEnabled = profile.Preferences.EnableVoiceSynthesis;
@@ -93,7 +93,7 @@ public class AccessibilityManager
     }
 
     /// <summary>
-    /// Envía un anuncio separando Canal B (lector de pantalla del sistema, siempre activo)
+    /// Envía un anuncio separando Canal B (lector de pantalla, según la preferencia)
     /// y Canal A (efectos de audio internos del juego, controlados por F2).
     /// </summary>
     public void Announce(string message, bool speak = true, bool playTone = false)
@@ -168,7 +168,7 @@ public class AccessibilityManager
 
     /// <summary>
     /// Conmuta únicamente el audio interno del juego (Canal A - Tecla F2).
-    /// El canal del lector de pantalla del sistema (Canal B) permanece siempre activo (Tarea 5).
+    /// El canal del lector de pantalla (Canal B) se controla con su propia preferencia.
     /// </summary>
     public void ToggleSpeech()
     {
@@ -177,7 +177,7 @@ public class AccessibilityManager
         Audio.Enabled = IsInternalAudioEnabled;
 
         string status = IsInternalAudioEnabled ? "activado" : "desactivado";
-        AnnounceAssertive($"Audio interno del juego {status}. El lector de pantalla permanece activo.");
+        AnnounceAssertive($"Audio interno del juego {status}.");
     }
 
     public void ApplySystemHighContrast(bool highContrast, bool useDarkScheme)

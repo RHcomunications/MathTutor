@@ -13,23 +13,23 @@ public class ExerciseGeneratorTests
     [Fact]
     public void GetTargetRange_RestrictsNumbers_ForIntellectualDisability()
     {
-        var severeProfile = new UserProfile
+        var extensiveProfile = new UserProfile
         {
             Disability = DisabilityType.Intellectual,
-            Severity = DisabilitySeverity.Severe
+            Support = { IntellectualSupport = IntellectualSupportLevel.Extensive }
         };
-        var (minSev, maxSev) = _generator.GetTargetRange(severeProfile);
-        Assert.Equal(1, minSev);
-        Assert.Equal(3, maxSev);
+        var (minExt, maxExt) = _generator.GetTargetRange(extensiveProfile);
+        Assert.Equal(1, minExt);
+        Assert.Equal(3, maxExt);
 
-        var moderateProfile = new UserProfile
+        var limitedProfile = new UserProfile
         {
             Disability = DisabilityType.Intellectual,
-            Severity = DisabilitySeverity.Moderate
+            Support = { IntellectualSupport = IntellectualSupportLevel.Limited }
         };
-        var (minMod, maxMod) = _generator.GetTargetRange(moderateProfile);
-        Assert.Equal(1, minMod);
-        Assert.Equal(5, maxMod);
+        var (minLim, maxLim) = _generator.GetTargetRange(limitedProfile);
+        Assert.Equal(1, minLim);
+        Assert.Equal(5, maxLim);
     }
 
     [Fact]
@@ -861,7 +861,7 @@ public class ExerciseGeneratorTests
     {
         var curriculum = new CurriculumService();
         var allTopics = curriculum.GetAllTopics();
-        Assert.Equal(45, allTopics.Count);
+        Assert.Equal(54, allTopics.Count);
 
         foreach (var topic in allTopics)
         {
@@ -872,7 +872,7 @@ public class ExerciseGeneratorTests
             Assert.All(exercises, ex =>
             {
                 Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
-                if (topic.Id != "kinder_counting_01")
+                if (topic.Level != AcademicLevel.Kindergarten)
                 {
                     Assert.NotEqual(GamePlayType.InteractiveCounting, ex.GameType);
                 }
@@ -887,7 +887,7 @@ public class ExerciseGeneratorTests
         var profile = new UserProfile
         {
             Disability = DisabilityType.Intellectual,
-            Severity = DisabilitySeverity.Moderate
+            Support = { IntellectualSupport = IntellectualSupportLevel.Limited }
         };
         profile.ApplyRecommendedAccessibilityDefaults();
 
@@ -919,8 +919,8 @@ public class ExerciseGeneratorTests
         var stations = rewards.GetRealmStations(profile);
         var badges = rewards.GetAllBadges(profile);
 
-        Assert.Equal(45, allTopics.Count);
-        Assert.Equal(45, stations.Count);
+        Assert.Equal(54, allTopics.Count);
+        Assert.Equal(54, stations.Count);
 
         var topicIds = allTopics.Select(t => t.Id).ToHashSet();
         var stationTopicIds = stations.Select(s => s.TopicId).ToHashSet();

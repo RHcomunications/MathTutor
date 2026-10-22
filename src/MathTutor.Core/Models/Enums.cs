@@ -11,17 +11,75 @@ public enum DisabilityType
     Hearing = 2,            // Discapacidad auditiva (Hipoacusia, Sordera)
     Motor = 3,              // Discapacidad motriz (Dificultades motoras finas, movilidad reducida)
     Intellectual = 4,       // Discapacidad intelectual / cognitiva (requiere lenguaje simplificado y menor carga)
-    Neurodivergent = 5      // Neurodivergencia (TDAH, Trastorno del Espectro Autista - baja sobrecarga sensorial)
+    Neurodivergent = 5,     // Valor heredado: se migra a Autism + ADHD al cargar perfiles antiguos
+    Autism = 6,             // Condición del espectro autista
+    ADHD = 7                // Trastorno por déficit de atención e hiperactividad
 }
 
 /// <summary>
-/// Grado o severidad de la discapacidad presentada.
+/// Nivel de apoyo para una condición del espectro autista.
+/// No es un grado de severidad: describe cuánto apoyo necesita la persona.
 /// </summary>
-public enum DisabilitySeverity
+public enum AutismSupportLevel
 {
-    Mild = 1,       // Leve
-    Moderate = 2,   // Moderada
-    Severe = 3      // Severa
+    NotApplicable = 0,
+    Level1 = 1,     // Requiere apoyo
+    Level2 = 2,     // Requiere apoyo sustancial
+    Level3 = 3      // Requiere apoyo muy sustancial
+}
+
+/// <summary>
+/// Presentación predominante del TDAH.
+/// </summary>
+public enum AdhdPresentation
+{
+    NotApplicable = 0,
+    PredominantlyInattentive = 1,
+    PredominantlyHyperactiveImpulsive = 2,
+    Combined = 3
+}
+
+/// <summary>
+/// Nivel de apoyos para discapacidad intelectual, en lugar de un grado global de severidad.
+/// </summary>
+public enum IntellectualSupportLevel
+{
+    NotApplicable = 0,
+    Intermittent = 1,   // Apoyo intermitente
+    Limited = 2,        // Apoyo limitado
+    Extensive = 3,      // Apoyo extenso
+    Pervasive = 4       // Apoyo generalizado
+}
+
+/// <summary>
+/// Descripción funcional de la visión, no una severidad genérica.
+/// </summary>
+public enum VisualFunctionalLevel
+{
+    NotApplicable = 0,
+    LowVision = 1,
+    Blindness = 2
+}
+
+/// <summary>
+/// Descripción funcional de la audición.
+/// </summary>
+public enum AuditoryFunctionalLevel
+{
+    NotApplicable = 0,
+    HardOfHearing = 1,
+    Deaf = 2
+}
+
+/// <summary>
+/// Descripción funcional de la motricidad.
+/// </summary>
+public enum MotorFunctionalLevel
+{
+    NotApplicable = 0,
+    FineMotorDifficulties = 1,
+    ReducedMobility = 2,
+    NoUpperLimbUse = 3
 }
 
 /// <summary>

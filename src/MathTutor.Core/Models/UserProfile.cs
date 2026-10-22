@@ -9,8 +9,36 @@ namespace MathTutor.Core.Models;
 /// </summary>
 public class AccessibilityPreferences
 {
+    public const string ThemePreference = nameof(Theme);
+    public const string FontSizePreference = nameof(FontSize);
+    public const string VoiceSynthesisPreference = nameof(EnableVoiceSynthesis);
+    public const string ScreenReaderPreference = nameof(ScreenReaderAnnouncements);
+    public const string AudioCuesPreference = nameof(PlayAudioCues);
+    public const string SimplifyLanguagePreference = nameof(SimplifyLanguage);
+    public const string ReduceOptionsPreference = nameof(ReduceOptionsCount);
+    public const string KeyboardNavigationPreference = nameof(SimplifiedKeyboardNavigation);
+    public const string UnlimitedTimePreference = nameof(UnlimitedTime);
+    public const string SpeechRatePreference = nameof(SpeechRate);
+
     /// <summary>Estado expandido o contraído de cada grupo de trofeos.</summary>
     public Dictionary<string, bool> BadgeGroupExpansion { get; set; } = new();
+
+    /// <summary>
+    /// Preferencias que el usuario ajustó manualmente. Las sugerencias automáticas
+    /// nunca sobrescriben estos valores.
+    /// </summary>
+    public List<string> ManualPreferenceKeys { get; set; } = new();
+
+    public bool IsManual(string preferenceKey) =>
+        ManualPreferenceKeys.Contains(preferenceKey, StringComparer.Ordinal);
+
+    public void MarkManual(string preferenceKey)
+    {
+        if (!IsManual(preferenceKey))
+        {
+            ManualPreferenceKeys.Add(preferenceKey);
+        }
+    }
 
     /// <summary>
     /// Habilita la síntesis de voz propia (TTS) que lee en voz alta cada instrucción, botón y evento.
@@ -71,13 +99,35 @@ public class AccessibilityPreferences
 }
 
 /// <summary>
+/// Apoyos y descripciones funcionales específicas de cada condición.
+/// No existe un grado universal de severidad.
+/// </summary>
+public class SupportProfile
+{
+    public AutismSupportLevel AutismSupport { get; set; } = AutismSupportLevel.NotApplicable;
+    public AdhdPresentation AdhdPresentation { get; set; } = AdhdPresentation.NotApplicable;
+    public IntellectualSupportLevel IntellectualSupport { get; set; } = IntellectualSupportLevel.NotApplicable;
+    public VisualFunctionalLevel VisualFunction { get; set; } = VisualFunctionalLevel.NotApplicable;
+    public AuditoryFunctionalLevel AuditoryFunction { get; set; } = AuditoryFunctionalLevel.NotApplicable;
+    public MotorFunctionalLevel MotorFunction { get; set; } = MotorFunctionalLevel.NotApplicable;
+}
+
+/// <summary>
 /// Perfil pedagógico y de accesibilidad del usuario / alumno.
 /// </summary>
 public class UserProfile
 {
+    public const int CurrentProfileVersion = 2;
+
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; } = "Pequeño Matemático";
     public int Age { get; set; } = 5;
+
+    /// <summary>
+    /// Versión del esquema del perfil. Permite migrar perfiles antiguos sin
+    /// convertir su severidad genérica en un nivel de apoyo autista.
+    /// </summary>
+    public int ProfileVersion { get; set; } = CurrentProfileVersion;
 
     private DisabilityType _disability = DisabilityType.None;
 
@@ -128,7 +178,18 @@ public class UserProfile
         return Disabilities.Contains(type) || Disability == type;
     }
 
-    public DisabilitySeverity Severity { get; set; } = DisabilitySeverity.Mild;
+    private SupportProfile _support = new();
+
+    /// <summary>
+    /// Apoyos específicos por condición (autismo, TDAH, intelectual, visual,
+    /// auditiva y motriz). Reemplaza el antiguo grado universal de severidad.
+    /// </summary>
+    public SupportProfile Support
+    {
+        get => _support;
+        set => _support = value ?? new SupportProfile();
+    }
+
     public AcademicLevel CurrentLevel { get; set; } = AcademicLevel.Kindergarten;
     public RegionalContext Region { get; set; } = RegionalContext.Mexico;
 
@@ -169,8 +230,8 @@ public class UserProfile
     public List<string> CompletedExerciseIds { get; set; } = new();
 
     /// <summary>
-    /// Aplica automáticamente la configuración inicial recomendada de accesibilidad
-    /// de acuerdo con la caracterización de discapacidad (incluyendo selecciones múltiples / comorbilidad) y edad.
+    /// Sugiere apoyos de accesibilidad según las condiciones y los apoyos
+    /// declarados. Nunca sobrescribe una preferencia que el usuario ajustó a mano.
     /// </summary>
     public void ApplyRecommendedAccessibilityDefaults()
     {
@@ -180,19 +241,28 @@ public class UserProfile
             activeDisabilities.Add(Disability);
         }
 
+        bool hasVisual = activeDisabilities.Contains(DisabilityType.Visual);
+        bool hasHearing = activeDisabilities.Contains(DisabilityType.Hearing);
+
         if (activeDisabilities.Count == 0)
         {
-            // Neurotípico
-            Preferences.Theme = HighContrastTheme.DefaultPlayful;
-            Preferences.SimplifyLanguage = false;
-            Preferences.ReduceOptionsCount = false;
-            Preferences.SpeechRate = 0;
-            if (Age <= 6)
-            {
-                Preferences.EnableVoiceSynthesis = true;
-                Preferences.PlayAudioCues = true;
-                Preferences.FontSize = FontSizeLevel.Large;
-            }
+            Suggest(Preferences, AccessibilityPreferences.ThemePreference,
+                () => Preferences.Theme = HighContrastTheme.DefaultPlayful);
+            Suggest(Preferences, AccessibilityPreferences.SimplifyLanguagePreference,
+                () => Preferences.SimplifyLanguage = false);
+            Suggest(Preferences, AccessibilityPreferences.ReduceOptionsPreference,
+                () => Preferences.ReduceOptionsCount = false);
+            Suggest(Preferences, AccessibilityPreferences.SpeechRatePreference,
+                () => Preferences.SpeechRate = 0);
+
+            Suggest(Preferences, AccessibilityPreferences.VoiceSynthesisPreference,
+                () => Preferences.EnableVoiceSynthesis = Age <= 6);
+            Suggest(Preferences, AccessibilityPreferences.ScreenReaderPreference,
+                () => Preferences.ScreenReaderAnnouncements = true);
+            Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                () => Preferences.PlayAudioCues = Age <= 6);
+            Suggest(Preferences, AccessibilityPreferences.FontSizePreference,
+                () => Preferences.FontSize = Age <= 6 ? FontSizeLevel.Large : FontSizeLevel.Normal);
             return;
         }
 
@@ -201,56 +271,132 @@ public class UserProfile
             switch (dis)
             {
                 case DisabilityType.Visual:
-                    Preferences.EnableVoiceSynthesis = true;
-                    Preferences.ScreenReaderAnnouncements = true;
-                    Preferences.PlayAudioCues = true;
-                    if (Severity >= DisabilitySeverity.Moderate)
-                    {
-                        Preferences.Theme = HighContrastTheme.HighContrastDark;
-                        Preferences.FontSize = FontSizeLevel.ExtraLarge;
-                    }
-                    else
-                    {
-                        Preferences.FontSize = FontSizeLevel.Large;
-                    }
+                    Suggest(Preferences, AccessibilityPreferences.VoiceSynthesisPreference,
+                        () => Preferences.EnableVoiceSynthesis = true);
+                    Suggest(Preferences, AccessibilityPreferences.ScreenReaderPreference,
+                        () => Preferences.ScreenReaderAnnouncements = true);
+                    Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                        () => Preferences.PlayAudioCues = true);
+
+                    bool blindness = Support.VisualFunction == VisualFunctionalLevel.Blindness;
+                    Suggest(Preferences, AccessibilityPreferences.ThemePreference,
+                        () => Preferences.Theme = blindness
+                            ? HighContrastTheme.HighContrastDark
+                            : HighContrastTheme.LowSensory);
+                    Suggest(Preferences, AccessibilityPreferences.FontSizePreference,
+                        () => Preferences.FontSize = blindness || Support.VisualFunction == VisualFunctionalLevel.LowVision
+                            ? FontSizeLevel.ExtraLarge
+                            : FontSizeLevel.Large);
                     break;
 
                 case DisabilityType.Hearing:
-                    if (!activeDisabilities.Contains(DisabilityType.Visual))
+                    if (!hasVisual)
                     {
-                        Preferences.EnableVoiceSynthesis = false;
-                        Preferences.ScreenReaderAnnouncements = false;
-                        Preferences.PlayAudioCues = false;
+                        Suggest(Preferences, AccessibilityPreferences.VoiceSynthesisPreference,
+                            () => Preferences.EnableVoiceSynthesis = false);
+                        Suggest(Preferences, AccessibilityPreferences.ScreenReaderPreference,
+                            () => Preferences.ScreenReaderAnnouncements = false);
+                        Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                            () => Preferences.PlayAudioCues = false);
                     }
-                    Preferences.FontSize = FontSizeLevel.Large;
+                    Suggest(Preferences, AccessibilityPreferences.FontSizePreference,
+                        () => Preferences.FontSize = FontSizeLevel.Large);
                     break;
 
                 case DisabilityType.Motor:
-                    Preferences.SimplifiedKeyboardNavigation = true;
-                    Preferences.FontSize = FontSizeLevel.Large;
-                    Preferences.UnlimitedTime = true;
+                    Suggest(Preferences, AccessibilityPreferences.KeyboardNavigationPreference,
+                        () => Preferences.SimplifiedKeyboardNavigation = true);
+                    Suggest(Preferences, AccessibilityPreferences.FontSizePreference,
+                        () => Preferences.FontSize = FontSizeLevel.Large);
+                    Suggest(Preferences, AccessibilityPreferences.UnlimitedTimePreference,
+                        () => Preferences.UnlimitedTime = true);
                     break;
 
                 case DisabilityType.Intellectual:
-                    Preferences.SimplifyLanguage = true;
-                    Preferences.ReduceOptionsCount = true;
-                    Preferences.SpeechRate = -2;
-                    Preferences.EnableVoiceSynthesis = true;
-                    Preferences.PlayAudioCues = true;
-                    Preferences.FontSize = FontSizeLevel.Large;
-                    Preferences.UnlimitedTime = true;
+                    int intellectualSupport = Support.IntellectualSupport == IntellectualSupportLevel.NotApplicable
+                        ? (int)IntellectualSupportLevel.Intermittent
+                        : (int)Support.IntellectualSupport;
+                    Suggest(Preferences, AccessibilityPreferences.SimplifyLanguagePreference,
+                        () => Preferences.SimplifyLanguage = true);
+                    Suggest(Preferences, AccessibilityPreferences.ReduceOptionsPreference,
+                        () => Preferences.ReduceOptionsCount = true);
+                    Suggest(Preferences, AccessibilityPreferences.SpeechRatePreference,
+                        () => Preferences.SpeechRate = intellectualSupport >= (int)IntellectualSupportLevel.Limited ? -2 : -1);
+                    Suggest(Preferences, AccessibilityPreferences.VoiceSynthesisPreference,
+                        () => Preferences.EnableVoiceSynthesis = true);
+                    Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                        () => Preferences.PlayAudioCues = true);
+                    if (intellectualSupport >= (int)IntellectualSupportLevel.Limited)
+                    {
+                        Suggest(Preferences, AccessibilityPreferences.FontSizePreference,
+                            () => Preferences.FontSize = FontSizeLevel.Large);
+                    }
+                    Suggest(Preferences, AccessibilityPreferences.UnlimitedTimePreference,
+                        () => Preferences.UnlimitedTime = true);
+                    break;
+
+                case DisabilityType.Autism:
+                    if (!hasVisual)
+                    {
+                        Suggest(Preferences, AccessibilityPreferences.ThemePreference,
+                            () => Preferences.Theme = HighContrastTheme.LowSensory);
+                    }
+                    Suggest(Preferences, AccessibilityPreferences.UnlimitedTimePreference,
+                        () => Preferences.UnlimitedTime = true);
+                    Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                        () => Preferences.PlayAudioCues = true);
+                    Suggest(Preferences, AccessibilityPreferences.SpeechRatePreference,
+                        () => Preferences.SpeechRate = -1);
+                    if (Support.AutismSupport >= AutismSupportLevel.Level2)
+                    {
+                        Suggest(Preferences, AccessibilityPreferences.ReduceOptionsPreference,
+                            () => Preferences.ReduceOptionsCount = true);
+                    }
+                    break;
+
+                case DisabilityType.ADHD:
+                    if (!hasVisual && (Support.AdhdPresentation is AdhdPresentation.PredominantlyHyperactiveImpulsive
+                        or AdhdPresentation.Combined))
+                    {
+                        Suggest(Preferences, AccessibilityPreferences.ThemePreference,
+                            () => Preferences.Theme = HighContrastTheme.LowSensory);
+                    }
+                    Suggest(Preferences, AccessibilityPreferences.UnlimitedTimePreference,
+                        () => Preferences.UnlimitedTime = true);
+                    Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                        () => Preferences.PlayAudioCues = true);
+                    Suggest(Preferences, AccessibilityPreferences.SpeechRatePreference,
+                        () => Preferences.SpeechRate = -1);
+                    Suggest(Preferences, AccessibilityPreferences.ReduceOptionsPreference,
+                        () => Preferences.ReduceOptionsCount = true);
                     break;
 
                 case DisabilityType.Neurodivergent:
-                    if (!activeDisabilities.Contains(DisabilityType.Visual) || Severity < DisabilitySeverity.Moderate)
+                    // Perfil heredado que no pasó por migración.
+                    if (!hasVisual)
                     {
-                        Preferences.Theme = HighContrastTheme.LowSensory;
+                        Suggest(Preferences, AccessibilityPreferences.ThemePreference,
+                            () => Preferences.Theme = HighContrastTheme.LowSensory);
                     }
-                    Preferences.PlayAudioCues = true;
-                    Preferences.SpeechRate = -1;
-                    Preferences.UnlimitedTime = true;
+                    Suggest(Preferences, AccessibilityPreferences.UnlimitedTimePreference,
+                        () => Preferences.UnlimitedTime = true);
+                    Suggest(Preferences, AccessibilityPreferences.AudioCuesPreference,
+                        () => Preferences.PlayAudioCues = true);
+                    Suggest(Preferences, AccessibilityPreferences.SpeechRatePreference,
+                        () => Preferences.SpeechRate = -1);
                     break;
             }
+        }
+    }
+
+    private static void Suggest(
+        AccessibilityPreferences preferences,
+        string preferenceKey,
+        Action apply)
+    {
+        if (!preferences.IsManual(preferenceKey))
+        {
+            apply();
         }
     }
 }
