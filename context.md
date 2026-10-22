@@ -32,7 +32,7 @@ MathTutor.slnx
 │
 ├── MathTutor.WinUI (net10.0-windows10.0.19041.0 - Cliente Escritorio WinUI 3 Accesible)
 │   ├── App.xaml / App.xaml.cs     (Diccionario de recursos dinámicos WCAG, estilos de foco, botones y controles accesibles)
-│   ├── MainWindow.xaml / .cs      (Shell principal, menú "Opciones del juego" con atajos F1-F6/Esc, foco inicial, diálogo posmisión, regiones de notificación UIA y alto contraste del sistema)
+│   ├── MainWindow.xaml / .cs      (Shell principal, menú "Opciones del juego" con atajos F1-F6/Esc, solicitud de primer plano tras la carga, foco inicial, diálogo posmisión, regiones de notificación UIA y alto contraste del sistema)
 │   ├── Navigation/NavigationService.cs (Frame de navegación y eventos de flujo entre vistas)
 │   ├── Navigation/VerticalListNavigation.cs (Navegación ↑/↓ compartida para ListView accesibles)
 │   ├── Services/
@@ -43,7 +43,7 @@ MathTutor.slnx
 │       ├── ProfilePage.xaml / .cs       (Caracterización del alumno con validación dinámica Edad/Discapacidad vs. Nivel Escolar)
 │       ├── MenuPage.xaml / .cs          (Menú principal con ListView navegable por flechas ↑/↓ y filtrado por edad)
 │       ├── LessonPage.xaml / .cs        (Lección con Cosmo, secreto matemático y ejemplo guiado paso a paso; pasos con ↑/↓)
-│       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo, pistas, respuestas con ↑/↓ y retroalimentación)
+│       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo con celdas de 170 px, pistas, respuestas con ↑/↓ y retroalimentación)
 │       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
 └── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 116 pruebas)
@@ -86,7 +86,7 @@ MathTutor.slnx
 | `CLAUDE.md` | Directrices de ingeniería de software basadas en los principios de Andrej Karpathy: (1) Pensar antes de codificar, (2) Simplicidad primero (sin sobreingeniería), (3) Cambios quirúrgicos y (4) Ejecución orientada a objetivos verificables con pruebas. |
 | `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 45 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
 | `LEEME.txt` | Guía en texto plano para familias, docentes y estudiantes: instalación, primeros pasos, teclas, accesibilidad, privacidad, consejos y solución de problemas. Se integra en el paquete de release junto al ejecutable. |
-| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.9.0`. |
+| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.9.1`. |
 | `context.md` | **(Este archivo)** Documento vivo de contexto técnico archivo por archivo para contribuidores y agentes de código. |
 | `.gitignore` | Reglas de exclusión de Git para artefactos de compilación (`artifacts/`, `bin/`, `obj/`, `.vs/`, paquetes temporales). |
 | `.engram/config.json` | Configuración del proyecto `mathtutor` para la memoria persistente Engram. |
@@ -221,6 +221,7 @@ Ventana principal y shell de navegación:
 - **Alto contraste del sistema**: escucha `AccessibilitySettings.HighContrastChanged`, aplica el tema correspondiente y conserva la preferencia del usuario al desactivarlo.
 - **Diálogo de misión completada**: calcula la siguiente misión, muestra el diálogo modal accesible y navega según la elección.
 - **Tamaño inicial**: ventana de 1100x820 lógicos, mínimo de 800x600, escalada por DPI y limitada al área de trabajo.
+- **Primer plano inicial**: tras la carga y la navegación inicial, `DispatcherQueue.TryEnqueue` llama una sola vez a `AppWindow.MoveInZOrderAtTop`, `Activate` y `SetForegroundWindow` (P/Invoke de `user32.dll`), con guarda `_isClosing`; `RootGrid.Loaded` se desuscribe para evitar solicitudes repetidas.
 
 #### `src/MathTutor.WinUI/Navigation/NavigationService.cs`
 Centraliza el `Frame` y los eventos del flujo: `TopicSelected`, `MapRequested`, `MenuRequested`, `ProfileCompleted`, `ProfileCancelled`, `StartGameRequested`, `BackToMenuRequested`, `BackToLessonRequested` y `MissionCompleted`.
@@ -257,7 +258,7 @@ Menú principal de misiones (`Esc`): saludo, resumen del perfil, estrellas, rach
 Lección guiada en tres pasos: historia de Cosmo, secreto matemático y ejemplo resuelto. Incluye navegación anterior/siguiente con `↑`/`↓` y `Backspace`, lectura de la explicación, inicio del minijuego y conservación del paso al volver desde el juego.
 
 #### `src/MathTutor.WinUI/Views/GamePage.xaml` y `GamePage.xaml.cs`
-Motor interactivo: progreso, instrucción adaptada, repaso del secreto matemático en la misma pantalla, objetos manipulables, pistas diagnósticas, opciones `1`–`3`, banners de error/éxito y barra de progreso. Las respuestas se recorren con `↑`/`↓`; se evita el doble conteo, se bloquean respuestas tras acertar y se anuncia retroalimentación y resultados; no narra la descripción de escena que contenía el resultado esperado.
+Motor interactivo: progreso, instrucción adaptada, repaso del secreto matemático en la misma pantalla, objetos manipulables, pistas diagnósticas, opciones `1`–`3`, banners de error/éxito y barra de progreso. Los grupos de objetos usan `ItemsRepeater` a ancho completo y celdas `UniformGridLayout` de 170 px para evitar solapamientos con botones de 140 px. Las respuestas se recorren con `↑`/`↓`; se evita el doble conteo, se bloquean respuestas tras acertar y se anuncia retroalimentación y resultados; no narra la descripción de escena que contenía el resultado esperado.
 
 #### `src/MathTutor.WinUI/Views/MapPage.xaml` y `MapPage.xaml.cs`
 Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. Las estaciones usan nombres como “Misión recomendada: …” y botones “Explorar la estación: …”; la sala de trofeos es un `TreeView` agrupado por nivel educativo que muestra el progreso de cada grupo, ordena los trofeos desbloqueados primero, expande/contrae con `→`/`←` y persiste el estado de cada grupo en `AccessibilityPreferences.BadgeGroupExpansion`. Conserva la selección al cambiar de tema.
@@ -417,6 +418,6 @@ dotnet test tests\MathTutor.Tests\MathTutor.Tests.csproj -c Release --nologo --n
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-winui.ps1
 
 # 5. Conservar únicamente el ZIP de la release vigente
-Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.9.0-Windows.zip' } | Remove-Item -Force
+Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.9.1-Windows.zip' } | Remove-Item -Force
 ```
 

@@ -23,6 +23,7 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
   - **100% Navegable por Teclado**: Todo el flujo (crear perfil, seleccionar misiones, explorar el mapa del reino, jugar, responder retos y pedir pistas) se opera sin ratón.
   - **Atajos Directos de Respuesta**: Las opciones se responden instantáneamente con las teclas numéricas `1`, `2`, `3` o `Enter`.
   - **Foco Visible Destacado**: Borde visual de 4px de alto contraste que indica en todo momento la posición activa en la pantalla.
+  - **Ventana al Frente al Iniciar**: Al abrir el programa, la ventana solicita el primer plano una sola vez después de cargar el perfil y la navegación inicial.
   - **Sin Límites de Tiempo**: Aprendizaje respetuoso del ritmo de cada alumno (Pauta WCAG 2.2).
 
 - **Comprensible, Adaptable y Culturalmente Cercano**:
@@ -32,6 +33,7 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
   - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
   - **Repaso Sin Abandonar el Reto**: La pantalla del ejercicio mantiene visible el secreto matemático para releerlo, y el anuncio del reto no revela el resultado esperado.
   - **Sala de Trofeos Agrupada por Nivel**: Las insignias se organizan por nivel educativo, muestran el progreso de cada grupo, se expanden y contraen con las flechas y recuerdan su estado entre sesiones.
+  - **Conteo sin Solapamientos**: Los objetos de conteo usan celdas de 170 px y se distribuyen en el ancho disponible para que los botones no se encimen.
 
 - **Robusto**:
   - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 116 pruebas unitarias xUnit).
@@ -85,7 +87,7 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.9.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.9.1`)
 
 Desde la terminal en esta carpeta:
 
@@ -99,11 +101,11 @@ dotnet test tests/MathTutor.Tests/MathTutor.Tests.csproj -c Release
 # Iniciar la aplicación WinUI 3
 dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 
-# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.9.0-Windows.zip)
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.9.1-Windows.zip)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.9.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.9.1` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo

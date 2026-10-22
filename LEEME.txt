@@ -1,6 +1,6 @@
 MATH TUTOR ACCESIBLE
 Guía para familias, docentes y estudiantes
-Versión 1.9.0 - Octubre de 2026
+Versión 1.9.1 - Octubre de 2026
 
 ============================================================
 QUÉ ES MATH TUTOR
@@ -43,7 +43,7 @@ nada para usar el programa.
 CÓMO ABRIRLO
 ============================================================
 
-1. Descarga el archivo MathTutor-v1.9.0-Windows.zip
+1. Descarga el archivo MathTutor-v1.9.1-Windows.zip
    desde la página de esta versión.
 
 2. Haz clic derecho sobre el archivo descargado y elige
@@ -202,6 +202,10 @@ No sé qué hacer:
 NOVEDADES DE ESTA VERSIÓN
 ============================================================
 
+- La ventana del programa aparece al frente al abrirse,
+  después de cargar el perfil y la navegación inicial.
+- Los objetos de conteo tienen celdas más anchas y se
+  distribuyen mejor para que no se encimen.
 - El botón "Opciones del juego" reúne el menú, el mapa, el
   perfil y los ajustes de accesibilidad en un solo lugar.
 - La sala de trofeos ahora agrupa las insignias por nivel y
@@ -222,5 +226,5 @@ aprendizaje. Math Tutor busca que cada estudiante se sienta
 capaz, escuchado y libre de aprender a su manera.
 
 MathTutor Accesible
-Versión 1.9.0
+Versión 1.9.1
 Octubre de 2026

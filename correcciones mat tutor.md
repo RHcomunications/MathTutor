@@ -442,3 +442,24 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** La versión de `MathTutor.Core`, `MathTutor.WinUI`, `LEEME.txt` y `README.md` se actualizó a `1.9.0`. Se mantiene el paquete por carpetas con lanzador `MathTutor.exe`, `libs/`, `modules/` y `LEEME.txt`.
 - **Ubicación:** `src/MathTutor.Core/MathTutor.Core.csproj`, `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `LEEME.txt`, `README.md`, `scripts/publish-winui.ps1`.
 - **Criterio de verificación:** ZIP `MathTutor-v1.9.0-Windows.zip` con lanzador, aplicación, `.pri`, módulos y guía; aplicación iniciada desde la carpeta extraída.
+
+---
+
+# REGISTRO DE CORRECCIONES REALIZADAS - Release `v1.9.1`
+
+> **Estado:** Implementado y verificado. Build `Release` sin advertencias y **116/116 pruebas unitarias** superadas. PR #2 de `metalalchemist` fusionada en `main` (merge `06b24c4`, fix `5bd2bb8`); release `v1.9.1` publicada.
+
+### 1. Ventana al frente al iniciar
+- **Corrección:** `MainWindow_Loaded` se desuscribe de `RootGrid.Loaded`, aplica el tamaño inicial, carga el perfil y la navegación, y encola una sola solicitud de primer plano con `AppWindow.MoveInZOrderAtTop`, `Activate` y `SetForegroundWindow` (P/Invoke de `user32.dll`), protegida por `_isClosing`.
+- **Ubicación:** `src/MathTutor.WinUI/MainWindow.xaml.cs`.
+- **Criterio de verificación:** La ventana aparece al frente una sola vez tras la carga; la solicitud no se repite al reactivar; build 0 warnings.
+
+### 2. Objetos de conteo sin solapamientos
+- **Corrección:** Los dos `ItemsRepeater` de conteo pasaron a `HorizontalAlignment="Stretch"` y sus celdas `UniformGridLayout` de `MinItemWidth=95` a `170`, por encima del `MinWidth=140` de los botones; los grupos aprovechan el ancho disponible y envuelven sin encimarse.
+- **Ubicación:** `src/MathTutor.WinUI/Views/GamePage.xaml`.
+- **Criterio de verificación:** XAML compila; los botones de ambos grupos conservan su ancho mínimo y no se solapan en el ancho de la tarjeta.
+
+### 3. Versión y paquete
+- **Corrección:** Versión de `MathTutor.Core`, `MathTutor.WinUI`, `README.md` y `LEEME.txt` actualizada a `1.9.1`; se mantiene el paquete con lanzador, `libs/`, `modules/` y guía.
+- **Ubicación:** `src/MathTutor.Core/MathTutor.Core.csproj`, `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `README.md`, `LEEME.txt`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** ZIP `MathTutor-v1.9.1-Windows.zip` con lanzador, `libs/MathTutor.exe`, `MathTutor.pri`, 53 módulos, `LEEME.txt` y sin PDB.
