@@ -201,7 +201,8 @@ public sealed partial class MapPage : Page
             {
                 string title = Enum.TryParse<AcademicLevel>(group.Key, out var level)
                     ? MenuPage.GetAcademicLevelName(level) : "Logros generales";
-                string progress = $"Desbloqueaste {group.Count(b => b.IsUnlocked)} trofeos de {group.Count()}";
+                int groupUnlocked = group.Count(b => b.IsUnlocked);
+                string progress = $"Desbloqueaste {groupUnlocked} {(groupUnlocked == 1 ? "trofeo" : "trofeos")} de {group.Count()}";
                 var groupNode = new TreeViewNode
                 {
                     Content = new BadgeDisplayItem
@@ -294,6 +295,28 @@ public sealed partial class MapPage : Page
 
         _acc.CurrentProfile.Preferences.BadgeGroupExpansion[group.GroupKey] = expanded;
         _acc.SaveCurrentProfile();
+    }
+
+    private void BadgeItem_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement element)
+            return;
+
+        var item = element.DataContext switch
+        {
+            TreeViewNode node => node.Content as BadgeDisplayItem,
+            BadgeDisplayItem direct => direct,
+            _ => null
+        };
+        if (item is null)
+            return;
+
+        DependencyObject? ancestor = element;
+        while (ancestor is not null and not TreeViewItem)
+            ancestor = VisualTreeHelper.GetParent(ancestor);
+
+        if (ancestor is TreeViewItem container)
+            AutomationProperties.SetName(container, item.AccessibleBadgeName);
     }
 
     private void ItemsStations_KeyDown(object sender, KeyRoutedEventArgs e)

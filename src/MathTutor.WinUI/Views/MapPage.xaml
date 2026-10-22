@@ -176,8 +176,8 @@
                       SelectionChanged="ItemsBadges_SelectionChanged">
                 <TreeView.ItemTemplate>
                     <DataTemplate>
-                        <TreeViewItem AutomationProperties.Name="{Binding Content.AccessibleBadgeName}">
-                            <Border MinWidth="260"
+                        <Border MinWidth="260"
+                                Loaded="BadgeItem_Loaded"
                                 Padding="16"
                                 CornerRadius="12"
                                 Background="{Binding Content.BadgeBackgroundBrush}"
@@ -207,7 +207,6 @@
                                            TextAlignment="Center" />
                             </StackPanel>
                         </Border>
-                        </TreeViewItem>
                     </DataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
