@@ -55,7 +55,11 @@ public sealed partial class LessonPage : Page
         TxtNarrativeStory.Text = _adaptive.GetAdaptedTopicIntro(topic, profile);
         TxtCoreConcept.Text = _adaptive.GetAdaptedConceptExplanation(topic, profile);
         TxtGuidedExample.Text = BuildGuidedExampleText(topic, profile);
-        ItemsPrinciples.ItemsSource = topic.PrinciplesAddressed;
+
+        bool showPrinciples = AdaptiveEngine.GetLanguageRegister(profile) >= LanguageRegister.Standard;
+        TxtPrinciplesHeading.Visibility = showPrinciples ? Visibility.Visible : Visibility.Collapsed;
+        ItemsPrinciples.Visibility = showPrinciples ? Visibility.Visible : Visibility.Collapsed;
+        ItemsPrinciples.ItemsSource = showPrinciples ? topic.PrinciplesAddressed : null;
 
         UpdateStepViewAndAnnounce(playTone: true);
     }
@@ -106,8 +110,8 @@ public sealed partial class LessonPage : Page
         string speechMessage = _currentStep switch
         {
             1 => $"Paso 1 de 3. Historia de la misión: {_topic.Title}. Cosmo dice: {TxtNarrativeStory.Text}. Presiona Enter o Espacio para continuar al Secreto Matemático.",
-            2 => $"Paso 2 de 3. El Secreto Matemático: {TxtCoreConcept.Text}. Presiona Enter o Espacio para ver el ejemplo guiado, o Flecha Izquierda para volver a la historia.",
-            3 => $"Paso 3 de 3. Ejemplo guiado con Cosmo: {TxtGuidedExample.Text}. ¡Lección completada! Presiona Enter para comenzar el reto lúdico, o Flecha Izquierda para repasar.",
+            2 => $"Paso 2 de 3. El Secreto Matemático: {TxtCoreConcept.Text}. Presiona Enter o Espacio para ver el ejemplo guiado, o Flecha arriba o Backspace para volver a la historia.",
+            3 => $"Paso 3 de 3. Ejemplo guiado con Cosmo: {TxtGuidedExample.Text}. ¡Lección completada! Presiona Enter para comenzar el reto lúdico, o Flecha arriba o Backspace para repasar.",
             _ => string.Empty
         };
 

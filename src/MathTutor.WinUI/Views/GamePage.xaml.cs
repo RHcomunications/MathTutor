@@ -313,8 +313,9 @@ public sealed partial class GamePage : Page
             BorderHintBanner.Visibility = Visibility.Collapsed;
             BorderSuccessBanner.Visibility = Visibility.Visible;
 
-            TxtSuccessExplanation.Text = !string.IsNullOrWhiteSpace(_currentExercise.ExplanationOfSuccess)
-                ? _currentExercise.ExplanationOfSuccess
+            string adaptedSuccess = _adaptive.GetAdaptedSuccess(_currentExercise, profile);
+            TxtSuccessExplanation.Text = !string.IsNullOrWhiteSpace(adaptedSuccess)
+                ? adaptedSuccess
                 : option.SpeechFeedback;
 
             BtnNextExercise.Focus(FocusState.Programmatic);
@@ -334,7 +335,7 @@ public sealed partial class GamePage : Page
 
         bool showDetailed = _hintStep >= 2;
         string hintLabel = showDetailed ? "Pista Paso a Paso" : "Pista Orientadora";
-        string hint = showDetailed ? _currentExercise.SecondHintDetailed : _currentExercise.FirstHint;
+        string hint = _adaptive.GetAdaptedHint(_currentExercise, profile, showDetailed);
 
         string feedbackMessage = $"{option.SpeechFeedback} {hintLabel} de Cosmo: {hint}";
         TxtHintMessage.Text = $"Incorrecto. Cosmo te explica por qué no es {option.Label}:\n• {option.SpeechFeedback}\n• {hintLabel}: {hint}";
@@ -480,9 +481,10 @@ public sealed partial class GamePage : Page
         _hintStep++;
         BorderHintBanner.Visibility = Visibility.Visible;
 
+        var profile = _acc.CurrentProfile;
         bool showDetailed = _hintStep >= 2;
         string hintLabel = showDetailed ? "Pista 2 (Resolución Paso a Paso)" : "Pista 1 (Orientación)";
-        string hint = showDetailed ? _currentExercise.SecondHintDetailed : _currentExercise.FirstHint;
+        string hint = _adaptive.GetAdaptedHint(_currentExercise, profile, showDetailed);
 
         TxtHintMessage.Text = $"💡 {hintLabel} de Cosmo: {hint}";
         DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => BorderHintBanner.StartBringIntoView());

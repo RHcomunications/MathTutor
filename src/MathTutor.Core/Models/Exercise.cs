@@ -115,6 +115,11 @@ public class Exercise
     public string SecondHintDetailed { get; set; } = string.Empty;
     public string ExplanationOfSuccess { get; set; } = string.Empty;
 
+    // Variantes para los primeros años (3 a 8 años), sin tecnicismos
+    public string SimplifiedFirstHint { get; set; } = string.Empty;
+    public string SimplifiedSecondHint { get; set; } = string.Empty;
+    public string SimplifiedExplanationOfSuccess { get; set; } = string.Empty;
+
     // Metadatos pedagógicos
     public int ExpectedResult { get; set; }
     public int TargetAgeMin { get; set; } = 3;

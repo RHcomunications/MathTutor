@@ -70,10 +70,13 @@ public class ExerciseGenerator
             ExpectedResult = count,
             StandardInstruction = $"En el jardín aparecieron {visual.Name.ToLower()}s mágicas. Toca o selecciona cada una para contarla al ritmo de la música. ¿Cuántas hay en total?",
             SimplifiedInstruction = $"Toca cada {visual.Name.ToLower()} para contar. Una, dos... ¿cuántas hay en total?",
-            ScreenReaderDescription = $"Hay {count} {visual.Name.ToLower()}s alineadas en fila. Debes contar cada una.",
+            ScreenReaderDescription = $"Hay varias {visual.Name.ToLower()}s en el jardín. Explora y cuenta una a una.",
             FirstHint = $"Toca la primera {visual.Name.ToLower()} y escucha su tono musical. Luego sigue con la siguiente.",
             SecondHintDetailed = $"Cuenta despacito: el último número que digas te dirá cuántas {visual.Name.ToLower()}s hay en total.",
-            ExplanationOfSuccess = $"¡Extraordinario! Hay {count} {visual.Name.ToLower()}s en total. ¡El último número contado representa la cantidad completa de la colección!"
+            ExplanationOfSuccess = $"¡Muy bien! Hay {count} {visual.Name.ToLower()}s en total.",
+            SimplifiedFirstHint = $"Toca la primera {visual.Name.ToLower()} y luego la siguiente.",
+            SimplifiedSecondHint = $"Cuenta una por una y di el último número.",
+            SimplifiedExplanationOfSuccess = $"¡Muy bien! Hay {count} {visual.Name.ToLower()}s."
         };
 
         for (int i = 0; i < count; i++)
@@ -117,8 +120,11 @@ public class ExerciseGenerator
             SimplifiedInstruction = $"Las piedras dicen: {start}, {start + 1}, {start + 2}... ¿Qué número sigue ahora?",
             ScreenReaderDescription = $"Una fila de piedras sobre el río con los números {start}, {start + 1}, {start + 2}. Falta la última piedra.",
             FirstHint = $"Di los números en voz alta como una canción: {start}, {start + 1}, {start + 2}...",
-            SecondHintDetailed = $"Después del número {start + 2} siempre viene el número {missing}. ¡El orden nunca cambia!",
-            ExplanationOfSuccess = $"¡Magnífico! El número {missing} es el correcto. Los números siempre viajan en el mismo orden invariable: ¡eso es el orden estable!"
+            SecondHintDetailed = $"Después del número {start + 2} viene el número {missing}. Los números van en orden.",
+            ExplanationOfSuccess = $"¡Bien! El número {missing} es el correcto. Los números van en orden: {start}, {start + 1}, {start + 2}, {missing}.",
+            SimplifiedFirstHint = $"Di los números: {start}, {start + 1}, {start + 2}...",
+            SimplifiedSecondHint = $"Después del {start + 2} viene el {missing}.",
+            SimplifiedExplanationOfSuccess = $"¡Bien! El número {missing} es el que sigue."
         };
 
         for (int i = 0; i < 3; i++)

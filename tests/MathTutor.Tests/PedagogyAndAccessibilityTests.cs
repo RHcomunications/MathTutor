@@ -494,6 +494,87 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void AdaptiveEngine_UsesAgeLanguageRegister_EvenWithoutDisability()
+    {
+        var young = new UserProfile { Age = 4 };
+        var older = new UserProfile { Age = 9 };
+        var topic = _curriculum.GetAllTopics().First(t => t.Id == "kinder_counting_01");
+        var exercise = topic.Exercises.First();
+
+        Assert.Equal(LanguageRegister.PlayfulEarly, AdaptiveEngine.GetLanguageRegister(young));
+        Assert.Equal(LanguageRegister.Standard, AdaptiveEngine.GetLanguageRegister(older));
+        Assert.Equal(exercise.SimplifiedInstruction, _adaptive.GetAdaptedInstruction(exercise, young));
+        Assert.Equal(exercise.StandardInstruction, _adaptive.GetAdaptedInstruction(exercise, older));
+        Assert.Equal(exercise.SimplifiedExplanationOfSuccess, _adaptive.GetAdaptedSuccess(exercise, young));
+        Assert.Equal(exercise.SimplifiedFirstHint, _adaptive.GetAdaptedHint(exercise, young, detailed: false));
+    }
+
+    [Fact]
+    public void AdaptiveEngine_DoesNotInfantilizeOlderLearner_WithIntellectualDisability()
+    {
+        var profile = new UserProfile
+        {
+            Age = 15,
+            Disability = DisabilityType.Intellectual
+        };
+
+        Assert.Equal(LanguageRegister.Simple, AdaptiveEngine.GetLanguageRegister(profile));
+    }
+
+    [Fact]
+    public void Kindergarten_ChildFacingText_HasNoTechnicalTerms()
+    {
+        var topic = _curriculum.GetAllTopics().First(t => t.Id == "kinder_counting_01");
+        var banned = new[]
+        {
+            "cardinalidad",
+            "correspondencia",
+            "orden estable",
+            "abstracción",
+            "abstraccion",
+            "irrelevancia",
+            "colección",
+            "coleccion"
+        };
+
+        var texts = new List<string>
+        {
+            topic.Title,
+            topic.NarrativeIntro,
+            topic.NarrativeIntroSimplified,
+            topic.CoreConceptExplanation,
+            topic.CoreConceptSimplified,
+            topic.CongratulationMessage
+        };
+
+        foreach (var exercise in topic.Exercises)
+        {
+            texts.Add(exercise.Title);
+            texts.Add(exercise.StandardInstruction);
+            texts.Add(exercise.SimplifiedInstruction);
+            texts.Add(exercise.FirstHint);
+            texts.Add(exercise.SecondHintDetailed);
+            texts.Add(exercise.ExplanationOfSuccess);
+            texts.Add(exercise.SimplifiedFirstHint);
+            texts.Add(exercise.SimplifiedSecondHint);
+            texts.Add(exercise.SimplifiedExplanationOfSuccess);
+            texts.AddRange(exercise.Options.Select(o => o.Label));
+            texts.AddRange(exercise.Options.Select(o => o.SpeechFeedback));
+        }
+
+        foreach (var text in texts.Where(t => !string.IsNullOrWhiteSpace(t)))
+        {
+            foreach (var term in banned)
+            {
+                Assert.False(
+                    text.Contains(term, StringComparison.OrdinalIgnoreCase),
+                    $"El texto de jardín contiene el término técnico '{term}': {text}");
+            }
+        }
+    }
+
+
+    [Fact]
     public void UserProfile_VisualDisability_EnablesVoiceAndScreenReaderDefaults()
     {
         var profile = new UserProfile

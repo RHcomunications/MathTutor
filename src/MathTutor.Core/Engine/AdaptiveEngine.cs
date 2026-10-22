@@ -109,11 +109,35 @@ public class AdaptiveEngine
     };
 
     /// <summary>
+    /// Determina el registro de lenguaje apropiado según la edad, el nivel y las
+    /// preferencias del alumno. La edad manda: la discapacidad no debe infantilizar
+    /// a un adolescente ni ocultar apoyos a un niño pequeño.
+    /// </summary>
+    public static LanguageRegister GetLanguageRegister(UserProfile profile)
+    {
+        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
+        {
+            return profile.Age <= 8 ? LanguageRegister.PlayfulEarly : LanguageRegister.Simple;
+        }
+
+        return profile.Age switch
+        {
+            <= 5 => LanguageRegister.PlayfulEarly,
+            <= 8 => LanguageRegister.Simple,
+            <= 12 => LanguageRegister.Standard,
+            _ => LanguageRegister.Technical
+        };
+    }
+
+    private static bool PrefersSimpleLanguage(UserProfile profile) =>
+        GetLanguageRegister(profile) is LanguageRegister.PlayfulEarly or LanguageRegister.Simple;
+
+    /// <summary>
     /// Obtiene la instrucción adaptada a la edad y discapacidad del alumno.
     /// </summary>
     public string GetAdaptedInstruction(Exercise exercise, UserProfile profile)
     {
-        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
+        if (PrefersSimpleLanguage(profile))
         {
             return !string.IsNullOrWhiteSpace(exercise.SimplifiedInstruction)
                 ? exercise.SimplifiedInstruction
@@ -128,7 +152,7 @@ public class AdaptiveEngine
     /// </summary>
     public string GetAdaptedTopicIntro(PedagogicalTopic topic, UserProfile profile)
     {
-        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
+        if (PrefersSimpleLanguage(profile))
         {
             return !string.IsNullOrWhiteSpace(topic.NarrativeIntroSimplified)
                 ? topic.NarrativeIntroSimplified
@@ -143,7 +167,7 @@ public class AdaptiveEngine
     /// </summary>
     public string GetAdaptedConceptExplanation(PedagogicalTopic topic, UserProfile profile)
     {
-        if (profile.Preferences.SimplifyLanguage || profile.HasDisability(DisabilityType.Intellectual))
+        if (PrefersSimpleLanguage(profile))
         {
             return !string.IsNullOrWhiteSpace(topic.CoreConceptSimplified)
                 ? topic.CoreConceptSimplified
@@ -151,6 +175,36 @@ public class AdaptiveEngine
         }
 
         return topic.CoreConceptExplanation;
+    }
+
+    /// <summary>
+    /// Obtiene el mensaje de éxito adaptado al registro del alumno.
+    /// </summary>
+    public string GetAdaptedSuccess(Exercise exercise, UserProfile profile)
+    {
+        if (PrefersSimpleLanguage(profile) && !string.IsNullOrWhiteSpace(exercise.SimplifiedExplanationOfSuccess))
+        {
+            return exercise.SimplifiedExplanationOfSuccess;
+        }
+
+        return exercise.ExplanationOfSuccess;
+    }
+
+    /// <summary>
+    /// Obtiene la pista adaptada al registro del alumno.
+    /// </summary>
+    public string GetAdaptedHint(Exercise exercise, UserProfile profile, bool detailed)
+    {
+        if (PrefersSimpleLanguage(profile))
+        {
+            string simplified = detailed ? exercise.SimplifiedSecondHint : exercise.SimplifiedFirstHint;
+            if (!string.IsNullOrWhiteSpace(simplified))
+            {
+                return simplified;
+            }
+        }
+
+        return detailed ? exercise.SecondHintDetailed : exercise.FirstHint;
     }
 
     /// <summary>

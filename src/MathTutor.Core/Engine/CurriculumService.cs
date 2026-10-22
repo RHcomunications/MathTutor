@@ -188,13 +188,13 @@ public class CurriculumService
         var topic = new PedagogicalTopic
         {
             Id = "kinder_counting_01",
-            Title = "El Bosque Mágico: Los 5 Secretos del Conteo",
+            Title = "El Bosque Mágico: Cuenta con Cosmo",
             Level = AcademicLevel.Kindergarten,
             CharacterName = "Cosmo el Búho Sabio",
-            NarrativeIntro = "¡Hola, valiente explorador! Soy Cosmo, el búho de los números. En nuestro Bosque Encantado, los números son llaves mágicas que abren cofres y ayudan a nuestros amigos animales. ¿Estás listo para aprender a contar jugando?",
-            NarrativeIntroSimplified = "¡Hola! Soy Cosmo. Vamos a jugar con los números en el bosque. ¡Será muy divertido!",
-            CoreConceptExplanation = "Contar no es solo decir palabras de memoria. Cuando contamos, seguimos reglas secretas: cada amigo recibe un número (correspondencia 1 a 1), los números nunca se cambian de lugar (orden estable), y el último número que decimos con fuerza nos dice cuántos amigos hay en total (cardinalidad).",
-            CoreConceptSimplified = "Para contar, señalamos cada cosita una sola vez. El último número que dices es la cantidad total.",
+            NarrativeIntro = "¡Hola! Soy Cosmo, el búho del bosque. Hoy vamos a contar manzanas, piedras y tesoros. ¿Me acompañas?",
+            NarrativeIntroSimplified = "¡Hola! Soy Cosmo. Vamos a contar cosas del bosque. ¡Vamos a jugar!",
+            CoreConceptExplanation = "Para contar, toca cada cosa una sola vez y di un número. No te saltes ninguna. El último número que dices es cuántas cosas hay.",
+            CoreConceptSimplified = "Toca cada cosa una vez. Di un número. El último número es el total.",
             PrinciplesAddressed = new List<string>
             {
                 "Correspondencia uno a uno (biunívoca)",
@@ -203,25 +203,28 @@ public class CurriculumService
                 "Abstracción",
                 "Irrelevancia del orden"
             },
-            CongratulationMessage = "¡Extraordinario trabajo! Has descubierto los 5 secretos mágicos del conteo. ¡Las estrellas brillan para ti!"
+            CongratulationMessage = "¡Muy bien! Ya sabes contar tocando cada cosa una vez. ¡Las estrellas brillan para ti!"
         };
 
         // Ejercicio 1: Principio de Correspondencia Uno a Uno y Cardinalidad
         var ex1 = new Exercise
         {
             Id = "count_ex_01",
-            Title = "El Banquete de las Manzanas Mágicas",
+            Title = "El Banquete de las Manzanas",
             GameType = GamePlayType.InteractiveCounting,
             TargetAgeMin = 3,
             TargetAgeMax = 5,
             Level = AcademicLevel.Kindergarten,
             ExpectedResult = 3,
-            StandardInstruction = "En el bosque hay 3 simpáticos conejitos con mucha hambre. Toca o selecciona cada manzana para dársela a un conejito. ¡Recuerda: una manzana para cada uno! ¿Cuántas manzanas tenemos en total?",
-            SimplifiedInstruction = "Toca cada manzana para contarla. Una, dos... ¿cuántas manzanas hay?",
-            ScreenReaderDescription = "Hay 3 manzanas rojas jugosas alineadas en el huerto. Cada una tiene una campana musical. Debes contarlas una a una.",
-            FirstHint = "Toca la primera manzana y escucha su campana. Luego la siguiente. ¡No saltes ninguna!",
-            SecondHintDetailed = "Vamos juntos: una manzana (1), dos manzanas (2), tres manzanas (3). El último número fue el 3.",
-            ExplanationOfSuccess = "¡Correcto! Hay 3 manzanas. Le diste exactamente una manzana a cada conejito. ¡Eso es correspondencia uno a uno y el 3 es el total de la colección!"
+            StandardInstruction = "Hay 3 conejitos con hambre. Toca cada manzana y dale una a cada conejito. ¿Cuántas manzanas hay?",
+            SimplifiedInstruction = "Toca cada manzana para contarla. ¿Cuántas manzanas hay?",
+            ScreenReaderDescription = "En el huerto hay varias manzanas. Explora y cuéntalas una a una.",
+            FirstHint = "Toca la primera manzana. Luego la siguiente. No te saltes ninguna.",
+            SecondHintDetailed = "Cuenta: una, dos, tres. El último número es 3.",
+            ExplanationOfSuccess = "¡Muy bien! Hay 3 manzanas. Tocaste cada una una vez.",
+            SimplifiedFirstHint = "Toca una manzana. Luego la siguiente. No te saltes ninguna.",
+            SimplifiedSecondHint = "Cuenta: una, dos, tres.",
+            SimplifiedExplanationOfSuccess = "¡Muy bien! Hay 3 manzanas."
         };
 
         ex1.ItemsGroupA.Add(new ManipulableItem { Id = "m1", Name = "Manzana Roja 1", EmojiSymbol = "🍎", AccessibleDescription = "Primera manzana roja", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
@@ -238,18 +241,21 @@ public class CurriculumService
         var ex2 = new Exercise
         {
             Id = "count_ex_02",
-            Title = "El Puente de Piedras del Río Cantarín",
+            Title = "El Puente de las Piedras",
             GameType = GamePlayType.OrderSequence,
             TargetAgeMin = 3,
             TargetAgeMax = 6,
             Level = AcademicLevel.Kindergarten,
             ExpectedResult = 4,
-            StandardInstruction = "Para cruzar el río, debemos pisar las piedras musicales que flotan en el agua. Las piedras dicen: 1, 2, 3... ¿Qué piedra mágica debe ir a continuación para no caernos al agua?",
-            SimplifiedInstruction = "Las piedras dicen: 1, 2, 3... ¿Qué número sigue ahora?",
-            ScreenReaderDescription = "Hay un puente con 4 piedras sobre el río. La primera tiene el número 1, la segunda el 2, la tercera el 3, y la cuarta está esperando tu respuesta.",
-            FirstHint = "Di los números en voz alta como una canción: uno, dos, tres...",
-            SecondHintDetailed = "Después del número 3 siempre viene el número 4. Los números nunca cambian su orden.",
-            ExplanationOfSuccess = "¡Bravo! El número 4 es la piedra correcta. Los números siempre viajan en el mismo trenecito ordenado: 1, 2, 3, 4, 5. ¡Eso es el orden estable!"
+            StandardInstruction = "Las piedras del río dicen: 1, 2, 3... ¿Qué número sigue en la siguiente piedra?",
+            SimplifiedInstruction = "Las piedras dicen: 1, 2, 3... ¿Qué número sigue?",
+            ScreenReaderDescription = "Hay piedras con números en orden. Una piedra está vacía.",
+            FirstHint = "Di los números como una canción: uno, dos, tres...",
+            SecondHintDetailed = "Después del 3 viene el 4. Los números van en orden.",
+            ExplanationOfSuccess = "¡Bien! El 4 es el número que sigue. Los números van en orden: 1, 2, 3, 4.",
+            SimplifiedFirstHint = "Di los números: uno, dos, tres...",
+            SimplifiedSecondHint = "Después del 3 viene el 4.",
+            SimplifiedExplanationOfSuccess = "¡Bien! El 4 es el número que sigue."
         };
 
         ex2.ItemsGroupA.Add(new ManipulableItem { Id = "p1", Name = "Piedra 1", EmojiSymbol = "🪨 1", AccessibleDescription = "Piedra con el número 1", OrderIndex = 1, MusicalPitchHz = Frequencies[0], IsCounted = true });
@@ -267,18 +273,21 @@ public class CurriculumService
         var ex3 = new Exercise
         {
             Id = "count_ex_03",
-            Title = "El Cofre de los Objetos Curiosos (Abstracción e Irrelevancia)",
+            Title = "El Cofre de los Tesoros",
             GameType = GamePlayType.InteractiveCounting,
             TargetAgeMin = 4,
             TargetAgeMax = 6,
             Level = AcademicLevel.Kindergarten,
             ExpectedResult = 5,
-            StandardInstruction = "Cosmo encontró en su cofre objetos muy diferentes: 2 estrellas doradas, 2 campanas musicales y 1 corazón rojo. ¿Se pueden contar todos juntos aunque sean diferentes? ¿Cuántos tesoros hay en total?",
-            SimplifiedInstruction = "Hay estrellas, campanas y un corazón. ¡Todos son juguetes! ¿Cuántos juguetes hay en total?",
-            ScreenReaderDescription = "Dentro del cofre hay 5 objetos variados: dos estrellas, dos campanas y un corazón. Puedes contarlos en cualquier orden.",
-            FirstHint = "¡Sí podemos contarlos! No importa que unos sean estrellas y otros campanas, todos son tesoros.",
-            SecondHintDetailed = "Cuenta uno por uno: 1, 2, 3, 4, 5. No importa si comienzas por el corazón o por las estrellas, el total siempre es 5.",
-            ExplanationOfSuccess = "¡Genial! Hay 5 tesoros. Aprendiste el principio de abstracción: podemos contar cualquier clase de objetos, y da igual el orden en que los toques, ¡el resultado siempre es 5!"
+            StandardInstruction = "En el cofre hay estrellas, campanas y un corazón. ¿Cuántos tesoros hay en total?",
+            SimplifiedInstruction = "Hay estrellas, campanas y un corazón. ¿Cuántos juguetes hay?",
+            ScreenReaderDescription = "Dentro del cofre hay objetos diferentes. Cuéntalos todos.",
+            FirstHint = "Puedes contarlos en cualquier orden. Toca cada uno una vez.",
+            SecondHintDetailed = "Cuenta: uno, dos, tres, cuatro, cinco. Hay 5.",
+            ExplanationOfSuccess = "¡Genial! Hay 5 tesoros. Los contaste todos, aunque fueran diferentes.",
+            SimplifiedFirstHint = "Toca cada tesoro una vez.",
+            SimplifiedSecondHint = "Cuenta: uno, dos, tres, cuatro, cinco.",
+            SimplifiedExplanationOfSuccess = "¡Genial! Hay 5 tesoros."
         };
 
         ex3.ItemsGroupA.Add(new ManipulableItem { Id = "item1", Name = "Estrella 1", EmojiSymbol = "⭐", AccessibleDescription = "Una estrella dorada", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });

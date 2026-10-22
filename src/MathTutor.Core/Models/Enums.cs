@@ -25,6 +25,18 @@ public enum DisabilitySeverity
 }
 
 /// <summary>
+/// Registro de lenguaje usado para adaptar instrucciones, explicaciones,
+/// pistas y retroalimentación a la edad y necesidades del alumno.
+/// </summary>
+public enum LanguageRegister
+{
+    PlayfulEarly = 0, // 3 a 5 años: frases cortas, vocabulario concreto, sin tecnicismos
+    Simple = 1,       // 6 a 8 años: lenguaje claro, un término nuevo a la vez
+    Standard = 2,     // 9 a 12 años: lenguaje escolar con definiciones breves
+    Technical = 3     // 13 años en adelante: terminología matemática explícita
+}
+
+/// <summary>
 /// Nivel o grado escolar del alumno.
 /// Diseñado para abarcar desde Jardín de niños hasta niveles avanzados y programación.
 /// </summary>

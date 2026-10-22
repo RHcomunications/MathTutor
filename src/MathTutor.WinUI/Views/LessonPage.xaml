@@ -50,7 +50,7 @@
                             CornerRadius="8"
                             Padding="12,6"
                             VerticalAlignment="Center">
-                        <TextBlock Text="Enter: Avanzar | Flechas: Retroceder"
+                        <TextBlock Text="Enter/Espacio o Flecha abajo: avanzar | Flecha arriba o Backspace: retroceder"
                                    FontSize="{ThemeResource AppBaseFontSize}"
                                    Foreground="{ThemeResource AppTextSecondaryBrush}"
                                    TextWrapping="Wrap" />
@@ -143,7 +143,8 @@
                              Foreground="{ThemeResource AppTextPrimaryBrush}"
                              AutomationProperties.Name="Explicación del Secreto Matemático" />
 
-                    <TextBlock Text="Principios que dominarás en este juego:"
+                    <TextBlock x:Name="TxtPrinciplesHeading"
+                               Text="Principios que dominarás en este juego:"
                                FontSize="{ThemeResource AppBaseFontSize}"
                                FontWeight="SemiBold"
                                Foreground="{ThemeResource AppTextSecondaryBrush}"
@@ -166,7 +167,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="👉 Presiona Enter o Espacio para ver el Ejemplo Guiado, o Flecha Izquierda para volver a la Historia."
+                    <TextBlock Text="👉 Presiona Enter o Espacio para ver el Ejemplo Guiado, o Flecha arriba/Backspace para volver a la Historia."
                                FontSize="{ThemeResource AppBaseFontSize}"
                                FontWeight="SemiBold"
                                Foreground="{ThemeResource AppAccentBrush}"
@@ -201,7 +202,7 @@
                              Foreground="{ThemeResource AppTextPrimaryBrush}"
                              AutomationProperties.Name="Ejemplo Guiado Paso a Paso con Cosmo" />
 
-                    <TextBlock Text="🎉 ¡Has completado la lección preparatoria! Presiona Enter para iniciar el reto lúdico o Flecha Izquierda para repasar."
+                    <TextBlock Text="🎉 ¡Has completado la lección preparatoria! Presiona Enter para iniciar el reto lúdico o Flecha arriba/Backspace para repasar."
                                FontSize="{ThemeResource AppBaseFontSize}"
                                FontWeight="Bold"
                                Foreground="{ThemeResource AppAccentBrush}"
