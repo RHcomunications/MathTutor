@@ -281,7 +281,7 @@ public class AccessibilityManager
                 SetResource("AppTextPrimaryBrush", new SolidColorBrush(Rgb(28, 43, 62)));
                 SetResource("AppTextSecondaryBrush", new SolidColorBrush(Rgb(55, 75, 100)));
                 SetResource("AppAccentBrush", new SolidColorBrush(Rgb(70, 130, 180)));
-                SetResource("AppFocusBorderBrush", new SolidColorBrush(Rgb(255, 140, 0)));
+                SetResource("AppFocusBorderBrush", new SolidColorBrush(Rgb(180, 83, 9)));
                 SetResource("FocusVisualPrimaryBrush", new SolidColorBrush(Rgb(0, 0, 0)));
                 SetResource("FocusVisualSecondaryBrush", new SolidColorBrush(Rgb(255, 255, 255)));
                 SetResource("AppBorderBrush", new SolidColorBrush(Rgb(102, 132, 160)));
@@ -300,7 +300,7 @@ public class AccessibilityManager
                 SetResource("AppTextPrimaryBrush", new SolidColorBrush(Rgb(20, 25, 45)));
                 SetResource("AppTextSecondaryBrush", new SolidColorBrush(Rgb(60, 70, 95)));
                 SetResource("AppAccentBrush", new SolidColorBrush(Rgb(90, 60, 220)));
-                SetResource("AppFocusBorderBrush", new SolidColorBrush(Rgb(255, 120, 0)));
+                SetResource("AppFocusBorderBrush", new SolidColorBrush(Rgb(194, 65, 12)));
                 SetResource("FocusVisualPrimaryBrush", new SolidColorBrush(Rgb(0, 0, 0)));
                 SetResource("FocusVisualSecondaryBrush", new SolidColorBrush(Rgb(255, 255, 255)));
                 SetResource("AppBorderBrush", new SolidColorBrush(Rgb(110, 125, 155)));

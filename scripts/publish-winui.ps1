@@ -14,6 +14,8 @@ $project = Join-Path $root 'src\MathTutor.WinUI\MathTutor.WinUI.csproj'
 $guidePath = Join-Path $root 'LEEME.txt'
 $privacyPath = Join-Path $root 'PRIVACIDAD.md'
 $bibliographyPath = Join-Path $root 'BIBLIOGRAFIA.md'
+$licensePath = Join-Path $root 'LICENSE'
+$noticesPath = Join-Path $root 'THIRD-PARTY-NOTICES.md'
 $launcherSource = Join-Path $root 'scripts\launcher\MathTutorLauncher.cs'
 $iconPath = Join-Path $root 'src\MathTutor.WinUI\Assets\AppIcon.ico'
 if (-not (Test-Path $project)) {
@@ -27,6 +29,12 @@ if (-not (Test-Path $privacyPath)) {
 }
 if (-not (Test-Path $bibliographyPath)) {
     throw "No se encontró la bibliografía: $bibliographyPath"
+}
+if (-not (Test-Path $licensePath)) {
+    throw "No se encontró la licencia: $licensePath"
+}
+if (-not (Test-Path $noticesPath)) {
+    throw "No se encontraron los avisos de terceros: $noticesPath"
 }
 if (-not (Test-Path $launcherSource)) {
     throw "No se encontró el lanzador: $launcherSource"
@@ -86,6 +94,8 @@ Get-ChildItem $libsDir -File -Filter '*.pdb' | Remove-Item -Force
 Copy-Item -LiteralPath $guidePath -Destination (Join-Path $packageDir 'LEEME.txt') -Force
 Copy-Item -LiteralPath $privacyPath -Destination (Join-Path $packageDir 'PRIVACIDAD.md') -Force
 Copy-Item -LiteralPath $bibliographyPath -Destination (Join-Path $packageDir 'BIBLIOGRAFIA.md') -Force
+Copy-Item -LiteralPath $licensePath -Destination (Join-Path $packageDir 'LICENSE') -Force
+Copy-Item -LiteralPath $noticesPath -Destination (Join-Path $packageDir 'THIRD-PARTY-NOTICES.md') -Force
 
 $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 if (-not (Test-Path $csc)) {
@@ -111,7 +121,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "No se pudo compilar el lanzador MathTutor.exe"
 }
 
-foreach ($required in @('MathTutor.exe', 'LEEME.txt', 'PRIVACIDAD.md', 'BIBLIOGRAFIA.md', 'libs\MathTutor.exe', 'libs\MathTutor.pri')) {
+foreach ($required in @('MathTutor.exe', 'LEEME.txt', 'PRIVACIDAD.md', 'BIBLIOGRAFIA.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'libs\MathTutor.exe', 'libs\MathTutor.pri')) {
     if (-not (Test-Path (Join-Path $packageDir $required))) {
         throw "El paquete no contiene $required"
     }
@@ -134,7 +144,7 @@ try {
 finally {
     $zip.Dispose()
 }
-foreach ($required in @('MathTutor.exe', 'LEEME.txt', 'PRIVACIDAD.md', 'BIBLIOGRAFIA.md', 'libs\MathTutor.exe', 'libs\MathTutor.pri')) {
+foreach ($required in @('MathTutor.exe', 'LEEME.txt', 'PRIVACIDAD.md', 'BIBLIOGRAFIA.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'libs\MathTutor.exe', 'libs\MathTutor.pri')) {
     $entry = "MathTutor-v$Version\$required"
     if ($entries -notcontains $entry) {
         throw "El ZIP no contiene $entry"
@@ -144,5 +154,5 @@ foreach ($required in @('MathTutor.exe', 'LEEME.txt', 'PRIVACIDAD.md', 'BIBLIOGR
 $fileCount = (Get-ChildItem $packageDir -Recurse -File).Count
 $zipSize = [math]::Round((Get-Item $zipPath).Length / 1MB, 1)
 Write-Output "Paquete: $packageDir"
-Write-Output "Archivos: $fileCount | Lanzador: MathTutor.exe | App: libs\MathTutor.exe | Módulos: $moduleCount | LEEME.txt, PRIVACIDAD.md y BIBLIOGRAFIA.md: presentes"
+Write-Output "Archivos: $fileCount | Lanzador: MathTutor.exe | App: libs\MathTutor.exe | Módulos: $moduleCount | LEEME.txt, PRIVACIDAD.md, BIBLIOGRAFIA.md, LICENSE y THIRD-PARTY-NOTICES.md: presentes"
 Write-Output "ZIP: $zipPath ($zipSize MB)"

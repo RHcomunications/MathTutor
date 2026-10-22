@@ -171,6 +171,8 @@ PRIVACIDAD
   tu perfil y progreso, o borrar el perfil de este equipo.
 - El aviso completo está en el archivo PRIVACIDAD.md y también
   se puede leer desde la pantalla de perfil.
+- La licencia del programa está en LICENSE y los avisos de
+  componentes de terceros en THIRD-PARTY-NOTICES.md.
 
 ============================================================
 SI ALGO NO FUNCIONA
@@ -222,6 +224,8 @@ NOVEDADES DE ESTA VERSIÓN
   equipo y leer el aviso de privacidad desde la misma pantalla.
 - Las preferencias ajustadas a mano ya no se sobrescriben
   automáticamente al cambiar de condición.
+- El borde de foco de los temas claro y de baja estimulación
+  ahora tiene mayor contraste para ubicarlo con facilidad.
 
 ============================================================
 GRACIAS

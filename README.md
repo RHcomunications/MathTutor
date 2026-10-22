@@ -36,7 +36,7 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
   - **Conteo sin Solapamientos**: Los objetos de conteo usan celdas de 170 px y se distribuyen en el ancho disponible para que los botones no se encimen.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 54 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 134 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 54 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 166 pruebas unitarias xUnit).
 
 ---
 
@@ -97,9 +97,17 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 - [Bibliografía y criterios del modelo de apoyos](BIBLIOGRAFIA.md): referencias sobre autismo, TDAH, discapacidad intelectual, funcionamiento y accesibilidad.
 - El perfil se guarda solo en `%LocalAppData%\MathTutor\user_profile.json`; la aplicación no usa telemetría ni envía datos a internet.
 
+## 🔧 Calidad, licencia y accesibilidad
+
+- [CI](.github/workflows/ci.yml): compila en Release con advertencias como errores, ejecuta las 166 pruebas y permite empaquetar manualmente.
+- [Licencia propietaria](LICENSE) de Narayan Projects.
+- [Avisos de terceros](THIRD-PARTY-NOTICES.md).
+- [Borrador ACR/VPAT y matriz de lectores](ACCESIBILIDAD-ACR-VPAT.md).
+- Los paquetes NuGet están fijados a versiones exactas para compilaciones reproducibles.
+
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.10.0`)
+## 🚀 Versión en preparación `v1.10.0`
 
 Desde la terminal en esta carpeta:
 
@@ -107,7 +115,7 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build MathTutor.slnx -c Release
 
-# Ejecutar las 134 pruebas unitarias automatizadas
+# Ejecutar las 166 pruebas unitarias automatizadas
 dotnet test tests/MathTutor.Tests/MathTutor.Tests.csproj -c Release
 
 # Iniciar la aplicación WinUI 3

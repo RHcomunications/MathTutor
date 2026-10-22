@@ -46,11 +46,12 @@ MathTutor.slnx
 │       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo con celdas de 170 px, pistas, respuestas con ↑/↓ y retroalimentación)
 │       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 134 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 166 pruebas)
     ├── ExerciseGeneratorTests.cs         (59 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
-    ├── PedagogyAndAccessibilityTests.cs  (51 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
-    ├── ProfileStorageTests.cs            (4 pruebas de serialización/deserialización JSON, incluida la expansión de grupos de trofeos)
+    ├── PedagogyAndAccessibilityTests.cs  (63 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
+    ├── ProfileStorageTests.cs            (10 pruebas de serialización, migración, exportación y borrado)
     └── RewardServiceTests.cs             (2 pruebas integrales de las 54 estaciones y desbloqueo de las 55 insignias)
+│   └── ThemeContrastTests.cs             (32 casos de contraste WCAG en los cuatro temas)
 ```
 
 ---
@@ -63,7 +64,7 @@ MathTutor.slnx
 │   ├── MathTutor.Core/       Biblioteca de dominio, currículo, motor adaptativo y almacenamiento
 │   └── MathTutor.WinUI/      Aplicación WinUI 3, navegación, servicios y vistas
 ├── tests/
-│   └── MathTutor.Tests/      Suite xUnit de 134 pruebas
+│   └── MathTutor.Tests/      Suite xUnit de 166 pruebas
 ├── scripts/
 │   └── publish-winui.ps1     Publicación y empaquetado de la release
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
@@ -81,13 +82,17 @@ MathTutor.slnx
 |---|---|
 | `MathTutor.slnx` | Archivo de solución XML moderno de .NET que agrupa los tres proyectos: `MathTutor.Core`, `MathTutor.WinUI` y `MathTutor.Tests`. |
 | `Directory.Build.props` | Centraliza las salidas de todos los proyectos en `artifacts/` mediante `UseArtifactsOutput` y `ArtifactsPath`; evita `bin/` y `obj/` dentro de cada proyecto. |
-| `scripts/publish-winui.ps1` | Publica WinUI 3 para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.pri`, organiza la aplicación en `libs/`, los módulos `.winmd` en `modules/`, integra `LEEME.txt`, compila el lanzador `MathTutor.exe`, arma la carpeta `MathTutor-v$Version` y genera `artifacts/releases/MathTutor-v$Version-Windows.zip`. |
+| `scripts/publish-winui.ps1` | Publica WinUI 3 para `win-x64`, `win-x86` o `win-arm64`, verifica `MathTutor.pri`, organiza la aplicación en `libs/`, los módulos `.winmd` en `modules/`, integra `LEEME.txt`, `PRIVACIDAD.md`, `BIBLIOGRAFIA.md`, `LICENSE` y `THIRD-PARTY-NOTICES.md`, compila el lanzador `MathTutor.exe`, arma la carpeta `MathTutor-v$Version` y genera `artifacts/releases/MathTutor-v$Version-Windows.zip`. |
 | `artifacts/` | Directorio ignorado por Git con salidas centralizadas: `bin/`, `obj/`, `publish/`, `package/` y `releases/`. |
 | `CLAUDE.md` | Directrices de ingeniería de software basadas en los principios de Andrej Karpathy: (1) Pensar antes de codificar, (2) Simplicidad primero (sin sobreingeniería), (3) Cambios quirúrgicos y (4) Ejecución orientada a objetivos verificables con pruebas. |
 | `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 54 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
 | `LEEME.txt` | Guía en texto plano para familias, docentes y estudiantes: instalación, primeros pasos, teclas, accesibilidad, privacidad, consejos y solución de problemas. Se integra en el paquete de release junto al ejecutable. |
 | `PRIVACIDAD.md` | Aviso de privacidad para familias: datos guardados, finalidad, ubicación local, exportación, borrado y contacto. También se copia al paquete de release y se puede leer desde el perfil. |
 | `BIBLIOGRAFIA.md` | Referencias y criterios del modelo de apoyos: DSM-5-TR, AAIDD, ICF, CDPD, WCAG 2.2, DUA y principios del conteo. |
+| `LICENSE` | Licencia propietaria de Narayan Projects; todos los derechos reservados. |
+| `THIRD-PARTY-NOTICES.md` | Avisos y licencias de los paquetes de ejecución y pruebas. |
+| `ACCESIBILIDAD-ACR-VPAT.md` | Borrador ACR/VPAT, evidencia automatizada y matriz manual NVDA/JAWS/Narrador. |
+| `.github/workflows/ci.yml` | CI de restore, build Release con advertencias como errores, pruebas y paquete manual. |
 | `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.10.0`. |
 | `context.md` | **(Este archivo)** Documento vivo de contexto técnico archivo por archivo para contribuidores y agentes de código. |
 | `.gitignore` | Reglas de exclusión de Git para artefactos de compilación (`artifacts/`, `bin/`, `obj/`, `.vs/`, paquetes temporales). |
@@ -193,7 +198,7 @@ Contiene el catálogo pedagógico completo de las **54 misiones** (`GetAllTopics
 
 #### `src/MathTutor.Core/Engine/ExerciseGenerator.cs` (2,710 líneas)
 Generador procedimental parametrizado que produce ejercicios infinitos y libres de colisiones para las **54 estaciones**:
-- **`GetTargetRange(UserProfile)`**: Ajusta el rango numérico a `(1, 3)` para discapacidad intelectual severa, `(1, 5)` para moderada/leve o Jardín de Niños, y `(1, 10)` para primaria inicial.
+- **`GetTargetRange(UserProfile)`**: Ajusta el rango numérico a `(1, 3)` para apoyos intelectuales extensos o generalizados, `(1, 5)` para apoyos intermitentes/limitados o Jardín de Niños, y `(1, 10)` para primaria inicial.
 - **46 métodos públicos de generación** (`GenerateCountingExercise`, `GenerateStableOrderExercise`, `GenerateAdditionCombineExercise`, ..., `GenerateProgrammingVariablesExercise`, `GenerateProgrammingConditionalsExercise`, `GenerateProgrammingBooleanLogicExercise`, `GenerateProgrammingLoopsExercise`, `GenerateProgrammingArraysExercise`, `GenerateProgrammingFunctionsExercise`, `GenerateProgrammingAlgorithmsSearchExercise`, `GenerateProgrammingGameCoordinatesExercise`, `GenerateProgrammingAssistiveAIExercise`) conectados en el despachador `GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)`.
 - **`BuildOptions(...)`**: Construye las opciones de respuesta garantizando valores únicos, barajado determinista/aleatorio sin sesgo de posición y **retroalimentación diagnóstica específica (`SpeechFeedback`)** en cada distractor (indicando si el número elegido es mayor o menor que el resultado correcto y qué paso revisar).
 
@@ -284,7 +289,7 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 
 > **Nota de arquitectura:** el proyecto WPF (`MathTutor.WpfApp`) fue retirado después de consolidar la paridad funcional en WinUI 3. El historial de Git conserva su implementación y los registros de releases anteriores.
 
-### 2.4. Proyecto `MathTutor.Tests` (Suite de 134 Pruebas Unitarias Automatizadas)
+### 2.4. Proyecto `MathTutor.Tests` (Suite de 166 Pruebas Unitarias Automatizadas)
 
 | Archivo de Pruebas | Pruebas | Qué Verifica |
 |---|---|---|
@@ -292,6 +297,7 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 | `PedagogyAndAccessibilityTests.cs` (1,064 líneas) | **63** | Verifica que las 54 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica. Incluye la cobertura de los 10 temas de jardín, el desbloqueo por edad, la invariante de que todo objeto visible en ejercicios de conteo se cuenta (`Kindergarten_InteractiveCounting_CountsEveryVisibleItem`) y pruebas de `AdaptiveEngine.GetAllowedLevelsForAge`, `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `ApplyRecommendedAccessibilityDefaults()`. |
 | `ProfileStorageTests.cs` (229 líneas) | **10** | Verifica serialización/deserialización de todos los campos, el estado de los grupos de trofeos, la migración de perfiles antiguos (`Neurodivergent`/severidad a `SupportProfile`), la exportación a una ruta elegida y el borrado del perfil con su valor de retorno. |
 | `RewardServiceTests.cs` (59 líneas) | **2** | Verifica el orden, `Id` y `TopicId` de las **54 estaciones** en `GetRealmStations` y la lógica de bloqueo/desbloqueo de las **55 insignias** en `GetAllBadges`. |
+| `ThemeContrastTests.cs` (32 casos) | **32** | Lee los colores de `AccessibilityManager` y verifica 4.5:1 para texto y 3:1 para bordes/foco en los cuatro temas. |
 
 ---
 
@@ -445,7 +451,7 @@ if (Test-Path artifacts) { Remove-Item artifacts -Recurse -Force }
 # 2. Compilar toda la solución en modo Release (0 advertencias permitidas)
 dotnet build MathTutor.slnx -c Release --nologo /p:TreatWarningsAsErrors=true
 
-# 3. Ejecutar las 134 pruebas unitarias automatizadas sobre la compilación Release
+# 3. Ejecutar las 166 pruebas unitarias automatizadas sobre la compilación Release
 dotnet test tests\MathTutor.Tests\MathTutor.Tests.csproj -c Release --nologo --no-build
 
 # 4. Publicar y empaquetar WinUI 3 (verifica MathTutor.pri)

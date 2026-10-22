@@ -494,3 +494,33 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Versión actualizada a `1.10.0` en el proyecto WinUI, `README.md` y `LEEME.txt`.
 - **Ubicación:** `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `README.md`, `LEEME.txt`, `scripts/publish-winui.ps1`.
 - **Criterio de verificación:** ZIP `MathTutor-v1.10.0-Windows.zip` con lanzador, `libs/MathTutor.exe`, `MathTutor.pri`, módulos, guía, privacidad y bibliografía.
+---
+
+# FASE 4 - CALIDAD Y ACCESIBILIDAD (EN CURSO)
+
+> **Estado:** automatizable implementado. La validación manual con NVDA/JAWS/Narrador, el ACR/VPAT firmado y la firma de código siguen pendientes.
+
+### 1. Integración continua
+- **Corrección:** Se añadió un workflow de GitHub Actions que restaura, compila en Release con `TreatWarningsAsErrors`, ejecuta las pruebas y permite empaquetar manualmente.
+- **Ubicación:** `.github/workflows/ci.yml`.
+- **Criterio de verificación:** El workflow ejecuta build, pruebas y publica el TRX; el paquete se genera solo en ejecución manual.
+
+### 2. Dependencias fijadas
+- **Corrección:** Se sustituyeron las versiones comodín de Windows App SDK, SDK BuildTools y BuildTools.WinApp por versiones exactas.
+- **Ubicación:** `src/MathTutor.WinUI/MathTutor.WinUI.csproj`.
+- **Criterio de verificación:** `dotnet restore` resuelve siempre las mismas versiones.
+
+### 3. Licencia y avisos legales
+- **Corrección:** Se añadió la licencia propietaria de Narayan Projects y los avisos de terceros. Ambos se incluyen en el paquete.
+- **Ubicación:** `LICENSE`, `THIRD-PARTY-NOTICES.md`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** El ZIP contiene `LICENSE` y `THIRD-PARTY-NOTICES.md`.
+
+### 4. Contraste automatizado
+- **Corrección:** Se añadieron 32 casos de prueba que verifican 4.5:1 para texto y 3:1 para bordes/foco en los cuatro temas. Se corrigió el color de foco de los temas claro y de baja estimulación, que no alcanzaba 3:1.
+- **Ubicación:** `tests/MathTutor.Tests/ThemeContrastTests.cs`, `src/MathTutor.WinUI/Services/AccessibilityManager.cs`.
+- **Criterio de verificación:** 166/166 pruebas superadas.
+
+### 5. ACR/VPAT y matriz manual
+- **Corrección:** Se documentó un borrador ACR/VPAT con evidencia automatizada, estados por criterio y matriz NVDA/JAWS/Narrador.
+- **Ubicación:** `ACCESIBILIDAD-ACR-VPAT.md`.
+- **Criterio de verificación:** El documento distingue lo verificado de lo pendiente y no declara conformidad formal.
