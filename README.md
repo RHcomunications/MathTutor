@@ -31,9 +31,10 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
   - **Adaptación Automática del Lenguaje**: Si se indica discapacidad intelectual o edad temprana, el motor adaptativo simplifica el vocabulario, acorta los enunciados y reduce la cantidad de distractores/opciones sin sesgo de posición para evitar la sobrecarga cognitiva.
   - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 45 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
   - **Repaso Sin Abandonar el Reto**: La pantalla del ejercicio mantiene visible el secreto matemático para releerlo, y el anuncio del reto no revela el resultado esperado.
+  - **Sala de Trofeos Agrupada por Nivel**: Las insignias se organizan por nivel educativo, muestran el progreso de cada grupo, se expanden y contraen con las flechas y recuerdan su estado entre sesiones.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 114 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 45 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 116 pruebas unitarias xUnit).
 
 ---
 
@@ -84,25 +85,25 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto (Release `v1.8.0`)
+## 🚀 Cómo Ejecutar el Proyecto (Release `v1.9.0`)
 
 Desde la terminal en esta carpeta:
 
 ```bash
 # Compilar la solución en modo Release
-dotnet build -c Release
+dotnet build MathTutor.slnx -c Release
 
-# Ejecutar las 114 pruebas unitarias automatizadas
-dotnet test -c Release
+# Ejecutar las 116 pruebas unitarias automatizadas
+dotnet test tests/MathTutor.Tests/MathTutor.Tests.csproj -c Release
 
 # Iniciar la aplicación WinUI 3
 dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 
-# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.8.0-Windows.zip)
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.9.0-Windows.zip)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.8.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.9.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo

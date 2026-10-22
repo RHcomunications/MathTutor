@@ -411,3 +411,34 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Se conserva el paquete con `MathTutor.exe` en la raíz, `libs/` con la aplicación y sus bibliotecas, `modules/` con los `.winmd` y `LEEME.txt`. El ejecutable de la raíz es un lanzador que inicia `libs/MathTutor.exe`.
 - **Ubicación:** `scripts/publish-winui.ps1`, `scripts/launcher/MathTutorLauncher.cs`.
 - **Criterio de verificación:** ZIP con lanzador, `libs/MathTutor.exe`, `libs/MathTutor.pri`, módulos y aplicación iniciada correctamente.
+
+---
+
+# REGISTRO DE CORRECCIONES REALIZADAS - Release `v1.9.0`
+
+> **Estado:** Implementado y verificado. Build `Release` sin advertencias y **116/116 pruebas unitarias** superadas. Publicado como release `v1.9.0` (`https://github.com/RHcomunications/MathTutor/releases/tag/v1.9.0`).
+
+### 1. Menú unificado "Opciones del juego"
+- **Corrección:** La barra superior pasó de `CommandBar` con botones sueltos a un `DropDownButton` con `MenuFlyout`, agrupando Menú, Mapa, Perfil y un submenú de accesibilidad (Contraste, Letra, Sonidos y Repetir). El menú se recorre con `↑`/`↓`, se elige con `Enter` y se cierra con `Esc`; los atajos F1–F6 se conservan.
+- **Ubicación:** `src/MathTutor.WinUI/MainWindow.xaml`, `src/MathTutor.WinUI/MainWindow.xaml.cs`.
+- **Criterio de verificación:** Menú operable solo con teclado, nombres accesibles en el botón y cada opción, sonido de navegación al enfocar y ausencia de la barra de desbordamiento anterior.
+
+### 2. Sala de trofeos agrupada por nivel
+- **Corrección:** La lista plana de insignias se reemplazó por un `TreeView` con un grupo por nivel educativo. Cada grupo muestra cuántos trofeos se desbloquearon, los desbloqueados aparecen primero, `→` expande, `←` contrae y el estado se guarda en `AccessibilityPreferences.BadgeGroupExpansion` para recordarlo entre sesiones.
+- **Ubicación:** `src/MathTutor.WinUI/Views/MapPage.xaml`, `src/MathTutor.WinUI/Views/MapPage.xaml.cs`, `src/MathTutor.Core/Models/UserProfile.cs`.
+- **Criterio de verificación:** Grupos y trofeos anunciados con su nombre y progreso (no como “TreeViewNode”), expansión/contracción persistente tras cerrar y abrir la aplicación, y perfil antiguo sin la propiedad cargado con estado vacío.
+
+### 3. Navegación vertical consistente
+- **Corrección:** Se añadió `VerticalListNavigation` para que las misiones y estaciones respondan explícitamente a `↑`/`↓`; las respuestas del reto se recorren con `↑`/`↓`; la lección avanza y retrocede con `↑`/`↓` y `Backspace`, dejando `←`/`→` para la navegación propia de cada control o del lector de pantalla.
+- **Ubicación:** `src/MathTutor.WinUI/Navigation/VerticalListNavigation.cs`, `src/MathTutor.WinUI/Views/MenuPage.xaml.cs`, `src/MathTutor.WinUI/Views/MapPage.xaml.cs`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`, `src/MathTutor.WinUI/Views/LessonPage.xaml.cs`.
+- **Criterio de verificación:** Foco visible sobre el elemento seleccionado, desplazamiento automático para mantenerlo a la vista y recorrido completo sin ratón.
+
+### 4. Persistencia y pruebas
+- **Corrección:** Se añadieron pruebas de guardado/carga del estado de expansión y de compatibilidad con perfiles anteriores. La suite pasó de 114 a 116 pruebas.
+- **Ubicación:** `tests/MathTutor.Tests/ProfileStorageTests.cs`.
+- **Criterio de verificación:** 116/116 pruebas superadas y build `Release` con `TreatWarningsAsErrors` sin advertencias.
+
+### 5. Actualización de versión y paquete
+- **Corrección:** La versión de `MathTutor.Core`, `MathTutor.WinUI`, `LEEME.txt` y `README.md` se actualizó a `1.9.0`. Se mantiene el paquete por carpetas con lanzador `MathTutor.exe`, `libs/`, `modules/` y `LEEME.txt`.
+- **Ubicación:** `src/MathTutor.Core/MathTutor.Core.csproj`, `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `LEEME.txt`, `README.md`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** ZIP `MathTutor-v1.9.0-Windows.zip` con lanzador, aplicación, `.pri`, módulos y guía; aplicación iniciada desde la carpeta extraída.

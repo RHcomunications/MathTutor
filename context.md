@@ -32,23 +32,24 @@ MathTutor.slnx
 │
 ├── MathTutor.WinUI (net10.0-windows10.0.19041.0 - Cliente Escritorio WinUI 3 Accesible)
 │   ├── App.xaml / App.xaml.cs     (Diccionario de recursos dinámicos WCAG, estilos de foco, botones y controles accesibles)
-│   ├── MainWindow.xaml / .cs      (Shell principal, barra global F1-F6/Esc, foco inicial, diálogo posmisión, regiones de notificación UIA y alto contraste del sistema)
+│   ├── MainWindow.xaml / .cs      (Shell principal, menú "Opciones del juego" con atajos F1-F6/Esc, foco inicial, diálogo posmisión, regiones de notificación UIA y alto contraste del sistema)
 │   ├── Navigation/NavigationService.cs (Frame de navegación y eventos de flujo entre vistas)
+│   ├── Navigation/VerticalListNavigation.cs (Navegación ↑/↓ compartida para ListView accesibles)
 │   ├── Services/
 │   │   ├── AccessibilityManager.cs (Singleton coordinador de perfil, canales F2 vs. lector, temas, escala tipográfica y anuncios)
 │   │   ├── SpeechService.cs       (Puente nativo hacia NVDA Controller Client, JAWS COM API y notificaciones UIA)
 │   │   └── AccessibleAudioCueService.cs (Sintetizador procedural PCM en memoria: notas, éxito, error y navegación)
 │   └── Views/
 │       ├── ProfilePage.xaml / .cs       (Caracterización del alumno con validación dinámica Edad/Discapacidad vs. Nivel Escolar)
-│       ├── MenuPage.xaml / .cs          (Menú principal con ListView navegable por flechas y filtrado por edad)
-│       ├── LessonPage.xaml / .cs        (Lección con Cosmo, secreto matemático y ejemplo guiado paso a paso)
-│       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo, pistas y retroalimentación)
-│       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones e insignias navegables)
+│       ├── MenuPage.xaml / .cs          (Menú principal con ListView navegable por flechas ↑/↓ y filtrado por edad)
+│       ├── LessonPage.xaml / .cs        (Lección con Cosmo, secreto matemático y ejemplo guiado paso a paso; pasos con ↑/↓)
+│       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo, pistas, respuestas con ↑/↓ y retroalimentación)
+│       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 114 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 116 pruebas)
     ├── ExerciseGeneratorTests.cs         (59 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
     ├── PedagogyAndAccessibilityTests.cs  (51 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
-    ├── ProfileStorageTests.cs            (2 pruebas de serialización/deserialización JSON de perfiles con comorbilidad)
+    ├── ProfileStorageTests.cs            (4 pruebas de serialización/deserialización JSON, incluida la expansión de grupos de trofeos)
     └── RewardServiceTests.cs             (2 pruebas integrales de las 45 estaciones y desbloqueo de las 46 insignias)
 ```
 
@@ -62,7 +63,7 @@ MathTutor.slnx
 │   ├── MathTutor.Core/       Biblioteca de dominio, currículo, motor adaptativo y almacenamiento
 │   └── MathTutor.WinUI/      Aplicación WinUI 3, navegación, servicios y vistas
 ├── tests/
-│   └── MathTutor.Tests/      Suite xUnit de 114 pruebas
+│   └── MathTutor.Tests/      Suite xUnit de 116 pruebas
 ├── scripts/
 │   └── publish-winui.ps1     Publicación y empaquetado de la release
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
@@ -85,7 +86,7 @@ MathTutor.slnx
 | `CLAUDE.md` | Directrices de ingeniería de software basadas en los principios de Andrej Karpathy: (1) Pensar antes de codificar, (2) Simplicidad primero (sin sobreingeniería), (3) Cambios quirúrgicos y (4) Ejecución orientada a objetivos verificables con pruebas. |
 | `README.md` | Documentación pública del proyecto orientada a usuarios finales y educadores: características de accesibilidad WCAG 2.2, integración nativa con lectores de pantalla (NVDA, JAWS, Narrador), desglose curricular de los 16 objetivos / 45 estaciones, tabla de atajos de teclado (`F1`–`F6`, `Esc`, `1`–`3`, `Enter`) e instrucciones de compilación y ejecución. |
 | `LEEME.txt` | Guía en texto plano para familias, docentes y estudiantes: instalación, primeros pasos, teclas, accesibilidad, privacidad, consejos y solución de problemas. Se integra en el paquete de release junto al ejecutable. |
-| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.7.0`. |
+| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.9.0`. |
 | `context.md` | **(Este archivo)** Documento vivo de contexto técnico archivo por archivo para contribuidores y agentes de código. |
 | `.gitignore` | Reglas de exclusión de Git para artefactos de compilación (`artifacts/`, `bin/`, `obj/`, `.vs/`, paquetes temporales). |
 | `.engram/config.json` | Configuración del proyecto `mathtutor` para la memoria persistente Engram. |
@@ -213,7 +214,7 @@ Define los recursos globales dinámicos y estilos accesibles WCAG 2.2:
 
 #### `src/MathTutor.WinUI/MainWindow.xaml` y `MainWindow.xaml.cs`
 Ventana principal y shell de navegación:
-- **Barra superior**: `CommandBar` con Menú (`Esc`), Mapa (`F6`), Perfil (`F5`), Contraste (`F3`), Letra (`F4`), Sonidos (`F2`), Repetir (`F1`) y contador de estrellas (`TxtTopStars`). El botón de desbordamiento se renombra a “Más opciones de navegación y accesibilidad”.
+- **Barra superior**: `DropDownButton` "Opciones del juego" con un `MenuFlyout` que agrupa Menú (`Esc`), Mapa (`F6`), Perfil (`F5`) y el submenú "Opciones de accesibilidad" con Contraste (`F3`), Letra (`F4`), Sonidos (`F2`) y Repetir (`F1`), además del contador de estrellas (`TxtTopStars`). Cada elemento reproduce el sonido de navegación al recibir foco.
 - **Host central**: `Frame` (`RootFrame`) gestionado por `NavigationService` para las páginas de perfil, menú, lección, minijuego y mapa.
 - **Atajos globales**: `KeyDown` con `handledEventsToo` para `F1`–`F6`, `Esc` y respuestas `1`–`4` cuando el minijuego está activo.
 - **Anuncios**: `RaiseScreenReaderAnnouncement` usa `RaiseNotificationEvent` de UI Automation (sin `LiveSetting` duplicado) y actualiza `TxtLiveAnnouncement` como texto de apoyo.
@@ -223,6 +224,9 @@ Ventana principal y shell de navegación:
 
 #### `src/MathTutor.WinUI/Navigation/NavigationService.cs`
 Centraliza el `Frame` y los eventos del flujo: `TopicSelected`, `MapRequested`, `MenuRequested`, `ProfileCompleted`, `ProfileCancelled`, `StartGameRequested`, `BackToMenuRequested`, `BackToLessonRequested` y `MissionCompleted`.
+
+#### `src/MathTutor.WinUI/Navigation/VerticalListNavigation.cs`
+Helper compartido por `MenuPage` y `MapPage` para que `ListView` mueva la selección y el foco con `↑`/`↓` de forma explícita, manteniendo el elemento visible y sin depender de la navegación interna del control. Las flechas horizontales se consumen para evitar saltos inesperados.
 
 #### `src/MathTutor.WinUI/Services/SpeechService.cs`
 Puente nativo con el lector de pantalla del sistema (sin SAPI5):
@@ -247,16 +251,16 @@ Singleton central (`AccessibilityManager.Instance`) que coordina:
 Caracterización inicial del alumno (`F5`): nombre, edad, nivel escolar filtrado por edad, país/moneda, discapacidades múltiples, severidad, audio interno, pistas sonoras, lenguaje simplificado, tema y tamaño de letra. Valida edad/nivel, restaura el perfil guardado al cancelar y usa encabezados y nombres accesibles.
 
 #### `src/MathTutor.WinUI/Views/MenuPage.xaml` y `MenuPage.xaml.cs`
-Menú principal de misiones (`Esc`): saludo, resumen del perfil, estrellas, racha y `ListView` de misiones filtradas por edad. Los elementos tienen nombres como “Misión recomendada: …” y los botones internos “Comenzar la misión: …” o “Volver a jugar: …”. Soporta flechas, `Enter` y `Espacio`.
+Menú principal de misiones (`Esc`): saludo, resumen del perfil, estrellas, racha y `ListView` de misiones filtradas por edad. Los elementos tienen nombres como “Misión recomendada: …” y los botones internos “Comenzar la misión: …” o “Volver a jugar: …”. Soporta `↑`/`↓` mediante `VerticalListNavigation`, `Enter` y `Espacio`.
 
 #### `src/MathTutor.WinUI/Views/LessonPage.xaml` y `LessonPage.xaml.cs`
-Lección guiada en tres pasos: historia de Cosmo, secreto matemático y ejemplo resuelto. Incluye navegación anterior/siguiente, lectura de la explicación, inicio del minijuego y conservación del paso al volver desde el juego.
+Lección guiada en tres pasos: historia de Cosmo, secreto matemático y ejemplo resuelto. Incluye navegación anterior/siguiente con `↑`/`↓` y `Backspace`, lectura de la explicación, inicio del minijuego y conservación del paso al volver desde el juego.
 
 #### `src/MathTutor.WinUI/Views/GamePage.xaml` y `GamePage.xaml.cs`
-Motor interactivo: progreso, instrucción adaptada, repaso del secreto matemático en la misma pantalla, objetos manipulables, pistas diagnósticas, opciones `1`–`3`, banners de error/éxito y barra de progreso. Evita doble conteo, bloquea respuestas tras acertar y anuncia retroalimentación y resultados; no narra la descripción de escena que contenía el resultado esperado.
+Motor interactivo: progreso, instrucción adaptada, repaso del secreto matemático en la misma pantalla, objetos manipulables, pistas diagnósticas, opciones `1`–`3`, banners de error/éxito y barra de progreso. Las respuestas se recorren con `↑`/`↓`; se evita el doble conteo, se bloquean respuestas tras acertar y se anuncia retroalimentación y resultados; no narra la descripción de escena que contenía el resultado esperado.
 
 #### `src/MathTutor.WinUI/Views/MapPage.xaml` y `MapPage.xaml.cs`
-Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. Las estaciones usan nombres como “Misión recomendada: …” y botones “Explorar la estación: …”; la sala de trofeos usa nombres “Trofeo desbloqueado/bloqueado: …”. Conserva la selección al cambiar de tema.
+Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. Las estaciones usan nombres como “Misión recomendada: …” y botones “Explorar la estación: …”; la sala de trofeos es un `TreeView` agrupado por nivel educativo que muestra el progreso de cada grupo, ordena los trofeos desbloqueados primero, expande/contrae con `→`/`←` y persiste el estado de cada grupo en `AccessibilityPreferences.BadgeGroupExpansion`. Conserva la selección al cambiar de tema.
 
 #### `src/MathTutor.WinUI/Assets`, `app.manifest`, `Properties/launchSettings.json` y `.gitignore`
 - `Assets/AppIcon.ico` es el único recurso de imagen requerido por la aplicación de escritorio.
@@ -266,13 +270,13 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 
 > **Nota de arquitectura:** el proyecto WPF (`MathTutor.WpfApp`) fue retirado después de consolidar la paridad funcional en WinUI 3. El historial de Git conserva su implementación y los registros de releases anteriores.
 
-### 2.4. Proyecto `MathTutor.Tests` (Suite de 114 Pruebas Unitarias Automatizadas)
+### 2.4. Proyecto `MathTutor.Tests` (Suite de 116 Pruebas Unitarias Automatizadas)
 
 | Archivo de Pruebas | Pruebas | Qué Verifica |
 |---|---|---|
 | `ExerciseGeneratorTests.cs` (1,053 líneas) | **59** | Verifica individualmente los métodos generadores de los 16 objetivos (desde conteo de Kinder hasta Cálculo e IA Asistiva), comprobando en bucles de 20 iteraciones con semilla determinista que `ExpectedResult` sea matemáticamente exacto, que exista exactamente una opción correcta, que no haya opciones duplicadas (`Distinct`), que los rangos se reduzcan para discapacidad intelectual y que la moneda/vocabulario cambie según `RegionalContext` (Perú `S/` vs. México `$`). |
 | `PedagogyAndAccessibilityTests.cs` (740 líneas) | **51** | Verifica que las 45 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica, además de probar `AdaptiveEngine.GetAllowedLevelsForAge` (incluyendo 12 años en 1º de Secundaria y refuerzo base en Discapacidad Intelectual), `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `UserProfile.ApplyRecommendedAccessibilityDefaults()`. |
-| `ProfileStorageTests.cs` (86 líneas) | **2** | Verifica que `ProfileStorageService` serialice y deserialice fielmente todos los campos de `UserProfile` y `AccessibilityPreferences` en disco usando archivos temporales aislados. |
+| `ProfileStorageTests.cs` (113 líneas) | **4** | Verifica que `ProfileStorageService` serialice y deserialice fielmente todos los campos de `UserProfile` y `AccessibilityPreferences` en disco usando archivos temporales aislados, incluido el estado expandido/contraído de los grupos de trofeos y la compatibilidad con perfiles antiguos sin esa propiedad. |
 | `RewardServiceTests.cs` (154 líneas) | **2** | Verifica el orden, `Id` y `TopicId` de las **45 estaciones** en `GetRealmStations` y la lógica de bloqueo/desbloqueo de las **46 insignias** en `GetAllBadges`. |
 
 ---
@@ -404,15 +408,15 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 if (Test-Path artifacts) { Remove-Item artifacts -Recurse -Force }
 
 # 2. Compilar toda la solución en modo Release (0 advertencias permitidas)
-dotnet build -c Release --nologo /p:TreatWarningsAsErrors=true
+dotnet build MathTutor.slnx -c Release --nologo /p:TreatWarningsAsErrors=true
 
-# 3. Ejecutar las 114 pruebas unitarias automatizadas sobre la compilación Release
-dotnet test -c Release --nologo --no-build
+# 3. Ejecutar las 116 pruebas unitarias automatizadas sobre la compilación Release
+dotnet test tests\MathTutor.Tests\MathTutor.Tests.csproj -c Release --nologo --no-build
 
 # 4. Publicar y empaquetar WinUI 3 (verifica MathTutor.pri)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\publish-winui.ps1
 
 # 5. Conservar únicamente el ZIP de la release vigente
-Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.8.0-Windows.zip' } | Remove-Item -Force
+Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -ne 'MathTutor-v1.9.0-Windows.zip' } | Remove-Item -Force
 ```
 
