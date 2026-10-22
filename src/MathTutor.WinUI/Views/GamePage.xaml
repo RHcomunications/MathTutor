@@ -141,9 +141,9 @@
                                Foreground="{ThemeResource AppTextSecondaryBrush}"
                                TextWrapping="Wrap" />
 
-                    <ItemsRepeater x:Name="ItemsGroupA" HorizontalAlignment="Center">
+                    <ItemsRepeater x:Name="ItemsGroupA" HorizontalAlignment="Stretch">
                         <ItemsRepeater.Layout>
-                            <UniformGridLayout MinItemWidth="95"
+                            <UniformGridLayout MinItemWidth="170"
                                                MinItemHeight="85"
                                                MinRowSpacing="12"
                                                MinColumnSpacing="12"
@@ -179,9 +179,9 @@
                                    FontWeight="Bold"
                                    Foreground="{ThemeResource AppAccentBrush}"
                                    HorizontalAlignment="Center" />
-                        <ItemsRepeater x:Name="ItemsGroupB" HorizontalAlignment="Center">
+                        <ItemsRepeater x:Name="ItemsGroupB" HorizontalAlignment="Stretch">
                             <ItemsRepeater.Layout>
-                                <UniformGridLayout MinItemWidth="95"
+                                <UniformGridLayout MinItemWidth="170"
                                                    MinItemHeight="85"
                                                    MinRowSpacing="12"
                                                    MinColumnSpacing="12"

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.WinUI.Navigation;
@@ -69,6 +70,7 @@ public sealed partial class MainWindow : Window
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        RootGrid.Loaded -= MainWindow_Loaded;
         ApplyInitialWindowSize();
 
         bool hasSavedProfile = _acc.LoadSavedProfile();
@@ -88,7 +90,20 @@ public sealed partial class MainWindow : Window
         {
             OpenProfile();
         }
+
+        // Request foreground once, after the initial layout and navigation are ready.
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            if (_isClosing) return;
+            AppWindow.MoveInZOrderAtTop();
+            Activate();
+            SetForegroundWindow(WinRT.Interop.WindowNative.GetWindowHandle(this));
+        });
     }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr windowHandle);
 
     private void ApplyInitialWindowSize()
     {
