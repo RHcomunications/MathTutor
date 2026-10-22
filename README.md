@@ -107,7 +107,7 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ---
 
-## 🚀 Versión en preparación `v1.10.0`
+## 🚀 Release `v1.10.0`
 
 Desde la terminal en esta carpeta:
 
