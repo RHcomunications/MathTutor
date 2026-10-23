@@ -48,6 +48,12 @@ if (-not $Version) {
     $Version = $versionNode.Node.InnerText.Trim()
 }
 
+if ($Version -notmatch '^\d+\.\d+\.\d+(\.\d+)?$') {
+    throw "La versión '$Version' debe tener el formato 1.2.3 o 1.2.3.4"
+}
+
+$fileVersion = if ($Version -match '^\d+\.\d+\.\d+\.\d+$') { $Version } else { "$Version.0" }
+
 $publishDir = Join-Path $root "artifacts\publish\MathTutor.WinUI\$($Configuration.ToLower())-$Runtime"
 $packageRoot = Join-Path $root 'artifacts\package'
 $packageDir = Join-Path $packageRoot "MathTutor-v$Version"
@@ -71,6 +77,8 @@ Push-Location $root
 try {
     & dotnet publish $project -c $Configuration -r $Runtime --self-contained true `
         -p:Version=$Version `
+        -p:FileVersion=$fileVersion `
+        -p:AssemblyVersion=$fileVersion `
         -p:EnableMsixTooling=false `
         -p:DebugType=None `
         -p:DebugSymbols=false `
@@ -105,6 +113,21 @@ if (-not (Test-Path $csc)) {
     throw "No se encontró el compilador de C# de .NET Framework (csc.exe)"
 }
 
+$launcherVersionSource = Join-Path ([System.IO.Path]::GetTempPath()) "MathTutorLauncherVersion.$PID.cs"
+$launcherVersionInfo = @"
+using System.Reflection;
+[assembly: AssemblyTitle("MathTutor")]
+[assembly: AssemblyProduct("MathTutor")]
+[assembly: AssemblyCompany("Narayan Projects")]
+[assembly: AssemblyVersion("$fileVersion")]
+[assembly: AssemblyFileVersion("$fileVersion")]
+[assembly: AssemblyInformationalVersion("$Version")]
+"@
+[System.IO.File]::WriteAllText(
+    $launcherVersionSource,
+    $launcherVersionInfo,
+    (New-Object System.Text.UTF8Encoding($false)))
+
 $cscArgs = @(
     '/nologo'
     '/target:winexe'
@@ -115,8 +138,10 @@ if (Test-Path $iconPath) {
     $cscArgs += "/win32icon:$iconPath"
 }
 $cscArgs += $launcherSource
+$cscArgs += $launcherVersionSource
 
 & $csc @cscArgs
+Remove-Item -LiteralPath $launcherVersionSource -Force -ErrorAction SilentlyContinue
 if ($LASTEXITCODE -ne 0) {
     throw "No se pudo compilar el lanzador MathTutor.exe"
 }
@@ -124,6 +149,12 @@ if ($LASTEXITCODE -ne 0) {
 foreach ($required in @('MathTutor.exe', 'LEEME.txt', 'PRIVACIDAD.md', 'BIBLIOGRAFIA.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md', 'libs\MathTutor.exe', 'libs\MathTutor.pri')) {
     if (-not (Test-Path (Join-Path $packageDir $required))) {
         throw "El paquete no contiene $required"
+    }
+}
+foreach ($binaryPath in @($launcherPath, (Join-Path $libsDir 'MathTutor.exe'))) {
+    $actualVersion = (Get-Item -LiteralPath $binaryPath).VersionInfo.FileVersion
+    if (-not $actualVersion -or -not $actualVersion.StartsWith($fileVersion)) {
+        throw "El archivo $binaryPath tiene versión '$actualVersion'; se esperaba $fileVersion"
     }
 }
 $moduleCount = (Get-ChildItem $modulesDir -File -Filter '*.winmd').Count

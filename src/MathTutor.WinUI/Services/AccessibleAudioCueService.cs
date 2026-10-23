@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Media;
 using System.Threading.Tasks;
+using MathTutor.Core.Models;
 
 namespace MathTutor.WinUI.Services;
 
@@ -39,6 +41,57 @@ public class AccessibleAudioCueService
                 using var wavStream = GenerateToneStream(frequencyHz, durationMs, 0.4);
                 using var player = new SoundPlayer(wavStream);
                 player.Play();
+            }
+            catch
+            {
+                // Manejo seguro si no hay dispositivo de audio
+            }
+        });
+    }
+
+    /// <summary>
+    /// Reproduce el timbre correspondiente al objeto manipulable (campana, tambor, flauta o palmada).
+    /// </summary>
+    public void PlayItemCue(ManipulableItem item)
+    {
+        if (!_enabled || !_musicEnabled || item is null) return;
+        Task.Run(() =>
+        {
+            try
+            {
+                using var wavStream = GenerateItemCueStream(item);
+                using var player = new SoundPlayer(wavStream);
+                player.PlaySync();
+            }
+            catch
+            {
+                // Manejo seguro si no hay dispositivo de audio
+            }
+        });
+    }
+
+    /// <summary>
+    /// Reproduce en orden el timbre de cada elemento para anticipar un patrón o secuencia.
+    /// </summary>
+    public void PlayItemSequence(IReadOnlyList<ManipulableItem> items, int startDelayMs = 0)
+    {
+        if (!_enabled || !_musicEnabled || items is null || items.Count == 0) return;
+        Task.Run(async () =>
+        {
+            try
+            {
+                if (startDelayMs > 0)
+                {
+                    await Task.Delay(startDelayMs);
+                }
+
+                foreach (var item in items)
+                {
+                    using var wavStream = GenerateItemCueStream(item);
+                    using var player = new SoundPlayer(wavStream);
+                    player.PlaySync();
+                    await Task.Delay(60);
+                }
             }
             catch
             {
@@ -146,6 +199,60 @@ public class AccessibleAudioCueService
         });
     }
 
+    private static MemoryStream GenerateItemCueStream(ManipulableItem item)
+    {
+        int frequency = Math.Clamp(item.MusicalPitchHz, 120, 1200);
+        return item.SoundKind switch
+        {
+            ManipulableSoundKind.Bell => GenerateTimbreStream(
+                frequency, 500, 0.32,
+                t => Math.Sin(2 * Math.PI * frequency * t) +
+                     0.45 * Math.Sin(2 * Math.PI * frequency * 2.4 * t),
+                2.2),
+            ManipulableSoundKind.Drum => GenerateTimbreStream(
+                Math.Clamp(frequency, 110, 220), 220, 0.5,
+                t => Math.Sin(2 * Math.PI * (frequency + 40 * Math.Exp(-t * 28)) * t),
+                4.5),
+            ManipulableSoundKind.Flute => GenerateTimbreStream(
+                frequency, 480, 0.28,
+                t => Math.Sin(2 * Math.PI * frequency * t) +
+                     0.12 * Math.Sin(2 * Math.PI * frequency * 2 * t),
+                0.5),
+            ManipulableSoundKind.Clap => GenerateTimbreStream(
+                frequency, 140, 0.45,
+                t => Math.Sin(2 * Math.PI * 873 * t) * Math.Sin(2 * Math.PI * 1487 * t) +
+                     Math.Sin(2 * Math.PI * 2341 * t) * 0.5,
+                7.0),
+            _ => GenerateToneStream(frequency, 300, 0.4)
+        };
+    }
+
+    private static MemoryStream GenerateTimbreStream(
+        int frequencyHz,
+        int durationMs,
+        double volume,
+        Func<double, double> wave,
+        double decayPower)
+    {
+        const int sampleRate = 44100;
+        int numSamples = sampleRate * durationMs / 1000;
+        var samples = new short[numSamples];
+        int fadeSamples = Math.Min(numSamples / 8, 441);
+        double amplitude = short.MaxValue * Math.Clamp(volume, 0.05, 0.95);
+
+        for (int i = 0; i < numSamples; i++)
+        {
+            double t = (double)i / sampleRate;
+            double progress = (double)i / numSamples;
+            double decay = Math.Pow(Math.Max(0, 1 - progress), decayPower);
+            double envelope = Math.Min(1, (double)i / fadeSamples);
+            double normalizedWave = Math.Clamp(wave(t) * 0.75, -1, 1);
+            samples[i] = (short)(normalizedWave * amplitude * decay * envelope);
+        }
+
+        return BuildWavStream(samples, sampleRate);
+    }
+
     /// <summary>
     /// Genera un MemoryStream con formato WAV PCM estándar a 44100Hz 16-bit Mono
     /// con envolvente (Fade-In y Fade-Out) para evitar clics o chasquidos acústicos.
@@ -178,6 +285,12 @@ public class AccessibleAudioCueService
             samples[i] = (short)(wave * amplitude * envelope);
         }
 
+        return BuildWavStream(samples, sampleRate);
+    }
+
+    private static MemoryStream BuildWavStream(short[] samples, int sampleRate)
+    {
+        int numSamples = samples.Length;
         var memoryStream = new MemoryStream();
         using var writer = new BinaryWriter(memoryStream, System.Text.Encoding.UTF8, leaveOpen: true);
 

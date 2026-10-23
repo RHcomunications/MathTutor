@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.WinUI.Services;
@@ -14,26 +16,49 @@ using Windows.System;
 
 namespace MathTutor.WinUI.Views;
 
-public sealed class GameItemView
+public sealed class GameItemView : INotifyPropertyChanged
 {
     public ManipulableItem Item { get; init; } = new();
     public string Key { get; init; } = string.Empty;
     public int DisplayOrder { get; init; }
     public bool IsSymbolicAdvanced { get; init; }
-    public bool IsCounted { get; init; }
+    public bool IsCounted { get; internal set; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public string EmojiSymbol => Item.EmojiSymbol;
     public string Label => IsCounted
         ? (IsSymbolicAdvanced ? $"✓ {Item.Name}" : $"✓ #{DisplayOrder}")
         : (IsSymbolicAdvanced ? Item.Name : $"#{DisplayOrder}");
 
-    public string AccessibleName => IsSymbolicAdvanced
-        ? $"{Item.Name}: {Item.AccessibleDescription}. Selecciona para explorar."
-        : $"{Item.AccessibleDescription}. Número {DisplayOrder}. Toca para contar.";
+    public string AccessibleName => IsCounted
+        ? (IsSymbolicAdvanced
+            ? $"{Item.Name}: {Item.AccessibleDescription}. Contado."
+            : $"{Item.AccessibleDescription}. Número {DisplayOrder}. Contado.")
+        : (IsSymbolicAdvanced
+            ? $"{Item.Name}: {Item.AccessibleDescription}. Selecciona para explorar."
+            : $"{Item.AccessibleDescription}. Número {DisplayOrder}. Toca para contar.");
 
-    public string HelpText => IsSymbolicAdvanced
-        ? "Presiona espacio o enter para escuchar la descripción detallada del elemento y su nota musical"
-        : "Presiona espacio o enter para contar este objeto y escuchar su nota musical";
+    public string HelpText => IsCounted
+        ? "Ya contaste este objeto. Usa las flechas o Tab para continuar con el siguiente."
+        : (IsSymbolicAdvanced
+            ? "Presiona espacio o enter para escuchar la descripción detallada del elemento y su nota musical"
+            : "Presiona espacio o enter para contar este objeto y escuchar su nota musical");
+
+    public void MarkCounted()
+    {
+        if (IsCounted)
+            return;
+
+        IsCounted = true;
+        OnPropertyChanged(nameof(IsCounted));
+        OnPropertyChanged(nameof(Label));
+        OnPropertyChanged(nameof(AccessibleName));
+        OnPropertyChanged(nameof(HelpText));
+    }
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
 
 public sealed class GameOptionView
@@ -46,7 +71,9 @@ public sealed class GameOptionView
         ? $"✗ [{Shortcut}]  {Option.Label}"
         : $"[{Shortcut}]  {Option.Label}";
 
-    public string AccessibleName => $"Opción {Shortcut}: {Option.Label}";
+    public string AccessibleName => string.IsNullOrWhiteSpace(Option.AccessibleDescription)
+        ? $"Opción {Shortcut}: {Option.Label}"
+        : $"Opción {Shortcut}: {Option.AccessibleDescription}";
     public string HelpText => $"Usa las flechas arriba y abajo para recorrer las respuestas. Presiona la tecla {Shortcut} o Enter para elegir esta respuesta";
 }
 
@@ -68,6 +95,8 @@ public sealed partial class GamePage : Page
     private bool _successVisible;
     private List<GameItemView> _groupAViews = new();
     private List<GameItemView> _groupBViews = new();
+    private string? _lastCueKey;
+    private DateTime _lastCueTime;
 
     public GamePage()
     {
@@ -106,8 +135,9 @@ public sealed partial class GamePage : Page
 
         if (_exerciseIndex >= _topic.Exercises.Count)
         {
+            int earnedStars = _attemptsCount <= 1 ? 3 : _attemptsCount == 2 ? 2 : 1;
             _acc.Audio.PlaySuccessChord();
-            App.Navigation.RequestMissionCompleted(_topic);
+            App.Navigation.RequestMissionCompleted(_topic, earnedStars);
             return;
         }
 
@@ -149,6 +179,24 @@ public sealed partial class GamePage : Page
         }
 
         _acc.Announce(fullSpeech, speak: true, playTone: true);
+        PlayPatternSequence(startDelayMs: 900);
+    }
+
+    private bool IsPatternExercise() => _topic?.Id == "kinder_patterns_01";
+
+    private void PlayPatternSequence(int startDelayMs)
+    {
+        if (!IsPatternExercise() || _currentExercise is null)
+            return;
+
+        var items = _currentExercise.ItemsGroupA
+            .Concat(_currentExercise.ItemsGroupB)
+            .ToList();
+
+        if (items.Count > 0)
+        {
+            _acc.Audio.PlayItemSequence(items, startDelayMs);
+        }
     }
 
     private void RenderManipulableItems()
@@ -165,9 +213,11 @@ public sealed partial class GamePage : Page
                                    (_currentExercise.Level == AcademicLevel.ProgrammingFoundations && _currentExercise.GameType != GamePlayType.PatternAndLoopSeed)) &&
                                   totalItems <= 2;
 
-        TxtManipulablesPrompt.Text = isSymbolicAdvanced
-            ? "Selecciona el elemento interactivo para explorar sus datos y escuchar su tono:"
-            : "Toca o selecciona cada objeto para contarlo y escuchar su nota mágica:";
+        TxtManipulablesPrompt.Text = IsPatternExercise()
+            ? "Escucha la secuencia y presiona R para repetirla. Recorre cada elemento con las flechas para oír su nota:"
+            : isSymbolicAdvanced
+                ? "Selecciona el elemento interactivo para explorar sus datos y escuchar su tono:"
+                : "Toca o selecciona cada objeto para contarlo y escuchar su nota mágica:";
 
         _groupAViews = BuildItemViews(groupA, 1, "A", isSymbolicAdvanced);
         _groupBViews = BuildItemViews(groupB, groupA.Count + 1, "B", isSymbolicAdvanced);
@@ -209,7 +259,8 @@ public sealed partial class GamePage : Page
 
         _countedItemKeys.Add(view.Key);
         _countedItemsCount++;
-        _acc.Audio.PlayNote(view.Item.MusicalPitchHz, 300);
+        view.MarkCounted();
+        PlayItemCueOnce(view);
 
         int totalItems = _currentExercise.ItemsGroupA.Count + _currentExercise.ItemsGroupB.Count;
         string speech;
@@ -227,34 +278,68 @@ public sealed partial class GamePage : Page
         }
 
         _acc.Announce(speech, speak: true);
-
-        RenderManipulableItems();
-        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, FocusNextUncountedItem);
     }
 
-    private void FocusNextUncountedItem()
+    private void Item_GotFocus(object sender, RoutedEventArgs e)
     {
-        foreach (var (repeater, views) in new[] { (ItemsGroupA, _groupAViews), (ItemsGroupB, _groupBViews) })
+        if (sender is Button { Tag: GameItemView view })
         {
-            for (int i = 0; i < views.Count; i++)
-            {
-                if (!_countedItemKeys.Contains(views[i].Key) &&
-                    repeater.TryGetElement(i) is Button itemButton)
-                {
-                    itemButton.Focus(FocusState.Programmatic);
-                    return;
-                }
-            }
+            PlayItemCueOnce(view);
+        }
+    }
+
+    private void PlayItemCueOnce(GameItemView view)
+    {
+        var now = DateTime.UtcNow;
+        if (_lastCueKey == view.Key && (now - _lastCueTime).TotalMilliseconds < 250)
+            return;
+
+        _lastCueKey = view.Key;
+        _lastCueTime = now;
+        _acc.Audio.PlayItemCue(view.Item);
+    }
+
+    private void Item_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key is not (VirtualKey.Left or VirtualKey.Right or VirtualKey.Up or VirtualKey.Down))
+            return;
+
+        if (sender is not Button { Tag: GameItemView current })
+            return;
+
+        e.Handled = true;
+        var items = _groupAViews.Concat(_groupBViews).ToList();
+        int currentIndex = items.FindIndex(item => ReferenceEquals(item, current));
+        if (currentIndex < 0)
+            return;
+
+        int nextIndex = Math.Clamp(
+            currentIndex + (e.Key is VirtualKey.Right or VirtualKey.Down ? 1 : -1),
+            0,
+            items.Count - 1);
+
+        if (nextIndex != currentIndex && FocusItemAt(nextIndex))
+        {
+            _acc.Audio.PlayNavigationClick();
+        }
+    }
+
+    private bool FocusItemAt(int index)
+    {
+        if (index < _groupAViews.Count)
+        {
+            return ItemsGroupA.GetOrCreateElement(index) is Button groupAButton &&
+                   groupAButton.Focus(FocusState.Programmatic);
         }
 
-        if (ItemsOptions.TryGetElement(0) is Button firstOption)
+        int groupBIndex = index - _groupAViews.Count;
+        if (groupBIndex >= 0 && groupBIndex < _groupBViews.Count)
         {
-            firstOption.Focus(FocusState.Programmatic);
+            return ItemsGroupB.GetOrCreateElement(groupBIndex) is Button groupBButton &&
+                   groupBButton.Focus(FocusState.Programmatic);
         }
-        else
-        {
-            BtnBackToLesson.Focus(FocusState.Programmatic);
-        }
+
+        return false;
     }
 
     private void RenderOptions()
@@ -387,6 +472,13 @@ public sealed partial class GamePage : Page
             return;
         }
 
+        if (e.Key == VirtualKey.R && IsPatternExercise())
+        {
+            e.Handled = true;
+            PlayPatternSequence(startDelayMs: 0);
+            return;
+        }
+
         if (e.Key == VirtualKey.Escape)
         {
             e.Handled = true;
@@ -423,6 +515,11 @@ public sealed partial class GamePage : Page
 
     public void FocusInitialElement()
     {
+        if (ShouldStartWithManipulables() && FocusItemAt(0))
+        {
+            return;
+        }
+
         if (ItemsOptions.TryGetElement(0) is Button firstOption)
         {
             firstOption.Focus(FocusState.Programmatic);
@@ -432,6 +529,10 @@ public sealed partial class GamePage : Page
             BtnBackToLesson.Focus(FocusState.Programmatic);
         }
     }
+
+    private bool ShouldStartWithManipulables() =>
+        _currentExercise is not null &&
+        (_currentExercise.GameType == GamePlayType.InteractiveCounting || IsPatternExercise());
 
     public bool SelectOptionByIndex(int index)
     {

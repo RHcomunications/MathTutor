@@ -1015,15 +1015,66 @@ internal static class KindergartenCurriculum
         string description)
     {
         var items = groupB ? exercise.ItemsGroupB : exercise.ItemsGroupA;
+        int orderIndex = items.Count + 1;
         items.Add(new ManipulableItem
         {
             Id = id,
             Name = name,
             EmojiSymbol = emoji,
             AccessibleDescription = description,
-            OrderIndex = items.Count + 1,
-            MusicalPitchHz = Frequencies[items.Count % Frequencies.Length]
+            OrderIndex = orderIndex,
+            MusicalPitchHz = ResolveSemanticPitch(name, emoji, orderIndex),
+            SoundKind = ResolveSoundKind(name, emoji)
         });
+    }
+
+    private static int ResolveSemanticPitch(string name, string emoji, int orderIndex)
+    {
+        string value = name.ToLowerInvariant();
+
+        if (value.Contains("tambor")) return 196;
+        if (value.Contains("campana")) return 523;
+        if (value.Contains("flauta") || value.Contains("trompeta")) return 659;
+        if (value.Contains("palmada") || value.Contains("palmas")) return 392;
+        if (value.Contains("fuerte")) return 523;
+        if (value.Contains("suave")) return 330;
+
+        if (value.Contains("pequeñ") || value.Contains("cort")) return 294;
+        if (value.Contains("median")) return 392;
+        if (value.Contains("grande") || value.Contains("larg")) return 523;
+
+        if (emoji.StartsWith("🔴")) return 262;
+        if (emoji.StartsWith("🟠")) return 294;
+        if (emoji.StartsWith("🟡")) return 330;
+        if (emoji.StartsWith("🟢")) return 349;
+        if (emoji.StartsWith("🔵")) return 392;
+        if (emoji.StartsWith("🟣")) return 440;
+        if (emoji.StartsWith("🟤")) return 466;
+        if (emoji.StartsWith("⚫")) return 247;
+        if (emoji.StartsWith("⚪")) return 523;
+        if (emoji.StartsWith("🔺")) return 523;
+        if (emoji.StartsWith("🔻")) return 494;
+        if (emoji.StartsWith("🟥")) return 262;
+        if (emoji.StartsWith("🟦")) return 349;
+        if (emoji.StartsWith("🟩")) return 392;
+        if (emoji.StartsWith("💠")) return 440;
+        if (emoji.StartsWith("🌟")) return 523;
+        if (emoji.StartsWith("⭐")) return 392;
+
+        return Frequencies[orderIndex % Frequencies.Length];
+    }
+
+    private static ManipulableSoundKind ResolveSoundKind(string name, string emoji)
+    {
+        string value = name.ToLowerInvariant();
+
+        if (value.Contains("tambor") || emoji.Contains("🥁")) return ManipulableSoundKind.Drum;
+        if (value.Contains("campana") || emoji.Contains("🔔")) return ManipulableSoundKind.Bell;
+        if (value.Contains("flauta") || emoji.Contains("🎺")) return ManipulableSoundKind.Flute;
+        if (value.Contains("palmada") || value.Contains("palmas") || emoji.Contains("👏"))
+            return ManipulableSoundKind.Clap;
+
+        return ManipulableSoundKind.Tone;
     }
 
     private static void AddOptions(
@@ -1041,11 +1092,49 @@ internal static class KindergartenCurriculum
                 Value = options[i].Value,
                 IsCorrect = isCorrect,
                 SpeechFeedback = isCorrect ? "¡Muy bien!" : "Prueba otra vez. Mira bien.",
+                AccessibleDescription = BuildOptionDescription(exercise, options[i].Label, options[i].Value),
                 AccessibleKeyShortcut = (i + 1).ToString()
             });
         }
 
         exercise.ExpectedResult = correctValue;
+    }
+
+    private static string BuildOptionDescription(Exercise exercise, string label, int value)
+    {
+        if (exercise.GameType != GamePlayType.Comparison)
+            return string.Empty;
+
+        if (label == "Igual")
+            return "Igual cantidad en ambos grupos";
+
+        bool refersToGroup = label.StartsWith("Las ") ||
+                             label.StartsWith("Los ") ||
+                             label.StartsWith("El grupo ");
+        if (!refersToGroup)
+            return string.Empty;
+
+        var group = value == 1
+            ? exercise.ItemsGroupA
+            : value == 2
+                ? exercise.ItemsGroupB
+                : new List<ManipulableItem>();
+
+        if (group.Count == 0)
+            return string.Empty;
+
+        string noun = group[0].Name.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+        return $"{label}, {group.Count} {Pluralize(noun)}";
+    }
+
+    private static string Pluralize(string noun)
+    {
+        string value = noun.ToLowerInvariant();
+        if (value.EndsWith("z"))
+            return $"{value[..^1]}ces";
+        if (value.EndsWith("a") || value.EndsWith("e") || value.EndsWith("i") || value.EndsWith("o") || value.EndsWith("u"))
+            return $"{value}s";
+        return $"{value}es";
     }
 
     private static string NumberLabel(int value, string singular, string plural) =>

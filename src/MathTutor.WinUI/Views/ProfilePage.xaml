@@ -205,7 +205,9 @@
                                               Padding="10,6"
                                               HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="Nivel de apoyo para autismo"
+                                              AutomationProperties.HelpText="Presiona Enter o Alt+Flecha Abajo para desplegar opciones y selecciona con las flechas"
                                               SelectionChanged="SupportDescription_Changed"
+                                              DropDownClosed="SupportCombo_DropDownClosed"
                                               GotFocus="Control_GotFocus" />
                                 </StackPanel>
 
@@ -217,7 +219,9 @@
                                               Padding="10,6"
                                               HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="Presentación predominante del TDAH"
+                                              AutomationProperties.HelpText="Presiona Enter o Alt+Flecha Abajo para desplegar opciones y selecciona con las flechas"
                                               SelectionChanged="SupportDescription_Changed"
+                                              DropDownClosed="SupportCombo_DropDownClosed"
                                               GotFocus="Control_GotFocus" />
                                 </StackPanel>
 
@@ -229,7 +233,9 @@
                                               Padding="10,6"
                                               HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="Nivel de apoyos para discapacidad intelectual"
+                                              AutomationProperties.HelpText="Presiona Enter o Alt+Flecha Abajo para desplegar opciones y selecciona con las flechas"
                                               SelectionChanged="SupportDescription_Changed"
+                                              DropDownClosed="SupportCombo_DropDownClosed"
                                               GotFocus="Control_GotFocus" />
                                 </StackPanel>
 
@@ -241,7 +247,9 @@
                                               Padding="10,6"
                                               HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="Descripción funcional de la visión"
+                                              AutomationProperties.HelpText="Presiona Enter o Alt+Flecha Abajo para desplegar opciones y selecciona con las flechas"
                                               SelectionChanged="SupportDescription_Changed"
+                                              DropDownClosed="SupportCombo_DropDownClosed"
                                               GotFocus="Control_GotFocus" />
                                 </StackPanel>
 
@@ -253,7 +261,9 @@
                                               Padding="10,6"
                                               HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="Descripción funcional de la audición"
+                                              AutomationProperties.HelpText="Presiona Enter o Alt+Flecha Abajo para desplegar opciones y selecciona con las flechas"
                                               SelectionChanged="SupportDescription_Changed"
+                                              DropDownClosed="SupportCombo_DropDownClosed"
                                               GotFocus="Control_GotFocus" />
                                 </StackPanel>
 
@@ -265,7 +275,9 @@
                                               Padding="10,6"
                                               HorizontalAlignment="Stretch"
                                               AutomationProperties.Name="Descripción funcional de la motricidad"
+                                              AutomationProperties.HelpText="Presiona Enter o Alt+Flecha Abajo para desplegar opciones y selecciona con las flechas"
                                               SelectionChanged="SupportDescription_Changed"
+                                              DropDownClosed="SupportCombo_DropDownClosed"
                                               GotFocus="Control_GotFocus" />
                                 </StackPanel>
                             </StackPanel>

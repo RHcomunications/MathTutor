@@ -236,7 +236,7 @@ public sealed partial class MainWindow : Window
         Navigation.Navigate(typeof(LessonPage), new LessonNavigationArgs(_currentTopic, 3));
     }
 
-    private async void OnMissionCompleted(PedagogicalTopic topic)
+    private async void OnMissionCompleted(PedagogicalTopic topic, int earnedStars)
     {
         if (!_acc.CurrentProfile.CompletedLessonIds.Contains(topic.Id))
         {
@@ -302,6 +302,14 @@ public sealed partial class MainWindow : Window
             Foreground = textBrush,
             FontSize = baseFontSize
         });
+        content.Children.Add(new TextBlock
+        {
+            Text = $"Ganaste {earnedStars} de 3 estrellas",
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = successBrush,
+            FontSize = subHeaderFontSize,
+            FontWeight = Microsoft.UI.Text.FontWeights.Bold
+        });
 
         if (nextTopic is not null)
         {
@@ -334,8 +342,8 @@ public sealed partial class MainWindow : Window
         };
 
         string spoken = nextTopic is not null
-            ? $"¡Felicidades! Misión completada. {congratulation} Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
-            : $"¡Felicidades! Misión completada. {congratulation} Has superado todas las misiones de tu etapa actual. Presiona Enter o Escape para volver al mapa.";
+            ? $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
+            : $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Completaste todas las misiones de esta etapa. Presiona Enter o Escape para volver al mapa.";
 
         void AnnounceInDialog()
         {
@@ -395,14 +403,20 @@ public sealed partial class MainWindow : Window
 
     private void OnThemeChanged()
     {
-        _acc.SaveCurrentProfile();
+        if (_acc.Storage.Exists())
+        {
+            _acc.SaveCurrentProfile();
+        }
         UpdateTopStatus();
         RefreshThemeResources();
     }
 
     private void OnFontSizeChanged()
     {
-        _acc.SaveCurrentProfile();
+        if (_acc.Storage.Exists())
+        {
+            _acc.SaveCurrentProfile();
+        }
         UpdateTopStatus();
         RefreshThemeResources();
     }

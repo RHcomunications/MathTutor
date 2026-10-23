@@ -20,7 +20,7 @@ public sealed class NavigationService
     public event Action<PedagogicalTopic>? StartGameRequested;
     public event Action? BackToMenuRequested;
     public event Action? BackToLessonRequested;
-    public event Action<PedagogicalTopic>? MissionCompleted;
+    public event Action<PedagogicalTopic, int>? MissionCompleted;
 
     public Type? CurrentPageType => _frame.CurrentSourcePageType;
 
@@ -38,5 +38,6 @@ public sealed class NavigationService
     public void RequestStartGame(PedagogicalTopic topic) => StartGameRequested?.Invoke(topic);
     public void RequestBackToMenu() => BackToMenuRequested?.Invoke();
     public void RequestBackToLesson() => BackToLessonRequested?.Invoke();
-    public void RequestMissionCompleted(PedagogicalTopic topic) => MissionCompleted?.Invoke(topic);
+    public void RequestMissionCompleted(PedagogicalTopic topic, int earnedStars) =>
+        MissionCompleted?.Invoke(topic, earnedStars);
 }

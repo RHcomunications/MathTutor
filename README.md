@@ -18,11 +18,13 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
     - *Baja Estimulación Sensorial* (Tonos pastel suaves anti-fatiga, ideal para TEA y TDAH).
   - **Escala de Fuentes Dinámica**: Estándar (18pt), Grande (23pt), Muy Grande (28pt) y Gigante (34pt).
   - **Audio Procedural en Memoria**: Generador acústico PCM WAV en tiempo real con frecuencias musicales para el conteo armónico (Do, Re, Mi, Fa, Sol, La, Si, Do) y acordes de éxito, sin depender de archivos externos.
+  - **Sonido con Significado**: Los patrones se reproducen como secuencias completas y cada objeto usa un timbre coherente con su instrumento o material (campana, tambor, flauta, palmas), reforzando el concepto sin sustituir al lector de pantalla.
 
 - **Operable**:
   - **100% Navegable por Teclado**: Todo el flujo (crear perfil, seleccionar misiones, explorar el mapa del reino, jugar, responder retos y pedir pistas) se opera sin ratón.
   - **Atajos Directos de Respuesta**: Las opciones se responden instantáneamente con las teclas numéricas `1`, `2`, `3` o `Enter`.
   - **Foco Visible Destacado**: Borde visual de 4px de alto contraste que indica en todo momento la posición activa en la pantalla.
+  - **Conteo sin Saltos de Foco**: Al marcar un objeto, su estado se actualiza en el lugar sin volver a dibujar la cuadrícula ni mover el foco; las flechas recorren los objetos y las opciones de forma predecible.
   - **Ventana al Frente al Iniciar**: Al abrir el programa, la ventana solicita el primer plano una sola vez después de cargar el perfil y la navegación inicial.
   - **Sin Límites de Tiempo**: Aprendizaje respetuoso del ritmo de cada alumno (Pauta WCAG 2.2).
 
@@ -33,10 +35,11 @@ Desarrollado en **C# (.NET 10 / WinUI 3)** para el aprendizaje matemático signi
   - **Ejemplos Guiados Paso a Paso y Retroalimentación Diagnóstica**: Cada una de las 54 misiones incluye un ejemplo resuelto paso a paso en la pantalla de lección y retroalimentación diagnóstica inmediata cuando el alumno comete un error, explicando si su respuesta fue mayor o menor que la esperada y qué principio revisar.
   - **Repaso Sin Abandonar el Reto**: La pantalla del ejercicio mantiene visible el secreto matemático para releerlo, y el anuncio del reto no revela el resultado esperado.
   - **Sala de Trofeos Agrupada por Nivel**: Las insignias se organizan por nivel educativo, muestran el progreso de cada grupo, se expanden y contraen con las flechas y recuerdan su estado entre sesiones.
+  - **Cierre de Misión con Estrellas**: El diálogo final indica cuántas estrellas se ganaron según los intentos y ofrece continuar con la siguiente misión o volver al mapa.
   - **Conteo sin Solapamientos**: Los objetos de conteo usan celdas de 170 px y se distribuyen en el ancho disponible para que los botones no se encimen.
 
 - **Robusto**:
-  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 54 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 166 pruebas unitarias xUnit).
+  - Arquitectura modular limpia en tres proyectos: `MathTutor.Core` (dominio, currículo de 54 estaciones y 16 objetivos, generador procedimental, motor adaptativo con filtrado por edad y recompensas), `MathTutor.WinUI` (servicios de accesibilidad, audio en memoria e interfaz WinUI 3) y `MathTutor.Tests` (suite automatizada de 168 pruebas unitarias xUnit).
 
 ---
 
@@ -84,7 +87,8 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 | **F4** | Cambiar cíclicamente el tamaño de letra (Estándar, Grande, Muy Grande, Gigante) |
 | **F5** | Abrir la pantalla de caracterización y perfil del alumno |
 | **F6** | Abrir el Mapa del Reino y Medallero de Insignias (54 estaciones) |
-| **Flechas (↑ ↓)** | Recorrer las misiones, las estaciones del mapa y las respuestas de opción múltiple; avanzar o retroceder entre pasos de la lección |
+| **Flechas (↑ ↓)** | Recorrer las misiones, las estaciones del mapa, los objetos de conteo y las respuestas de opción múltiple; avanzar o retroceder entre pasos de la lección |
+| **R** | Repetir la secuencia sonora del patrón actual |
 | **Escape** | Volver al menú principal de aventuras (o cerrar el diálogo al terminar una misión) |
 | **1, 2, 3** | Responder directamente la opción correspondiente en el minijuego |
 | **Enter / Espacio** | Iniciar misión seleccionada o avanzar a la siguiente misión tras completar un nivel |
@@ -99,7 +103,7 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ## 🔧 Calidad, licencia y accesibilidad
 
-- [CI](.github/workflows/ci.yml): compila en Release con advertencias como errores, ejecuta las 166 pruebas y permite empaquetar manualmente.
+- [CI](.github/workflows/ci.yml): compila en Release con advertencias como errores, ejecuta las 168 pruebas y permite empaquetar manualmente.
 - [Licencia propietaria](LICENSE) de Narayan Projects.
 - [Avisos de terceros](THIRD-PARTY-NOTICES.md).
 - [Borrador ACR/VPAT y matriz de lectores](ACCESIBILIDAD-ACR-VPAT.md).
@@ -115,7 +119,7 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build MathTutor.slnx -c Release
 
-# Ejecutar las 166 pruebas unitarias automatizadas
+# Ejecutar las 168 pruebas unitarias automatizadas
 dotnet test tests/MathTutor.Tests/MathTutor.Tests.csproj -c Release
 
 # Iniciar la aplicación WinUI 3

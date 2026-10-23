@@ -62,6 +62,18 @@ public enum GamePlayType
 }
 
 /// <summary>
+/// Familia tímbrica usada para reforzar patrones, instrumentos y comparaciones.
+/// </summary>
+public enum ManipulableSoundKind
+{
+    Tone,
+    Bell,
+    Drum,
+    Flute,
+    Clap
+}
+
+/// <summary>
 /// Representa un objeto concreto contable o manipulable en el minijuego.
 /// Proporciona accesibilidad multimodal: imagen/icono, etiqueta de texto, color y nota musical.
 /// </summary>
@@ -74,6 +86,7 @@ public class ManipulableItem
     public int OrderIndex { get; set; } = 1;
     public bool IsCounted { get; set; } = false;
     public int MusicalPitchHz { get; set; } = 440; // Frecuencia para retroalimentación sonora
+    public ManipulableSoundKind SoundKind { get; set; } = ManipulableSoundKind.Tone;
 }
 
 /// <summary>
@@ -86,6 +99,7 @@ public class ExerciseOption
     public int Value { get; set; }
     public bool IsCorrect { get; set; }
     public string SpeechFeedback { get; set; } = string.Empty;
+    public string AccessibleDescription { get; set; } = string.Empty;
     public string AccessibleKeyShortcut { get; set; } = string.Empty; // Ej. "1", "2", "3"
 }
 

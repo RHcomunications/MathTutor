@@ -154,13 +154,15 @@
                                 <Button Style="{StaticResource AccessibleGameOptionButton}"
                                         Tag="{x:Bind}"
                                         Click="Item_Click"
-                                        AutomationProperties.Name="{x:Bind AccessibleName}"
-                                        AutomationProperties.HelpText="{x:Bind HelpText}">
+                                        GotFocus="Item_GotFocus"
+                                        PreviewKeyDown="Item_PreviewKeyDown"
+                                        AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}"
+                                        AutomationProperties.HelpText="{x:Bind HelpText, Mode=OneWay}">
                                     <StackPanel HorizontalAlignment="Center" Spacing="4">
                                         <TextBlock Text="{x:Bind EmojiSymbol}"
                                                    FontSize="38"
                                                    HorizontalAlignment="Center" />
-                                        <TextBlock Text="{x:Bind Label}"
+                                        <TextBlock Text="{x:Bind Label, Mode=OneWay}"
                                                    FontSize="{ThemeResource AppBaseFontSize}"
                                                    FontWeight="Bold"
                                                    Foreground="{ThemeResource AppTextSecondaryBrush}"
@@ -192,13 +194,15 @@
                                     <Button Style="{StaticResource AccessibleGameOptionButton}"
                                             Tag="{x:Bind}"
                                             Click="Item_Click"
-                                            AutomationProperties.Name="{x:Bind AccessibleName}"
-                                            AutomationProperties.HelpText="{x:Bind HelpText}">
+                                            GotFocus="Item_GotFocus"
+                                            PreviewKeyDown="Item_PreviewKeyDown"
+                                            AutomationProperties.Name="{x:Bind AccessibleName, Mode=OneWay}"
+                                            AutomationProperties.HelpText="{x:Bind HelpText, Mode=OneWay}">
                                         <StackPanel HorizontalAlignment="Center" Spacing="4">
                                             <TextBlock Text="{x:Bind EmojiSymbol}"
                                                        FontSize="38"
                                                        HorizontalAlignment="Center" />
-                                            <TextBlock Text="{x:Bind Label}"
+                                            <TextBlock Text="{x:Bind Label, Mode=OneWay}"
                                                        FontSize="{ThemeResource AppBaseFontSize}"
                                                        FontWeight="Bold"
                                                        Foreground="{ThemeResource AppTextSecondaryBrush}"

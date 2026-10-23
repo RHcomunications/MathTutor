@@ -26,6 +26,7 @@ public sealed partial class ProfilePage : Page
 
     private readonly AccessibilityManager _acc = AccessibilityManager.Instance;
     private bool _isInitializing = true;
+    private bool _supportSelectionDirty;
     private UserProfile? _snapshot;
 
     public ProfilePage()
@@ -311,8 +312,20 @@ public sealed partial class ProfilePage : Page
         profile.ApplyRecommendedAccessibilityDefaults();
         SyncAccessibilityControlsFromProfile();
         _acc.ApplyProfile(profile);
+        _supportSelectionDirty = true;
+    }
 
-        _acc.Announce("Apoyos actualizados. Las preferencias que ajustaste manualmente se conservan.");
+    private void SupportCombo_DropDownClosed(object sender, object e)
+    {
+        if (_isInitializing || !_supportSelectionDirty)
+            return;
+
+        _supportSelectionDirty = false;
+        string selection = (sender as ComboBox)?.SelectedItem is ComboBoxItem item
+            ? item.Content?.ToString() ?? string.Empty
+            : string.Empty;
+        string detail = string.IsNullOrWhiteSpace(selection) ? string.Empty : $" {selection}.";
+        _acc.Announce($"Apoyos actualizados.{detail} Las preferencias que ajustaste manualmente se conservan.");
     }
 
     private void CmbAge_SelectionChanged(object sender, SelectionChangedEventArgs e)

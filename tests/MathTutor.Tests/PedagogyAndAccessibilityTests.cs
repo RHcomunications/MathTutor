@@ -1059,6 +1059,42 @@ public class PedagogyAndAccessibilityTests
         Assert.True(option2Count > 0, "La opción correcta nunca cayó en la posición 2");
         Assert.True(option3Count > 0, "La opción correcta nunca cayó en la posición 3");
     }
+
+    [Fact]
+    public void Kindergarten_Patterns_UseDistinctSemanticPitchesAndInstrumentTimbre()
+    {
+        var patternExercise = _curriculum.GetAllTopics()
+            .Find(t => t.Id == "kinder_patterns_01")!
+            .Exercises.Find(e => e.Id == "pattern_ex_01")!;
+        var red = patternExercise.ItemsGroupA.Find(i => i.Name.Contains("Rojo"))!;
+        var blue = patternExercise.ItemsGroupA.Find(i => i.Name.Contains("Azul"))!;
+
+        Assert.NotEqual(red.MusicalPitchHz, blue.MusicalPitchHz);
+
+        var musicExercise = _curriculum.GetAllTopics()
+            .Find(t => t.Id == "kinder_music_01")!
+            .Exercises.Find(e => e.Id == "music_ex_03")!;
+        var drum = musicExercise.ItemsGroupA.Find(i => i.Name.Contains("Tambor"))!;
+        var clap = musicExercise.ItemsGroupA.Find(i => i.Name.Contains("Palmas"))!;
+
+        Assert.Equal(ManipulableSoundKind.Drum, drum.SoundKind);
+        Assert.Equal(ManipulableSoundKind.Clap, clap.SoundKind);
+        Assert.NotEqual(drum.MusicalPitchHz, clap.MusicalPitchHz);
+    }
+
+    [Fact]
+    public void Kindergarten_ComparisonOptions_DescribeGroupQuantities()
+    {
+        var comparison = _curriculum.GetAllTopics()
+            .Find(t => t.Id == "kinder_sorting_01")!
+            .Exercises.Find(e => e.Id == "sorting_ex_01")!;
+
+        var redOption = comparison.Options.Find(o => o.Label == "Las rojas")!;
+        var greenOption = comparison.Options.Find(o => o.Label == "Las verdes")!;
+
+        Assert.Contains("3 manzanas", redOption.AccessibleDescription);
+        Assert.Contains("2 manzanas", greenOption.AccessibleDescription);
+    }
 }
 
 

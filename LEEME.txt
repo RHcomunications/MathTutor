@@ -2,9 +2,7 @@ MATH TUTOR ACCESIBLE
 Guía para familias, docentes y estudiantes
 Versión 1.10.0 - Octubre de 2026
 
-============================================================
 QUÉ ES MATH TUTOR
-============================================================
 
 Math Tutor es un programa para aprender matemáticas jugando.
 Acompaña al estudiante con explicaciones claras, ejemplos,
@@ -17,9 +15,7 @@ No es un examen ni una carrera contra el reloj. El estudiante
 puede avanzar a su propio ritmo, repetir, escuchar de nuevo y
 consultar el secreto matemático cuando lo necesite.
 
-============================================================
 PARA QUIÉN ES
-============================================================
 
 - Estudiantes que quieren practicar matemáticas.
 - Docentes que buscan una actividad guiada para el aula.
@@ -27,9 +23,7 @@ PARA QUIÉN ES
 - Estudiantes que usan lector de pantalla, teclado, letra
   grande, alto contraste o sonidos de apoyo.
 
-============================================================
 QUÉ NECESITAS
-============================================================
 
 - Una computadora con Windows 10 u 11.
 - Bocinas o audífonos, si quieres escuchar los sonidos.
@@ -39,9 +33,7 @@ QUÉ NECESITAS
 No necesitas crear una cuenta, conectarte a internet ni pagar
 nada para usar el programa.
 
-============================================================
 CÓMO ABRIRLO
-============================================================
 
 1. Descarga el archivo MathTutor-v1.10.0-Windows.zip
    desde la página de esta versión.
@@ -68,9 +60,7 @@ Consejo: no abras el programa desde dentro del archivo
 comprimido. Primero extrae la carpeta completa. No necesitas
 buscar entre cientos de archivos ni instalar nada más.
 
-============================================================
 PRIMEROS PASOS
-============================================================
 
 1. La primera vez, el programa te pedirá crear un perfil.
    Puedes escribir el nombre del estudiante, su edad, su
@@ -101,9 +91,7 @@ Arriba y abajo recorren los grupos y sus trofeos visibles.
 Los desbloqueados aparecen primero dentro de cada grupo.
 El juego recuerda qué grupos dejaste abiertos o cerrados.
 
-============================================================
 TECLAS ÚTILES
-============================================================
 
 F1    Repetir la última instrucción o explicación.
 F2    Encender o apagar los sonidos del juego.
@@ -111,15 +99,14 @@ F3    Cambiar el contraste de la pantalla.
 F4    Cambiar el tamaño de la letra.
 F5    Abrir el perfil del estudiante.
 F6    Abrir el mapa de misiones e insignias.
+R     Repetir la secuencia de sonidos en los patrones.
 Esc   Volver al menú principal.
 1, 2, 3  Responder la opción correspondiente.
 Enter o Espacio  Iniciar una misión o continuar.
 Flechas arriba y abajo  Moverse entre misiones, estaciones
                        y respuestas; recorrer los pasos de la lección.
 
-============================================================
 ACCESIBILIDAD
-============================================================
 
 Math Tutor está pensado para usarse de distintas maneras:
 
@@ -136,9 +123,7 @@ Si usas lector de pantalla, enciéndelo antes de abrir el
 programa para que los anuncios estén disponibles desde el
 primer momento.
 
-============================================================
 CONSEJOS PARA DOCENTES Y FAMILIAS
-============================================================
 
 - Acompaña la primera sesión. Ayuda a completar el perfil y a
   elegir una misión adecuada.
@@ -155,9 +140,7 @@ CONSEJOS PARA DOCENTES Y FAMILIAS
 - Celebra el esfuerzo y el proceso, no solo las respuestas
   correctas.
 
-============================================================
 PRIVACIDAD
-============================================================
 
 - El programa no pide una cuenta.
 - No muestra anuncios.
@@ -174,9 +157,7 @@ PRIVACIDAD
 - La licencia del programa está en LICENSE y los avisos de
   componentes de terceros en THIRD-PARTY-NOTICES.md.
 
-============================================================
 SI ALGO NO FUNCIONA
-============================================================
 
 No se abre el programa:
 - Comprueba que extrajiste la carpeta completa.
@@ -206,9 +187,7 @@ No sé qué hacer:
 - Presiona F1 para escuchar o leer la instrucción otra vez.
 - Consulta el secreto matemático que aparece en la pantalla.
 
-============================================================
 NOVEDADES DE ESTA VERSIÓN
-============================================================
 
 - Jardín de niños ahora tiene 10 temas organizados por edad:
   formas, posiciones, cuentos, patrones, clasificación, música,
@@ -227,9 +206,7 @@ NOVEDADES DE ESTA VERSIÓN
 - El borde de foco de los temas claro y de baja estimulación
   ahora tiene mayor contraste para ubicarlo con facilidad.
 
-============================================================
 GRACIAS
-============================================================
 
 Gracias por acompañar a niñas, niños y jóvenes en su
 aprendizaje. Math Tutor busca que cada estudiante se sienta

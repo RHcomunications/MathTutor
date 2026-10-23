@@ -202,7 +202,7 @@
                              Foreground="{ThemeResource AppTextPrimaryBrush}"
                              AutomationProperties.Name="Ejemplo Guiado Paso a Paso con Cosmo" />
 
-                    <TextBlock Text="🎉 ¡Has completado la lección preparatoria! Presiona Enter para iniciar el reto lúdico o Flecha arriba/Backspace para repasar."
+                    <TextBlock Text="🎉 ¡Explicación completada! Presiona Enter para iniciar el reto lúdico o Flecha arriba/Backspace para repasar."
                                FontSize="{ThemeResource AppBaseFontSize}"
                                FontWeight="Bold"
                                Foreground="{ThemeResource AppAccentBrush}"

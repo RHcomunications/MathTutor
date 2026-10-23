@@ -280,7 +280,10 @@ public class AdaptiveEngine
         for (int i = 0; i < options.Count; i++)
         {
             var opt = options[i];
-            sb.Append($"Opción {i + 1}: {opt.Label}. ");
+            string optionText = string.IsNullOrWhiteSpace(opt.AccessibleDescription)
+                ? opt.Label
+                : opt.AccessibleDescription;
+            sb.Append($"Opción {i + 1}: {optionText}. ");
         }
 
         string instruction = options.Count switch

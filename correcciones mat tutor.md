@@ -524,3 +524,49 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 - **Corrección:** Se documentó un borrador ACR/VPAT con evidencia automatizada, estados por criterio y matriz NVDA/JAWS/Narrador.
 - **Ubicación:** `ACCESIBILIDAD-ACR-VPAT.md`.
 - **Criterio de verificación:** El documento distingue lo verificado de lo pendiente y no declara conformidad formal.
+
+---
+
+# FASE 5 - ACCESIBILIDAD, FOCO Y AUDIO SEMÁNTICO (IMPLEMENTADO LOCALMENTE)
+
+> **Estado:** implementado y verificado localmente. Build `Release` sin advertencias y **168/168 pruebas** superadas. No se publicó una nueva release ni se reemplazó el paquete `v1.10.0`.
+
+### 1. Guía y atajos
+- **Corrección:** Se eliminaron los separadores largos de `LEEME.txt` y se documentó la tecla `R` para repetir la secuencia de un patrón.
+- **Ubicación:** `LEEME.txt`.
+- **Criterio de verificación:** La guía conserva secciones legibles y menciona `R` junto a los atajos de teclado.
+
+### 2. Versión del lanzador y la aplicación
+- **Corrección:** Se fijaron `FileVersion` y `AssemblyVersion` en `1.10.0.0`; el script de publicación valida la versión, la estampa en el lanzador temporal y verifica la metadata de ambos ejecutables.
+- **Ubicación:** `src/MathTutor.WinUI/MathTutor.WinUI.csproj`, `scripts/publish-winui.ps1`.
+- **Criterio de verificación:** `libs/MathTutor.exe` y el lanzador raíz reportan `1.10.0.0`; el script pasa el análisis sintáctico de PowerShell.
+
+### 3. Borrado del perfil sin recreación automática
+- **Corrección:** Los cambios de tema y tamaño de letra solo guardan el perfil si el archivo existe; tras borrarlo, la aplicación no vuelve a crear `user_profile.json` y el arranque regresa a la caracterización.
+- **Ubicación:** `src/MathTutor.WinUI/MainWindow.xaml.cs`.
+- **Criterio de verificación:** Borrar el perfil, cambiar tema o tamaño y reiniciar mantiene la pantalla de perfil sin datos persistidos.
+
+### 4. Selectores de apoyos accesibles
+- **Corrección:** Los seis selectores de apoyos exponen `AutomationProperties.HelpText` y anuncian el valor elegido al cerrarse, sin interrumpir mientras se recorren las opciones.
+- **Ubicación:** `src/MathTutor.WinUI/Views/ProfilePage.xaml`, `ProfilePage.xaml.cs`.
+- **Criterio de verificación:** El lector recibe una sola confirmación después de elegir y no recibe anuncios por cada movimiento dentro del desplegable.
+
+### 5. Lenguaje de finalización de lección
+- **Corrección:** El texto visible y el anuncio usan “¡Explicación completada!” en lugar de “¡Lección completada!”.
+- **Ubicación:** `src/MathTutor.WinUI/Views/LessonPage.xaml`, `LessonPage.xaml.cs`.
+- **Criterio de verificación:** El texto en pantalla y el anuncio coinciden.
+
+### 6. Foco estable en conteo y patrones
+- **Corrección:** Marcar un objeto actualiza su nombre y estado en el lugar, sin volver a dibujar la cuadrícula ni mover el foco; el foco inicial va al primer objeto manipulable y las flechas recorren los objetos sin saltar a las opciones.
+- **Ubicación:** `src/MathTutor.WinUI/Views/GamePage.xaml`, `GamePage.xaml.cs`.
+- **Criterio de verificación:** Contar varios objetos consecutivos conserva el foco y el orden de navegación; el anuncio de cada objeto refleja si ya fue contado.
+
+### 7. Estrellas al completar la misión
+- **Corrección:** El diálogo y el anuncio indican cuántas estrellas se ganaron: 3 al primer intento, 2 al segundo y 1 con tres o más intentos.
+- **Ubicación:** `src/MathTutor.WinUI/Navigation/NavigationService.cs`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`, `src/MathTutor.WinUI/MainWindow.xaml.cs`.
+- **Criterio de verificación:** El texto visible y el anuncio incluyen “Ganaste X de 3 estrellas” y la siguiente misión conserva el tema calculado.
+
+### 8. Audio semántico y comparaciones
+- **Corrección:** Se añadieron timbres de campana, tambor, flauta y palmas; los patrones se reproducen como secuencias y `R` las repite; cada objeto usa un tono coherente con su instrumento o material. Las opciones de comparación anuncian cantidad y sustantivo plural, por ejemplo “Las rojas, 3 manzanas”.
+- **Ubicación:** `src/MathTutor.Core/Models/Exercise.cs`, `src/MathTutor.Core/Engine/KindergartenCurriculum.cs`, `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `src/MathTutor.WinUI/Services/AccessibleAudioCueService.cs`, `tests/MathTutor.Tests/PedagogyAndAccessibilityTests.cs`.
+- **Criterio de verificación:** Las pruebas confirman tonos/timbres distintos y descripciones de cantidad; build `Release` con 0 advertencias y 168/168 pruebas superadas.
