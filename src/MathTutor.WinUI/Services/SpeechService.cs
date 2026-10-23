@@ -161,24 +161,31 @@ public class SpeechService : IDisposable
             if (!(_nvdaControllerActive || nvdaController_testIfRunning() == 0))
                 return false;
 
-            _nvdaControllerActive = true;
-
             if (interrupt)
             {
                 nvdaController_cancelSpeech();
             }
-            return nvdaController_speakText(text) == 0;
+
+            // El latch solo se activa con una locución real exitosa: si NVDA se
+            // cierra durante la sesión, la siguiente locución reintenta el
+            // handshake en lugar de fallar en silencio.
+            bool spoken = nvdaController_speakText(text) == 0;
+            _nvdaControllerActive = spoken;
+            return spoken;
         }
         catch (DllNotFoundException)
         {
             _nvdaClientDllAvailable = false;
+            _nvdaControllerActive = false;
         }
         catch (EntryPointNotFoundException)
         {
             _nvdaClientDllAvailable = false;
+            _nvdaControllerActive = false;
         }
         catch
         {
+            _nvdaControllerActive = false;
         }
 
         return false;
@@ -246,6 +253,22 @@ public class SpeechService : IDisposable
 
     public void Dispose()
     {
-        _jawsComObject = null;
+        if (_jawsComObject != null)
+        {
+            try
+            {
+                Marshal.FinalReleaseComObject(_jawsComObject);
+            }
+            catch
+            {
+                // El RCW pudo liberarse ya o no ser un objeto COM real.
+            }
+            _jawsComObject = null;
+        }
+
+        // Permitir que una instancia reutilizada vuelva a detectar lectores.
+        _jawsInitialized = false;
+        _jawsFailed = false;
+        _jawsDetected = false;
     }
 }

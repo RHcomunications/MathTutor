@@ -28,6 +28,7 @@ public sealed partial class MainWindow : Window
     private bool _repeatToggleFlag;
     private bool _isClosing;
     private bool _missionDialogOpen;
+    private string? _missionDialogMessage;
     private AccessibilitySettings? _systemAccessibility;
 
     public NavigationService Navigation { get; }
@@ -50,6 +51,10 @@ public sealed partial class MainWindow : Window
         Navigation.BackToMenuRequested += OpenMenu;
         Navigation.BackToLessonRequested += BackToLesson;
         Navigation.MissionCompleted += OnMissionCompleted;
+
+        // Al cambiar de pantalla, las secuencias de audio pendientes de la
+        // pantalla anterior no deben seguir sonando sobre la nueva.
+        RootFrame.Navigated += (_, _) => _acc.Audio.ClearPendingCues();
 
         _acc.AnnouncementMade += Acc_AnnouncementMade;
         _acc.ThemeChanged += OnThemeChanged;
@@ -196,7 +201,7 @@ public sealed partial class MainWindow : Window
         if (Navigation.CurrentPageType == typeof(MenuPage) &&
             RootFrame.Content is MenuPage menuPage)
         {
-            menuPage.RefreshData();
+            menuPage.RefreshData(announceWelcome: false);
             return;
         }
 
@@ -361,10 +366,11 @@ public sealed partial class MainWindow : Window
                 ? $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
                 : $"¡Misión Superada: {topic.Title}! Tu mejor calificación es {_acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id)} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
             : $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Completaste todas las misiones de esta etapa. Presiona Enter o Escape para volver al mapa.";
+        _missionDialogMessage = spoken;
 
         void AnnounceInDialog()
         {
-            _acc.AnnounceAssertive(spoken);
+            _acc.AnnounceAssertive(_missionDialogMessage ?? string.Empty);
         }
 
         var dialog = new ContentDialog
@@ -397,13 +403,9 @@ public sealed partial class MainWindow : Window
             dialog.CloseButtonStyle = closeButtonStyle;
         }
 
-        var repeatAccelerator = new KeyboardAccelerator { Key = Windows.System.VirtualKey.F1 };
-        repeatAccelerator.Invoked += (_, args) =>
-        {
-            args.Handled = true;
-            AnnounceInDialog();
-        };
-        dialog.KeyboardAccelerators.Add(repeatAccelerator);
+        // El F1 del diálogo lo gestiona el acelerador global (OnHelpAccelerator)
+        // consultando _missionDialogMessage, evitando la doble invocación.
+
         dialog.Opened += (_, _) => DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, AnnounceInDialog);
 
         // El acelerador de Escape global queda silenciado mientras este diálogo está abierto;
@@ -411,6 +413,7 @@ public sealed partial class MainWindow : Window
         _missionDialogOpen = true;
         var result = await dialog.ShowAsync();
         _missionDialogOpen = false;
+        _missionDialogMessage = null;
 
         if (result == ContentDialogResult.Primary && nextTopic is not null)
         {
@@ -515,6 +518,12 @@ public sealed partial class MainWindow : Window
     private void OnHelpAccelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         args.Handled = true;
+        if (_missionDialogOpen)
+        {
+            _acc.AnnounceAssertive(_missionDialogMessage ?? string.Empty);
+            return;
+        }
+
         RepeatActiveViewVoice();
     }
 

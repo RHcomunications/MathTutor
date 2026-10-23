@@ -158,6 +158,13 @@ public sealed partial class LessonPage : Page
 
     private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
     {
+        // El texto de la lección es legible con el caret (Mays+Flechas);
+        // mientras el foco esté en un TextBox no se secuestra ninguna tecla.
+        if (FocusManager.GetFocusedElement(XamlRoot) is TextBox)
+        {
+            return;
+        }
+
         if (e.Key == VirtualKey.F1)
         {
             e.Handled = true;
@@ -165,13 +172,8 @@ public sealed partial class LessonPage : Page
             return;
         }
 
-        if (e.Key == VirtualKey.Escape)
-        {
-            e.Handled = true;
-            _acc.Audio.PlayNavigationClick();
-            App.Navigation.RequestMenu();
-            return;
-        }
+        // Escape vuelve al menú vía el acelerador global de MainWindow
+        // (único camino, sin doble manejo de navegación).
 
         if (e.Key is VirtualKey.Back or VirtualKey.Up)
         {

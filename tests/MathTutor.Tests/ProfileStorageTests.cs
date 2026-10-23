@@ -284,6 +284,135 @@ public class ProfileStorageTests : IDisposable
     }
 
     [Fact]
+    public void Load_MigrationPersistFailsTransiently_ProfileIsReturnedNotQuarantined()
+    {
+        File.WriteAllText(
+            _testFilePath,
+            "{\"Age\":8,\"Disability\":\"Neurodivergent\",\"Disabilities\":[\"Neurodivergent\"]}");
+
+        // El archivo temporal se sustituye por un directorio: Save no puede
+        // escribir y la re-persistencia de la migración falla.
+        Directory.CreateDirectory(_testFilePath + ".tmp");
+        try
+        {
+            var loaded = _storage.Load();
+
+            // El JSON era válido: se devuelve el perfil migrado y JAMÁS se
+            // cuarentena por una falla de escritura.
+            Assert.NotNull(loaded);
+            Assert.Equal(UserProfile.CurrentProfileVersion, loaded.ProfileVersion);
+            Assert.Contains(DisabilityType.Autism, loaded.Disabilities);
+            Assert.Contains(DisabilityType.ADHD, loaded.Disabilities);
+        }
+        finally
+        {
+            if (Directory.Exists(_testFilePath + ".tmp"))
+            {
+                Directory.Delete(_testFilePath + ".tmp");
+            }
+        }
+
+        Assert.Empty(Directory.GetFiles(Path.GetTempPath(), Path.GetFileName(_testFilePath) + ".corrupt-*"));
+        Assert.True(_storage.Exists());
+
+        // Con el camino despejado, el siguiente arranque persiste la migración.
+        var reloaded = _storage.Load();
+        Assert.NotNull(reloaded);
+        string jsonOnDisk = File.ReadAllText(_testFilePath);
+        Assert.Contains("ProfileVersion", jsonOnDisk);
+    }
+
+    [Fact]
+    public void ConcurrentSavesAndLoadsAndDelete_NeverQuarantineAValidProfile()
+    {
+        var storage = new ProfileStorageService(_testFilePath);
+        const int workers = 4;
+        const int iterations = 25;
+        var failures = new System.Collections.Concurrent.ConcurrentQueue<Exception>();
+
+        void SaveLoop(int workerIndex)
+        {
+            try
+            {
+                for (int i = 0; i < iterations; i++)
+                {
+                    storage.Save(new UserProfile
+                    {
+                        Name = $"Paola {workerIndex}-{i}",
+                        Age = 6 + (i % 5)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                failures.Enqueue(ex);
+            }
+        }
+
+        void LoadLoop()
+        {
+            try
+            {
+                for (int i = 0; i < iterations; i++)
+                {
+                    if (storage.Exists())
+                    {
+                        storage.Load();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                failures.Enqueue(ex);
+            }
+        }
+
+        void DeleteLoop()
+        {
+            try
+            {
+                for (int i = 0; i < iterations; i++)
+                {
+                    storage.Delete();
+                }
+            }
+            catch (Exception ex)
+            {
+                failures.Enqueue(ex);
+            }
+        }
+
+        var threads = new List<Thread>();
+        for (int w = 0; w < workers; w++)
+        {
+            threads.Add(new Thread(() => SaveLoop(w)));
+        }
+        threads.Add(new Thread(LoadLoop));
+        threads.Add(new Thread(DeleteLoop));
+
+        foreach (var thread in threads)
+        {
+            thread.Start();
+        }
+        foreach (var thread in threads)
+        {
+            thread.Join();
+        }
+
+        Assert.True(failures.IsEmpty, "Las operaciones concurrentes nunca deben lanzar: " +
+            string.Join("; ", failures.Select(f => f.Message)));
+        Assert.Empty(Directory.GetFiles(Path.GetTempPath(), Path.GetFileName(_testFilePath) + ".corrupt-*"));
+
+        // El estado final es consistente: si hay archivo, es un perfil
+        // válido deserializable (nunca JSON corrupto).
+        if (storage.Exists())
+        {
+            var finalProfile = storage.Load();
+            Assert.NotNull(finalProfile);
+        }
+    }
+
+    [Fact]
     public void MigrateLegacyProfile_IsIdempotent_SecondCallLeavesProfileUnchanged()
     {
         var profile = new UserProfile

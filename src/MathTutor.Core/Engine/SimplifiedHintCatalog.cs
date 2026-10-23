@@ -78,8 +78,8 @@ public static class SimplifiedHintCatalog
             "¡Perfecto! Partir el número en partes pequeñas hace la multiplicación más fácil: después se junta todo."),
         [GamePlayType.MixedFractions] = new(
             "Cada entero son pedazos completos y además hay un pedacito suelto.",
-            "Cada entero son dos medios. Cuenta cuántos medios se acumulan en total.",
-            "¡Excelente! El número mixto significa un entero más un pedacito: los medios se juntan como fracción."),
+            "Divide cada entero en las mismas partes que indica el número de abajo de la fracción y cuenta todas las partes iguales: enteros por el número de abajo, más las partes extra.",
+            "¡Excelente! El número mixto significa un entero más un pedacito: junta todas las partes iguales en una sola fracción."),
         [GamePlayType.DecimalsMoney] = new(
             "Piensa en monedas: la de peso entero vale 100 centavos y la de medio vale 50 centavos.",
             "Empieza por los pesos enteros y luego suma las monedas pequeñas.",

@@ -713,7 +713,7 @@ public class CurriculumService
             TargetAgeMax = 8,
             Level = AcademicLevel.EarlyElementary,
             ExpectedResult = 6,
-            StandardInstruction = "El tren de la Aldea transporta 6 tesoros repartidos en tres vagones: 2 en el vagon 1, 3 en el vagon 2 y 1 en el vagon 3. La locomotora prueba dos maneras de agrupar: primero une el vagon 1 con el 2 (2 + 3 = 5) y después agrega el vagon 3: 5 + 1 = 6. Luego prueba agrupando el vagon 2 con el 3 (3 + 1 = 4) y después une el vagon 1: 2 + 4 = 6. ¿Cuántos tesoros lleva el tren en total?",
+            StandardInstruction = "El tren de la Aldea transporta 6 tesoros repartidos en tres vagones: 2 en el vagón 1, 3 en el vagón 2 y 1 en el vagón 3. La locomotora prueba dos maneras de agrupar: primero une el vagón 1 con el 2 (2 + 3 = 5) y después agrega el vagón 3: 5 + 1 = 6. Luego prueba agrupando el vagón 2 con el 3 (3 + 1 = 4) y después une el vagón 1: 2 + 4 = 6. ¿Cuántos tesoros lleva el tren en total?",
             SimplifiedInstruction = "En el tren hay vagones con 2, 3 y 1 tesoros. Primero suma dos de los vagones y luego el tercero: 2 + 3 + 1. ¿Cuántos tesoros hay en total?",
             ScreenReaderDescription = "Tren con tres vagones: vagón 1 con 2 tesoros, vagón 2 con 3 tesoros y vagón 3 con 1 tesoro. Agrupa los tesoros de dos maneras distintas y compara los resultados.",
             FirstHint = "Elige una pareja de vagones para empezar: 2 + 3 = 5. Ahora suma el último vagón: 5 + 1.",
@@ -721,13 +721,14 @@ public class CurriculumService
             ExplanationOfSuccess = "¡Estupendo! Cambiar la manera de agrupar los sumandos no cambia el total: (2 + 3) + 1 = 2 + (3 + 1) = 6. ¡Esa es la Propiedad Asociativa, el superpoder de los vagones del tren!"
         };
 
-        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "w1a", Name = "Tesoro 1 del vagon 1", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 1 del vagon 1", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
-        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "w1b", Name = "Tesoro 2 del vagon 1", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 2 del vagon 1", OrderIndex = 2, MusicalPitchHz = Frequencies[1] });
-        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2a", Name = "Tesoro 1 del vagon 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 1 del vagon 2", OrderIndex = 3, MusicalPitchHz = Frequencies[2] });
-        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2b", Name = "Tesoro 2 del vagon 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 2 del vagon 2", OrderIndex = 4, MusicalPitchHz = Frequencies[3] });
-        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2c", Name = "Tesoro 3 del vagon 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 3 del vagon 2", OrderIndex = 5, MusicalPitchHz = Frequencies[4] });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "w1a", Name = "Tesoro 1 del vagón 1", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 1 del vagón 1", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "w1b", Name = "Tesoro 2 del vagón 1", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 2 del vagón 1", OrderIndex = 2, MusicalPitchHz = Frequencies[1] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2a", Name = "Tesoro 1 del vagón 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 1 del vagón 2", OrderIndex = 3, MusicalPitchHz = Frequencies[2] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2b", Name = "Tesoro 2 del vagón 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 2 del vagón 2", OrderIndex = 4, MusicalPitchHz = Frequencies[3] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2c", Name = "Tesoro 3 del vagón 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 3 del vagón 2", OrderIndex = 5, MusicalPitchHz = Frequencies[4] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w3a", Name = "Tesoro del vagón 3", EmojiSymbol = "💎", AccessibleDescription = "Tesoro del vagón 3", OrderIndex = 6, MusicalPitchHz = Frequencies[5] });
 
-        ex4.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 tesoros", Value = 5, IsCorrect = false, SpeechFeedback = "5 es solo la primera agrupación (2 + 3); falta sumar el vagon con 1 tesoro.", AccessibleKeyShortcut = "1" });
+        ex4.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 tesoros", Value = 5, IsCorrect = false, SpeechFeedback = "5 es solo la primera agrupación (2 + 3); falta sumar el vagón con 1 tesoro.", AccessibleKeyShortcut = "1" });
         ex4.Options.Add(new ExerciseOption { Id = "opt2", Label = "6 tesoros", Value = 6, IsCorrect = true, SpeechFeedback = "¡Exacto! 2 + 3 + 1 son 6 tesoros, sin importar cómo agrupes.", AccessibleKeyShortcut = "2" });
         ex4.Options.Add(new ExerciseOption { Id = "opt3", Label = "7 tesoros", Value = 7, IsCorrect = false, SpeechFeedback = "Contamos un tesoro de más; revisa los vagones: 2, 3 y 1.", AccessibleKeyShortcut = "3" });
 
@@ -777,6 +778,11 @@ public class CurriculumService
             SecondHintDetailed = "5 patitos menos 2 patitos es igual a 3 patitos.",
             ExplanationOfSuccess = "¡Brillante! 5 - 2 = 3. Al quitar o separar una parte de la colección, descubrimos cuántos quedan."
         };
+
+        for (int i = 0; i < 5; i++)
+        {
+            ex1.ItemsGroupA.Add(new ManipulableItem { Id = $"p{i + 1}", Name = $"Patito {i + 1}", EmojiSymbol = "🦆", AccessibleDescription = $"Patito nadando número {i + 1}", OrderIndex = i + 1, MusicalPitchHz = Frequencies[i] });
+        }
 
         ex1.Options.Add(new ExerciseOption { Id = "opt1", Label = "2 patitos", Value = 2, IsCorrect = false, SpeechFeedback = "2 son los que se fueron a dormir.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt2", Label = "3 patitos", Value = 3, IsCorrect = true, SpeechFeedback = "¡Magnífico! Quedan 3 patitos nadando en el agua.", AccessibleKeyShortcut = "2" });
@@ -1566,7 +1572,7 @@ public class CurriculumService
             Title = "La Tiendita y la Recta Numérica: Números con Signo",
             Level = AcademicLevel.SecondaryFirstGrade,
             CharacterName = "Cosmo el Búho Sabio",
-            NarrativeIntro = "¡Bienvenido a 1º de Secundaria! En la vida cotidiana no todos los números son positivos: en la tiendita cuando pedimos fiado tenemos una deuda (saldo negativo), y en invierno la temperatura en la sierra baja a grados bajo cero. Los números enteros con signo (+ y -) nos permiten calcular ganancias, pérdidas y balances exactos.",
+            NarrativeIntro = "¡Bienvenido a 1º de Secundaria! En la vida cotidiana no todos los números son positivos: en la tiendita cuando pedimos fiado tenemos una deuda (saldo negativo), y en invierno la temperatura en la sierra puede quedar en grados bajo cero. Los números enteros con signo (+ y -) nos permiten calcular ganancias, pérdidas y balances exactos.",
             NarrativeIntroSimplified = "Los números con signo nos ayudan a contar deudas (-) y dinero que tenemos (+).",
             CoreConceptExplanation = "El conjunto de los números enteros (Z) incluye los positivos, el cero y los negativos. En una suma (+a) + (-b), si el número negativo tiene mayor valor absoluto, el resultado final es negativo: representa una deuda o déficit.",
             CoreConceptSimplified = "Si tienes 5 pesos pero debes 8 pesos, pagas tus 5 y todavía quedas debiendo 3 (-3).",
@@ -2947,8 +2953,8 @@ public class CurriculumService
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "En Secundaria y Preparatoria aprendiste que una función matemática f(x) = 2x + 3 transforma una entrada x en una salida. ¡En programación una 'función' es exactamente eso! Es un bloque de código con nombre propio que recibe datos de entrada (parámetros), los procesa y devuelve un resultado con la instrucción RETORNAR (return).",
             NarrativeIntroSimplified = "Una función de código es como una máquina con nombre: le das un número de entrada (parámetro), hace el cálculo y te devuelve (return) el resultado.",
-            CoreConceptExplanation = "Las funciones evitan repetir código y hacen los programas limpios y modulares. Al definir 'FUNCION calcularVolumen(nivel) { RETORNAR (3 * nivel) + 2 }', 'nivel' es el parámetro de entrada. Cuando llamamos a 'calcularVolumen(4)', el parámetro toma el valor 4, calcula (3 × 4) + 2 y retorna 14.",
-            CoreConceptSimplified = "En 'FUNCION calcularVolumen(nivel) { RETORNAR 3 * nivel + 2 }', si llamamos a calcularVolumen(4), calcula 3 × 4 + 2 = 14.",
+            CoreConceptExplanation = "Las funciones evitan repetir código y hacen los programas limpios y modulares. Al definir 'FUNCION calcularDecibeles(nivel) { RETORNAR (3 * nivel) + 2 }', 'nivel' es el parámetro de entrada. Cuando llamamos a 'calcularDecibeles(4)', el parámetro toma el valor 4, calcula (3 × 4) + 2 y retorna 14.",
+            CoreConceptSimplified = "En 'FUNCION calcularDecibeles(nivel) { RETORNAR 3 * nivel + 2 }', si llamamos a calcularDecibeles(4), calcula 3 × 4 + 2 = 14.",
             PrinciplesAddressed = new List<string>
             {
                 "Conexión directa entre funciones algebraicas f(x) y funciones en programación",
@@ -2961,26 +2967,26 @@ public class CurriculumService
         var ex1 = new Exercise
         {
             Id = "prog_func_ex_01",
-            Title = "Llamando a la Función: calcularVolumen(4)",
+            Title = "Llamando a la Función: calcularDecibeles(4)",
             GameType = GamePlayType.ProgrammingFunctionsReturn,
             TargetAgeMin = 10,
             TargetAgeMax = 18,
             Level = AcademicLevel.ProgrammingFoundations,
             ExpectedResult = 14,
-            StandardInstruction = "En el módulo de audio accesible programamos esta función reutilizable:\n• FUNCION calcularVolumen(nivel) { RETORNAR (3 * nivel) + 2 }\nSi el programa principal invoca la función pasándole el argumento 4: calcularVolumen(4), ¿qué valor numérico retorna (return) la función?",
-            SimplifiedInstruction = "La función 'calcularVolumen' multiplica el número de entrada por 3 y luego suma 2. Si entra el 4, ¿cuánto es (3 × 4) + 2?",
-            ScreenReaderDescription = "Función calcularVolumen con parámetro nivel: retorna 3 por nivel más 2. Evaluar calcularVolumen con argumento 4.",
+            StandardInstruction = "En el módulo de audio accesible programamos esta función reutilizable:\n• FUNCION calcularDecibeles(nivel) { RETORNAR (3 * nivel) + 2 }\nSi el programa principal invoca la función pasándole el argumento 4: calcularDecibeles(4), ¿qué valor numérico retorna (return) la función?",
+            SimplifiedInstruction = "La función 'calcularDecibeles' multiplica el número de entrada por 3 y luego suma 2. Si entra el 4, ¿cuánto es (3 × 4) + 2?",
+            ScreenReaderDescription = "Función calcularDecibeles con parámetro nivel: retorna 3 por nivel más 2. Evaluar calcularDecibeles con argumento 4.",
             FirstHint = "Sustituye el parámetro 'nivel' por el argumento 4: primero multiplica 3 × 4 = 12.",
             SecondHintDetailed = "Ahora súmale 2 al producto: 12 + 2 = 14 decibeles. Ese es el valor que retorna la función.",
-            ExplanationOfSuccess = "¡Magnífico! Al llamar a calcularVolumen(4), el parámetro 'nivel' recibió 4, evaluó (3 × 4) + 2 = 14 y retornó 14 decibeles."
+            ExplanationOfSuccess = "¡Magnífico! Al llamar a calcularDecibeles(4), el parámetro 'nivel' recibió 4, evaluó (3 × 4) + 2 = 14 y retornó 14 decibeles."
         };
 
         ex1.ItemsGroupA.Add(new ManipulableItem
         {
             Id = "func_call_item",
-            Name = "calcularVolumen(4) → return 14",
+            Name = "calcularDecibeles(4) → return 14",
             EmojiSymbol = "⚙️",
-            AccessibleDescription = "Función calcularVolumen: recibe entrada 4, calcula 3 por 4 más 2 y retorna 14",
+            AccessibleDescription = "Función calcularDecibeles: recibe entrada 4, calcula 3 por 4 más 2 y retorna 14",
             OrderIndex = 1,
             MusicalPitchHz = Frequencies[7]
         });

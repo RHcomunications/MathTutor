@@ -33,6 +33,7 @@ public static class AudioSynthesizer
     public static byte[] GetItemCueWav(ManipulableItem item)
     {
         int frequency = Math.Clamp(item.MusicalPitchHz, 120, 1200);
+        int drumPitch = Math.Clamp(frequency, 110, 220);
         return item.SoundKind switch
         {
             ManipulableSoundKind.Bell => GetFromCache($"bell|{frequency}", () => SynthesizeTimbre(
@@ -40,9 +41,9 @@ public static class AudioSynthesizer
                 t => Math.Sin(2 * Math.PI * frequency * t) +
                      0.45 * Math.Sin(2 * Math.PI * frequency * 2.4 * t),
                 2.2)),
-            ManipulableSoundKind.Drum => GetFromCache($"drum|{frequency}", () => SynthesizeTimbre(
-                Math.Clamp(frequency, 110, 220), 220, 0.5,
-                t => Math.Sin(2 * Math.PI * (frequency + 40 * Math.Exp(-t * 28)) * t),
+            ManipulableSoundKind.Drum => GetFromCache($"drum|{drumPitch}", () => SynthesizeTimbre(
+                drumPitch, 220, 0.5,
+                t => Math.Sin(2 * Math.PI * (drumPitch + 40 * Math.Exp(-t * 28)) * t),
                 4.5)),
             ManipulableSoundKind.Flute => GetFromCache($"flute|{frequency}", () => SynthesizeTimbre(
                 frequency, 480, 0.28,

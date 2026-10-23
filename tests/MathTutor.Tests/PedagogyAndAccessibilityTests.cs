@@ -44,6 +44,13 @@ public class PedagogyAndAccessibilityTests
 
         Assert.NotNull(subTopic);
         Assert.Contains(subTopic.PrinciplesAddressed, p => p.Contains("inversa"));
+
+        // El primer reto narra 5 patitos: la escena debe tener los 5 objetos
+        // contables que el lector de pantalla describe.
+        var takeAway = subTopic.Exercises.Find(e => e.Id == "sub_ex_01");
+        Assert.NotNull(takeAway);
+        Assert.Equal(5, takeAway.ItemsGroupA.Count + takeAway.ItemsGroupB.Count);
+        Assert.Equal(3, takeAway.ExpectedResult);
     }
 
     [Fact]
@@ -1151,8 +1158,10 @@ public class PedagogyAndAccessibilityTests
         Assert.Single(correctOptions);
         Assert.Equal(6, correctOptions[0].Value);
 
-        // Coherencia sensorial: los 2 + 3 tesoros del primer agrupamiento
-        Assert.Equal(5, associative.ItemsGroupA.Count + associative.ItemsGroupB.Count);
+        // Coherencia sensorial: los 2 + 3 + 1 tesoros de los tres vagones
+        Assert.Equal(6, associative.ItemsGroupA.Count + associative.ItemsGroupB.Count);
+        Assert.Contains(associative.ItemsGroupA.Concat(associative.ItemsGroupB),
+            i => i.Id == "w3a");
         Assert.All(associative.ItemsGroupA.Concat(associative.ItemsGroupB),
             i => Assert.False(string.IsNullOrWhiteSpace(i.AccessibleDescription)));
     }

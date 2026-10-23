@@ -225,16 +225,36 @@ public class AdaptiveEngine
         if (profile.Preferences.ReduceOptionsCount || profile.HasDisability(DisabilityType.Intellectual))
         {
             var correct = exercise.Options.FirstOrDefault(o => o.IsCorrect);
-            var distractor = exercise.Options.FirstOrDefault(o => !o.IsCorrect);
-
-            var reduced = exercise.Options
-                .Where(o => ReferenceEquals(o, correct) || ReferenceEquals(o, distractor))
-                .ToList();
-
-            // Reasignar atajos de teclado numéricos limpios (1 y 2)
-            for (int i = 0; i < reduced.Count; i++)
+            if (correct is null)
             {
-                reduced[i].AccessibleKeyShortcut = (i + 1).ToString();
+                return exercise.Options;
+            }
+
+            // El distractor más cercano al resultado es el más informativo
+            // (obliga a discriminar) y evita que la opción reducida sea siempre
+            // la primera de la lista original.
+            var distractor = exercise.Options
+                .Where(o => !o.IsCorrect)
+                .OrderBy(o => Math.Abs(o.Value - correct.Value))
+                .FirstOrDefault();
+
+            var reduced = new List<ExerciseOption>(2);
+            foreach (var source in exercise.Options
+                .Where(o => ReferenceEquals(o, correct) || ReferenceEquals(o, distractor)))
+            {
+                // Copia: los atajos limpios (1 y 2) no deben mutar las opciones
+                // del ejercicio compartido; se conserva el orden original para
+                // no revelar la posición de la respuesta correcta.
+                reduced.Add(new ExerciseOption
+                {
+                    Id = source.Id,
+                    Label = source.Label,
+                    Value = source.Value,
+                    IsCorrect = source.IsCorrect,
+                    SpeechFeedback = source.SpeechFeedback,
+                    AccessibleDescription = source.AccessibleDescription,
+                    AccessibleKeyShortcut = (reduced.Count + 1).ToString()
+                });
             }
 
             return reduced;

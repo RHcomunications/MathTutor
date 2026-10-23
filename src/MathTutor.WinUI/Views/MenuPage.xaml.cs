@@ -50,10 +50,10 @@ public sealed partial class MenuPage : Page
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        RefreshData();
+        RefreshData(announceWelcome: true);
     }
 
-    public void RefreshData()
+    public void RefreshData(bool announceWelcome = true)
     {
         var profile = _acc.CurrentProfile;
 
@@ -132,6 +132,7 @@ public sealed partial class MenuPage : Page
         }
 
         ItemsTopics.ItemsSource = displayList;
+        TxtEmptyMissions.Visibility = displayList.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
         if (displayList.Count > 0)
         {
@@ -144,6 +145,13 @@ public sealed partial class MenuPage : Page
         DispatcherQueue.TryEnqueue(FocusFirstMissionItem);
 
         int completedCount = allowedTopics.Count(t => profile.CompletedLessonIds.Contains(t.Id));
+        if (!announceWelcome)
+        {
+            // Vuelta implícita al menú (botón de navegación): la locución
+            // larga de bienvenida solo ocurre al llegar de verdad al menú.
+            return;
+        }
+
         _acc.Announce(
             $"Bienvenido a MathTutor, {profile.Name}. Menú de misiones para {GetAcademicLevelName(profile.CurrentLevel)}. " +
             $"Tienes {profile.StarsTotal} estrellas y {completedCount} de {allowedTopics.Count} misiones completadas. " +

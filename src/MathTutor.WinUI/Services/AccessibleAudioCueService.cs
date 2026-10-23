@@ -76,6 +76,11 @@ public class AccessibleAudioCueService
     public void PlayItemSequence(IReadOnlyList<ManipulableItem> items, int startDelayMs = 0)
     {
         if (!_enabled || !_musicEnabled || items is null || items.Count == 0) return;
+
+        // Una secuencia debe escucharse completa: se descarta lo encolado antes
+        // (incluida una secuencia previa) para no desincronizar el patrón.
+        ClearPendingCues();
+
         if (startDelayMs > 0)
         {
             Enqueue(new CueSpec(SilenceWav(Math.Min(startDelayMs, 3000)), gapMs: 0));

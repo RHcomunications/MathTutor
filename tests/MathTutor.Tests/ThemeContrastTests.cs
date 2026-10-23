@@ -6,12 +6,16 @@ namespace MathTutor.Tests;
 public class ThemeContrastTests
 {
     // Texto base de lectura (párrafos y texto secundario) se exige WCAG AAA (7:1,
-    // 2.2 H. 64 AAA). Los pares OnAccent/OnSuccess son texto grueso sobre botones
-    // y chips de color, que conservan el mínimo AA grande (4.5:1).
+    // 2.2 H. 64 AAA). El acento también se usa como texto (progreso, estado de
+    // nivel) y por eso cumple AAA sobre fondo y tarjeta. Los pares
+    // OnAccent/OnSuccess son texto grueso sobre botones y chips de color, que
+    // conservan el mínimo AA grande (4.5:1).
     [Theory]
     [InlineData("DefaultPlayful", "AppTextPrimaryBrush", "AppBackgroundBrush", 7.0)]
     [InlineData("DefaultPlayful", "AppTextPrimaryBrush", "AppCardBrush", 7.0)]
     [InlineData("DefaultPlayful", "AppTextSecondaryBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("DefaultPlayful", "AppAccentBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("DefaultPlayful", "AppAccentBrush", "AppCardBrush", 7.0)]
     [InlineData("DefaultPlayful", "AppOnAccentBrush", "AppAccentBrush", 4.5)]
     [InlineData("DefaultPlayful", "AppOnSuccessBrush", "AppSuccessBrush", 4.5)]
     [InlineData("DefaultPlayful", "AppErrorBrush", "AppBackgroundBrush", 7.0)]
@@ -20,6 +24,8 @@ public class ThemeContrastTests
     [InlineData("HighContrastDark", "AppTextPrimaryBrush", "AppBackgroundBrush", 7.0)]
     [InlineData("HighContrastDark", "AppTextPrimaryBrush", "AppCardBrush", 7.0)]
     [InlineData("HighContrastDark", "AppTextSecondaryBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("HighContrastDark", "AppAccentBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("HighContrastDark", "AppAccentBrush", "AppCardBrush", 7.0)]
     [InlineData("HighContrastDark", "AppOnAccentBrush", "AppAccentBrush", 4.5)]
     [InlineData("HighContrastDark", "AppOnSuccessBrush", "AppSuccessBrush", 4.5)]
     [InlineData("HighContrastDark", "AppErrorBrush", "AppBackgroundBrush", 7.0)]
@@ -28,6 +34,8 @@ public class ThemeContrastTests
     [InlineData("HighContrastLight", "AppTextPrimaryBrush", "AppBackgroundBrush", 7.0)]
     [InlineData("HighContrastLight", "AppTextPrimaryBrush", "AppCardBrush", 7.0)]
     [InlineData("HighContrastLight", "AppTextSecondaryBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("HighContrastLight", "AppAccentBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("HighContrastLight", "AppAccentBrush", "AppCardBrush", 7.0)]
     [InlineData("HighContrastLight", "AppOnAccentBrush", "AppAccentBrush", 4.5)]
     [InlineData("HighContrastLight", "AppOnSuccessBrush", "AppSuccessBrush", 4.5)]
     [InlineData("HighContrastLight", "AppErrorBrush", "AppBackgroundBrush", 7.0)]
@@ -36,6 +44,8 @@ public class ThemeContrastTests
     [InlineData("LowSensory", "AppTextPrimaryBrush", "AppBackgroundBrush", 7.0)]
     [InlineData("LowSensory", "AppTextPrimaryBrush", "AppCardBrush", 7.0)]
     [InlineData("LowSensory", "AppTextSecondaryBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("LowSensory", "AppAccentBrush", "AppBackgroundBrush", 7.0)]
+    [InlineData("LowSensory", "AppAccentBrush", "AppCardBrush", 7.0)]
     [InlineData("LowSensory", "AppOnAccentBrush", "AppAccentBrush", 4.5)]
     [InlineData("LowSensory", "AppOnSuccessBrush", "AppSuccessBrush", 4.5)]
     [InlineData("LowSensory", "AppErrorBrush", "AppBackgroundBrush", 7.0)]

@@ -1069,7 +1069,7 @@ public class ExerciseGeneratorTests
                 Assert.Equal(ex.Options.Select(o => o.Value).Count(), ex.Options.Select(o => o.Value).Distinct().Count());
                 Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == correct);
                 // El rango es un límite heurístico: cuando solo caben dos opciones posibles
-                // dentro del rango, el respaldo determinista expande hacia valores mayores.
+                // dentro del rango, el respaldo determinista expande alternando lados.
                 int poolSize = Math.Max(max, correct) - Math.Min(min, correct) + 1;
                 if (poolSize - 1 >= 2)
                 {
@@ -1098,6 +1098,53 @@ public class ExerciseGeneratorTests
         }
 
         Assert.True(distractorSets.Count >= 6, $"Solo {distractorSets.Count} combinaciones de distractores distintas en 60 semillas.");
+    }
+
+    [Fact]
+    public void BuildOptions_DegenerateRange_ExpandsOnBothSides()
+    {
+        var buildOptions = GetBuildOptionsAccessor();
+        var rng = new Random(3);
+
+        // Rango con solo dos opciones posibles: el respaldo no debe sesgar
+        // todos los distractores hacia arriba.
+        var ex = new Exercise { Id = "deg", ExpectedResult = 1 };
+        buildOptions.Invoke(null, new object?[] { ex, 1, 1, 2, "", rng });
+        var values = ex.Options.Select(o => o.Value).OrderBy(v => v).ToList();
+        Assert.Equal(new[] { 0, 1, 2 }, values);
+
+        // Resultado negativo sin espacio en el rango: también alterna lados.
+        var neg = new Exercise { Id = "neg", ExpectedResult = -3 };
+        buildOptions.Invoke(null, new object?[] { neg, -3, -3, -3, "", rng });
+        var negValues = neg.Options.Select(o => o.Value).OrderBy(v => v).ToList();
+        Assert.Contains(-4, negValues);
+        Assert.Contains(-3, negValues);
+        Assert.Contains(-2, negValues);
+    }
+
+    [Fact]
+    public void GetAdaptedOptions_ReducesToClosestDistractor_WithoutMutatingSource()
+    {
+        var profile = new UserProfile { Age = 7, Disability = DisabilityType.Intellectual };
+        var exercise = new Exercise { Id = "red" };
+        exercise.Options.Add(new ExerciseOption { Id = "a", Value = 9, IsCorrect = false, AccessibleKeyShortcut = "1" });
+        exercise.Options.Add(new ExerciseOption { Id = "b", Value = 6, IsCorrect = true, AccessibleKeyShortcut = "2" });
+        exercise.Options.Add(new ExerciseOption { Id = "c", Value = 12, IsCorrect = false, AccessibleKeyShortcut = "3" });
+
+        var reduced = _adaptive.GetAdaptedOptions(exercise, profile);
+
+        Assert.Equal(2, reduced.Count);
+        Assert.Contains(reduced, o => o.IsCorrect && o.Value == 6);
+        // 9 está más cerca de 6 que 12: se conserva el distractor más informativo.
+        Assert.Contains(reduced, o => !o.IsCorrect && o.Value == 9);
+        Assert.Equal(new[] { "1", "2" }, reduced.Select(o => o.AccessibleKeyShortcut).ToArray());
+
+        // Las opciones originales del ejercicio compartido no se mutan.
+        Assert.Equal("1", exercise.Options[0].AccessibleKeyShortcut);
+        Assert.Equal("2", exercise.Options[1].AccessibleKeyShortcut);
+        Assert.Equal("3", exercise.Options[2].AccessibleKeyShortcut);
+        Assert.NotSame(reduced[0], exercise.Options[0]);
+        Assert.NotSame(reduced[1], exercise.Options[1]);
     }
 
     [Fact]

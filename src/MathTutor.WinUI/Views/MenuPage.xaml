@@ -168,5 +168,15 @@
                 </Border>
             </DataTemplate>
         </ListView.ItemTemplate>
+
+        <ListView.Footer>
+            <TextBlock x:Name="TxtEmptyMissions"
+                       Text="Todavía no hay misiones para esta edad. Cambia la edad en tu perfil para descubrir nuevas aventuras."
+                       FontSize="{ThemeResource AppSubHeaderFontSize}"
+                       Foreground="{ThemeResource AppTextSecondaryBrush}"
+                       Margin="4,8,0,24"
+                       TextWrapping="Wrap"
+                       Visibility="Collapsed" />
+        </ListView.Footer>
     </ListView>
 </Page>

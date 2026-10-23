@@ -178,6 +178,13 @@ public class AccessibilityManager
         CurrentProfile.Preferences.EnableVoiceSynthesis = IsInternalAudioEnabled;
         Audio.Enabled = IsInternalAudioEnabled;
 
+        // Persistir como el resto de preferencias (F3/F4), solo cuando ya
+        // existe un perfil guardado (guardar antes rompería el onboarding).
+        if (Storage.Exists())
+        {
+            SaveCurrentProfile();
+        }
+
         string status = IsInternalAudioEnabled ? "activado" : "desactivado";
         AnnounceAssertive($"Audio interno del juego {status}.");
     }
@@ -282,13 +289,13 @@ public class AccessibilityManager
                 SetResource("AppCardBrush", new SolidColorBrush(Rgb(230, 238, 245)));
                 SetResource("AppTextPrimaryBrush", new SolidColorBrush(Rgb(28, 43, 62)));
                 SetResource("AppTextSecondaryBrush", new SolidColorBrush(Rgb(55, 75, 100)));
-                SetResource("AppAccentBrush", new SolidColorBrush(Rgb(70, 130, 180)));
+                SetResource("AppAccentBrush", new SolidColorBrush(Rgb(30, 80, 120))); // ≥ 7:1 sobre fondo y tarjeta (AAA)
                 SetResource("AppFocusBorderBrush", new SolidColorBrush(Rgb(180, 83, 9)));
                 SetResource("FocusVisualPrimaryBrush", new SolidColorBrush(Rgb(0, 0, 0)));
                 SetResource("FocusVisualSecondaryBrush", new SolidColorBrush(Rgb(255, 255, 255)));
                 SetResource("AppBorderBrush", new SolidColorBrush(Rgb(102, 132, 160)));
                 SetResource("AppSuccessBrush", new SolidColorBrush(Rgb(46, 139, 87)));
-                SetResource("AppOnAccentBrush", new SolidColorBrush(Rgb(0, 0, 0)));
+                SetResource("AppOnAccentBrush", new SolidColorBrush(Rgb(255, 255, 255)));
                 SetResource("AppOnSuccessBrush", new SolidColorBrush(Rgb(0, 0, 0)));
                 SetResource("AppErrorBrush", new SolidColorBrush(Rgb(150, 0, 0)));
                 break;
@@ -301,7 +308,7 @@ public class AccessibilityManager
                 SetResource("AppCardBrush", new SolidColorBrush(Rgb(240, 243, 250)));
                 SetResource("AppTextPrimaryBrush", new SolidColorBrush(Rgb(20, 25, 45)));
                 SetResource("AppTextSecondaryBrush", new SolidColorBrush(Rgb(60, 70, 95)));
-                SetResource("AppAccentBrush", new SolidColorBrush(Rgb(90, 60, 220)));
+                SetResource("AppAccentBrush", new SolidColorBrush(Rgb(70, 45, 180))); // ≥ 7:1 sobre fondo y tarjeta (AAA)
                 SetResource("AppFocusBorderBrush", new SolidColorBrush(Rgb(194, 65, 12)));
                 SetResource("FocusVisualPrimaryBrush", new SolidColorBrush(Rgb(0, 0, 0)));
                 SetResource("FocusVisualSecondaryBrush", new SolidColorBrush(Rgb(255, 255, 255)));

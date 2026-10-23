@@ -138,34 +138,50 @@ public class ProfileStorageService
             return null;
         }
 
+        UserProfile? profile;
         try
         {
-            if (JsonSerializer.Deserialize<UserProfile>(json, JsonOptions)
-                    is not UserProfile profile)
-            {
-                // JSON válido que no representa un objeto de perfil (p. ej. un array).
-                QuarantineCorruptProfile(DefaultFilePath);
-                return null;
-            }
-
-            bool needsPersistence = !hasProfileVersion ||
-                profile.ProfileVersion < UserProfile.CurrentProfileVersion;
-
-            MigrateLegacyProfile(profile, legacySeverity, force: !hasProfileVersion);
-
-            if (needsPersistence)
-            {
-                // Persistir la migración para que no se repita en cada arranque.
-                Save(profile);
-            }
-
-            return profile;
+            profile = JsonSerializer.Deserialize<UserProfile>(json, JsonOptions);
         }
-        catch (Exception)
+        catch (JsonException)
         {
             QuarantineCorruptProfile(DefaultFilePath);
             return null;
         }
+
+        // JSON válido que no representa un objeto de perfil (p. ej. un array
+        // o el literal null).
+        if (profile is null)
+        {
+            QuarantineCorruptProfile(DefaultFilePath);
+            return null;
+        }
+
+        bool needsPersistence = !hasProfileVersion ||
+            profile.ProfileVersion < UserProfile.CurrentProfileVersion;
+
+        MigrateLegacyProfile(profile, legacySeverity, force: !hasProfileVersion);
+
+        if (needsPersistence)
+        {
+            // Persistir la migración para que no se repita en cada arranque.
+            // Un fallo transitorio de escritura nunca invalida el perfil: el
+            // objeto en memoria es correcto y la próxima carga reintenta.
+            try
+            {
+                Save(profile);
+            }
+            catch (IOException)
+            {
+                // Disco completo o archivo bloqueado temporalmente.
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Permiso denegado transitorio (p. ej. bloqueo antivirus).
+            }
+        }
+
+        return profile;
     }
 
     private static void QuarantineCorruptProfile(string path)
@@ -292,23 +308,26 @@ public class ProfileStorageService
     /// </summary>
     public bool Delete()
     {
-        if (!File.Exists(DefaultFilePath))
+        lock (FileGate)
         {
-            return false;
-        }
+            if (!File.Exists(DefaultFilePath))
+            {
+                return false;
+            }
 
-        try
-        {
-            File.Delete(DefaultFilePath);
-            return true;
-        }
-        catch (IOException)
-        {
-            return false;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return false;
+            try
+            {
+                File.Delete(DefaultFilePath);
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
     }
 

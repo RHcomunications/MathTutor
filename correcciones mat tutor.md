@@ -627,8 +627,9 @@ y 0 errores. Era progresión: 178 (F1) → 183 (F2) → 189 (F3) → 191 (F4/F5)
 
 ## Fase 4 — UX de Escape, estrellas por lección y refresco de menú
 - **Corrección:** `Escape` unificado con `_missionDialogOpen`: cierra el diálogo de
-  misión sin saltar vistas; "regreso a la lección" sin Escape en `GamePage` vale con
-  `RequestBackToLesson`; "el menú" sucumbe con dedup de acordes (solo `MainWindow`
+  misión sin saltar vistas; el regreso a la lección usa `RequestBackToLesson` y el
+  menú se abre con un único acelerador global en `MainWindow` (sin acordes duplicados
+  que se disparen dos veces)
   suena). Persistencia de mejor calificación por lección:
   `UserProfile.LessonStarRatings[topicId] = max(prev, ganadas)`; diálogos muestran
   "Mejor calificación" al repetir; estrella por `RecordAttempt` del `AdaptiveEngine` otorga
@@ -640,15 +641,15 @@ y 0 errores. Era progresión: 178 (F1) → 183 (F2) → 189 (F3) → 191 (F4/F5)
   `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `src/MathTutor.WinUI/MainWindow.xaml.cs`,
   `src/MathTutor.WinUI/Views/GamePage.xaml.cs`, `src/MathTutor.WinUI/Views/MenuPage.xaml.cs`.
 - **Criterio de verificación:** 2 pruebas (repeticiones sin inflar estrellas; ronda de
-  `LessonStarRatings` trabajo en roundtrip en v3). Comportamiento Escape
+  `LessonStarRatings` sobrevive el roundtrip en v3). Comportamiento de Escape
   verificado en el arranque manual de la app.
 
 ## Fase 5 — Accesibilidad fina (AAA y lanzamientos por lector de pantalla)
 - **Corrección:** Colores subidos a contraste AAA 7:1 en el test de `TextPrimary`, 
-  `TextSecondary` y `AppError` para los 4 temas (en `HC-oscuro` se ajusta el error a
+  `TextSecondary` y `AppError` para los 4 temas (en el tema de alto contraste oscuro se ajusta el error a
   RGB 255,120,120 y en `DefaultPlayful` a RGB 170,0,30); texto en chips/botones
-  (`OnAccent`/`OnSuccess`) se mantiene ≥ 4.5:1. `CycleTheme` evita mintir cuando el
-  Contraste del Sistema de Windows define el appreciate/tema. Atajos de teclado
+  (`OnAccent`/`OnSuccess`) se mantiene ≥ 4.5:1. `CycleTheme` no fuerza un tema cuando el
+  Contraste del Sistema de Windows define la apariencia. Atajos de teclado
   publicados por `AutomationProperties.AcceleratorKey` en `MainWindow.xaml.cs` y
   `trophy` del diálogo misión marcada con la vista de
   accesibilidad `Raw` vía `AutomationProperties.SetAccessibilityView(..., Raw)` (el
@@ -661,19 +662,19 @@ y 0 errores. Era progresión: 178 (F1) → 183 (F2) → 189 (F3) → 191 (F4/F5)
 
 ## Fase 6 — Generador de ejercicios
 - **Corrección:** `BuildOptions` respeta el rango declarado por cada tipo (mínimo/máximo
-  exactos si aplica), ya no da distractores viscosity loyalty triviales (-1/+1/+2) y elige
+  exactos si aplica), ya no da distractores triviales y predecibles (-1/+1/+2) y elige
   distractores cercanos pero aleatorios con `jitter = span/3`; respaldo determinista
   siempre terminante para type ranges con solo 2 opciones posibles (caso fracción 1/2).
   Neutralizadas 21 descripciones `ScreenReaderDescription` que revelaban
-  la respuesta (`Fase 6.1` = 8撰写 en `ExerciseGenerator.cs`; `Fase 6.2` = 13 reescritas en
-  `CurriculumService.cs`: "Total: 6"→ "observa y cuenta…"; "Respuesta: 6 pasos"→
-  "cuenta cuántas veces multiplicas…", etc.).
+  la respuesta (`Fase 6.1` = 8 reescrituras en `ExerciseGenerator.cs`; `Fase 6.2` = 13 reescrituras en
+  `CurriculumService.cs`: "Total: 6" → "observa y cuenta."; "Respuesta: 6 pasos" →
+  "cuenta cuántas veces multiplicas.", etc.).
 - **Ubicación:** `src/MathTutor.Core/Engine/ExerciseGenerator.cs`
   (`BuildOptions`, descripciones), `src/MathTutor.Core/Engine/CurriculumService.cs`.
 - **Criterio de verificación:** 3 pruebas nuevas (`BuildOptions` con 2 rangos degenerados
   producen terminación y 3 opciones únicas; variedad > 6 combinatorias de distractores
   al ampliar semillas; cordura de opciones con 3 desperdicios obligados en retos de
-  todos los temas de curriculum;pecifica). OJO: bug introducido y arreglado en esta fase
+  todos los temas del currículo específico). OJO: bug introducido y arreglado en esta fase
   (fallback con `Clamp` no terminante para `fracciones` con denominador 2); verificado con
   `dotnet-stack`.
 
@@ -690,15 +691,100 @@ y 0 errores. Era progresión: 178 (F1) → 183 (F2) → 189 (F3) → 191 (F4/F5)
 
 ## Fase 8 — Pistas simplificadas en lenguaje sencillo
 - **Corrección:** `SimplifiedHintCatalog` (nuevo en `MathTutor.Core`) con pistas 1 y 2 y
-  explicación de éxito en lenguaje sin tecnicismos para TODOS los 61 tipos de juego; 
+  explicación de éxito en lenguaje sin tecnicismos para TODOS los 52 tipos de juego; 
   `AdaptiveEngine.GetAdaptedHint` y `GetAdaptedSuccess` usan esas variantes como
   respaldo para alumnos con `SimplifyLanguage`/discapacidad intelectual en
   los ~45 temas de secundaria, preparatoria y programación (y jardín/primaria sin texto
   simple propio) cuando el ejercicio no trae variantes simplificadas a mano.
-  Prueba cubre los 61 tipos del catálogo y el fallback en
+  Prueba cubre los 52 tipos del catálogo y el fallback en
   `sec_order_operations_01` con `SimplifyLanguage`.
 - **Ubicación:** `src/MathTutor.Core/Engine/SimplifiedHintCatalog.cs` (nuevo),
   `src/MathTutor.Core/Engine/AdaptiveEngine.cs`,
   `tests/MathTutor.Tests/ExerciseGeneratorTests.cs`.
-- **Criterio de verificación:** cobertura completa del catálogo (61 entradas) y
+- **Criterio de verificación:** cobertura completa del catálogo (52 entradas) y
   fallback comprobado; build 0/0 y 196/196.
+
+## Segunda auditoría integral de remediación (fases 1-7, oct 2026)
+
+Revisión posterior con ojo fresco sobre Core, WinUI y documentación. Suite: 196 → 209.
+
+### Fase 1 - Persistencia y perfil
+- **Corrección:** `ProfileStorageService.LoadCore` limita su `catch` a `JsonException`;
+  la re-escritura de la migración v2→v3 y el `Save` quedan fuera de la cuarentena y
+  capturan `IOException`/`UnauthorizedAccessException`, de modo que un fallo
+  transitorio de disco ya no marca como corrupto un perfil válido. `Delete` se
+  serializa con el mismo `FileGate` que `Save`/`Load`.
+- **Ubicación:** `src/MathTutor.Core/Services/ProfileStorageService.cs`.
+- **Criterio de verificación:** 2 pruebas nuevas (fallo transitorio de persistencia de
+  migración; concurrencia `Save`/`Load`/`Delete` sin cuarentena espuria).
+
+### Fase 2 - Foco, teclado y estrellas
+- **Corrección:** `LessonPage` no intercepta `↑`/`↓`/`Backspace`/`Espacio` cuando el
+  foco está en un `TextBox` (lectura con caret) y se eliminó su `Escape` local (solo
+  queda el acelerador global de `MainWindow`). `GamePage` suma los intentos del último
+  reto antes de calcular estrellas y el reintento anuncia un mensaje breve en lugar de
+  concatenar la pista obsoleta. El F1 del diálogo de misión se unificó en el
+  acelerador global (`_missionDialogMessage`) sin doble anuncio. `MapPage` anuncia
+  "Sendero por desbloquear" y una ayuda coherente para estaciones bloqueadas; menú y
+  mapa muestran estado vacío cuando no hay misiones para la edad; la bienvenida larga
+  solo suena al llegar de verdad al menú. `ToggleSpeech` persiste cuando ya hay perfil.
+- **Ubicación:** `Views/LessonPage.xaml.cs`, `Views/GamePage.xaml.cs`,
+  `Views/MapPage.xaml(.cs)`, `Views/MenuPage.xaml(.cs)`, `MainWindow.xaml.cs`,
+  `Services/AccessibilityManager.cs`.
+- **Criterio de verificación:** build 0/0 y comportamiento revisado en arranque manual.
+
+### Fase 3 - Contenido curricular y recompensas
+- **Corrección:** `add_ex_04` incluye el sexto tesoro (vagón 3) y corrige "vagón";
+  `sub_ex_01` incorpora los 5 patitos manipulables que narra; la pista simplificada de
+  fracciones mixtas ya no asume denominador 2; `calcularVolumen` pasa a
+  `calcularDecibeles` (coherente con su unidad) en el tema curado y en el generador;
+  se aclara la frase de "sierra" en números con signo. `RewardService.GetRealmStations`
+  usa las estrellas reales de `LessonStarRatings` (mínimo 1 para perfiles antiguos sin
+  calificación) en lugar de 3 fijos.
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`,
+  `Engine/ExerciseGenerator.cs`, `Engine/SimplifiedHintCatalog.cs`,
+  `src/MathTutor.Core/Services/RewardService.cs`.
+- **Criterio de verificación:** pruebas de contenido actualizadas (6 ítems en
+  asociativa, 5 patitos en resta, estrellas reales) y 209/209.
+
+### Fase 4 - Generador adaptativo
+- **Corrección:** el respaldo de `BuildOptions` alterna arriba/abajo y siempre termina
+  (sin sesgo en rangos degenerados ni resultados negativos); `GetAdaptedOptions` elige
+  el distractor más cercano al resultado y trabaja sobre copias, preservando el orden
+  relativo y sin mutar las opciones compartidas.
+- **Ubicación:** `src/MathTutor.Core/Engine/ExerciseGenerator.cs`,
+  `src/MathTutor.Core/Engine/AdaptiveEngine.cs`.
+- **Criterio de verificación:** 2 pruebas nuevas (rango degenerado bidireccional;
+  reducción al distractor más cercano sin mutación).
+
+### Fase 5 - Audio y lectores de pantalla
+- **Corrección:** el timbre de tambor aplica de verdad el clamp 110-220 Hz (antes era
+  código muerto); `PlayItemSequence` limpia la cola antes de sonar y
+  `RootFrame.Navigated` limpia las señales pendientes al cambiar de página; el latch de
+  NVDA solo se activa con una locución exitosa (se degrada si el RPC falla) y se
+  reinicia en los `catch`; `Dispose` libera el RCW de JAWS con
+  `Marshal.FinalReleaseComObject` y reinicia los latches.
+- **Ubicación:** `src/MathTutor.Core/Services/AudioSynthesizer.cs`,
+  `src/MathTutor.WinUI/Services/AccessibleAudioCueService.cs`,
+  `src/MathTutor.WinUI/Services/SpeechService.cs`, `MainWindow.xaml.cs`.
+- **Criterio de verificación:** 6 pruebas de síntesis y build 0/0.
+
+### Fase 6 - Contraste AAA
+- **Corrección:** el acento usado como texto cumple AAA 7:1 en los cuatro temas
+  (`LowSensory` RGB 30,80,120 con `OnAccent` blanco; `DefaultPlayful` RGB 70,45,180).
+  La teoría de contraste cubre `AppAccentBrush` sobre fondo y tarjeta.
+- **Ubicación:** `src/MathTutor.WinUI/Services/AccessibilityManager.cs`,
+  `tests/MathTutor.Tests/ThemeContrastTests.cs`.
+- **Criterio de verificación:** 8 casos `InlineData` nuevos (40 en total).
+
+### Fase 7 - Documentación
+- **Corrección:** README y ACR con 209 pruebas; tabla y árbol de pruebas al día
+  (66/71/21/5/6 + 40 casos); `GamePlayType` unificado en 52; `ProfileVersion` v3;
+  eliminada la dependencia inexistente de WebView2; enlaces `file:///` de máquinas
+  ajenas convertidos a rutas relativas; fragmentos corruptos reescritos.
+- **Criterio de verificación:** build 0/0, 209/209, UTF-8 sin BOM y sin U+FFFD.
+
+> **Limitaciones aceptadas:** el "flip" transitorio de tema en `RefreshThemeResources`
+> se conserva (fuerza la re-evaluación de `ThemeResource`; su alternativa requiere
+> prueba visual en dispositivo); las preferencias de tema/fuente elegidas antes de
+> crear el perfil no se persisten (guardarlas antes del onboarding lo saltaría).

@@ -148,6 +148,11 @@ public sealed partial class GamePage : Page
 
         if (_exerciseIndex >= _topic.Exercises.Count)
         {
+            // Los intentos del último reto se contabilizan al iniciar el
+            // siguiente reto; incluirlos aquí ANTES de calificar para que el
+            // esfuerzo de TODOS los retos pese en las estrellas.
+            _attemptSum += _attemptsCount;
+
             // Estrellas por lección: se valora el esfuerzo de TODOS los retos,
             // no únicamente del último reto resuelto
             int earnedStars = _exercisesStarted == 0 || _attemptSum <= _exercisesStarted
@@ -399,7 +404,9 @@ public sealed partial class GamePage : Page
 
         if (_wrongOptions.Contains(option))
         {
-            _acc.AnnounceAssertive($"Ya probaste esta opción. {TxtHintMessage.Text}");
+            // Mensaje dedicado breve: la pista obsoleta multilínea confunde;
+            // se repite la retroalimentación propia de la opción.
+            _acc.AnnounceAssertive($"Ya probaste esta opción. {option.SpeechFeedback}");
             return;
         }
 

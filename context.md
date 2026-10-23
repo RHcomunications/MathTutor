@@ -19,15 +19,18 @@ MathTutor.slnx
 │   ├── Models/
 │   │   ├── Enums.cs               (DisabilityType, AutismSupportLevel, AdhdPresentation, IntellectualSupportLevel, AcademicLevel, RegionalContext, HighContrastTheme, FontSizeLevel, AnswerResult)
 │   │   ├── UserProfile.cs         (AccessibilityPreferences + UserProfile + propiedades culturales LATAM + ApplyRecommendedAccessibilityDefaults)
-│   │   ├── Exercise.cs            (GamePlayType [53 mecánicas], ManipulableItem, ExerciseOption, Exercise)
+│   │   ├── Exercise.cs            (GamePlayType [52 mecánicas], ManipulableItem, ExerciseOption, Exercise)
 │   │   ├── PedagogicalTopic.cs    (Modelo de lección: narrativa, concepto, principios, lista de ejercicios)
-│   │   └── Badge.cs               (Badge y RealmStation para el Mapa del Reino Matemágico)
+│   │   └── Badge.cs               (Badge y RealmStation para el Mapa del Reino Matemático)
 │   ├── Engine/
 │   │   ├── AdaptiveEngine.cs      (Validación Edad vs. Nivel Escolar, adaptación de lenguaje, reducción cognitiva y estrellas/racha)
 │   │   ├── CurriculumService.cs   (Catálogo de las 54 lecciones, filtrado por edad GetTopicsForAge, GetNextTopic y generación adaptativa)
-│   │   └── ExerciseGenerator.cs   (Generador procedimental parametrizado para las 54 estaciones con distractores diagnósticos)
+│   │   ├── ExerciseGenerator.cs   (Generador procedimental parametrizado para las 54 estaciones con distractores diagnósticos)
+│   │   ├── KindergartenCurriculum.cs (10 temas de jardín de niños y 45 ejercicios curados)
+│   │   └── SimplifiedHintCatalog.cs (Pistas 1/2 y éxito en lenguaje simple para cada GamePlayType)
 │   └── Services/
-│       ├── ProfileStorageService.cs (Persistencia JSON en %LocalAppData%/MathTutor/user_profile.json)
+│       ├── ProfileStorageService.cs (Persistencia JSON atómica en %LocalAppData%/MathTutor/user_profile.json)
+│       ├── AudioSynthesizer.cs    (Síntesis procedural WAV PCM determinista con caché acotada)
 │       └── RewardService.cs       (55 insignias y 54 estaciones conectadas al progreso del alumno)
 │
 ├── MathTutor.WinUI (net10.0-windows10.0.19041.0 - Cliente Escritorio WinUI 3 Accesible)
@@ -38,7 +41,7 @@ MathTutor.slnx
 │   ├── Services/
 │   │   ├── AccessibilityManager.cs (Singleton coordinador de perfil, canales F2 vs. lector, temas, escala tipográfica y anuncios)
 │   │   ├── SpeechService.cs       (Puente nativo hacia NVDA Controller Client, JAWS COM API y notificaciones UIA)
-│   │   └── AccessibleAudioCueService.cs (Sintetizador procedural PCM en memoria: notas, éxito, error y navegación)
+│   │   └── AccessibleAudioCueService.cs (Canal serializado de audio en memoria: notas, éxito, error y navegación)
 │   └── Views/
 │       ├── ProfilePage.xaml / .cs       (Caracterización del alumno con validación dinámica Edad/Discapacidad vs. Nivel Escolar)
 │       ├── MenuPage.xaml / .cs          (Menú principal con ListView navegable por flechas ↑/↓ y filtrado por edad)
@@ -46,12 +49,13 @@ MathTutor.slnx
 │       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo con celdas de 170 px, pistas, respuestas con ↑/↓ y retroalimentación)
 │       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 196 pruebas)
-    ├── ExerciseGeneratorTests.cs         (59 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
-    ├── PedagogyAndAccessibilityTests.cs  (65 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
-    ├── ProfileStorageTests.cs            (10 pruebas de serialización, migración, exportación y borrado)
-    └── RewardServiceTests.cs             (2 pruebas integrales de las 54 estaciones y desbloqueo de las 55 insignias)
-│   └── ThemeContrastTests.cs             (32 casos de contraste WCAG en los cuatro temas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 209 pruebas)
+    ├── ExerciseGeneratorTests.cs         (66 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
+    ├── PedagogyAndAccessibilityTests.cs  (71 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
+    ├── ProfileStorageTests.cs            (21 pruebas de serialización, migración, concurrencia, exportación y borrado)
+    ├── RewardServiceTests.cs             (5 pruebas integrales de las 54 estaciones y desbloqueo de las 55 insignias)
+    ├── AudioSynthesizerTests.cs          (6 pruebas de síntesis WAV determinista y caché)
+    └── ThemeContrastTests.cs             (40 casos de contraste WCAG en los cuatro temas)
 ```
 
 ---
@@ -64,7 +68,7 @@ MathTutor.slnx
 │   ├── MathTutor.Core/       Biblioteca de dominio, currículo, motor adaptativo y almacenamiento
 │   └── MathTutor.WinUI/      Aplicación WinUI 3, navegación, servicios y vistas
 ├── tests/
-│   └── MathTutor.Tests/      Suite xUnit de 196 pruebas
+│   └── MathTutor.Tests/      Suite xUnit de 209 pruebas
 ├── scripts/
 │   └── publish-winui.ps1     Publicación y empaquetado de la release
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
@@ -93,7 +97,7 @@ MathTutor.slnx
 | `THIRD-PARTY-NOTICES.md` | Avisos y licencias de los paquetes de ejecución y pruebas. |
 | `ACCESIBILIDAD-ACR-VPAT.md` | Borrador ACR/VPAT, evidencia automatizada y matriz manual NVDA/JAWS/Narrador. |
 | `.github/workflows/ci.yml` | CI de restore, build Release con advertencias como errores, pruebas y paquete manual. |
-| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.10.0` y el registro posterior de la Fase 5. |
+| `correcciones mat tutor.md` | Registro histórico de correcciones, especificaciones de accesibilidad y reglas de negocio, con secciones por release hasta `v1.10.0`, el registro de la Fase 5 y las dos auditorías integrales de remediación (fases 1-8 y segunda pasada). |
 | `context.md` | **(Este archivo)** Documento vivo de contexto técnico archivo por archivo para contribuidores y agentes de código. |
 | `.gitignore` | Reglas de exclusión de Git para artefactos de compilación (`artifacts/`, `bin/`, `obj/`, `.vs/`, paquetes temporales). |
 | `.engram/config.json` | Configuración del proyecto `mathtutor` para la memoria persistente Engram. |
@@ -134,7 +138,7 @@ Define las enumeraciones fundamentales del dominio:
 10. **`FontSizeLevel`**: `Normal = 0` (18pt), `Large = 1` (23-24pt), `ExtraLarge = 2` (28-30pt), `Huge = 3` (34-36pt).
 11. **`AnswerResult`**: `None = 0`, `Correct = 1`, `NeedsGuidance = 2`, `Assisted = 3`.
 
-#### `src/MathTutor.Core/Models/UserProfile.cs` (402 líneas)
+#### `src/MathTutor.Core/Models/UserProfile.cs` (408 líneas)
 Contiene tres clases clave:
 1. **`AccessibilityPreferences`**:
    - Propiedades persistibles: `EnableVoiceSynthesis`, `ScreenReaderAnnouncements`, `Theme`, `FontSize`, `SpeechRate`, `SpeechVolume`, `PlayAudioCues`, `SimplifyLanguage`, `ReduceOptionsCount`, `SimplifiedKeyboardNavigation`, `UnlimitedTime`.
@@ -145,7 +149,7 @@ Contiene tres clases clave:
    - Describe apoyos y funcionamiento; no exige diagnóstico ni usa una severidad genérica.
 3. **`UserProfile`**:
    - Datos del alumno: `Id`, `Name`, `Age`, `CurrentLevel`, `Region`, `Preferences`, `Disabilities`, `Support` y `ProfileVersion`.
-   - `ProfileVersion = 2` permite migrar perfiles antiguos: `Neurodivergent` se separa en `Autism` + `ADHD` y la severidad heredada se convierte en el apoyo correspondiente.
+   - `CurrentProfileVersion = 3` permite migrar perfiles antiguos: `Neurodivergent` se separa en `Autism` + `ADHD` y la severidad heredada se convierte en el apoyo correspondiente.
    - La propiedad `Disability` se conserva por compatibilidad y devuelve la primera condición marcada.
    - Propiedades calculadas de localización cultural latinoamericana:
      - `CurrencyName`: `"soles"` para Perú; `"pesos"` para México, Colombia, Argentina y Chile.
@@ -156,20 +160,20 @@ Contiene tres clases clave:
    - Método **`ApplyRecommendedAccessibilityDefaults()`**: Configura tema de contraste, tamaño de fuente, simplificación, reducción de opciones y voz según la edad, las condiciones y el `SupportProfile`, respetando las preferencias marcadas como manuales.
 
 #### `src/MathTutor.Core/Models/Exercise.cs` (142 líneas)
-- **`GamePlayType` (Enum con 53 valores)**: Identifica la mecánica exacta de cada reto (desde `InteractiveCounting`, `OrderSequence`, `Comparison` hasta `CalculusDerivativeRate`, `CalculusIntegralArea`, `ProgrammingVariablesState`, `ProgrammingConditionalsIfElse`, `ProgrammingBooleanLogic`, `ProgrammingLoopsForWhile`, `ProgrammingArraysZeroIndex`, `ProgrammingFunctionsReturn`, `ProgrammingAlgorithmsSearch`, `ProgrammingGameCoordinates2D`, `ProgrammingAssistiveAIData`).
+- **`GamePlayType` (Enum con 52 valores)**: Identifica la mecánica exacta de cada reto (desde `InteractiveCounting`, `OrderSequence`, `Comparison` hasta `CalculusDerivativeRate`, `CalculusIntegralArea`, `ProgrammingVariablesState`, `ProgrammingConditionalsIfElse`, `ProgrammingBooleanLogic`, `ProgrammingLoopsForWhile`, `ProgrammingArraysZeroIndex`, `ProgrammingFunctionsReturn`, `ProgrammingAlgorithmsSearch`, `ProgrammingGameCoordinates2D`, `ProgrammingAssistiveAIData`).
 - **`ManipulableSoundKind`**: Timbre semántico del objeto (`Tone`, `Bell`, `Drum`, `Flute`, `Clap`), usado para que el audio refuerce el material o instrumento representado.
 - **`ManipulableItem`**: Objeto interactivo contable o explorable en pantalla (`Id`, `Name`, `EmojiSymbol`, `AccessibleDescription`, `OrderIndex`, `IsCounted`, `MusicalPitchHz`, `SoundKind`).
 - **`ExerciseOption`**: Opción de respuesta (`Id`, `Label`, `Value`, `IsCorrect`, `SpeechFeedback` con diagnóstico formativo del error o acierto, `AccessibleDescription` para cantidades comparativas y `AccessibleKeyShortcut` `"1"`, `"2"`, `"3"`).
 - **`Exercise`**: Reto completo con instrucciones duales (`StandardInstruction` y `SimplifiedInstruction`), descripción de escena (`ScreenReaderDescription`, ya no se anuncia para no revelar el resultado), colecciones `ItemsGroupA` e `ItemsGroupB`, lista `Options`, pistas escalonadas (`FirstHint`, `SecondHintDetailed`), `ExplanationOfSuccess`, `ExpectedResult`, `TargetAgeMin/Max` y `Level`.
 
-#### `src/MathTutor.Core/Models/PedagogicalTopic.cs` (30 líneas)
+#### `src/MathTutor.Core/Models/PedagogicalTopic.cs` (32 líneas)
 - Representa una misión o lección completa: `Id`, `Title`, `Level`, `CharacterName` (`"Cosmo el Búho Sabio"`), `NarrativeIntro`, `NarrativeIntroSimplified`, `CoreConceptExplanation`, `CoreConceptSimplified`, `PrinciplesAddressed` (`List<string>`), `Exercises` (`List<Exercise>`) y `CongratulationMessage`.
 
 #### `src/MathTutor.Core/Models/Badge.cs` (34 líneas)
 - **`Badge`**: Trofeo desbloqueable (`Id`, `Title`, `Description`, `IconEmoji`, `AssociatedTopicId`, `RequiredStars`, `IsUnlocked`, `UnlockedAt`).
 - **`RealmStation`**: Estación del sendero en el Mapa del Reino (`Id`, `Name`, `Description`, `LandmarkEmoji`, `TopicId`, `OrderIndex`, `IsCompleted`, `IsCurrentStation`, `StarsEarned`).
 
-#### `src/MathTutor.Core/Engine/AdaptiveEngine.cs` (300 líneas)
+#### `src/MathTutor.Core/Engine/AdaptiveEngine.cs` (331 líneas)
 Motor de adaptación pedagógica y reglas de negocio por edad y condición:
 - **`GetAllowedLevelsForAge(int age, DisabilityType disability = DisabilityType.None)`** (Tarea 6 y Tarea 12): Devuelve la lista de niveles académicos válidos para la edad y condición del alumno:
   - `3 a 5 años`: `Kindergarten`
@@ -181,7 +185,7 @@ Motor de adaptación pedagógica y reglas de negocio por edad y condición:
 - **`GetRecommendedLevelForAge(int age)`** (Tarea 6): Sugiere el nivel académico inicial óptimo dentro de los niveles permitidos para la edad seleccionada.
 - **`GetAdaptedInstruction(Exercise, UserProfile)`**: Devuelve `SimplifiedInstruction` si `SimplifyLanguage` es `true` o si `Disability == DisabilityType.Intellectual`; de lo contrario devuelve `StandardInstruction`.
 - **`GetAdaptedTopicIntro(PedagogicalTopic, UserProfile)`** y **`GetAdaptedConceptExplanation(PedagogicalTopic, UserProfile)`**: Conmutan entre la versión estándar y la versión simplificada de la narrativa y del concepto matemático.
-- **`GetAdaptedOptions(Exercise, UserProfile)`**: Si `ReduceOptionsCount` o `Disability == Intellectual` está activo, filtra la lista de opciones dejando **1 respuesta correcta y 1 distractor** en su orden relativo original y reasigna los atajos `"1"` y `"2"`.
+- **`GetAdaptedOptions(Exercise, UserProfile)`**: Si `ReduceOptionsCount` o `Disability == Intellectual` está activo, deja **1 respuesta correcta y el distractor más cercano al resultado** en su orden relativo original, sobre copias (sin mutar las opciones compartidas del ejercicio) y reasigna los atajos `"1"` y `"2"`.
 - **`BuildOptionsAnnouncement(Exercise, UserProfile)`**: Anuncia el enunciado y cada opción; cuando `ExerciseOption.AccessibleDescription` está disponible (por ejemplo, “Las rojas, 3 manzanas”), la usa en lugar de la etiqueta corta para que la comparación de cantidades sea comprensible sin ver la pantalla.
 - **`RecordAttempt(UserProfile, Exercise, bool isCorrect, int attemptCount)`**:
   - Si `isCorrect == true`: incrementa `CurrentStreak`, otorga **3 estrellas** (primer intento), **2 estrellas** (segundo intento) o **1 estrella** (3+ intentos, premiando siempre la perseverancia), suma `starsEarned * 10` a `PointsTotal` y registra el `exercise.Id` en `CompletedExerciseIds`.
@@ -190,7 +194,7 @@ Motor de adaptación pedagógica y reglas de negocio por edad y condición:
 #### `src/MathTutor.Core/Engine/KindergartenCurriculum.cs` (1,142 líneas)
 Contiene los **10 temas de jardín de niños** y sus 45 ejercicios curados. Los temas se organizan por banda de edad (3-4, 4-5 y 5-6) y cubren conteo, formas, posiciones, cuentos, patrones, clasificación, música, números hasta 10, suma/resta y medida. Los patrones se reproducen como secuencias y cada objeto recibe un tono y un timbre coherentes con su instrumento o material; las opciones de comparación incluyen la cantidad y el sustantivo plural (por ejemplo, “Las rojas, 3 manzanas”) para el anuncio accesible.
 
-#### `src/MathTutor.Core/Engine/CurriculumService.cs` (3,076 líneas)
+#### `src/MathTutor.Core/Engine/CurriculumService.cs` (3,184 líneas)
 Contiene el catálogo pedagógico completo de las **54 misiones** (`GetAllTopics()`), el filtrado adaptativo por edad/condición y el orquestador de ejercicios:
 - **`GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None)`** (Tarea 6 y Tarea 12): Filtra `GetAllTopics()` devolviendo únicamente las misiones cuyos niveles pertenecen a `AdaptiveEngine.GetAllowedLevelsForAge(age, disability)`.
 - **`GetNextTopic(string currentTopicId, UserProfile? profile = null)`** (Tarea 7 y Tarea 10): Obtiene la siguiente misión secuencial o pendiente dentro del rango de edad del alumno tras completar `currentTopicId`, devolviendo `null` cuando el alumno ha completado todas las misiones de su etapa.
@@ -198,17 +202,21 @@ Contiene el catálogo pedagógico completo de las **54 misiones** (`GetAllTopics
   - Si el alumno tiene `DisabilityType.Intellectual` o es un tema monetario con región distinta de México, genera los `count` ejercicios procedimentalmente con `ExerciseGenerator` para garantizar el rango numérico reducido y la moneda local (`soles`, `pesos`, `tiendita`, `kiosco`, `bodega`, `almacén`).
   - En caso estándar, conserva como **Reto 1** el ejercicio curado de la lección (`templateTopic.Exercises[0]`, que conecta directamente con el Ejemplo Guiado Paso a Paso) y genera procedimentalmente los retos restantes con `_generator.GenerateExercisesForTopic(topic.Id, profile, remaining)`.
 
-#### `src/MathTutor.Core/Engine/ExerciseGenerator.cs` (2,710 líneas)
+#### `src/MathTutor.Core/Engine/ExerciseGenerator.cs` (2,749 líneas)
 Generador procedimental parametrizado que produce ejercicios infinitos y libres de colisiones para las **54 estaciones**:
 - **`GetTargetRange(UserProfile)`**: Ajusta el rango numérico a `(1, 3)` para apoyos intelectuales extensos o generalizados, `(1, 5)` para apoyos intermitentes/limitados o Jardín de Niños, y `(1, 10)` para primaria inicial.
 - **46 métodos públicos de generación** (`GenerateCountingExercise`, `GenerateStableOrderExercise`, `GenerateAdditionCombineExercise`, ..., `GenerateProgrammingVariablesExercise`, `GenerateProgrammingConditionalsExercise`, `GenerateProgrammingBooleanLogicExercise`, `GenerateProgrammingLoopsExercise`, `GenerateProgrammingArraysExercise`, `GenerateProgrammingFunctionsExercise`, `GenerateProgrammingAlgorithmsSearchExercise`, `GenerateProgrammingGameCoordinatesExercise`, `GenerateProgrammingAssistiveAIExercise`) conectados en el despachador `GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)`.
-- **`BuildOptions(...)`**: Construye las opciones de respuesta garantizando valores únicos, barajado determinista/aleatorio sin sesgo de posición y **retroalimentación diagnóstica específica (`SpeechFeedback`)** en cada distractor (indicando si el número elegido es mayor o menor que el resultado correcto y qué paso revisar).
+- **`BuildOptions(...)`**: Construye las opciones de respuesta garantizando valores únicos, barajado determinista/aleatorio sin sesgo de posición y **retroalimentación diagnóstica específica (`SpeechFeedback`)** en cada distractor (indicando si el número elegido es mayor o menor que el resultado correcto y qué paso revisar). Los distractores se eligen aleatoriamente dentro del rango declarado con peso `|v-correcto| + jitter (span/3)`; si el rango no aporta dos, un respaldo determinista siempre terminante expande **alternando arriba y abajo** para no sesgar la pista.
 
-#### `src/MathTutor.Core/Services/ProfileStorageService.cs` (215 líneas)
+#### `src/MathTutor.Core/Engine/SimplifiedHintCatalog.cs` (244 líneas)
+Catálogo estático de pistas en lenguaje llano para los **52 `GamePlayType`**: `GetSimpleHint(GamePlayType, bool detailed)` devuelve la pista 1 o 2 y `GetSimpleSuccess(GamePlayType)` la explicación de éxito. `AdaptiveEngine.GetAdaptedHint` y `GetAdaptedSuccess` lo usan como respaldo cuando el ejercicio no trae variantes simplificadas propias; los textos evitan tecnicismos y no revelan la respuesta numérica del caso concreto.
+#### `src/MathTutor.Core/Services/ProfileStorageService.cs` (341 líneas)
 - Gestiona la persistencia local del perfil en `%LocalAppData%\MathTutor\user_profile.json` usando `System.Text.Json` con `JsonStringEnumConverter`.
 - Permite inyectar una ruta personalizada en el constructor (`ProfileStorageService(string? customPath = null)`) para pruebas unitarias aisladas en archivos temporales.
 - Métodos: `Save(UserProfile)`, `Load()`, `Exists()`, `Export(UserProfile, string)` y `Delete()`.
 
+#### `src/MathTutor.Core/Services/AudioSynthesizer.cs` (188 líneas)
+Síntesis procedural determinista de WAV PCM (44.1 kHz, 16-bit, mono) con envolvente de atenuación en ambos extremos y caché acotada (96 buffers, bajo candado). `GetNoteWav(...)` genera tonos puros y `GetItemCueWav(ManipulableItem)` genera el timbre de cada `ManipulableSoundKind` (campana, tambor con barrido de frecuencia clampeado a 110-220 Hz, flauta y palmada) con clamp global de 120-1200 Hz.
 #### `src/MathTutor.Core/Services/RewardService.cs` (1,064 líneas)
 - **`GetAllBadges(UserProfile)`**: Define y evalúa el estado de desbloqueo (`IsUnlocked`) de las **55 insignias** (54 insignias asociadas 1-a-1 a cada `TopicId` + 1 insignia especial `"badge_star_collector"` al acumular $\ge 15$ estrellas).
 - **`GetRealmStations(UserProfile, IReadOnlySet<string>? allowedTopicIds = null)`**: Devuelve las **54 estaciones** del Mapa del Reino (`station_1` a `station_54`), marcando `IsCompleted = true` para las lecciones en `CompletedLessonIds`. Si se recibe `allowedTopicIds`, la estación activa se elige solo entre esos temas; así la recomendación nunca queda fuera del rango de edad del alumno.
@@ -293,16 +301,16 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 
 > **Nota de arquitectura:** el proyecto WPF (`MathTutor.WpfApp`) fue retirado después de consolidar la paridad funcional en WinUI 3. El historial de Git conserva su implementación y los registros de releases anteriores.
 
-### 2.4. Proyecto `MathTutor.Tests` (Suite de 196 Pruebas Unitarias Automatizadas)
+### 2.4. Proyecto `MathTutor.Tests` (Suite de 209 Pruebas Unitarias Automatizadas)
 
 | Archivo de Pruebas | Pruebas | Qué Verifica |
 |---|---|---|
-| `ExerciseGeneratorTests.cs` (1,053 líneas) | **59** | Verifica individualmente los métodos generadores de los 16 objetivos (desde conteo de Kinder hasta Cálculo e IA Asistiva), comprobando en bucles de 20 iteraciones con semilla determinista que `ExpectedResult` sea matemáticamente exacto, que exista exactamente una opción correcta, que no haya opciones duplicadas (`Distinct`), que los rangos se reduzcan para discapacidad intelectual y que la moneda/vocabulario cambie según `RegionalContext` (Perú `S/` vs. México `$`). |
-| `PedagogyAndAccessibilityTests.cs` (1,110 líneas) | **65** | Verifica que las 54 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica. Incluye la cobertura de los 10 temas de jardín, el desbloqueo por edad, la invariante de que todo objeto visible en ejercicios de conteo se cuenta (`Kindergarten_InteractiveCounting_CountsEveryVisibleItem`), la variedad de tonos y timbres semánticos, las descripciones de cantidad en comparaciones y pruebas de `AdaptiveEngine.GetAllowedLevelsForAge`, `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `ApplyRecommendedAccessibilityDefaults()`. |
-| `ProfileStorageTests.cs` (229 líneas) | **10** | Verifica serialización/deserialización de todos los campos, el estado de los grupos de trofeos, la migración de perfiles antiguos (`Neurodivergent`/severidad a `SupportProfile`), la exportación a una ruta elegida y el borrado del perfil con su valor de retorno. |
-| `RewardServiceTests.cs` (95 líneas) | **4** | Verifica el orden, `Id` y `TopicId` de las **54 estaciones**, la estación activa dentro del rango permitido, la coincidencia entre títulos de jardín y nombres de estación, y la lógica de bloqueo/desbloqueo de las **55 insignias** en `GetAllBadges`. |
-| `ThemeContrastTests.cs` (32 casos) | **32** | Lee los colores de `AccessibilityManager` y verifica 4.5:1 para texto y 3:1 para bordes/foco en los cuatro temas. |
-
+| `ExerciseGeneratorTests.cs` (1,231 líneas) | **66** | Verifica individualmente los métodos generadores de los 16 objetivos (desde conteo de Kinder hasta Cálculo e IA Asistiva), comprobando en bucles de 20 iteraciones con semilla determinista que `ExpectedResult` sea matemáticamente exacto, que exista exactamente una opción correcta, que no haya opciones duplicadas (`Distinct`), que los rangos se reduzcan para discapacidad intelectual y que la moneda/vocabulario cambie según `RegionalContext` (Perú `S/` vs. México `$`). Incluye el respaldo bidireccional de `BuildOptions` y la reducción sin mutar opciones de `GetAdaptedOptions`. |
+| `PedagogyAndAccessibilityTests.cs` (1,226 líneas) | **71** | Verifica que las 54 misiones existan en `CurriculumService`, cubran sus principios matemáticos esperados, posean instrucciones estándar y simplificadas, pistas escalonadas y retroalimentación diagnóstica. Incluye la cobertura de los 10 temas de jardín, el desbloqueo por edad, la invariante de que todo objeto visible en ejercicios de conteo se cuenta (`Kindergarten_InteractiveCounting_CountsEveryVisibleItem`), la variedad de tonos y timbres semánticos, las descripciones de cantidad en comparaciones y pruebas de `AdaptiveEngine.GetAllowedLevelsForAge`, `GetRecommendedLevelForAge`, `CurriculumService.GetTopicsForAge`, `GetNextTopic` (incluyendo retorno `null` al completar toda una etapa) y `ApplyRecommendedAccessibilityDefaults()`. |
+| `ProfileStorageTests.cs` (547 líneas) | **21** | Verifica serialización/deserialización de todos los campos, el estado de los grupos de trofeos, la migración de perfiles antiguos (`Neurodivergent`/severidad a `SupportProfile`), la exportación a una ruta elegida, el borrado del perfil con su valor de retorno, la cuarentena ante JSON corrupto, el fallo transitorio de persistencia y la concurrencia de `Save`/`Load`/`Delete`. |
+| `RewardServiceTests.cs` (111 líneas) | **5** | Verifica el orden, `Id` y `TopicId` de las **54 estaciones**, la estación activa dentro del rango permitido, la coincidencia entre títulos de jardín y nombres de estación, las estrellas reales de `LessonStarRatings` y la lógica de bloqueo/desbloqueo de las **55 insignias** en `GetAllBadges`. |
+| `AudioSynthesizerTests.cs` (89 líneas) | **6** | Verifica el contenedor WAV PCM, la envolvente de atenuación, el determinismo, los timbres por `ManipulableSoundKind`, el rango de frecuencias y el carácter no tonal del aplauso. |
+| `ThemeContrastTests.cs` (131 líneas, 40 casos) | **40** | Lee los colores de `AccessibilityManager` y verifica AAA 7:1 para texto (incluido el acento sobre fondo y tarjeta) y 3:1 para bordes/foco en los cuatro temas. |
 ---
 
 ## 3. Mapa Curricular Completo (54 Estaciones / 16 Objetivos)
@@ -382,7 +390,7 @@ Mapa del Reino (`F6`): estaciones e insignias filtradas por edad y condición. L
 
 > **Nota histórica:** las fases 1 a 4 describen la implementación original en WPF, retirada en `v1.7.0`. La interfaz vigente y sus equivalentes están en `src/MathTutor.WinUI`, descritos en las secciones 2.3 y 2.4.
 
-Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/Users/artik/Documents/antigravity/math%20tutor/correcciones%20mat%20tutor.md) se encuentran implementadas y verificadas:
+Todas las mejoras especificadas en [`correcciones mat tutor.md`](correcciones%20mat%20tutor.md) se encuentran implementadas y verificadas:
 
 ### Fase 1 (Tareas 1 a 7)
 1. ✅ **Tarea 1 (Foco Inicial Automático y Anuncio de Entrada al Iniciar)**:
@@ -414,20 +422,20 @@ Todas las mejoras especificadas en [`correcciones mat tutor.md`](file:///C:/User
 
 ### Fase 3 — Feedback de Usuario y Pruebas de Usabilidad (Mejoras 1 a 4)
 13. ✅ **Mejora 1 (Tutorial y Lección Interactiva Paso a Paso — Wizard/Stepper)**:
-    - Transformada la vista [`LessonView.xaml`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/LessonView.xaml) y [`LessonView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/LessonView.xaml.cs) en un flujo guiado interactivo de 3 pasos (Paso 1: Historia con Cosmo, Paso 2: El Secreto Matemático, Paso 3: Ejemplo Guiado y Reto).
+    - Transformada la vista `LessonView.xaml` y `LessonView.xaml.cs` en un flujo guiado interactivo de 3 pasos (Paso 1: Historia con Cosmo, Paso 2: El Secreto Matemático, Paso 3: Ejemplo Guiado y Reto).
     - Eliminada la lectura corrida que causaba fatiga auditiva: ahora se muestra y anuncia una sola tarjeta a la vez con instrucciones interactivas ("Presiona Enter o Espacio para continuar...").
     - Navegación bidireccional mediante teclas de dirección (`Flecha Izquierda` / `Backspace` para retroceder, `Enter` / `Espacio` / `Flecha Derecha` para avanzar) y `F1` para repetir el paso actual.
     - La transición al minijuego práctico únicamente se habilita al alcanzar el último paso.
 14. ✅ **Mejora 2 (Soporte para Discapacidades Múltiples — Comorbilidad e Interseccionalidad)**:
-    - Añadida la propiedad `Disabilities` (`List<DisabilityType>`) y el método `HasDisability(...)` en [`UserProfile.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/src/MathTutor.Core/Models/UserProfile.cs), manteniendo la propiedad `Disability` sincronizada como fachada de retrocompatibilidad.
-    - En [`ProfileSetupView.xaml`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/ProfileSetupView.xaml), sustituido el `ComboBox` de selección única por casillas de verificación (`CheckBox`) accesibles e independientes.
+    - Añadida la propiedad `Disabilities` (`List<DisabilityType>`) y el método `HasDisability(...)` en `UserProfile.cs`, manteniendo la propiedad `Disability` sincronizada como fachada de retrocompatibilidad.
+    - En `ProfileSetupView.xaml`, sustituido el `ComboBox` de selección única por casillas de verificación (`CheckBox`) accesibles e independientes.
     - Adaptaciones simultáneas y acumulativas activadas en `ApplyRecommendedAccessibilityDefaults()` (por ejemplo, Ceguera + TEA o Intelectual + Motriz aplican al unísono tamaño de fuente, voz, lectura de pantalla, simplificación y paleta sensorial).
-    - Adaptados [`AdaptiveEngine.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/src/MathTutor.Core/Engine/AdaptiveEngine.cs), [`CurriculumService.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/src/MathTutor.Core/Engine/CurriculumService.cs), [`CurriculumMenuView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/CurriculumMenuView.xaml.cs) y [`RealmMapView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/RealmMapView.xaml.cs) para aceptar colecciones de discapacidades.
+    - Adaptados `AdaptiveEngine.cs`, `CurriculumService.cs`, `CurriculumMenuView.xaml.cs` y `RealmMapView.xaml.cs` para aceptar colecciones de discapacidades.
 15. ✅ **Mejora 3 (Anuncio Completo de Opciones en los Retos para TTS y Lector de Pantalla)**:
-    - Implementado `AdaptiveEngine.BuildOptionsAnnouncement` y conectado en [`MiniGameView.xaml.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/MathTutor.WpfApp/Views/MiniGameView.xaml.cs) tanto al iniciar un ejercicio como al presionar `F1` (Repetir).
+    - Implementado `AdaptiveEngine.BuildOptionsAnnouncement` y conectado en `MiniGameView.xaml.cs` tanto al iniciar un ejercicio como al presionar `F1` (Repetir).
     - Anuncia explícitamente el enunciado y todas las opciones disponibles con sus atajos numéricos: `"{Pregunta}. Opción 1: {Opcion1}. Opción 2: {Opcion2}. Opción 3: {Opcion3}. Presiona 1, 2 o 3 para responder."` evitando que el alumno tenga que explorar a ciegas.
 16. ✅ **Mejora 4 (Aleatorización de Opciones para Eliminar el Sesgo de Posición)**:
-    - Implementado el algoritmo Fisher-Yates en `ExerciseGenerator.ShuffleOptions` y en `BuildOptions` dentro de [`ExerciseGenerator.cs`](file:///c:/Users/maria/Desktop/programas%20descargados/desarrollo/MathTutor/src/MathTutor.Core/Engine/ExerciseGenerator.cs).
+    - Implementado el algoritmo Fisher-Yates en `ExerciseGenerator.ShuffleOptions` y en `BuildOptions` dentro de `ExerciseGenerator.cs`.
     - Reindexa los atajos accesibles del 1 al N tras barajar, eliminando el sesgo en el que la respuesta correcta caía siempre en la opción 2 (tecla 2) y distribuyéndola equitativamente entre las opciones 1, 2 y 3.
 
 ### Fase 4 — Ajustes de Accesibilidad y Pruebas de Campo
@@ -477,7 +485,7 @@ if (Test-Path artifacts) { Remove-Item artifacts -Recurse -Force }
 # 2. Compilar toda la solución en modo Release (0 advertencias permitidas)
 dotnet build MathTutor.slnx -c Release --nologo /p:TreatWarningsAsErrors=true
 
-# 3. Ejecutar las 196 pruebas unitarias automatizadas sobre la compilación Release
+# 3. Ejecutar las 209 pruebas unitarias automatizadas sobre la compilación Release
 dotnet test tests\MathTutor.Tests\MathTutor.Tests.csproj -c Release --nologo --no-build
 
 # 4. Publicar y empaquetar WinUI 3 (verifica MathTutor.pri)
@@ -490,7 +498,7 @@ Get-ChildItem artifacts\releases -Filter *.zip -File | Where-Object { $_.Name -n
 
 ---
 
-## 7. Audioría integral de remediación (Phases 1-8, oct 2026)
+## 6. Auditoría integral de remediación (fases 1-8, oct 2026)
 
 Arquitectura sin cambios estructurales; la auditoría integral agregó y corrigió:
 
@@ -498,31 +506,79 @@ Arquitectura sin cambios estructurales; la auditoría integral agregó y corrigi
   determinista WAV PCM (44.1 kHz / 16-bit / mono), envolvente de atenuación en ambos
   extremos, caché acotada 96 buffers con candado, timbres para cada
   `ManipulableSoundKind` (campana/armónico, tambor/barrido de frecuencia,
-  flauta/armónico puro, aplauso/no tonal neutral) y clamp de frecuencias
+  flauta/armónico puro, aplauso/no tonal) y clamp de frecuencias
   120-1200 Hz. `AccessibleAudioCueService` consume este sintetizador dentro de un
   canal serializado (hilo dedicado de reproducción, cola acotada a 32 eventos,
-  `ClearPendingCues()` público para evitar spam al iniciar lección).
+  `ClearPendingCues()` público para evitar spam al cambiar de pantalla).
 - **`src/MathTutor.Core/Engine/SimplifiedHintCatalog.cs` (nuevo):** respaldo de
   sugerencias simplificadas (pista 1, pista 2, éxito) en lenguaje sin tecnicismos
-  para cada `GamePlayType` (61 tipos); el `AdaptiveEngine` lo sirve cuando el
+  para cada `GamePlayType` (52 tipos); el `AdaptiveEngine` lo sirve cuando el perfil
   prefiere lenguaje simple y el ejercicio no trae variantes simplificadas a mano.
 - **`ProfileStorageService.cs`:** guardado atómico + cuarentena de archivos
   corruptos + `Delete` restringido + migración v2→v3 persistente
   (`UserProfile.CurrentProfileVersion = 3`, campo `LessonStarRatings`).
 - **`CurriculumService.cs`:** `GetTopicsForAge` con exención de nivel bipolar, +
-  `GetNextTopic` fallback hacia adelante; proreg yTrivia 16+; `add_ex_04`
+  `GetNextTopic` fallback hacia adelante; programación y trivia 16+; `add_ex_04`
   (propiedad asociativa para 6-8 pedazos).
-- **`ExerciseGenerator.cs`:** distractores aleatorizados cerca del Wallace con
+- **`ExerciseGenerator.cs`:** distractores aleatorizados cerca del resultado con
   respaldo determinista terminante; 8 `ScreenReaderDescription` neutralizados
-  (dejan de rezar la respuesta).
+  (dejan de revelar la respuesta).
 - **`CurriculumService.cs` (13 `ScreenReaderDescription`):** sin revelar respuestas.
 - **`SpeechService.cs`:** latches de handshake NVDA RPC, presencia y falla JAWS COM.
 - **`AccessibilityManager.cs`:** ciclo de temas honesto respecto al Contraste del
-  Sistema; pinceles de error en `HC-oscuro` (255,120,120) y `DefaultPlayful`
+  Sistema; pinceles de error en `HighContrastDark` (255,120,120) y `DefaultPlayful`
   (170,0,30) subidos a AAA 7:1.
 - **`MainWindow.xaml.cs`:** `AutomationProperties.SetAcceleratorKey` de los atajos
   globales; 🏆 del diálogo de misión en vista de accesibilidad `Raw` (enum
   `Microsoft.UI.Xaml.Automation.Peers` en WinUI 3).
-- **Suite:** 196/196 pruebas en Release, 0 advertencias, 0 errores. `dotnet test`
-  local sigue bloqueado por ACL del sistema; usar
+- **Suite:** 196/196 pruebas en Release al cerrar esta pasada, 0 advertencias,
+  0 errores. `dotnet test` local sigue bloqueado por ACL del sistema; usar
   `C:\Users\artik\AppData\Local\Temp\opencode\MathTutorRunner\MathTutorRunner.csproj`.
+
+## 7. Segunda auditoría integral de remediación (oct 2026)
+
+Segunda revisión con ojo fresco (Core, WinUI y documentación). Cambios de esta pasada:
+
+- **Persistencia (`ProfileStorageService.cs`):** la re-escritura de la migración ya
+  no puede cuarentenar un perfil válido (el `catch` se limita a `JsonException` y el
+  `Save` de migración captura `IOException`/`UnauthorizedAccessException`); `Delete`
+  se serializa con el mismo `FileGate` que `Save`/`Load`. Dos pruebas nuevas:
+  fallo transitorio de persistencia de migración y concurrencia `Save`/`Load`/`Delete`.
+- **Foco y teclado:** `LessonPage` no secuestra `↑`/`↓`/`Backspace`/`Espacio` cuando
+  el foco está en un `TextBox` (lectura con caret) y su `Escape` duplicado se eliminó
+  (solo el acelerador global de `MainWindow`). Las estrellas de la misión ahora
+  incluyen los intentos del último reto. El F1 del diálogo de misión se unificó en
+  el acelerador global (`_missionDialogMessage`), sin doble anuncio. El reintento de
+  una opción ya probada anuncia un mensaje breve en lugar de concatenar la pista
+  obsoleta. `ToggleSpeech` persiste la preferencia cuando ya existe perfil.
+- **Contenido:** `add_ex_04` incluye el sexto tesoro (vagón 3) y corrige "vagón";
+  `sub_ex_01` incorpora los 5 patitos manipulables que narra; la pista simplificada
+  de fracciones mixtas ya no asume denominador 2; la función de programación se
+  llama `calcularDecibeles` (coherente con su unidad) en el tema curado y en el
+  generador; se aclaró la frase de "sierra" en números con signo.
+- **Mapa y estados:** `RewardService.GetRealmStations` usa `LessonStarRatings` reales
+  (mínimo 1 para perfiles antiguos sin calificación) en lugar de 3 fijos; las
+  estaciones bloqueadas anuncian "Sendero por desbloquear" con ayuda coherente; el
+  menú y el mapa muestran estado vacío cuando no hay misiones para la edad; la
+  bienvenida larga del menú solo se locuta al llegar de verdad al menú.
+- **Generador:** el respaldo de `BuildOptions` alterna arriba/abajo (sin sesgo
+  direccional en rangos degenerados y resultados negativos); `GetAdaptedOptions`
+  elige el distractor más cercano y trabaja sobre copias, sin mutar las opciones
+  compartidas ni cambiar el orden relativo.
+- **Audio y lectores:** el timbre de tambor aplica de verdad el clamp 110-220 Hz
+  (antes era código muerto); las secuencias limpian la cola antes de sonar y al
+  navegar entre páginas; el latch de NVDA solo se activa con una locución exitosa
+  (se degrada si el RPC falla); `Dispose` libera el RCW de JAWS con
+  `Marshal.FinalReleaseComObject` y reinicia los latches.
+- **Contraste:** el acento usado como texto cumple AAA 7:1 en los cuatro temas
+  (`LowSensory` RGB 30,80,120 con `OnAccent` blanco; `DefaultPlayful` RGB 70,45,180);
+  la teoría de contraste cubre `AppAccentBrush` sobre fondo y tarjeta.
+- **Documentación:** README/ACR con 209 pruebas; tabla y árbol de pruebas al día
+  (66/71/21/5/6 + 40 casos); `GamePlayType` unificado en 52; `ProfileVersion` v3;
+  eliminada la dependencia inexistente de WebView2; enlaces `file:///` de máquinas
+  ajenas convertidos a rutas relativas; fragmentos corruptos reescritos.
+- **Suite:** 209/209 pruebas, build Release 0 advertencias / 0 errores.
+- **Limitaciones aceptadas:** el "flip" transitorio de tema en `RefreshThemeResources`
+  se conserva (fuerza la re-evaluación de `ThemeResource`; su alternativa requiere
+  prueba visual en dispositivo); las preferencias de tema/fuente elegidas antes de
+  crear el perfil no se persisten (guardarlas antes del onboarding lo saltaría).

@@ -14,7 +14,7 @@
 | Control | Estado | Evidencia |
 |---|---|---|
 | Compilación Release sin advertencias | Cumple | `dotnet build MathTutor.slnx -c Release /p:TreatWarningsAsErrors=true` |
-| Pruebas unitarias | Cumple | 166 pruebas, incluidas las de contraste de los cuatro temas |
+| Pruebas unitarias | Cumple | 209 pruebas, incluidas las de contraste AAA de los cuatro temas |
 | Contraste de texto y bordes | Cumple | `ThemeContrastTests` verifica 4.5:1 para texto y 3:1 para bordes/foco |
 | CI de build, pruebas y paquete | Cumple | `.github/workflows/ci.yml` |
 | Dependencias fijadas | Cumple | Versiones exactas en los `.csproj` |

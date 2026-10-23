@@ -28,6 +28,7 @@ public sealed class StationDisplayItem
     public Brush StatusBrush { get; init; } = new SolidColorBrush(Microsoft.UI.Colors.Gray);
     public string AccessibleActionName { get; init; } = string.Empty;
     public string ActionButtonAccessibleName { get; init; } = string.Empty;
+    public string ActionHelpText { get; init; } = "Presiona Enter o Espacio para comenzar.";
 }
 
 public sealed class BadgeDisplayItem
@@ -141,7 +142,7 @@ public sealed partial class MapPage : Page
             else
             {
                 status = "🔒 Sendero por Desbloquear";
-                cleanState = "Misión disponible";
+                cleanState = "Sendero por desbloquear";
                 statusBrush = ResourceBrush("AppTextSecondaryBrush");
             }
 
@@ -155,11 +156,15 @@ public sealed partial class MapPage : Page
                 StatusText = status,
                 StatusBrush = statusBrush,
                 AccessibleActionName = $"{cleanState}: {s.Name}",
-                ActionButtonAccessibleName = $"Explorar la estación: {s.Name}"
+                ActionButtonAccessibleName = $"Explorar la estación: {s.Name}",
+                ActionHelpText = s.IsCompleted || s.IsCurrentStation
+                    ? "Presiona Enter o Espacio para comenzar."
+                    : "Completa la estación anterior para desbloquear este sendero."
             });
         }
 
         ItemsStations.ItemsSource = stationDisplayList;
+        TxtEmptyStations.Visibility = stationDisplayList.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
         if (stationDisplayList.Count > 0)
         {
@@ -278,7 +283,7 @@ public sealed partial class MapPage : Page
         if (args.ItemContainer is ListViewItem container && args.Item is StationDisplayItem item)
         {
             AutomationProperties.SetName(container, item.AccessibleActionName);
-            AutomationProperties.SetHelpText(container, "Presiona Enter o Espacio para comenzar.");
+            AutomationProperties.SetHelpText(container, item.ActionHelpText);
         }
     }
 

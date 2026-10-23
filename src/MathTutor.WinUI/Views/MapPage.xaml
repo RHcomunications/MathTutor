@@ -154,6 +154,16 @@
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
+
+                <ListView.Footer>
+                    <TextBlock x:Name="TxtEmptyStations"
+                               Text="Todavía no hay senderos disponibles para tu edad. Cambia la edad en tu perfil para descubrir nuevas estaciones."
+                               FontSize="{ThemeResource AppSubHeaderFontSize}"
+                               Foreground="{ThemeResource AppTextSecondaryBrush}"
+                               Margin="4,8,0,24"
+                               TextWrapping="Wrap"
+                               Visibility="Collapsed" />
+                </ListView.Footer>
             </ListView>
 
             <TextBlock Text="🏅 Sala de Trofeos e Insignias del Reino (Usa Tab y las flechas para explorar tus medallas):"

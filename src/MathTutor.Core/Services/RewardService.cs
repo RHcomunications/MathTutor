@@ -1037,7 +1037,12 @@ public class RewardService
             s.IsCompleted = profile.CompletedLessonIds.Contains(s.TopicId);
             if (s.IsCompleted)
             {
-                s.StarsEarned = 3;
+                // Estrellas reales de la lección (máximo histórico); si el perfil
+                // viene de una versión previa sin calificaciones, se premia el
+                // completado con la mínima en lugar de inventar 3.
+                s.StarsEarned = profile.LessonStarRatings.TryGetValue(s.TopicId, out int stars)
+                    ? stars
+                    : 1;
             }
 
             if (allowedTopicIds is not null && !allowedTopicIds.Contains(s.TopicId))

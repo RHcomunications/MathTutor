@@ -2296,26 +2296,26 @@ public class ExerciseGenerator
         var ex = new Exercise
         {
             Id = $"gen_prog_func_{Guid.NewGuid():N}",
-            Title = $"Funciones Modulares: calcularVolumen({inputParam})",
+            Title = $"Funciones Modulares: calcularDecibeles({inputParam})",
             GameType = GamePlayType.ProgrammingFunctionsReturn,
             TargetAgeMin = 10,
             TargetAgeMax = 18,
             Level = AcademicLevel.ProgrammingFoundations,
             ExpectedResult = returnValue,
-            StandardInstruction = $"Igual que en matemáticas evaluamos f(x) = {factor}x + {baseOffset}, en programación definimos una función reutilizable con parámetro de entrada 'nivel' y valor de retorno (return):\n• FUNCION calcularVolumen(nivel) {{ RETORNAR ({factor} * nivel) + {baseOffset} }}\nSi nuestro programa llama a la función con calcularVolumen({inputParam}), ¿qué valor devuelve (return)?",
-            SimplifiedInstruction = $"La máquina de código 'calcularVolumen' multiplica el número de entrada por {factor} y luego le suma {baseOffset}. Si entra el número {inputParam}, ¿cuánto es ({factor} × {inputParam}) + {baseOffset}?",
-            ScreenReaderDescription = $"Función calcularVolumen con parámetro nivel: retorna {factor} por nivel más {baseOffset}. Evaluar la llamada calcularVolumen con argumento {inputParam}.",
+            StandardInstruction = $"Igual que en matemáticas evaluamos f(x) = {factor}x + {baseOffset}, en programación definimos una función reutilizable con parámetro de entrada 'nivel' y valor de retorno (return):\n• FUNCION calcularDecibeles(nivel) {{ RETORNAR ({factor} * nivel) + {baseOffset} }}\nSi nuestro programa llama a la función con calcularDecibeles({inputParam}), ¿qué valor devuelve (return)?",
+            SimplifiedInstruction = $"La máquina de código 'calcularDecibeles' multiplica el número de entrada por {factor} y luego le suma {baseOffset}. Si entra el número {inputParam}, ¿cuánto es ({factor} × {inputParam}) + {baseOffset}?",
+            ScreenReaderDescription = $"Función calcularDecibeles con parámetro nivel: retorna {factor} por nivel más {baseOffset}. Evaluar la llamada calcularDecibeles con argumento {inputParam}.",
             FirstHint = $"Sustituye el parámetro 'nivel' por {inputParam} dentro de la función: primero multiplica {factor} × {inputParam} = {factor * inputParam}.",
             SecondHintDetailed = $"Al producto {factor * inputParam} súmale la constante {baseOffset}: {factor * inputParam} + {baseOffset} = {returnValue} decibeles.",
-            ExplanationOfSuccess = $"¡Gran diseño modular! Al invocar calcularVolumen({inputParam}), la función evaluó ({factor} × {inputParam}) + {baseOffset} y retornó {returnValue} decibeles."
+            ExplanationOfSuccess = $"¡Gran diseño modular! Al invocar calcularDecibeles({inputParam}), la función evaluó ({factor} × {inputParam}) + {baseOffset} y retornó {returnValue} decibeles."
         };
 
         ex.ItemsGroupA.Add(new ManipulableItem
         {
             Id = "func_return_item",
-            Name = $"calcularVolumen({inputParam}) → return {returnValue}",
+            Name = $"calcularDecibeles({inputParam}) → return {returnValue}",
             EmojiSymbol = "⚙️",
-            AccessibleDescription = $"Función modular: recibe parámetro {inputParam}, calcula {factor} por {inputParam} más {baseOffset} y retorna {returnValue}",
+            AccessibleDescription = $"Función modular: recibe parámetro {inputParam}, calcula {factor} por {inputParam} más {baseOffset} y retorna {returnValue} decibeles",
             OrderIndex = 1,
             MusicalPitchHz = PentatonicScaleHz[7]
         });
@@ -2628,15 +2628,32 @@ public class ExerciseGenerator
             .ToList();
 
         // Respaldo determinista (siempre terminante): si el rango no aporta dos
-        // distractores, se expande hacia valores mayores. Caso extremo: un rango
-        // con solo dos opciones posibles (p. ej. fracción 1/2 con max = 2).
+        // distractores, se expande alternando lados (arriba y abajo) para no
+        // sesgar la dirección de la pista. Caso extremo: un rango con solo dos
+        // opciones posibles (p. ej. fracción 1/2 con max = 2).
         int delta = 1;
         while (chosen.Count < 2)
         {
-            int candidate = correctValue + delta;
-            if (candidate != correctValue && !chosen.Contains(candidate))
+            // Si el rango no tiene espacio a un lado, se usa el otro; si tiene
+            // espacio en ambos, se alterna el lado según la distancia.
+            bool aboveFirst = correctValue <= min
+                ? true
+                : correctValue >= max
+                    ? false
+                    : delta % 2 == 1;
+
+            int above = correctValue + delta;
+            int below = correctValue - delta;
+
+            if (aboveFirst)
             {
-                chosen.Add(candidate);
+                if (above != correctValue && !chosen.Contains(above)) chosen.Add(above);
+                if (chosen.Count < 2 && below != correctValue && !chosen.Contains(below)) chosen.Add(below);
+            }
+            else
+            {
+                if (below != correctValue && !chosen.Contains(below)) chosen.Add(below);
+                if (chosen.Count < 2 && above != correctValue && !chosen.Contains(above)) chosen.Add(above);
             }
             delta++;
         }

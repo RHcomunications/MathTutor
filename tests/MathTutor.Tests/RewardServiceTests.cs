@@ -80,6 +80,22 @@ public class RewardServiceTests
     }
 
     [Fact]
+    public void GetRealmStations_UsesRealLessonStarRatings()
+    {
+        var profile = new UserProfile();
+        profile.CompletedLessonIds.Add("kinder_counting_01");
+        profile.CompletedLessonIds.Add("kinder_shapes_01");
+        profile.LessonStarRatings["kinder_counting_01"] = 2;
+
+        var stations = _rewards.GetRealmStations(profile);
+
+        // Calificación real guardada: 2 estrellas (no 3 por defecto).
+        Assert.Equal(2, stations.First(s => s.TopicId == "kinder_counting_01").StarsEarned);
+        // Perfil antiguo sin calificación: se premia el completado con 1.
+        Assert.Equal(1, stations.First(s => s.TopicId == "kinder_shapes_01").StarsEarned);
+    }
+
+    [Fact]
     public void KindergartenStations_UseMissionTitles()
     {
         var curriculum = new CurriculumService();
