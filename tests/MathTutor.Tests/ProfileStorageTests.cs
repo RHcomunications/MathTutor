@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using MathTutor.Core.Models;
 using MathTutor.Core.Services;
 using Xunit;
@@ -193,6 +194,193 @@ public class ProfileStorageTests : IDisposable
     }
 
     [Fact]
+    public void Load_CorruptJson_QuarantinesFileInsteadOfSilentlyLosingIt()
+    {
+        File.WriteAllText(_testFilePath, "esto no es json {{{");
+
+        Assert.Null(_storage.Load());
+        Assert.False(File.Exists(_testFilePath));
+
+        string? quarantined = Directory
+            .EnumerateFiles(Path.GetTempPath(), Path.GetFileName(_testFilePath) + ".corrupt-*")
+            .FirstOrDefault();
+        Assert.True(quarantined is not null, "El archivo corrupto debió ponerse en cuarentena");
+
+        string quarantinedText = File.ReadAllText(quarantined);
+        Assert.Equal("esto no es json {{{", quarantinedText);
+    }
+
+    [Fact]
+    public void Load_TruncatedJson_SimulatingCrashDuringWrite_ReturnsNullAndQuarantines()
+    {
+        // Simula el resultado de un corte de luz a mitad de una escritura no atómica.
+        File.WriteAllText(_testFilePath, "{\"Name\": \"SofÍa Ex");
+
+        Assert.Null(_storage.Load());
+        Assert.False(File.Exists(_testFilePath));
+        Assert.Contains(
+            Directory.EnumerateFiles(Path.GetTempPath()),
+            path => Path.GetFileName(path).StartsWith(Path.GetFileName(_testFilePath) + ".corrupt-"));
+    }
+
+    [Fact]
+    public void Load_ValidJsonThatIsNotAProfileObject_QuarantinesAndReturnsNull()
+    {
+        File.WriteAllText(_testFilePath, "[1, 2, 3]");
+
+        Assert.Null(_storage.Load());
+        Assert.False(File.Exists(_testFilePath));
+        Assert.Contains(
+            Directory.EnumerateFiles(Path.GetTempPath()),
+            path => Path.GetFileName(path).StartsWith(Path.GetFileName(_testFilePath) + ".corrupt-"));
+    }
+
+    [Fact]
+    public void Save_CleansUpTempFile_AfterSuccessfulSave()
+    {
+        _storage.Save(new UserProfile { Name = "Atómico" });
+        bool tempExists = File.Exists(_testFilePath + ".tmp");
+
+        Assert.False(tempExists, "El archivo temporal debe desaparecer tras el rename");
+        Assert.Equal("Atómico", _storage.Load()?.Name);
+    }
+
+    [Fact]
+    public void SaveAndLoad_PersistsLessonStarRatings_PerLesson()
+    {
+        var profile = new UserProfile { Name = "Calificada" };
+        profile.CompletedLessonIds.Add("elem_addition_01");
+        profile.LessonStarRatings["elem_addition_01"] = 3;
+        profile.LessonStarRatings["kinder_counting_01"] = 2;
+
+        _storage.Save(profile);
+        var loaded = _storage.Load();
+
+        Assert.NotNull(loaded);
+        Assert.Equal(3, loaded.LessonStarRatings["elem_addition_01"]);
+        Assert.Equal(2, loaded.LessonStarRatings["kinder_counting_01"]);
+        Assert.Equal(2, loaded.LessonStarRatings.Count);
+    }
+
+    [Fact]
+    public void Load_LegacyProfile_PersistsMigratedResultOnDisk()
+    {
+        File.WriteAllText(
+            _testFilePath,
+            "{\"Age\":10,\"Disability\":\"Visual\",\"Disabilities\":[\"Visual\"],\"Severity\":\"Severe\"}");
+
+        var loaded = _storage.Load();
+        Assert.NotNull(loaded);
+        Assert.Equal(VisualFunctionalLevel.Blindness, loaded.Support.VisualFunction);
+
+        // El archivo en disco ya migrado no debe volver a migrar en cada arranque.
+        string jsonOnDisk = File.ReadAllText(_testFilePath);
+        Assert.Contains("ProfileVersion", jsonOnDisk);
+        Assert.DoesNotContain("Severity", jsonOnDisk);
+
+        var reloaded = _storage.Load();
+        Assert.NotNull(reloaded);
+        Assert.Equal(loaded.Support.VisualFunction, reloaded.Support.VisualFunction);
+    }
+
+    [Fact]
+    public void MigrateLegacyProfile_IsIdempotent_SecondCallLeavesProfileUnchanged()
+    {
+        var profile = new UserProfile
+        {
+            Disability = DisabilityType.Neurodivergent,
+            Disabilities = { DisabilityType.Neurodivergent },
+            Support = { VisualFunction = VisualFunctionalLevel.NotApplicable }
+        };
+
+        ProfileStorageService.MigrateLegacyProfile(profile, legacySeverity: null, force: true);
+        var afterFirst = snapshotSupportState(profile);
+
+        ProfileStorageService.MigrateLegacyProfile(profile, legacySeverity: null, force: true);
+        var afterSecond = snapshotSupportState(profile);
+
+        Assert.Equal(afterFirst, afterSecond);
+        Assert.True(profile.HasDisability(DisabilityType.Autism));
+        Assert.True(profile.HasDisability(DisabilityType.ADHD));
+    }
+
+    private static string snapshotSupportState(UserProfile profile)
+    {
+        return string.Join(
+            "|",
+            profile.Disabilities.OrderBy(d => d.ToString()),
+            profile.Disability,
+            profile.Support.VisualFunction,
+            profile.Support.AuditoryFunction,
+            profile.Support.MotorFunction,
+            profile.Support.IntellectualSupport,
+            profile.Support.AutismSupport,
+            profile.Support.AdhdPresentation);
+    }
+
+    [Fact]
+    public void SaveAndLoad_PersistsSupportDescriptorsForAutismAdhdHearingAndMotor()
+    {
+        var profile = new UserProfile
+        {
+            Name = "Perfil con apoyos completos",
+            Age = 12,
+            Disabilities = { DisabilityType.Autism, DisabilityType.ADHD, DisabilityType.Hearing, DisabilityType.Motor },
+            Support =
+            {
+                AutismSupport = AutismSupportLevel.Level3,
+                AdhdPresentation = AdhdPresentation.PredominantlyInattentive,
+                AuditoryFunction = AuditoryFunctionalLevel.HardOfHearing,
+                MotorFunction = MotorFunctionalLevel.FineMotorDifficulties
+            }
+        };
+
+        _storage.Save(profile);
+        var loaded = _storage.Load();
+
+        Assert.NotNull(loaded);
+        Assert.Equal(4, loaded.Disabilities.Count);
+        Assert.True(loaded.HasDisability(DisabilityType.Autism));
+        Assert.True(loaded.HasDisability(DisabilityType.ADHD));
+        Assert.True(loaded.HasDisability(DisabilityType.Hearing));
+        Assert.True(loaded.HasDisability(DisabilityType.Motor));
+        Assert.Equal(AutismSupportLevel.Level3, loaded.Support.AutismSupport);
+        Assert.Equal(AdhdPresentation.PredominantlyInattentive, loaded.Support.AdhdPresentation);
+        Assert.Equal(AuditoryFunctionalLevel.HardOfHearing, loaded.Support.AuditoryFunction);
+        Assert.Equal(MotorFunctionalLevel.FineMotorDifficulties, loaded.Support.MotorFunction);
+    }
+
+    [Fact]
+    public void Delete_ReturnsFalse_WhenFileIsLockedByAnotherHandle()
+    {
+        _storage.Save(new UserProfile { Name = "Bloqueado" });
+        FileStream? locked = null;
+
+        try
+        {
+            locked = File.Open(
+                _testFilePath,
+                FileMode.Open,
+                FileAccess.ReadWrite,
+                FileShare.None);
+
+            // Borrado con el archivo bloqueado debe reportar false, no lanzar.
+            bool deleted = _storage.Delete();
+
+            Assert.False(deleted);
+            Assert.True(_storage.Exists());
+        }
+        finally
+        {
+            locked?.Dispose();
+        }
+
+        // Al liberar el bloqueo el borrado debe funcionar con normalidad.
+        Assert.True(_storage.Delete());
+        Assert.False(_storage.Exists());
+    }
+
+    [Fact]
     public void Profile_DefaultsToCurrentVersionAndKeepsAutismAndAdhdSeparate()
     {
         var profile = new UserProfile
@@ -216,9 +404,10 @@ public class ProfileStorageTests : IDisposable
     {
         try
         {
-            if (File.Exists(_testFilePath))
+            string prefix = Path.GetFileName(_testFilePath);
+            foreach (string file in Directory.EnumerateFiles(Path.GetTempPath(), prefix + "*"))
             {
-                File.Delete(_testFilePath);
+                File.Delete(file);
             }
         }
         catch

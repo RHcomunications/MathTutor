@@ -11,6 +11,8 @@ namespace MathTutor.Core.Services;
 /// </summary>
 public class ProfileStorageService
 {
+    private static readonly object FileGate = new();
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
@@ -34,7 +36,10 @@ public class ProfileStorageService
     }
 
     /// <summary>
-    /// Guarda el perfil del usuario en disco.
+    /// Guarda el perfil del usuario en disco mediante una escritura atómica:
+    /// primero se escribe un archivo temporal en el mismo directorio y luego
+    /// se reemplaza el archivo final con rename. Un corte de luz o un fallo
+    /// a mitad de la escritura nunca trunca el perfil ya guardado.
     /// </summary>
     public void Save(UserProfile profile)
     {
@@ -47,11 +52,36 @@ public class ProfileStorageService
         }
 
         string json = JsonSerializer.Serialize(profile, JsonOptions);
-        File.WriteAllText(DefaultFilePath, json);
+        string tempPath = DefaultFilePath + ".tmp";
+
+        lock (FileGate)
+        {
+            try
+            {
+                File.WriteAllText(tempPath, json);
+                File.Move(tempPath, DefaultFilePath, overwrite: true);
+            }
+            finally
+            {
+                try
+                {
+                    if (File.Exists(tempPath))
+                    {
+                        File.Delete(tempPath);
+                    }
+                }
+                catch (IOException)
+                {
+                    // El rename ya se aplicó; el temporal aislado se limpia con el SO.
+                }
+            }
+        }
     }
 
     /// <summary>
-    /// Carga el perfil del usuario desde el disco. Retorna null si no existe o si ocurre un error de lectura.
+    /// Carga el perfil del usuario desde el disco. Retorna null si no existe o si el
+    /// archivo está dañado; un JSON corrupto se pone en cuarentena con sufijo
+    /// <c>.corrupt</c> en lugar de perderse, y la migración resultante se persiste.
     /// </summary>
     public UserProfile? Load()
     {
@@ -60,12 +90,30 @@ public class ProfileStorageService
             return null;
         }
 
+        lock (FileGate)
+        {
+            return LoadCore();
+        }
+    }
+
+    private UserProfile? LoadCore()
+    {
+        string json;
         try
         {
-            string json = File.ReadAllText(DefaultFilePath);
-            string? legacySeverity = null;
-            bool hasProfileVersion = false;
+            json = File.ReadAllText(DefaultFilePath);
+        }
+        catch (IOException)
+        {
+            return null;
+        }
 
+        string? legacySeverity = null;
+        bool hasProfileVersion = false;
+        bool validJson = true;
+
+        try
+        {
             using (var document = JsonDocument.Parse(json))
             {
                 if (document.RootElement.ValueKind == JsonValueKind.Object)
@@ -78,18 +126,65 @@ public class ProfileStorageService
                     }
                 }
             }
+        }
+        catch (Exception)
+        {
+            validJson = false;
+        }
 
-            var profile = JsonSerializer.Deserialize<UserProfile>(json, JsonOptions);
-            if (profile != null)
+        if (!validJson)
+        {
+            QuarantineCorruptProfile(DefaultFilePath);
+            return null;
+        }
+
+        try
+        {
+            if (JsonSerializer.Deserialize<UserProfile>(json, JsonOptions)
+                    is not UserProfile profile)
             {
-                MigrateLegacyProfile(profile, legacySeverity, force: !hasProfileVersion);
+                // JSON válido que no representa un objeto de perfil (p. ej. un array).
+                QuarantineCorruptProfile(DefaultFilePath);
+                return null;
+            }
+
+            bool needsPersistence = !hasProfileVersion ||
+                profile.ProfileVersion < UserProfile.CurrentProfileVersion;
+
+            MigrateLegacyProfile(profile, legacySeverity, force: !hasProfileVersion);
+
+            if (needsPersistence)
+            {
+                // Persistir la migración para que no se repita en cada arranque.
+                Save(profile);
             }
 
             return profile;
         }
-        catch
+        catch (Exception)
         {
+            QuarantineCorruptProfile(DefaultFilePath);
             return null;
+        }
+    }
+
+    private static void QuarantineCorruptProfile(string path)
+    {
+        string? directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd-HHmmss-fff");
+        string quarantinePath = path + $".corrupt-{timestamp}";
+        try
+        {
+            File.Move(path, quarantinePath);
+        }
+        catch (IOException)
+        {
+            // Archivo bloqueado: se deja en sitio; el próximo arranque reintenta.
         }
     }
 
@@ -192,7 +287,8 @@ public class ProfileStorageService
     }
 
     /// <summary>
-    /// Borra el perfil local. Devuelve true si existía un archivo que eliminar.
+    /// Borra el perfil local. Devuelve true si existía un archivo y se eliminó con éxito;
+    /// false si no existía o si el archivo estaba bloqueado por otro proceso.
     /// </summary>
     public bool Delete()
     {
@@ -201,8 +297,19 @@ public class ProfileStorageService
             return false;
         }
 
-        File.Delete(DefaultFilePath);
-        return true;
+        try
+        {
+            File.Delete(DefaultFilePath);
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 
     /// <summary>

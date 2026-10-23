@@ -339,7 +339,7 @@ public class ExerciseGenerator
             ExpectedResult = total,
             StandardInstruction = $"En el huerto de Cosmo plantamos {rows} filas con {cols} {visual.Name.ToLower()}s en cada fila. ¿Cuántas hay en total? ¡Calcula {rows} × {cols}!",
             SimplifiedInstruction = $"Hay {rows} grupitos. Cada grupito tiene {cols} {visual.Name.ToLower()}s. ¿Cuántas hay en total?",
-            ScreenReaderDescription = $"Una cuadrícula de {rows} filas por {cols} columnas con {visual.Name.ToLower()}s. Total: {total}.",
+            ScreenReaderDescription = $"Una cuadrícula de {rows} filas por {cols} columnas con {visual.Name.ToLower()}s. Cuenta las filas iguales para descubrir el total.",
             FirstHint = $"Suma cada fila: {string.Join(" + ", Enumerable.Repeat(cols.ToString(), rows))}...",
             SecondHintDetailed = $"{rows} veces {cols} es igual a {total}.",
             ExplanationOfSuccess = $"¡Espectacular! {rows} × {cols} = {total}. Multiplicar es una forma rápida de sumar grupos iguales: ¡{rows} veces {cols} da {total}!"
@@ -661,7 +661,7 @@ public class ExerciseGenerator
             ExpectedResult = totalSubUnits,
             StandardInstruction = $"En el mercado compras frutas mágicas. Tienes {wholeUnits} moneda(s) de {symbol}1.00 (100 {fraction}) y {halfUnits} moneda(s) de {symbol}0.50 (50 {fraction}). ¿Cuántos {fraction} tienes en total? (Equivale a {symbol}{decimalAmount:F2})",
             SimplifiedInstruction = $"Tienes {wholeUnits} moneda de {symbol}1 y {halfUnits} de 50 {fraction}. ¿Cuántos {fraction} tienes en total?",
-            ScreenReaderDescription = $"{wholeUnits} monedas de 1.00 {currency} y {halfUnits} monedas de cincuenta {fraction}. Total: {totalSubUnits} {fraction}.",
+            ScreenReaderDescription = $"{wholeUnits} monedas de 1.00 {currency} y {halfUnits} monedas de cincuenta {fraction}. Añade el valor de todas las monedas.",
             FirstHint = $"Cada {symbol}1.00 son 100 {fraction}. Suma: ({wholeUnits * 100}) + ({halfUnits * 50}).",
             SecondHintDetailed = $"{wholeUnits * 100} {fraction} más {halfUnits * 50} {fraction} es igual a {totalSubUnits} {fraction} ({symbol}{decimalAmount:F2}).",
             ExplanationOfSuccess = $"¡Excelente! Tienes {totalSubUnits} {fraction}, que se escribe matemáticamente como {symbol}{decimalAmount:F2} {currency}. ¡Los decimales son las partes de una unidad entera!"
@@ -880,7 +880,7 @@ public class ExerciseGenerator
             ExpectedResult = root,
             StandardInstruction = $"El jardín mágico de Cosmo tiene forma de cuadrado perfecto y está formado por {squareArea} baldosas en total. Como tiene el mismo número de filas que de columnas, ¿cuántas baldosas mide cada lado del jardín? (Calcula la raíz cuadrada: √{squareArea})",
             SimplifiedInstruction = $"Un piso cuadrado tiene {squareArea} baldosas en total. ¿Cuántas baldosas tiene de ancho y de largo?",
-            ScreenReaderDescription = $"Cuadrado perfecto de {squareArea} losas en una cuadrícula de {root} por {root}. Raíz cuadrada de {squareArea}.",
+            ScreenReaderDescription = $"Cuadrado perfecto de {squareArea} losas. Observa cómo se organizan en filas y columnas iguales para hallar la raíz cuadrada.",
             FirstHint = $"Busca un número que multiplicado por sí mismo dé {squareArea}: ¿qué número por sí mismo da {squareArea}?",
             SecondHintDetailed = $"{root} × {root} = {squareArea}, por lo tanto √{squareArea} = {root}.",
             ExplanationOfSuccess = $"¡Espectacular! √{squareArea} = {root}, porque {root} × {root} = {squareArea}. La raíz cuadrada es la operación inversa de elevar al cuadrado."
@@ -929,7 +929,7 @@ public class ExerciseGenerator
             ExpectedResult = expected,
             StandardInstruction = $"El cofre del tesoro está marcado en el mapa en el punto ({xCoord}, {yCoord}). Recuerda que el primer número siempre indica el eje X horizontal (este) y el segundo el eje Y vertical (norte). ¿Cuál es la coordenada sobre el eje {axisName}?",
             SimplifiedInstruction = $"El punto es ({xCoord}, {yCoord}). El primer número es X y el segundo es Y. ¿Cuánto vale {(askX ? "X" : "Y")}?",
-            ScreenReaderDescription = $"Plano cartesiano con un punto en coordenada X igual a {xCoord} e Y igual a {yCoord}. Pregunta por el eje {axisName}.",
+            ScreenReaderDescription = $"Plano cartesiano con un punto marcado en ({xCoord}, {yCoord}). Localiza su posición sobre el eje {axisName}.",
             FirstHint = "En el par ordenado (X, Y), el primer valor es X y el segundo es Y.",
             SecondHintDetailed = $"Para ({xCoord}, {yCoord}), la coordenada en el eje {axisName} es {expected}.",
             ExplanationOfSuccess = $"¡Navegante experto! En el punto ({xCoord}, {yCoord}), el valor sobre el eje {axisName} es {expected}."
@@ -975,7 +975,7 @@ public class ExerciseGenerator
             ExpectedResult = finalBalance,
             StandardInstruction = $"En el/la {store} de la esquina tenías {symbol}{initialBalance} {currency} a favor (+{initialBalance}). Compraste mercancía por {symbol}{debt} {currency} que quedaste a deber (-{debt}). Al registrar (+{initialBalance}) + (-{debt}), ¿cuál es tu saldo final?",
             SimplifiedInstruction = $"Tenías {initialBalance} {currency} y gastaste {debt} {currency}. Quedaste debiendo. ¿Cuál es tu saldo final?",
-            ScreenReaderDescription = $"Operación con números enteros con signo: positivo {initialBalance} más negativo {debt}. Resultado esperado: {finalBalance}.",
+            ScreenReaderDescription = $"Operación con números enteros con signo: positivo {initialBalance} más negativo {debt}. Sigue la flecha sobre la recta numérica para hallar el saldo.",
             FirstHint = $"Como la deuda ({debt}) es mayor que tu saldo inicial ({initialBalance}), tu resultado será un número negativo.",
             SecondHintDetailed = $"(+{initialBalance}) - {debt} = {finalBalance}. Tienes una deuda de {Math.Abs(finalBalance)} {currency}.",
             ExplanationOfSuccess = $"¡Excelente! (+{initialBalance}) + (-{debt}) = {finalBalance}. Un saldo de {finalBalance} significa que debes {Math.Abs(finalBalance)} {currency} en el/la {store}."
@@ -1700,7 +1700,7 @@ public class ExerciseGenerator
             ExpectedResult = expectedY,
             StandardInstruction = $"En el servicio de mototaxi de la comunidad, la tarifa en {currency} sigue la recta lineal y = mx + b, donde m = {symbol}{m} {currency} por kilómetro (pendiente), b = {symbol}{b} {currency} de banderazo inicial (ordenada al origen), y x son los kilómetros recorridos. Si viajas x = {x} kilómetros, ¿cuánto pagas en total y = {m}({x}) + {b}?",
             SimplifiedInstruction = $"Calcula y = {m} × {x} + {b}. Multiplica {m} por {x} y luego súmale {b}. ¿Cuánto pagas en total?",
-            ScreenReaderDescription = $"Ecuación de la recta y = {m}x + {b}. Para x = {x} kilómetros: {m} por {x} es {m * x}, más {b} {currency} da {expectedY} {currency}.",
+            ScreenReaderDescription = $"Ecuación de la recta y = {m}x + {b}. Para x = {x} kilómetros: multiplica la pendiente por x y suma el banderazo en {currency}.",
             FirstHint = $"Multiplica la pendiente por los kilómetros: {m} × {x} = {m * x}. Luego suma el banderazo: + {b}.",
             SecondHintDetailed = $"y = ({m * x}) + {b} = {expectedY} {currency}.",
             ExplanationOfSuccess = $"¡Exacto! y = {m}({x}) + {b} = {m * x} + {b} = {symbol}{expectedY} {currency}. La recta y = mx + b modela costos fijos y variables en la economía cotidiana."
@@ -1785,7 +1785,7 @@ public class ExerciseGenerator
             ExpectedResult = peakValue,
             StandardInstruction = $"En un sintetizador musical accesible, una nota pura genera una onda senoidal de voltaje dada por la función y = {amplitude} · sen(x). Como el valor máximo de la función seno es 1 (sen 90° = 1), ¿cuál es la amplitud máxima o cresta alcanzada por la onda sonora ({amplitude} × 1)?",
             SimplifiedInstruction = $"En la onda y = {amplitude} × sen(x), el seno máximo vale 1. ¿Cuál es la altura máxima alcanzada ({amplitude} × 1)?",
-            ScreenReaderDescription = $"Función trigonométrica continua y = {amplitude} por seno de x. Amplitud máxima en el pico donde sen(x) es 1. Altura máxima {amplitude}.",
+            ScreenReaderDescription = $"Función trigonométrica continua y = {amplitude} por seno de x. Amplitud máxima en el pico donde sen(x) es 1. Calcula {amplitude} multiplicado por 1.",
             FirstHint = $"El valor máximo que puede tener la función sen(x) es 1. Multiplica {amplitude} por 1.",
             SecondHintDetailed = $"Altura máxima = {amplitude} × 1 = {amplitude} voltios / unidades.",
             ExplanationOfSuccess = $"¡Espectacular! La amplitud de la onda es A = {amplitude}. Las funciones senoidales son el alma del audio digital, la síntesis de voz y las señales de radio."
@@ -2011,7 +2011,7 @@ public class ExerciseGenerator
             ExpectedResult = totalSteps,
             StandardInstruction = $"Nuestra ranita robot ejecuta el bucle de código: 'REPETIR {iterations} VECES {{ AVANZAR {stepsPerIteration} PASOS }}'. Esto equivale a la suma repetida {sumExpression} (o {iterations} × {stepsPerIteration}). ¿Cuántos pasos avanza la ranita al terminar el bucle?",
             SimplifiedInstruction = $"La ranita da {iterations} saltos de {stepsPerIteration} pasos cada uno ({sumExpression}). ¿Cuántos pasos avanza en total?",
-            ScreenReaderDescription = $"Bucle de programación: repetir {iterations} veces avanzar {stepsPerIteration} pasos. Suma repetida {sumExpression} igual a {totalSteps} pasos.",
+            ScreenReaderDescription = $"Bucle de programación: repetir {iterations} veces avanzar {stepsPerIteration} pasos. Cuentas la suma repetida {sumExpression} en cada vuelta del ciclo.",
             FirstHint = $"Suma {stepsPerIteration} un total de {iterations} veces: {sumExpression}.",
             SecondHintDetailed = $"{iterations} veces {stepsPerIteration} ({iterations} × {stepsPerIteration}) es igual a {totalSteps} pasos.",
             ExplanationOfSuccess = $"¡Excelente pensamiento algorítmico! El bucle REPETIR {iterations} VECES {{ AVANZAR {stepsPerIteration} }} suma {sumExpression} = {totalSteps} pasos."
@@ -2604,28 +2604,50 @@ public class ExerciseGenerator
             ex.Options[i].AccessibleKeyShortcut = (i + 1).ToString();
         }
     }
-
     private static void BuildOptions(Exercise ex, int correctValue, int min, int max, string unitLabel, Random rng)
     {
-        var values = new HashSet<int> { correctValue };
+        // Distractores cercanos al resultado pero elegidos aleatoriamente dentro del
+        // rango definido por cada tipo de ejercicio, sin salirse de sus límites.
+        int span = Math.Max(0, max - min);
+        int jitter = Math.Max(1, span / 3);
 
-        // Añadir distractores cercanos
-        int candidate1 = correctValue + 1;
-        int candidate2 = Math.Max(min, correctValue - 1);
-        int candidate3 = correctValue + 2;
-
-        values.Add(candidate1);
-        if (candidate2 != correctValue) values.Add(candidate2);
-        if (values.Count < 3) values.Add(candidate3);
-
-        var listValues = values.ToList();
-
-        for (int i = 0; i < listValues.Count; i++)
+        var candidates = new List<int>();
+        int lower = Math.Min(min, correctValue);
+        int upper = Math.Max(max, correctValue);
+        for (int v = lower; v <= upper; v++)
         {
-            int val = listValues[i];
+            if (v == correctValue) continue;
+            candidates.Add(v);
+        }
+
+        var chosen = candidates
+            .Select(v => (Value: v, Weight: Math.Abs(v - correctValue) + rng.Next(0, jitter + 1)))
+            .OrderBy(c => c.Weight).ThenBy(c => c.Value)
+            .Take(2)
+            .Select(c => c.Value)
+            .ToList();
+
+        // Respaldo determinista (siempre terminante): si el rango no aporta dos
+        // distractores, se expande hacia valores mayores. Caso extremo: un rango
+        // con solo dos opciones posibles (p. ej. fracción 1/2 con max = 2).
+        int delta = 1;
+        while (chosen.Count < 2)
+        {
+            int candidate = correctValue + delta;
+            if (candidate != correctValue && !chosen.Contains(candidate))
+            {
+                chosen.Add(candidate);
+            }
+            delta++;
+        }
+
+        var listValues = new List<int>(chosen) { correctValue };
+
+        foreach (int val in listValues)
+        {
             bool isCorrect = (val == correctValue);
             string label = string.IsNullOrWhiteSpace(unitLabel) ? val.ToString() : $"{val} {unitLabel}";
-            string shortcut = (i + 1).ToString();
+            string shortcut = (listValues.IndexOf(val) + 1).ToString();
 
             ex.Options.Add(new ExerciseOption
             {

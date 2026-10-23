@@ -29,7 +29,10 @@ public class SpeechService : IDisposable
     private bool _enabled = true;
     private object? _jawsComObject;
     private bool _jawsInitialized;
+    private bool _jawsFailed;
+    private bool _jawsDetected;
     private bool _nvdaClientDllAvailable = true;
+    private bool _nvdaControllerActive;
 
     /// <summary>
     /// Canal B: Integración con el lector de pantalla del sistema (NVDA, JAWS, Narrador).
@@ -152,14 +155,19 @@ public class SpeechService : IDisposable
 
         try
         {
-            if (nvdaController_testIfRunning() == 0)
+            // Handshake RPC latched: tras una primera respuesta positiva se evita
+            // el ping por cada locución (honestidad: si el latch está activo,
+            // la locución por NVDA se intenta de forma directa).
+            if (!(_nvdaControllerActive || nvdaController_testIfRunning() == 0))
+                return false;
+
+            _nvdaControllerActive = true;
+
+            if (interrupt)
             {
-                if (interrupt)
-                {
-                    nvdaController_cancelSpeech();
-                }
-                return nvdaController_speakText(text) == 0;
+                nvdaController_cancelSpeech();
             }
+            return nvdaController_speakText(text) == 0;
         }
         catch (DllNotFoundException)
         {
@@ -180,16 +188,26 @@ public class SpeechService : IDisposable
     {
         try
         {
-            if (Process.GetProcessesByName("jfw").Length == 0)
+            // La falla de vinculación COM (JAWS sin soporte de workspace COM moderno,
+            // p. ej. licencia de pantalla inferior o DLL no registrada) se latching para
+            // no repetir la creación del objeto COM en cada locución.
+            if (_jawsFailed)
                 return false;
+
+            if (!_jawsDetected && Process.GetProcessesByName("jfw").Length == 0)
+                return false;
+
+            _jawsDetected = true;
 
             if (!_jawsInitialized)
             {
                 _jawsInitialized = true;
                 var jawsType = Type.GetTypeFromProgID("FreedomScientific.JawsApi");
-                if (jawsType != null)
+                _jawsComObject = jawsType != null ? Activator.CreateInstance(jawsType) : null;
+                if (_jawsComObject == null)
                 {
-                    _jawsComObject = Activator.CreateInstance(jawsType);
+                    _jawsFailed = true;
+                    return false;
                 }
             }
 
@@ -204,6 +222,10 @@ public class SpeechService : IDisposable
 
                 return result is true;
             }
+        }
+        catch (COMException)
+        {
+            _jawsFailed = true;
         }
         catch
         {

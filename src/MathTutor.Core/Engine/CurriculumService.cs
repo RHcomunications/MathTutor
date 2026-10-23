@@ -73,30 +73,71 @@ public class CurriculumService
     /// </summary>
     public List<PedagogicalTopic> GetTopicsForAge(int age, DisabilityType disability = DisabilityType.None, IEnumerable<string>? completedLessonIds = null)
     {
+        var allTopics = GetAllTopics();
         var allowedLevels = new HashSet<AcademicLevel>(AdaptiveEngine.GetAllowedLevelsForAge(age, disability));
-        if (completedLessonIds != null)
+
+        // Niveles de refuerzo concedidos únicamente por discapacidad intelectual:
+        // sus temas quedan exentos del filtro de rango de edad objetivo, de lo
+        // contrario el filtro anularía el refuerzo (p. ej. Kínder para 6-15 años).
+        var exemptLevels = new HashSet<AcademicLevel>();
+        if (disability == DisabilityType.Intellectual && age >= 6 && age <= 15)
         {
-            var completedSet = new HashSet<string>(completedLessonIds);
-            var baseTopics = GetAllTopics().FindAll(t =>
-                allowedLevels.Contains(t.Level) &&
-                (age >= 16 || (age >= t.TargetAgeMin && age <= t.TargetAgeMax)));
-            if (age >= 5 &&
-                baseTopics.Count > 0 &&
-                baseTopics.TrueForAll(t => completedSet.Contains(t.Id)))
+            var baseLevels = new HashSet<AcademicLevel>(AdaptiveEngine.GetAllowedLevelsForAge(age, DisabilityType.None));
+            foreach (var level in allowedLevels)
             {
-                var allTopics = GetAllTopics();
-                int lastIdx = allTopics.FindLastIndex(t => allowedLevels.Contains(t.Level));
-                if (lastIdx >= 0 && lastIdx + 1 < allTopics.Count)
+                if (!baseLevels.Contains(level))
                 {
-                    allowedLevels.Add(allTopics[lastIdx + 1].Level);
+                    exemptLevels.Add(level);
                 }
             }
         }
 
-        return GetAllTopics()
+        if (completedLessonIds != null)
+        {
+            var completedSet = new HashSet<string>(completedLessonIds);
+
+            bool IsAllowed(PedagogicalTopic t) =>
+                allowedLevels.Contains(t.Level) &&
+                (age >= 16 || exemptLevels.Contains(t.Level) ||
+                 (age >= t.TargetAgeMin && age <= t.TargetAgeMax));
+
+            // Desbloqueo en cascada: si el alumno ya completó todas las misiones
+            // permitidas, se abre el nivel siguiente del orden canónico; la cascada
+            // se repite mientras continúe completado. Los niveles desbloqueados por
+            // progreso quedan exentos del filtro de edad objetivo, porque un alumno
+            // adelantado puede terminarlos antes de llegar a la edad canónica.
+            while (age >= 5)
+            {
+                var allowedTopics = allTopics.FindAll(IsAllowed);
+                if (allowedTopics.Count == 0 || !allowedTopics.TrueForAll(t => completedSet.Contains(t.Id)))
+                {
+                    break;
+                }
+
+                int lastIdx = allTopics.FindLastIndex(t => allowedLevels.Contains(t.Level));
+                bool added = false;
+                for (int i = lastIdx + 1; i < allTopics.Count; i++)
+                {
+                    if (allowedLevels.Add(allTopics[i].Level))
+                    {
+                        exemptLevels.Add(allTopics[i].Level);
+                        added = true;
+                        break;
+                    }
+                }
+
+                if (!added)
+                {
+                    break;
+                }
+            }
+        }
+
+        return allTopics
             .FindAll(t =>
                 allowedLevels.Contains(t.Level) &&
-                (age >= 16 || (age >= t.TargetAgeMin && age <= t.TargetAgeMax)));
+                (age >= 16 || exemptLevels.Contains(t.Level) ||
+                 (age >= t.TargetAgeMin && age <= t.TargetAgeMax)));
     }
 
     /// <summary>
@@ -140,7 +181,18 @@ public class CurriculumService
 
         if (profile != null)
         {
-            return topics.Find(t => t.Id != currentTopicId && !profile.CompletedLessonIds.Contains(t.Id));
+            // Fallback hacia adelante: si el tema actualidad no está visible para este
+            // perfil (p. ej. quedó fuera de sus niveles permitidos), se ubica su posición
+            // canónica y se prefiere el primer tema pendiente posterior a él en el orden
+            // del currículo; solo si ya no hay pendientes adelante se retrocede.
+            var allTopics = GetAllTopics();
+            int canonicalIdx = allTopics.FindIndex(t => t.Id == currentTopicId);
+            int start = canonicalIdx >= 0 ? canonicalIdx : -1;
+
+            return topics.FirstOrDefault(t =>
+                       allTopics.IndexOf(t) > start &&
+                       !profile.CompletedLessonIds.Contains(t.Id)) ??
+                   topics.Find(t => t.Id != currentTopicId && !profile.CompletedLessonIds.Contains(t.Id));
         }
 
         return null;
@@ -651,6 +703,36 @@ public class CurriculumService
 
         topic.Exercises.Add(ex3);
 
+        // Ejercicio 4: Propiedad Asociativa
+        var ex4 = new Exercise
+        {
+            Id = "add_ex_04",
+            Title = "Los Vagones del Tren: Propiedad Asociativa",
+            GameType = GamePlayType.AssociativePropertyDemo,
+            TargetAgeMin = 6,
+            TargetAgeMax = 8,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = 6,
+            StandardInstruction = "El tren de la Aldea transporta 6 tesoros repartidos en tres vagones: 2 en el vagon 1, 3 en el vagon 2 y 1 en el vagon 3. La locomotora prueba dos maneras de agrupar: primero une el vagon 1 con el 2 (2 + 3 = 5) y después agrega el vagon 3: 5 + 1 = 6. Luego prueba agrupando el vagon 2 con el 3 (3 + 1 = 4) y después une el vagon 1: 2 + 4 = 6. ¿Cuántos tesoros lleva el tren en total?",
+            SimplifiedInstruction = "En el tren hay vagones con 2, 3 y 1 tesoros. Primero suma dos de los vagones y luego el tercero: 2 + 3 + 1. ¿Cuántos tesoros hay en total?",
+            ScreenReaderDescription = "Tren con tres vagones: vagón 1 con 2 tesoros, vagón 2 con 3 tesoros y vagón 3 con 1 tesoro. Agrupa los tesoros de dos maneras distintas y compara los resultados.",
+            FirstHint = "Elige una pareja de vagones para empezar: 2 + 3 = 5. Ahora suma el último vagón: 5 + 1.",
+            SecondHintDetailed = "Las dos agrupaciones dan el mismo resultado: (2 + 3) + 1 = 6 y 2 + (3 + 1) = 6.",
+            ExplanationOfSuccess = "¡Estupendo! Cambiar la manera de agrupar los sumandos no cambia el total: (2 + 3) + 1 = 2 + (3 + 1) = 6. ¡Esa es la Propiedad Asociativa, el superpoder de los vagones del tren!"
+        };
+
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "w1a", Name = "Tesoro 1 del vagon 1", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 1 del vagon 1", OrderIndex = 1, MusicalPitchHz = Frequencies[0] });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "w1b", Name = "Tesoro 2 del vagon 1", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 2 del vagon 1", OrderIndex = 2, MusicalPitchHz = Frequencies[1] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2a", Name = "Tesoro 1 del vagon 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 1 del vagon 2", OrderIndex = 3, MusicalPitchHz = Frequencies[2] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2b", Name = "Tesoro 2 del vagon 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 2 del vagon 2", OrderIndex = 4, MusicalPitchHz = Frequencies[3] });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "w2c", Name = "Tesoro 3 del vagon 2", EmojiSymbol = "💎", AccessibleDescription = "Tesoro 3 del vagon 2", OrderIndex = 5, MusicalPitchHz = Frequencies[4] });
+
+        ex4.Options.Add(new ExerciseOption { Id = "opt1", Label = "5 tesoros", Value = 5, IsCorrect = false, SpeechFeedback = "5 es solo la primera agrupación (2 + 3); falta sumar el vagon con 1 tesoro.", AccessibleKeyShortcut = "1" });
+        ex4.Options.Add(new ExerciseOption { Id = "opt2", Label = "6 tesoros", Value = 6, IsCorrect = true, SpeechFeedback = "¡Exacto! 2 + 3 + 1 son 6 tesoros, sin importar cómo agrupes.", AccessibleKeyShortcut = "2" });
+        ex4.Options.Add(new ExerciseOption { Id = "opt3", Label = "7 tesoros", Value = 7, IsCorrect = false, SpeechFeedback = "Contamos un tesoro de más; revisa los vagones: 2, 3 y 1.", AccessibleKeyShortcut = "3" });
+
+        topic.Exercises.Add(ex4);
+
         return topic;
     }
 
@@ -690,7 +772,7 @@ public class CurriculumService
             ExpectedResult = 3,
             StandardInstruction = "En el estanque nadaban alegremente 5 patitos dorados. De pronto, 2 patitos salieron a dormir una siesta en el pasto. ¿Cuántos patitos siguen nadando en el agua? ¡Calcula 5 - 2!",
             SimplifiedInstruction = "Había 5 patitos. 2 patitos se fueron. ¿Cuántos patitos quedaron en el agua?",
-            ScreenReaderDescription = "5 patitos nadando en el agua. Dos de ellos se van nadando hacia la orilla. Quedan 3 patitos en el centro.",
+            ScreenReaderDescription = "5 patitos nadando en el agua. Dos de ellos se van nadando hacia la orilla. Observa cuántos siguen en el centro.",
             FirstHint = "Teníamos 5. Cuenta hacia atrás dos pasitos: 4... 3...",
             SecondHintDetailed = "5 patitos menos 2 patitos es igual a 3 patitos.",
             ExplanationOfSuccess = "¡Brillante! 5 - 2 = 3. Al quitar o separar una parte de la colección, descubrimos cuántos quedan."
@@ -739,6 +821,8 @@ public class CurriculumService
             Id = "prog_seed_01",
             Title = "La Ranita Robot: Sumas Repetidas y Bucles de Código",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¿Sabías que los programadores de computadoras usan matemáticas todo el tiempo? En programación, cuando queremos hacer la misma acción varias veces, usamos algo llamado 'Bucle' o 'Repetición'. ¡Y en matemáticas, sumar el mismo número varias veces es el secreto de la multiplicación!",
             NarrativeIntroSimplified = "En las computadoras repetimos pasos para crear juegos. Repetir sumas es multiplicar.",
@@ -756,18 +840,18 @@ public class CurriculumService
         var ex1 = new Exercise
         {
             Id = "prog_ex_01",
-            Title = "Los Saltos de la Ranita Robot",
+            Title = "El Robot de Entrenamiento: tu Primer Bucle de Código",
             GameType = GamePlayType.PatternAndLoopSeed,
-            TargetAgeMin = 6,
-            TargetAgeMax = 8,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             Level = AcademicLevel.ProgrammingFoundations,
             ExpectedResult = 6,
-            StandardInstruction = "Nuestra ranita robot está programada con la instrucción: 'REPETIR 3 VECES { AVANZAR 2 PASOS }'. Es decir: 2 pasos en el primer salto + 2 en el segundo + 2 en el tercero. ¿Cuántos pasos avanzó en total? ¡Calcula 2 + 2 + 2!",
-            SimplifiedInstruction = "La ranita da 3 saltos de 2 pasos cada uno: 2 + 2 + 2. ¿Cuántos pasos dio en total?",
-            ScreenReaderDescription = "Una ranita mecánica da 3 saltos iguales sobre la recta numérica. Cada salto mide 2 unidades. Aterriza en el 6.",
-            FirstHint = "Suma primero los dos primeros saltos: 2 + 2 = 4. Luego suma el tercer salto: 4 + 2...",
-            SecondHintDetailed = "2 + 2 + 2 es igual a 6. Tres veces el número 2 son 6.",
-            ExplanationOfSuccess = "¡Impresionante! 2 + 2 + 2 = 6, lo que es igual a 3 veces 2 (3 x 2 = 6). ¡Acabas de resolver tu primer algoritmo matemático con bucles!"
+            StandardInstruction = "Antes de escribir código real, todo programador entrena el pensamiento computacional con diagramas. Nuestro robot de entrenamiento ejecuta la instrucción: 'REPETIR 3 VECES { AVANZAR 2 PASOS }'. Es decir: 2 pasos en el primer salto + 2 en el segundo + 2 en el tercero. Este patrón de repetición se llama bucle (loop). ¿Cuántos pasos avanzó en total? Calcula 2 + 2 + 2.",
+            SimplifiedInstruction = "El robot repite 3 veces la orden de avanzar 2 pasos: 2 + 2 + 2. ¿Cuántos pasos dio en total?",
+            ScreenReaderDescription = "Un robot de entrenamiento ejecuta 3 repeticiones idénticas sobre la recta numérica. Cada repetición mide 2 unidades. Observa dónde aterriza al terminar el bucle.",
+            FirstHint = "Suma primero las dos primeras repeticiones: 2 + 2 = 4. Luego añade la tercera: 4 + 2...",
+            SecondHintDetailed = "2 + 2 + 2 es igual a 6. Tres veces el número 2 son 6: en programación lo notarías como 3 × 2.",
+            ExplanationOfSuccess = "¡Impresionante! 2 + 2 + 2 = 6, lo que equivale a 3 veces 2 (3 × 2 = 6). Acabas de resolver tu primer algoritmo matemático con un bucle: la base de toda la programación."
         };
 
         for (int i = 1; i <= 3; i++)
@@ -828,7 +912,7 @@ public class CurriculumService
             ExpectedResult = 6,
             StandardInstruction = "Cosmo organizó sus manzanas en 2 filas bien ordenadas. Cada fila tiene 3 manzanas rojas. ¿Cuántas manzanas hay en total? ¡Es la multiplicación 2 × 3!",
             SimplifiedInstruction = "Hay 2 filas. Cada fila tiene 3 manzanas. ¿Cuántas hay en total?",
-            ScreenReaderDescription = "Una cuadrícula de 2 filas con 3 manzanas cada una. Total: 6 manzanas.",
+            ScreenReaderDescription = "Una cuadrícula de 2 filas con 3 manzanas cada una. Observa cómo las filas iguales se suman para multiplicar.",
             FirstHint = "Suma la primera fila más la segunda fila: 3 + 3...",
             SecondHintDetailed = "2 veces 3 es igual a 6. 2 × 3 = 6.",
             ExplanationOfSuccess = "¡Extraordinario! 2 × 3 = 6. Dos filas de tres manzanas nos dan seis manzanas en total."
@@ -954,7 +1038,7 @@ public class CurriculumService
             ExpectedResult = 3,
             StandardInstruction = "Un pastel se cortó en 4 rebanadas iguales. Los amigos comieron 3 de esas rebanadas. ¿Cuál es el numerador (la cantidad de rebanadas que se comieron)?",
             SimplifiedInstruction = "El pastel tiene 4 pedazos iguales. Se comieron 3. ¿Cuántos pedazos se comieron?",
-            ScreenReaderDescription = "Un pastel redondo dividido en 4 rebanadas idénticas. 3 rebanadas han sido tomadas y queda 1 rebanada en el plato.",
+            ScreenReaderDescription = "Un pastel redondo dividido en 4 rebanadas idénticas. Observa cuántas rebanadas han sido tomadas y cuántas siguen en el plato.",
             FirstHint = "El número de arriba (numerador) indica las partes tomadas: cuenta cuántas rebanadas se comieron.",
             SecondHintDetailed = "Se comieron 3 de 4 partes. El numerador es 3 y la fracción es 3/4.",
             ExplanationOfSuccess = "¡Correcto! El numerador es 3. La fracción es 3/4: tomaron 3 partes de un total de 4 partes iguales."
@@ -1089,7 +1173,7 @@ public class CurriculumService
             ExpectedResult = 3,
             StandardInstruction = "Ada horneó 1 waffle entero y 1/2 de otro. Si cada waffle se divide en 2 pedazos iguales, ¿cuántos pedazos de 1/2 hay en total en 1 y 1/2?",
             SimplifiedInstruction = "Tienes 1 waffle entero partido en 2, más 1 pedazo extra. ¿Cuántos pedazos hay en total?",
-            ScreenReaderDescription = "Un waffle entero partido en 2 porciones y medio waffle más partido en 1 porción. Total: 3 medios waffles.",
+            ScreenReaderDescription = "Un waffle entero partido en 2 porciones y medio waffle más partido en 1 porción. Cuenta cuántas porciones de waffle hay en total.",
             FirstHint = "1 waffle entero son 2 medios pedazos. Suma el pedazo suelto.",
             SecondHintDetailed = "2 medios + 1 medio = 3 medios pedazos (3/2).",
             ExplanationOfSuccess = "¡Correcto! 1 y 1/2 waffle equivalen a 3 medios pedazos (3/2). ¡Es una fracción impropia!"
@@ -1151,7 +1235,7 @@ public class CurriculumService
             ExpectedResult = 150,
             StandardInstruction = "En el mercado tienes 1 moneda de $1.00 (100 centavos) y 1 moneda de $0.50 (50 centavos). ¿Cuántos centavos tienes en total? (Equivale a $1.50).",
             SimplifiedInstruction = "Tienes 1 moneda de $1 (100 centavos) y 1 moneda de 50 centavos. ¿Cuántos centavos tienes en total?",
-            ScreenReaderDescription = "1 moneda dorada de un peso (100 centavos) y 1 moneda plateada de cincuenta centavos. Total: 150 centavos o 1 peso con 50.",
+            ScreenReaderDescription = "1 moneda dorada de un peso (100 centavos) y 1 moneda plateada de cincuenta centavos. Añade el valor de todas las monedas.",
             FirstHint = "Suma 100 centavos más 50 centavos.",
             SecondHintDetailed = "100 + 50 = 150 centavos ($1.50).",
             ExplanationOfSuccess = "¡Exacto! Tienes 150 centavos, que se escribe $1.50 con un punto decimal. ¡Los decimales representan las partes sueltas de un entero!"
@@ -1385,7 +1469,7 @@ public class CurriculumService
             ExpectedResult = 3,
             StandardInstruction = "El piso de la sala de meditación es un cuadrado perfecto formado por 9 baldosas mágicas en total (3 filas de 3 columnas). ¿Cuántas baldosas mide cada lado de la sala? (Calcula la raíz cuadrada: √9)",
             SimplifiedInstruction = "El piso cuadrado tiene 9 baldosas. ¿Cuántas baldosas hay en cada fila y columna?",
-            ScreenReaderDescription = "Cuadrado de 9 losas organizado en 3 filas por 3 columnas. Raíz cuadrada de 9.",
+            ScreenReaderDescription = "Cuadrado perfecto de 9 losas. Observa cómo se organizan en filas y columnas iguales para hallar la raíz cuadrada.",
             FirstHint = "Piensa: ¿qué número multiplicado por sí mismo es igual a 9?",
             SecondHintDetailed = "3 × 3 = 9, por lo tanto √9 = 3.",
             ExplanationOfSuccess = "¡Brillante! √9 = 3 porque 3² = 3 × 3 = 9. La raíz cuadrada nos devuelve la medida del lado."
@@ -1506,7 +1590,7 @@ public class CurriculumService
             ExpectedResult = -3,
             StandardInstruction = "En la tiendita tenías $5 pesos a favor (+5). Compraste un jugo y unas papitas por $8 pesos fiados (-8). Al sumar (+5) + (-8), ¿cuál es tu saldo final?",
             SimplifiedInstruction = "Tienes 5 pesos y debes 8. ¿Cuánto quedas debiendo?",
-            ScreenReaderDescription = "Suma de enteros: positivo 5 más negativo 8. Da negativo 3.",
+            ScreenReaderDescription = "Suma de enteros: positivo 5 más negativo 8. Sigue la flecha sobre la recta numérica para conocer el saldo.",
             FirstHint = "Como debes más de lo que tienes, el resultado es negativo.",
             SecondHintDetailed = "5 - 8 = -3 pesos (debes 3 pesos).",
             ExplanationOfSuccess = "¡Exacto! (+5) + (-8) = -3. Quedas a deber 3 pesos en la tiendita."
@@ -1558,7 +1642,7 @@ public class CurriculumService
             ExpectedResult = 10,
             StandardInstruction = "Calcula el valor de la expresión: 4 + 3 × 2. Recuerda que la multiplicación se resuelve antes que la suma. ¿Cuál es el resultado correcto?",
             SimplifiedInstruction = "Primero haz 3 × 2 = 6. Luego suma 4 + 6. ¿Cuánto da?",
-            ScreenReaderDescription = "Expresión: 4 más 3 por 2. Por jerarquía de operaciones, 3 por 2 es 6, más 4 es igual a 10.",
+            ScreenReaderDescription = "Expresión: 4 más 3 por 2. Por jerarquía de operaciones, resuelve primero la multiplicación y después la suma.",
             FirstHint = "Resuelve primero 3 × 2. Luego suma 4.",
             SecondHintDetailed = "3 × 2 = 6, y 4 + 6 = 10.",
             ExplanationOfSuccess = "¡Magnífico! 3 × 2 = 6, y 4 + 6 = 10. Si sumaras primero 4 + 3 = 7 y luego multiplicaras daría 14, ¡lo cual es un error común que tú evitaste!"
@@ -1659,7 +1743,7 @@ public class CurriculumService
             ExpectedResult = 40,
             StandardInstruction = "En la tienda una mochila cuesta $200 pesos y tiene un descuento especial del 20%. ¿Cuántos pesos te descuentan del precio original?",
             SimplifiedInstruction = "La mochila vale 200 pesos y tiene 20% de descuento. ¿Cuánto dinero te descuentan?",
-            ScreenReaderDescription = "Cálculo de 20% de 200 pesos. 20 por cada 100 pesos da 40 pesos de rebaja.",
+            ScreenReaderDescription = "Cálculo de 20% de 200 pesos. Por cada 100 pesos se descuentan 20.",
             FirstHint = "Por cada $100 pesos te descuentan $20. Como son $200 pesos, te descuentan el doble: 20 × 2.",
             SecondHintDetailed = "(200 × 20) ÷ 100 = 40 pesos de descuento.",
             ExplanationOfSuccess = "¡Exacto! El 20% de $200 pesos son $40 pesos de descuento. La mochila te costará solo $160 pesos."
@@ -2221,7 +2305,7 @@ public class CurriculumService
             ExpectedResult = 26,
             StandardInstruction = "En el servicio de mototaxi, la tarifa en pesos es y = 4x + 10, donde $4 pesos es el costo por kilómetro (m), $10 pesos es el banderazo inicial (b) y x son los kilómetros recorridos. Si una persona viaja x = 4 kilómetros, ¿cuánto paga en total y = 4(4) + 10?",
             SimplifiedInstruction = "Calcula 4 × 4 + 10. Primero multiplica 4 por 4 (= 16) y luego suma 10. ¿Cuánto pagas?",
-            ScreenReaderDescription = "Ecuación de la recta y = 4x + 10. Para x = 4 kilómetros: 4 por 4 es 16, más 10 pesos da 26 pesos.",
+            ScreenReaderDescription = "Ecuación de la recta y = 4x + 10. Para x = 4 kilómetros: multiplica la pendiente por x y suma el banderazo.",
             FirstHint = "Multiplica 4 por los 4 km: 4 × 4 = 16. Luego suma el banderazo: 16 + 10.",
             SecondHintDetailed = "y = 16 + 10 = 26 pesos.",
             ExplanationOfSuccess = "¡Brillante! y = 4(4) + 10 = 16 + 10 = $26 pesos. ¡La ecuación y = mx + b modela a la perfección los costos de transporte!"
@@ -2374,7 +2458,7 @@ public class CurriculumService
             ExpectedResult = 6,
             StandardInstruction = "En una biblioteca digital accesible de 64 libros ordenados alfabéticamente, un algoritmo de búsqueda binaria descarta la mitad de opciones en cada intento. Sabiendo que 2⁶ = 64, ¿cuántos pasos comparativos como máximo se necesitan (log₂(64))?",
             SimplifiedInstruction = "¿A qué potencia elevas el 2 para que dé 64? (2 × 2 × 2 × 2 × 2 × 2). ¿Cuántas veces multiplicas el 2?",
-            ScreenReaderDescription = "Logaritmo en base 2 de 64. Potencia de 2 que da 64. 2 elevado a la 6 es 64. Respuesta: 6 pasos.",
+            ScreenReaderDescription = "Logaritmo en base 2 de 64. Cuenta cuántas veces multiplicas el 2 por sí mismo para llegar a 64.",
             FirstHint = "Multiplica el 2 sucesivamente: 2¹=2, 2²=4, 2³=8, 2⁴=16, 2⁵=32, 2⁶=64.",
             SecondHintDetailed = "Como 2⁶ = 64, entonces log₂(64) = 6 pasos.",
             ExplanationOfSuccess = "¡Brillante! log₂(64) = 6. ¡Con solo 6 preguntas puedes encontrar cualquier libro entre 64! El logaritmo convierte listas enormes en búsquedas instantáneas."
@@ -2527,7 +2611,7 @@ public class CurriculumService
             ExpectedResult = 8,
             StandardInstruction = "En un laboratorio de tecnología asistiva se evaluó la velocidad de respuesta de un lector de pantalla en 3 pruebas, obteniendo calificaciones de 7, 8 y 9 puntos. ¿Cuál es la media aritmética o promedio x̄ = (7 + 8 + 9) / 3?",
             SimplifiedInstruction = "Suma 7 + 8 + 9 (= 24) y divide entre 3 para conocer el promedio. ¿Cuánto es 24 ÷ 3?",
-            ScreenReaderDescription = "Estadística descriptiva: datos 7, 8 y 9. Suma total 24. Dividido entre 3 observaciones da media 8.",
+            ScreenReaderDescription = "Estadística descriptiva: datos 7, 8 y 9. Suma todos los datos y divide entre la cantidad de observaciones.",
             FirstHint = "Suma los tres valores: 7 + 8 + 9 = 24. Ahora divide 24 entre 3.",
             SecondHintDetailed = "x̄ = 24 ÷ 3 = 8 puntos.",
             ExplanationOfSuccess = "¡Excelente! La media aritmética es x̄ = 8 puntos. ¡Con este dominio de la estadística y el cálculo estás listo para programar el futuro!"
@@ -2553,6 +2637,8 @@ public class CurriculumService
             Id = "prog_variables_state_01",
             Title = "Cajas de Memoria: Variables, Asignación y Estado (x = x + a)",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¡Bienvenido al Módulo 1 de Programación Inclusiva! Ya dominas las incógnitas del álgebra; ahora descubrirás cómo las computadoras guardan información. En programación, una 'variable' es como una caja etiquetada en la memoria donde guardamos un dato (como el saldo de la tiendita o las vidas de un juego) y lo actualizamos línea por línea.",
             NarrativeIntroSimplified = "Una variable es como una cajita con nombre donde la computadora guarda un número y lo puede cambiar sumando o restando.",
@@ -2612,6 +2698,8 @@ public class CurriculumService
             Id = "prog_conditionals_ifelse_01",
             Title = "El Semáforo Inteligente: Condicionales SI / SI NO (if / else)",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¿Cómo sabe un lector de pantalla o un bastón inteligente cuándo activar una alerta sonora? ¡Gracias a las estructuras condicionales! Usando las desigualdades matemáticas (mayor que >, menor que <, mayor o igual >=), el código evalúa una pregunta lógica y elige el camino verdadero (SI / if) o el camino alternativo (SI NO / else).",
             NarrativeIntroSimplified = "Con la instrucción SI (if), el programa hace una pregunta: si se cumple sigue un camino, y SI NO (else) sigue el otro.",
@@ -2671,6 +2759,8 @@ public class CurriculumService
             Id = "prog_boolean_logic_01",
             Title = "Las Compuertas del Robot: Lógica Booleana (Y / AND, O / OR, NO / NOT)",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¡Llegamos al corazón lógico de todas las computadoras! El matemático George Boole descubrió que toda decisión compleja puede construirse combinando valores Verdaderos (1) y Falsos (0) mediante tres operadores lógicos: Y (AND), O (OR) y NO (NOT). ¡Con ellos programamos sensores de seguridad y sistemas de asistencia!",
             NarrativeIntroSimplified = "El operador lógico Y (AND) exige que las dos condiciones sean verdaderas (1 y 1) al mismo tiempo.",
@@ -2730,6 +2820,8 @@ public class CurriculumService
             Id = "prog_loops_for_while_01",
             Title = "El Motor de Repetición: Ciclos PARA (for) y Variables Acumuladoras",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¡Bienvenido al Módulo 2 de Programación Inclusiva! ¿Recuerdas cómo la multiplicación resume sumas repetidas? En programación, cuando necesitamos que el código repita una tarea decenas o miles de veces (como leer cada renglón de un libro digital accesible), usamos un ciclo PARA (for) o MIENTRAS (while) junto con una variable acumuladora.",
             NarrativeIntroSimplified = "Un ciclo PARA (for) repite una orden varias veces automáticamente y va guardando la suma en una variable acumuladora.",
@@ -2789,6 +2881,8 @@ public class CurriculumService
             Id = "prog_arrays_lists_01",
             Title = "El Estante Numerado desde Cero: Arreglos (Arrays) e Índices [0, 1, 2...]",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "Cuando queremos guardar toda una colección de datos en orden (como las notas musicales de una melodía accesible o la lista de precios de la tiendita), en lugar de crear cien variables sueltas usamos un Arreglo (Array) o Lista. ¡El secreto más famoso de la programación es que la primera posición de un arreglo siempre tiene el índice 0!",
             NarrativeIntroSimplified = "Un arreglo es una fila de cajitas numeradas empezando desde el 0: la primera cajita es [0], la segunda es [1] y la tercera es [2].",
@@ -2848,6 +2942,8 @@ public class CurriculumService
             Id = "prog_functions_params_01",
             Title = "Máquinas Reutilizables de Código: Funciones, Parámetros y Return",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "En Secundaria y Preparatoria aprendiste que una función matemática f(x) = 2x + 3 transforma una entrada x en una salida. ¡En programación una 'función' es exactamente eso! Es un bloque de código con nombre propio que recibe datos de entrada (parámetros), los procesa y devuelve un resultado con la instrucción RETORNAR (return).",
             NarrativeIntroSimplified = "Una función de código es como una máquina con nombre: le das un número de entrada (parámetro), hace el cálculo y te devuelve (return) el resultado.",
@@ -2907,6 +3003,8 @@ public class CurriculumService
             Id = "prog_algorithms_search_01",
             Title = "Recetas Paso a Paso: Algoritmos de Búsqueda y Valor Máximo",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¡Bienvenido al Módulo 3 de Programación Inclusiva! Un 'algoritmo' (palabra que viene del matemático Al-Juarismi) es una secuencia finita y ordenada de pasos sin ambigüedad para resolver un problema. Combinando un arreglo, un ciclo PARA y un condicional SI, podemos programar un algoritmo que recorra cualquier colección de datos y encuentre el valor máximo o mínimo.",
             NarrativeIntroSimplified = "Un algoritmo es una receta paso a paso. Para hallar el número más grande de una lista, revisamos uno por uno y guardamos siempre el mayor.",
@@ -2966,6 +3064,8 @@ public class CurriculumService
             Id = "prog_game_coordinates_01",
             Title = "Física y Coordenadas en Videojuegos Accesibles: Vectores (x = x + v·t)",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¿Cómo se mueven los personajes en un videojuego accesible con sonido espacial 3D? ¡Uniendo el plano cartesiano y las ecuaciones lineales que aprendiste en Secundaria y Preparatoria con el bucle principal del juego (Game Loop)! En cada segundo, el programa calcula la nueva posición sumando a la coordenada inicial el producto de la velocidad por el tiempo.",
             NarrativeIntroSimplified = "En un videojuego, para mover un personaje calculamos su nueva posición sumando dónde empezó más su velocidad multiplicada por el tiempo.",
@@ -3025,6 +3125,8 @@ public class CurriculumService
             Id = "prog_assistive_ai_data_01",
             Title = "Programando Tecnología Inclusiva: Sensores, Promedios e IA Asistiva",
             Level = AcademicLevel.ProgrammingFoundations,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
             CharacterName = "Cosmo el Búho Sabio",
             NarrativeIntro = "¡Llegaste a la cumbre del Reino Matemágico y de la Programación Inclusiva! Desde contar tus primeros objetos en Preescolar hasta dominar el Cálculo, la Estadística y el Código, ahora tienes todas las herramientas para crear tecnología que cambie vidas: lectores de pantalla, guantes traductores de Lengua de Señas, sillas de ruedas autónomas e Inteligencia Artificial accesible.",
             NarrativeIntroSimplified = "Combinando promedios estadísticos y funciones de código podemos programar Inteligencia Artificial que traduce señas y ayuda a las personas.",

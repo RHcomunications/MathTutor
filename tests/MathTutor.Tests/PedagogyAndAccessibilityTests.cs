@@ -794,6 +794,21 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void AdaptiveEngine_RecordAttempt_DoesNotInflateStarsWhenExerciseReplayed()
+    {
+        var profile = new UserProfile();
+        var ex = _curriculum.GetAllTopics().First().Exercises.First();
+
+        _adaptive.RecordAttempt(profile, ex, isCorrect: true, attemptCount: 1);
+        int starsAfterFirst = profile.StarsTotal;
+
+        // Re-jugar el mismo ejercicio ya no otorga estrellas duplicadas
+        _adaptive.RecordAttempt(profile, ex, isCorrect: true, attemptCount: 2);
+
+        Assert.Equal(starsAfterFirst, profile.StarsTotal);
+    }
+
+    [Fact]
     public void AdaptiveEngine_GetAllowedLevelsForAge_EnforcesAgeBracketRules()
     {
         // 3 a 5 años: únicamente Preescolar / Kínder
@@ -1061,6 +1076,98 @@ public class PedagogyAndAccessibilityTests
     }
 
     [Fact]
+    public void CurriculumService_GetTopicsForAge_ExemptsReinforcementLevelsFromTargetAgeFilter()
+    {
+        // Sin opción de refuerzo: a los 10 años no habría Kínder
+        var age10Default = _curriculum.GetTopicsForAge(10);
+        Assert.DoesNotContain(age10Default, t => t.Level == AcademicLevel.Kindergarten);
+
+        // Con discapacidad intelectual, el refuerzo de Kínder queda exento del
+        // filtro de rango de edad objetivo; de lo contrario el filtro anularía el refuerzo
+        var age10Intellectual = _curriculum.GetTopicsForAge(10, DisabilityType.Intellectual);
+        var kinderTopics = age10Intellectual.Where(t => t.Level == AcademicLevel.Kindergarten).ToList();
+        Assert.NotEmpty(kinderTopics);
+        Assert.Contains(kinderTopics, t => t.TargetAgeMax < 10);
+
+        // El resto de sus niveles base se conserva
+        Assert.Contains(age10Intellectual, t => t.Level == AcademicLevel.MiddleElementary);
+    }
+
+    [Fact]
+    public void CurriculumService_CascadeUnlocksSubsequentLevels_UntilFirstIncompleteLevel()
+    {
+        // Estado inicial: 1º de Preparatoria no está disponible a los 13 años
+        var initial = _curriculum.GetTopicsForAge(13);
+        Assert.DoesNotContain(initial, t => t.Level == AcademicLevel.HighSchoolFirstGrade);
+
+        // Una alumna de 13 años que termina TODA Secundaria desbloquea 1º de Preparatoria
+        var completed = _curriculum.GetAllTopics()
+            .Where(t => t.Level is AcademicLevel.SecondaryFirstGrade
+                or AcademicLevel.SecondarySecondGrade
+                or AcademicLevel.SecondaryThirdGrade)
+            .Select(t => t.Id)
+            .ToHashSet();
+
+        var unlocked = _curriculum.GetTopicsForAge(13, DisabilityType.None, completed);
+        Assert.Contains(unlocked, t => t.Level == AcademicLevel.HighSchoolFirstGrade);
+        Assert.DoesNotContain(unlocked, t => t.Level == AcademicLevel.Kindergarten);
+        Assert.DoesNotContain(unlocked, t => t.Level == AcademicLevel.ProgrammingFoundations);
+    }
+
+    [Fact]
+    public void ProgrammingTopics_DeclareAdultTargetAges_BeforeModuleUnlocksAtSixteen()
+    {
+        var programmingTopics = _curriculum.GetAllTopics()
+            .Where(t => t.Level == AcademicLevel.ProgrammingFoundations)
+            .ToList();
+
+        Assert.Equal(10, programmingTopics.Count);
+        Assert.All(programmingTopics, t =>
+        {
+            Assert.Equal(16, t.TargetAgeMin);
+            Assert.Equal(18, t.TargetAgeMax);
+        });
+
+        // Antes de los 16 el módulo permanece oculto
+        var age12TopicIds = _curriculum.GetTopicsForAge(12).Select(t => t.Id).ToHashSet();
+        Assert.DoesNotContain("prog_seed_01", age12TopicIds);
+
+        // A partir de 16 el módulo se desbloquea completo
+        var age16TopicIds = _curriculum.GetTopicsForAge(16).Select(t => t.Id).ToHashSet();
+        Assert.Contains("prog_seed_01", age16TopicIds);
+        Assert.Contains("prog_assistive_ai_data_01", age16TopicIds);
+    }
+
+    [Fact]
+    public void AdditionTopic_IncludesAssociativePropertyExercise_AccurateAndAccessible()
+    {
+        var topic = _curriculum.GetAllTopics().Find(t => t.Id == "elem_addition_01")!;
+        var associative = topic.Exercises.Find(e => e.Id == "add_ex_04")!;
+
+        Assert.Equal(GamePlayType.AssociativePropertyDemo, associative.GameType);
+        Assert.Equal(6, associative.ExpectedResult);
+
+        var correctOptions = associative.Options.Where(o => o.IsCorrect).ToList();
+        Assert.Single(correctOptions);
+        Assert.Equal(6, correctOptions[0].Value);
+
+        // Coherencia sensorial: los 2 + 3 tesoros del primer agrupamiento
+        Assert.Equal(5, associative.ItemsGroupA.Count + associative.ItemsGroupB.Count);
+        Assert.All(associative.ItemsGroupA.Concat(associative.ItemsGroupB),
+            i => Assert.False(string.IsNullOrWhiteSpace(i.AccessibleDescription)));
+    }
+
+    [Fact]
+    public void CurriculumService_GetNextTopic_HandlesHiddenCurrentTopic_Gracefully()
+    {
+        // Un tema de Kínder no es visible para un perfil de 12 años: la recomendación
+        // recae en el primer tema pendiente del orden canónico
+        var next = _curriculum.GetNextTopic("kinder_counting_01", new UserProfile { Age = 12 });
+        Assert.NotNull(next);
+        Assert.Equal("elem_addition_01", next.Id);
+    }
+
+    [Fact]
     public void Kindergarten_Patterns_UseDistinctSemanticPitchesAndInstrumentTimbre()
     {
         var patternExercise = _curriculum.GetAllTopics()
@@ -1070,6 +1177,16 @@ public class PedagogyAndAccessibilityTests
         var blue = patternExercise.ItemsGroupA.Find(i => i.Name.Contains("Azul"))!;
 
         Assert.NotEqual(red.MusicalPitchHz, blue.MusicalPitchHz);
+
+        var patternTopic = _curriculum.GetAllTopics()
+            .Find(t => t.Id == "kinder_patterns_01")!;
+        foreach (var exercise in patternTopic.Exercises.Where(e => e.Id.StartsWith("pattern_ex_")))
+        {
+            foreach (var repeatedItem in exercise.ItemsGroupA.GroupBy(i => i.EmojiSymbol))
+            {
+                Assert.Single(repeatedItem.Select(i => i.MusicalPitchHz).Distinct());
+            }
+        }
 
         var musicExercise = _curriculum.GetAllTopics()
             .Find(t => t.Id == "kinder_music_01")!

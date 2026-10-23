@@ -182,9 +182,14 @@ public class AdaptiveEngine
     /// </summary>
     public string GetAdaptedSuccess(Exercise exercise, UserProfile profile)
     {
-        if (PrefersSimpleLanguage(profile) && !string.IsNullOrWhiteSpace(exercise.SimplifiedExplanationOfSuccess))
+        if (PrefersSimpleLanguage(profile))
         {
-            return exercise.SimplifiedExplanationOfSuccess;
+            if (!string.IsNullOrWhiteSpace(exercise.SimplifiedExplanationOfSuccess))
+            {
+                return exercise.SimplifiedExplanationOfSuccess;
+            }
+
+            return SimplifiedHintCatalog.GetSimpleSuccess(exercise.GameType) ?? exercise.ExplanationOfSuccess;
         }
 
         return exercise.ExplanationOfSuccess;
@@ -202,6 +207,9 @@ public class AdaptiveEngine
             {
                 return simplified;
             }
+
+            return SimplifiedHintCatalog.GetSimpleHint(exercise.GameType, detailed)
+                ?? (detailed ? exercise.SecondHintDetailed : exercise.FirstHint);
         }
 
         return detailed ? exercise.SecondHintDetailed : exercise.FirstHint;
@@ -243,18 +251,21 @@ public class AdaptiveEngine
         if (isCorrect)
         {
             profile.CurrentStreak++;
-            int starsEarned = attemptCount switch
-            {
-                1 => 3, // 3 estrellas si lo logra al primer intento
-                2 => 2, // 2 estrellas con una pista
-                _ => 1  // 1 estrella asistida (siempre premia el esfuerzo y la perseverancia)
-            };
 
-            profile.StarsTotal += starsEarned;
-            profile.PointsTotal += starsEarned * 10;
-
+            // Las estrellas y puntos se otorgan una sola vez por ejercicio:
+            // re-jugar la misma misión ya no infla el total acumulado,
+            // la mejor calificación histórica vive en LessonStarRatings.
             if (!profile.CompletedExerciseIds.Contains(exercise.Id))
             {
+                int starsEarned = attemptCount switch
+                {
+                    1 => 3, // 3 estrellas si lo logra al primer intento
+                    2 => 2, // 2 estrellas con una pista
+                    _ => 1  // 1 estrella asistida (siempre premia el esfuerzo y la perseverancia)
+                };
+
+                profile.StarsTotal += starsEarned;
+                profile.PointsTotal += starsEarned * 10;
                 profile.CompletedExerciseIds.Add(exercise.Id);
             }
         }

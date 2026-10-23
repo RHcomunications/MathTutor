@@ -145,7 +145,9 @@ public class AccessibilityManager
         };
 
         ApplyTheme(nextTheme);
-        AnnounceAssertive($"Esquema de contraste cambiado a: {GetThemeDisplayName(nextTheme)}");
+        AnnounceAssertive(IsSystemThemeOverride
+            ? $"El Contraste del Sistema de Windows está gestionando la apariencia; tu preferencia ({GetThemeDisplayName(nextTheme)}) se aplicará cuando se desactive el contraste del sistema."
+            : $"Esquema de contraste cambiado a: {GetThemeDisplayName(nextTheme)}");
     }
 
     /// <summary>
@@ -252,7 +254,7 @@ public class AccessibilityManager
                 SetResource("AppSuccessBrush", new SolidColorBrush(Rgb(50, 255, 50)));
                 SetResource("AppOnAccentBrush", new SolidColorBrush(Rgb(0, 0, 0)));
                 SetResource("AppOnSuccessBrush", new SolidColorBrush(Rgb(0, 0, 0)));
-                SetResource("AppErrorBrush", new SolidColorBrush(Rgb(255, 90, 90)));
+                SetResource("AppErrorBrush", new SolidColorBrush(Rgb(255, 120, 120))); // ≥ 7:1 sobre negro (AAA)
                 break;
 
             case HighContrastTheme.HighContrastLight:
@@ -307,7 +309,7 @@ public class AccessibilityManager
                 SetResource("AppSuccessBrush", new SolidColorBrush(Rgb(11, 107, 54)));
                 SetResource("AppOnAccentBrush", new SolidColorBrush(Rgb(255, 255, 255)));
                 SetResource("AppOnSuccessBrush", new SolidColorBrush(Rgb(255, 255, 255)));
-                SetResource("AppErrorBrush", new SolidColorBrush(Rgb(176, 0, 32)));
+                SetResource("AppErrorBrush", new SolidColorBrush(Rgb(170, 0, 30))); // ≥ 7:1 sobre fondo (AAA)
                 break;
         }
 

@@ -26,6 +26,8 @@ public class TopicDisplayItem
 
 public sealed partial class MenuPage : Page
 {
+    private static string? _lastSelectedTopicId;
+
     private readonly AccessibilityManager _acc = AccessibilityManager.Instance;
     private readonly CurriculumService _curriculum = new();
     private readonly AdaptiveEngine _adaptive = new();
@@ -36,6 +38,13 @@ public sealed partial class MenuPage : Page
         ItemsTopics.PreviewKeyDown += VerticalListNavigation.OnPreviewKeyDown;
         ItemsTopics.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(ItemsTopics_KeyDown), handledEventsToo: true);
         ItemsTopics.ContainerContentChanging += ItemsTopics_ContainerContentChanging;
+        ItemsTopics.SelectionChanged += (_, _) =>
+        {
+            if (ItemsTopics.SelectedItem is TopicDisplayItem item)
+            {
+                _lastSelectedTopicId = item.TopicId;
+            }
+        };
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -126,7 +135,10 @@ public sealed partial class MenuPage : Page
 
         if (displayList.Count > 0)
         {
-            ItemsTopics.SelectedIndex = 0;
+            // Recordar la misión que el alumno tenía seleccionada al regresar al menú,
+            // en lugar de restablecer siempre la primera de la lista
+            int restoreIndex = displayList.FindIndex(d => d.TopicId == _lastSelectedTopicId);
+            ItemsTopics.SelectedIndex = restoreIndex >= 0 ? restoreIndex : 0;
         }
 
         DispatcherQueue.TryEnqueue(FocusFirstMissionItem);

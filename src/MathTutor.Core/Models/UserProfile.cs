@@ -117,7 +117,7 @@ public class SupportProfile
 /// </summary>
 public class UserProfile
 {
-    public const int CurrentProfileVersion = 2;
+    public const int CurrentProfileVersion = 3;
 
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string Name { get; set; } = "Pequeño Matemático";
@@ -228,6 +228,12 @@ public class UserProfile
     public int CurrentStreak { get; set; } = 0;
     public List<string> CompletedLessonIds { get; set; } = new();
     public List<string> CompletedExerciseIds { get; set; } = new();
+
+    /// <summary>
+    /// Mejor calificación de estrellas alcanzada por lección (0-3 por id de tema),
+    /// persistida desde el modelo v3 para recompensar el mejor intento histórico.
+    /// </summary>
+    public Dictionary<string, int> LessonStarRatings { get; set; } = new();
 
     /// <summary>
     /// Sugiere apoyos de accesibilidad según las condiciones y los apoyos

@@ -532,14 +532,14 @@ public class RewardService
     /// <summary>
     /// Construye las estaciones del Mapa del Reino Matemágico según el progreso del alumno.
     /// </summary>
-    public List<RealmStation> GetRealmStations(UserProfile profile)
+    public List<RealmStation> GetRealmStations(UserProfile profile, IReadOnlySet<string>? allowedTopicIds = null)
     {
         var stations = new List<RealmStation>
         {
             new()
             {
                 Id = "station_1",
-                Name = "El Bosque de los Números",
+                Name = "El Bosque Mágico: Cuenta con Cosmo",
                 Description = "La arboleda donde habitan los 5 secretos mágicos del conteo.",
                 LandmarkEmoji = "🌳",
                 TopicId = "kinder_counting_01",
@@ -557,7 +557,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_positions",
-                Name = "El Escondite de Nico",
+                Name = "¿Dónde Está?",
                 Description = "Un lugar para mirar arriba, abajo, dentro y fuera.",
                 LandmarkEmoji = "🐰",
                 TopicId = "kinder_positions_01",
@@ -566,7 +566,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_stories",
-                Name = "La Carpa de los Cuentos",
+                Name = "Cuentos con Números",
                 Description = "El escenario donde los cuentos tienen números.",
                 LandmarkEmoji = "📖",
                 TopicId = "kinder_stories_01",
@@ -575,7 +575,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_patterns",
-                Name = "La Pista del Ritmo",
+                Name = "Sigue el Ritmo",
                 Description = "Un camino de colores, formas y sonidos que se repiten.",
                 LandmarkEmoji = "🎵",
                 TopicId = "kinder_patterns_01",
@@ -584,7 +584,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_sorting",
-                Name = "La Mesa de Pancho",
+                Name = "Pon Cada Cosa en su Lugar",
                 Description = "El taller donde cada cosa encuentra su lugar.",
                 LandmarkEmoji = "🧺",
                 TopicId = "kinder_sorting_01",
@@ -593,7 +593,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_music",
-                Name = "La Banda de Tito",
+                Name = "Música y Conteo",
                 Description = "El escenario donde se cuentan tambores, campanas y palmadas.",
                 LandmarkEmoji = "🥁",
                 TopicId = "kinder_music_01",
@@ -602,7 +602,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_count_to_ten",
-                Name = "El Estanque hasta Diez",
+                Name = "Cuenta hasta Diez",
                 Description = "Un estanque para contar peces, flores y estrellas hasta diez.",
                 LandmarkEmoji = "🐟",
                 TopicId = "kinder_count_to_10_01",
@@ -611,7 +611,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_add_subtract",
-                Name = "La Cesta de Ada",
+                Name = "Junto y Quito",
                 Description = "El lugar donde se juntan y se quitan cosas.",
                 LandmarkEmoji = "🍐",
                 TopicId = "kinder_add_sub_01",
@@ -620,7 +620,7 @@ public class RewardService
             new()
             {
                 Id = "station_kinder_measure",
-                Name = "El Taller de Milo",
+                Name = "Mido y Ordeno",
                 Description = "Un taller para medir, comparar y ordenar.",
                 LandmarkEmoji = "📏",
                 TopicId = "kinder_measure_01",
@@ -1030,6 +1030,7 @@ public class RewardService
         }
 
         bool foundCurrent = false;
+        RealmStation? lastAllowed = null;
 
         foreach (var s in stations)
         {
@@ -1038,17 +1039,24 @@ public class RewardService
             {
                 s.StarsEarned = 3;
             }
-            else if (!foundCurrent)
+
+            if (allowedTopicIds is not null && !allowedTopicIds.Contains(s.TopicId))
+            {
+                continue;
+            }
+
+            lastAllowed = s;
+            if (!foundCurrent && !s.IsCompleted)
             {
                 s.IsCurrentStation = true;
                 foundCurrent = true;
             }
         }
 
-        // Si todas están completadas, la última es la activa
-        if (!foundCurrent && stations.Count > 0)
+        // Si todas las estaciones disponibles están completadas, la última es la activa
+        if (!foundCurrent && lastAllowed is not null)
         {
-            stations[^1].IsCurrentStation = true;
+            lastAllowed.IsCurrentStation = true;
         }
 
         return stations;

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using Xunit;
@@ -9,6 +10,7 @@ namespace MathTutor.Tests;
 public class ExerciseGeneratorTests
 {
     private readonly ExerciseGenerator _generator = new();
+    private readonly AdaptiveEngine _adaptive = new();
 
     [Fact]
     public void GetTargetRange_RestrictsNumbers_ForIntellectualDisability()
@@ -1048,6 +1050,135 @@ public class ExerciseGeneratorTests
         Assert.True(option1Count >= 15, $"Opción 1 apareció {option1Count} veces, se esperaba >= 15");
         Assert.True(option2Count >= 15, $"Opción 2 apareció {option2Count} veces, se esperaba >= 15");
         Assert.True(option3Count >= 15, $"Opción 3 apareció {option3Count} veces, se esperaba >= 15");
+    }
+
+    [Fact]
+    public void BuildOptions_OptionsStayWithinDeclaredRange()
+    {
+        var buildOptions = GetBuildOptionsAccessor();
+        var rng = new Random(7);
+
+        foreach (var (correct, min, max) in new[] { (10, 1, 20), (30, 30, 30 + 4), (50, 1, 50), (7, 1, 7), (100, 50, 150), (1, 1, 2), (2, 1, 2) })
+        {
+            for (int seed = 0; seed < 30; seed++)
+            {
+                var ex = new Exercise { Id = $"t_{seed}", ExpectedResult = correct };
+                buildOptions.Invoke(null, new object?[] { ex, correct, min, max, "", rng });
+
+                Assert.Equal(3, ex.Options.Count);
+                Assert.Equal(ex.Options.Select(o => o.Value).Count(), ex.Options.Select(o => o.Value).Distinct().Count());
+                Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == correct);
+                // El rango es un límite heurístico: cuando solo caben dos opciones posibles
+                // dentro del rango, el respaldo determinista expande hacia valores mayores.
+                int poolSize = Math.Max(max, correct) - Math.Min(min, correct) + 1;
+                if (poolSize - 1 >= 2)
+                {
+                    Assert.All(ex.Options, o => Assert.True(o.Value >= Math.Min(min, correct) && o.Value <= Math.Max(max, correct), $"Opción {o.Value} fuera de [{min}, {max}]"));
+                }
+                Assert.Equal(1, ex.Options.Count(o => o.IsCorrect));
+            }
+        }
+    }
+
+    [Fact]
+    public void BuildOptions_DistractorsVary_WithinWideRange()
+    {
+        var buildOptions = GetBuildOptionsAccessor();
+        const int correct = 10;
+        const int min = 1;
+        const int max = 30;
+
+        var distractorSets = new HashSet<string>();
+        for (int seed = 0; seed < 60; seed++)
+        {
+            var ex = new Exercise { Id = $"v_{seed}", ExpectedResult = correct };
+            buildOptions.Invoke(null, new object?[] { ex, correct, min, max, "", new Random(seed) });
+            var set = string.Join(",", ex.Options.Where(o => !o.IsCorrect).OrderBy(o => o.Value).Select(o => o.Value));
+            distractorSets.Add(set);
+        }
+
+        Assert.True(distractorSets.Count >= 6, $"Solo {distractorSets.Count} combinaciones de distractores distintas en 60 semillas.");
+    }
+
+    [Fact]
+    public void AllCurriculumTopicExercises_HaveSoundOptionSets()
+    {
+        var profile = new UserProfile { Age = 14, CurrentLevel = AcademicLevel.HighSchoolSecondGrade };
+        var curriculum = new CurriculumService();
+        var topics = curriculum.GetAllTopics();
+        int generadoCount = 0;
+
+        foreach (var topic in topics)
+        {
+            var list = _generator.GenerateExercisesForTopic(topic.Id, profile, count: 3);
+            foreach (var ex in list)
+            {
+                Assert.NotEmpty(ex.Options);
+                Assert.Equal(ex.Options.Select(o => o.Value).Count(), ex.Options.Select(o => o.Value).Distinct().Count());
+                Assert.Equal(1, ex.Options.Count(o => o.IsCorrect));
+                Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+                generadoCount++;
+            }
+        }
+
+        Assert.True(generadoCount >= 100, $"Se esperaban >= 100 ejercicios generados, salieron {generadoCount}");
+    }
+
+    private static MethodInfo GetBuildOptionsAccessor()
+    {
+        var method = typeof(ExerciseGenerator).GetMethod("BuildOptions", BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.NotNull(method);
+        return method!;
+    }
+
+    [Fact]
+    public void SimplifiedHintCatalog_CoversEveryGamePlayType()
+    {
+        foreach (GamePlayType gameType in Enum.GetValues<GamePlayType>())
+        {
+            var first = SimplifiedHintCatalog.GetSimpleHint(gameType, detailed: false);
+            var second = SimplifiedHintCatalog.GetSimpleHint(gameType, detailed: true);
+            var success = SimplifiedHintCatalog.GetSimpleSuccess(gameType);
+
+            Assert.False(string.IsNullOrWhiteSpace(first), $"Falta pista 1 simple para {gameType}");
+            Assert.False(string.IsNullOrWhiteSpace(second), $"Falta pista 2 simple para {gameType}");
+            Assert.False(string.IsNullOrWhiteSpace(success), $"Falta explicación de éxito simple para {gameType}");
+        }
+    }
+
+    [Fact]
+    public void GetAdaptedHints_FallBackToCatalog_ForSecondaryTopicWithSimpleLanguage()
+    {
+        var profile = new UserProfile
+        {
+            Age = 15,
+            CurrentLevel = AcademicLevel.SecondaryFirstGrade,
+            Preferences = { SimplifyLanguage = true }
+        };
+        var topic = new CurriculumService().GetAllTopics()
+            .First(t => t.Id == "sec_order_operations_01");
+        var exercise = _generator.GenerateExercisesForTopic(topic.Id, profile, count: 1)[0];
+
+        var simpleFirst = exercise.SimplifiedFirstHint;
+        if (string.IsNullOrWhiteSpace(simpleFirst))
+        {
+            var hint = _adaptive.GetAdaptedHint(exercise, profile, detailed: false);
+            Assert.False(string.IsNullOrWhiteSpace(hint));
+            // El catálogo no depende de números generados: la pista respaldada es estable.
+            Assert.Equal(SimplifiedHintCatalog.GetSimpleHint(exercise.GameType, detailed: false), hint);
+            Assert.NotEqual(exercise.FirstHint, hint);
+        }
+        else
+        {
+            Assert.Equal(simpleFirst, _adaptive.GetAdaptedHint(exercise, profile, detailed: false));
+        }
+
+        var success = _adaptive.GetAdaptedSuccess(exercise, profile);
+        Assert.False(string.IsNullOrWhiteSpace(success));
+        if (string.IsNullOrWhiteSpace(exercise.SimplifiedExplanationOfSuccess))
+        {
+            Assert.Equal(SimplifiedHintCatalog.GetSimpleSuccess(exercise.GameType), success);
+        }
     }
 }
 

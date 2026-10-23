@@ -1,4 +1,5 @@
 using System.Linq;
+using MathTutor.Core.Engine;
 using MathTutor.Core.Models;
 using MathTutor.Core.Services;
 using Xunit;
@@ -55,5 +56,40 @@ public class RewardServiceTests
         Assert.Equal("elem_addition_01", stations.First(s => s.TopicId == "elem_addition_01").TopicId);
         Assert.Equal("sec_quadratic_functions_01", stations.First(s => s.TopicId == "sec_quadratic_functions_01").TopicId);
         Assert.Equal("prog_assistive_ai_data_01", stations[^1].TopicId);
+    }
+
+    [Fact]
+    public void GetRealmStations_WithAllowedTopics_FlagsCurrentWithinAllowedRange()
+    {
+        var curriculum = new CurriculumService();
+        var profile = new UserProfile { Age = 4 };
+        var allowedTopicIds = curriculum.GetTopicsForAge(4)
+            .Select(t => t.Id)
+            .ToHashSet();
+
+        foreach (var topicId in allowedTopicIds)
+        {
+            profile.CompletedLessonIds.Add(topicId);
+        }
+
+        var stations = _rewards.GetRealmStations(profile, allowedTopicIds);
+        var currentStations = stations.Where(s => s.IsCurrentStation).ToList();
+
+        Assert.Single(currentStations);
+        Assert.Contains(currentStations[0].TopicId, allowedTopicIds);
+    }
+
+    [Fact]
+    public void KindergartenStations_UseMissionTitles()
+    {
+        var curriculum = new CurriculumService();
+        var profile = new UserProfile { Age = 4 };
+        var stations = _rewards.GetRealmStations(profile);
+
+        foreach (var topic in curriculum.GetTopicsForAge(4))
+        {
+            var station = stations.Single(s => s.TopicId == topic.Id);
+            Assert.Equal(topic.Title, station.Name);
+        }
     }
 }

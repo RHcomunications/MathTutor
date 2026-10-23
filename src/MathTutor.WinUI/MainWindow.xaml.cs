@@ -27,6 +27,7 @@ public sealed partial class MainWindow : Window
     private string _lastSpokenMessage = string.Empty;
     private bool _repeatToggleFlag;
     private bool _isClosing;
+    private bool _missionDialogOpen;
     private AccessibilitySettings? _systemAccessibility;
 
     public NavigationService Navigation { get; }
@@ -66,6 +67,10 @@ public sealed partial class MainWindow : Window
 
         RootGrid.Loaded += MainWindow_Loaded;
         Closed += MainWindow_Closed;
+
+        // Publicar los atajos globales en el árbol de UIA para que lectores de
+        // pantalla los anuncien al recorrer la ventana.
+        AutomationProperties.SetAcceleratorKey(RootGrid, "F1, F2, F3, F4, F5, F6, Escape");
     }
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -238,10 +243,16 @@ public sealed partial class MainWindow : Window
 
     private async void OnMissionCompleted(PedagogicalTopic topic, int earnedStars)
     {
-        if (!_acc.CurrentProfile.CompletedLessonIds.Contains(topic.Id))
+        bool firstCompletion = !_acc.CurrentProfile.CompletedLessonIds.Contains(topic.Id);
+
+        if (firstCompletion)
         {
             _acc.CurrentProfile.CompletedLessonIds.Add(topic.Id);
         }
+
+        // Calificación por lección persistente: se conserva la mejor racha de estrellas
+        int previousBest = _acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id);
+        _acc.CurrentProfile.LessonStarRatings[topic.Id] = Math.Max(previousBest, earnedStars);
 
         _acc.SaveCurrentProfile();
         UpdateTopStatus();
@@ -270,12 +281,14 @@ public sealed partial class MainWindow : Window
             Orientation = Orientation.Horizontal,
             Spacing = 12
         };
-        titlePanel.Children.Add(new TextBlock
+        var trophyText = new TextBlock
         {
             Text = "🏆",
             FontSize = 40,
             VerticalAlignment = VerticalAlignment.Center
-        });
+        };
+        AutomationProperties.SetAccessibilityView(trophyText, Microsoft.UI.Xaml.Automation.Peers.AccessibilityView.Raw);
+        titlePanel.Children.Add(trophyText);
         titlePanel.Children.Add(new TextBlock
         {
             Text = $"¡Misión Superada: {topic.Title}!",
@@ -304,7 +317,9 @@ public sealed partial class MainWindow : Window
         });
         content.Children.Add(new TextBlock
         {
-            Text = $"Ganaste {earnedStars} de 3 estrellas",
+            Text = firstCompletion
+                ? $"Ganaste {earnedStars} de 3 estrellas"
+                : $"Mejor calificación en esta misión: {_acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id)} de 3 estrellas",
             TextWrapping = TextWrapping.Wrap,
             Foreground = successBrush,
             FontSize = subHeaderFontSize,
@@ -342,7 +357,9 @@ public sealed partial class MainWindow : Window
         };
 
         string spoken = nextTopic is not null
-            ? $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
+            ? firstCompletion
+                ? $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
+                : $"¡Misión Superada: {topic.Title}! Tu mejor calificación es {_acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id)} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
             : $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Completaste todas las misiones de esta etapa. Presiona Enter o Escape para volver al mapa.";
 
         void AnnounceInDialog()
@@ -389,7 +406,11 @@ public sealed partial class MainWindow : Window
         dialog.KeyboardAccelerators.Add(repeatAccelerator);
         dialog.Opened += (_, _) => DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, AnnounceInDialog);
 
+        // El acelerador de Escape global queda silenciado mientras este diálogo está abierto;
+        // el propio diálogo gestiona Escape para cerrarse sin salir de la etapa actual.
+        _missionDialogOpen = true;
         var result = await dialog.ShowAsync();
+        _missionDialogOpen = false;
 
         if (result == ContentDialogResult.Primary && nextTopic is not null)
         {
@@ -529,6 +550,23 @@ public sealed partial class MainWindow : Window
 
     private void OnEscapeAccelerator(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
+        // Un solo camino de salida: la página activa decide su propio Escape
+        // (GamePage regresa a la lección, el diálogo de misión se cierra solo),
+        // sin duplicar navegaciones ni interrumpir al lector de pantalla.
+        if (_missionDialogOpen)
+        {
+            args.Handled = true;
+            return;
+        }
+
+        if (Navigation.CurrentPageType == typeof(GamePage))
+        {
+            args.Handled = true;
+            _acc.Audio.PlayNavigationClick();
+            BackToLesson();
+            return;
+        }
+
         if (Navigation.CurrentPageType == typeof(MenuPage))
             return;
 

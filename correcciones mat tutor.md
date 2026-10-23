@@ -529,7 +529,7 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 
 # FASE 5 - ACCESIBILIDAD, FOCO Y AUDIO SEMÁNTICO (IMPLEMENTADO LOCALMENTE)
 
-> **Estado:** implementado y verificado localmente. Build `Release` sin advertencias y **168/168 pruebas** superadas. No se publicó una nueva release ni se reemplazó el paquete `v1.10.0`.
+> **Estado:** implementado y verificado localmente. Build `Release` sin advertencias y **170/170 pruebas** superadas. No se publicó una nueva release ni se reemplazó el paquete `v1.10.0`.
 
 ### 1. Guía y atajos
 - **Corrección:** Se eliminaron los separadores largos de `LEEME.txt` y se documentó la tecla `R` para repetir la secuencia de un patrón.
@@ -569,4 +569,136 @@ Durante las pruebas de usuario en **MathTutor** (C# / .NET 10 WPF), se han ident
 ### 8. Audio semántico y comparaciones
 - **Corrección:** Se añadieron timbres de campana, tambor, flauta y palmas; los patrones se reproducen como secuencias y `R` las repite; cada objeto usa un tono coherente con su instrumento o material. Las opciones de comparación anuncian cantidad y sustantivo plural, por ejemplo “Las rojas, 3 manzanas”.
 - **Ubicación:** `src/MathTutor.Core/Models/Exercise.cs`, `src/MathTutor.Core/Engine/KindergartenCurriculum.cs`, `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `src/MathTutor.WinUI/Services/AccessibleAudioCueService.cs`, `tests/MathTutor.Tests/PedagogyAndAccessibilityTests.cs`.
-- **Criterio de verificación:** Las pruebas confirman tonos/timbres distintos y descripciones de cantidad; build `Release` con 0 advertencias y 168/168 pruebas superadas.
+- **Criterio de verificación:** Las pruebas confirman tonos/timbres distintos y descripciones de cantidad; build `Release` con 0 advertencias y 170/170 pruebas superadas.
+
+### 9. Sincronización de estaciones y recomendación por edad
+- **Corrección:** Las 10 estaciones de jardín usan exactamente el título de su misión. `GetRealmStations` acepta el conjunto de `TopicId` permitidos y `MapPage` lo recibe después de filtrar por edad; la estación recomendada se elige solo dentro de ese conjunto y, si todas están completadas, se marca la última disponible. Se añadieron pruebas de regresión para la selección, los nombres y el tono repetido de los patrones.
+- **Ubicación:** `src/MathTutor.Core/Services/RewardService.cs`, `src/MathTutor.WinUI/Views/MapPage.xaml.cs`, `tests/MathTutor.Tests/RewardServiceTests.cs`, `tests/MathTutor.Tests/PedagogyAndAccessibilityTests.cs`.
+- **Criterio de verificación:** El mapa nunca marca una estación fuera del rango de edad; los nombres de jardín coinciden con sus misiones; cada ítem repetido de un patrón conserva su tono; build `Release` con 0 advertencias y 170/170 pruebas superadas.
+# AUDITORÍA INTEGRAL DE REMEDIACIÓN (Fases 1 a 8) — Rama local, pendiente de release
+
+Después de las fases 4 y 5 llegó una auditoría integral de accesibilidad, contenido
+educativo, currículo, ejercicios, motores de audio, servicios y UX. Se ejecutó un plan
+de remediación en ocho fases con verificación completa después de cada una
+(`dotnet build MathTutor.slnx -c Release --nologo /p:TreatWarningsAsErrors=true` más la
+suite completa de pruebas). La suite quedó en 196/196 pruebas superadas, 0 advertencias
+y 0 errores. Era progresión: 178 (F1) → 183 (F2) → 189 (F3) → 191 (F4/F5) → 194 (F6) →
+196 (F8).
+
+## Fase 1 — Persistencia robusta
+- **Corrección:** Guardado atómico del perfil (escritura a archivo temporal +
+  `File.Move(..., overwrite: true)` bajo un candado `FileGate`); carga corrupta a cuarentena
+  (renombra a `*.corrupt-{timestamp}` y reconstruye en blanco sin perder el archivo
+  defectuoso); `Delete` de perfiles protegido (solo elimina archivos dentro de la carpeta
+  de perfiles); re-migración idempotente persistida (`ProfileVersion` llega a disco).
+- **Ubicación:** `src/MathTutor.Core/Services/ProfileStorageService.cs`.
+- **Criterio de verificación:** 3 pruebas de IO con archivos reales (guardado atómico,
+  cuarentena de JSON corrupto, borrado restringido).
+
+## Fase 2 — Currículo por edad
+- **Corrección:** `GetTopicsForAge` separa reforzamiento del nivel de apoyo (DI) del
+  alcance por edad; el nivel actual y los desbloqueados en cascada quedan exentos del
+  filtro `TargetAge`. `GetNextTopic` hace `fallback` hacia adelante cuando el tema
+  "siguiente" solo está encadenado en un nivel bloqueado por edad. Los 9 temas +
+  `prog_seed_01` declaran `TargetAgeMin=16` para el desbloqueo adulto (fase 4 pedagógica:
+  `prog_ex_01` se reorientó a adolescentes, "El Robot de Entrenamiento", resultado 6).
+  Nuevo ejercicio `add_ex_04` "Los Vagones del Tren" (demostración
+  `AssociativePropertyDemo`, 5 tesoros, esperado 6, edades 6-8) para la propiedad
+  asociativa en `elem_addition_01`.
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`.
+- **Criterio de verificación:** 5 pruebas nuevas de exención DI, cascada de niveles,
+  temas 16+, ejercicio asociativo accesible y fallback de `GetNextTopic`.
+
+## Fase 3 — Motor de audio robusto (F2)
+- **Corrección:** Sustitución de patches por un motor durable: `AudioSynthesizer` en
+  `MathTutor.Core` (síntesis WAV PCM 44100 Hz/16-bit/mono determinista con envolvente,
+  números máximos/mínimos de frecuencias entre 120 y 1200 Hz, timbres de campana,
+  tambor, flauta, aplauso tónica/no tonal) y `AccessibleAudioCueService` reescrito con
+  canal serializado único: hilo de reproducción con cola acotada a 32 eventos
+  (descarta el más antiguo), `PlaySync` por pista, caché de buffers vía
+  `AudioSynthesizer`, hibernación entre 15 segundos de reposo (`Monitor.Wait`) y API
+  pública de métodos `ClearPendingCues()` para el inicio de nueva
+  partida/cambio de lección. No hay spam de sonidos al iniciar el nivel.
+- **Ubicación:** `src/MathTutor.Core/Services/AudioSynthesizer.cs` (nuevo),
+  `src/MathTutor.WinUI/Services/AccessibleAudioCueService.cs`.
+- **Criterio de verificación:** 6 pruebas WAV: contenedor PCM, envolvente de fade con
+  tolerancia < 500 unidades, determinismo, timbres por `ManipulableSoundKind`, números
+  de frecuencias limitados, aplauso tónica/no tonal.
+
+## Fase 4 — UX de Escape, estrellas por lección y refresco de menú
+- **Corrección:** `Escape` unificado con `_missionDialogOpen`: cierra el diálogo de
+  misión sin saltar vistas; "regreso a la lección" sin Escape en `GamePage` vale con
+  `RequestBackToLesson`; "el menú" sucumbe con dedup de acordes (solo `MainWindow`
+  suena). Persistencia de mejor calificación por lección:
+  `UserProfile.LessonStarRatings[topicId] = max(prev, ganadas)`; diálogos muestran
+  "Mejor calificación" al repetir; estrella por `RecordAttempt` del `AdaptiveEngine` otorga
+  estrella/puntos solo en la primera finalización de cada reto (los reintentos no
+  inflan estrellas). Foco tras error se queda en la opción pulsada. `MenuPage`
+  conserva/restaura la selección del tema anterior entre
+  navegaciones (`UserProfile.CurrentProfileVersion = 3` con migración persistente).
+- **Ubicación:** `src/MathTutor.Core/Models/UserProfile.cs`,
+  `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `src/MathTutor.WinUI/MainWindow.xaml.cs`,
+  `src/MathTutor.WinUI/Views/GamePage.xaml.cs`, `src/MathTutor.WinUI/Views/MenuPage.xaml.cs`.
+- **Criterio de verificación:** 2 pruebas (repeticiones sin inflar estrellas; ronda de
+  `LessonStarRatings` trabajo en roundtrip en v3). Comportamiento Escape
+  verificado en el arranque manual de la app.
+
+## Fase 5 — Accesibilidad fina (AAA y lanzamientos por lector de pantalla)
+- **Corrección:** Colores subidos a contraste AAA 7:1 en el test de `TextPrimary`, 
+  `TextSecondary` y `AppError` para los 4 temas (en `HC-oscuro` se ajusta el error a
+  RGB 255,120,120 y en `DefaultPlayful` a RGB 170,0,30); texto en chips/botones
+  (`OnAccent`/`OnSuccess`) se mantiene ≥ 4.5:1. `CycleTheme` evita mintir cuando el
+  Contraste del Sistema de Windows define el appreciate/tema. Atajos de teclado
+  publicados por `AutomationProperties.AcceleratorKey` en `MainWindow.xaml.cs` y
+  `trophy` del diálogo misión marcada con la vista de
+  accesibilidad `Raw` vía `AutomationProperties.SetAccessibilityView(..., Raw)` (el
+  enum correcto en WinUI 3 vive en `Microsoft.UI.Xaml.Automation.Peers`).
+- **Ubicación:** `src/MathTutor.WinUI/Services/AccessibilityManager.cs`,
+  `src/MathTutor.WinUI/MainWindow.xaml.cs`,
+  `tests/MathTutor.Tests/ThemeContrastTests.cs`.
+- **Criterio de verificación:** tabla de contrastes calculada en los 4 temas; granular
+  `theme` con umbral AAA automático en la suite.
+
+## Fase 6 — Generador de ejercicios
+- **Corrección:** `BuildOptions` respeta el rango declarado por cada tipo (mínimo/máximo
+  exactos si aplica), ya no da distractores viscosity loyalty triviales (-1/+1/+2) y elige
+  distractores cercanos pero aleatorios con `jitter = span/3`; respaldo determinista
+  siempre terminante para type ranges con solo 2 opciones posibles (caso fracción 1/2).
+  Neutralizadas 21 descripciones `ScreenReaderDescription` que revelaban
+  la respuesta (`Fase 6.1` = 8撰写 en `ExerciseGenerator.cs`; `Fase 6.2` = 13 reescritas en
+  `CurriculumService.cs`: "Total: 6"→ "observa y cuenta…"; "Respuesta: 6 pasos"→
+  "cuenta cuántas veces multiplicas…", etc.).
+- **Ubicación:** `src/MathTutor.Core/Engine/ExerciseGenerator.cs`
+  (`BuildOptions`, descripciones), `src/MathTutor.Core/Engine/CurriculumService.cs`.
+- **Criterio de verificación:** 3 pruebas nuevas (`BuildOptions` con 2 rangos degenerados
+  producen terminación y 3 opciones únicas; variedad > 6 combinatorias de distractores
+  al ampliar semillas; cordura de opciones con 3 desperdicios obligados en retos de
+  todos los temas de curriculum;pecifica). OJO: bug introducido y arreglado en esta fase
+  (fallback con `Clamp` no terminante para `fracciones` con denominador 2); verificado con
+  `dotnet-stack`.
+
+## Fase 7 — `SpeechService` sin chatter
+- **Corrección:** Latches de comprobación: `NVDA Controller Client` hace el
+  handshake RPC la primera vez (`_nvdaControllerActive`) y `_jawsDetected`/`_jawsFailed`
+  evitan re-consultar procesos y re-crear el objeto COM de JAWS en cada locución. Toda
+  falla latching de `JAWS COM` cae honestamente en el canal
+  `UIA` nativo (NVDA/JAWS/Narrador con velocidad del usuario). La firma del binding
+  `COM SayString(text, interrupt)` no se toca.
+- **Ubicación:** `src/MathTutor.WinUI/Services/SpeechService.cs`.
+- **Criterio de verificación:** no aplica pruebas unitarias (native bridge),
+  comportamiento revisado; build 0/0 y 194/194 al momento del cambio.
+
+## Fase 8 — Pistas simplificadas en lenguaje sencillo
+- **Corrección:** `SimplifiedHintCatalog` (nuevo en `MathTutor.Core`) con pistas 1 y 2 y
+  explicación de éxito en lenguaje sin tecnicismos para TODOS los 61 tipos de juego; 
+  `AdaptiveEngine.GetAdaptedHint` y `GetAdaptedSuccess` usan esas variantes como
+  respaldo para alumnos con `SimplifyLanguage`/discapacidad intelectual en
+  los ~45 temas de secundaria, preparatoria y programación (y jardín/primaria sin texto
+  simple propio) cuando el ejercicio no trae variantes simplificadas a mano.
+  Prueba cubre los 61 tipos del catálogo y el fallback en
+  `sec_order_operations_01` con `SimplifyLanguage`.
+- **Ubicación:** `src/MathTutor.Core/Engine/SimplifiedHintCatalog.cs` (nuevo),
+  `src/MathTutor.Core/Engine/AdaptiveEngine.cs`,
+  `tests/MathTutor.Tests/ExerciseGeneratorTests.cs`.
+- **Criterio de verificación:** cobertura completa del catálogo (61 entradas) y
+  fallback comprobado; build 0/0 y 196/196.

@@ -86,6 +86,8 @@ public sealed partial class GamePage : Page
     private int _exerciseIndex;
     private Exercise? _currentExercise;
     private int _attemptsCount;
+    private int _attemptSum;
+    private int _exercisesStarted;
     private int _hintStep;
     private int _countedItemsCount;
     private List<ExerciseOption> _currentOptions = new();
@@ -122,6 +124,9 @@ public sealed partial class GamePage : Page
     {
         _topic = topic;
         _exerciseIndex = 0;
+        _attemptSum = 0;
+        _exercisesStarted = 0;
+        _attemptsCount = 0;
         LoadExerciseAtCurrentIndex();
     }
 
@@ -133,15 +138,28 @@ public sealed partial class GamePage : Page
             return;
         }
 
+        if (_topic.Exercises.Count == 0)
+        {
+            // Sin retos no se premia: la misión no se marca como ganada sin jugarla
+            _acc.AnnounceAssertive($"La misión {_topic.Title} todavía no tiene retos disponibles. Regresando a la lección.");
+            App.Navigation.RequestBackToLesson();
+            return;
+        }
+
         if (_exerciseIndex >= _topic.Exercises.Count)
         {
-            int earnedStars = _attemptsCount <= 1 ? 3 : _attemptsCount == 2 ? 2 : 1;
-            _acc.Audio.PlaySuccessChord();
+            // Estrellas por lección: se valora el esfuerzo de TODOS los retos,
+            // no únicamente del último reto resuelto
+            int earnedStars = _exercisesStarted == 0 || _attemptSum <= _exercisesStarted
+                ? 3
+                : _attemptSum <= _exercisesStarted * 2 ? 2 : 1;
             App.Navigation.RequestMissionCompleted(_topic, earnedStars);
             return;
         }
 
         _currentExercise = _topic.Exercises[_exerciseIndex];
+        _attemptSum += _attemptsCount;
+        _exercisesStarted++;
         _attemptsCount = 0;
         _hintStep = 0;
         _countedItemsCount = 0;
@@ -429,6 +447,16 @@ public sealed partial class GamePage : Page
         DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
         {
             BorderHintBanner.StartBringIntoView();
+            // Conservar el foco en la opción que el alumno ya estaba probando:
+            // saltar de regreso a la primera opción desorienta a lectores de pantalla
+            // y a usuarios de teclado a mitad del recorrido.
+            int pressedIndex = _currentOptions.IndexOf(option);
+            if (pressedIndex >= 0 && ItemsOptions.TryGetElement(pressedIndex) is Button pressedOption)
+            {
+                pressedOption.Focus(FocusState.Programmatic);
+                return;
+            }
+
             if (ItemsOptions.TryGetElement(0) is Button firstOption)
             {
                 firstOption.Focus(FocusState.Programmatic);
@@ -479,13 +507,8 @@ public sealed partial class GamePage : Page
             return;
         }
 
-        if (e.Key == VirtualKey.Escape)
-        {
-            e.Handled = true;
-            _acc.Audio.PlayNavigationClick();
-            App.Navigation.RequestBackToLesson();
-            return;
-        }
+        // Escape vuelve a la lección vía el acelerador global de MainWindow
+        // (único camino, sin doble manejo de navegación).
 
         if (_successVisible)
         {

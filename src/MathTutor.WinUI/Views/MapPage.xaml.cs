@@ -102,7 +102,7 @@ public sealed partial class MapPage : Page
             .Select(t => t.Id)
             .ToHashSet();
 
-        var stations = _rewards.GetRealmStations(profile)
+        var stations = _rewards.GetRealmStations(profile, allowedTopicIds)
             .Where(s => allowedTopicIds.Contains(s.TopicId))
             .ToList();
         var badges = _rewards.GetAllBadges(profile)
