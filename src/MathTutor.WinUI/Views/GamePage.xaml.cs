@@ -528,18 +528,21 @@ public sealed partial class GamePage : Page
             return;
         }
 
-        int selectedIndex = e.Key switch
+        if (_acc.CurrentProfile.Preferences.SimplifiedKeyboardNavigation)
         {
-            VirtualKey.Number1 or VirtualKey.NumberPad1 => 0,
-            VirtualKey.Number2 or VirtualKey.NumberPad2 => 1,
-            VirtualKey.Number3 or VirtualKey.NumberPad3 => 2,
-            VirtualKey.Number4 or VirtualKey.NumberPad4 => 3,
-            _ => -1
-        };
+            int selectedIndex = e.Key switch
+            {
+                VirtualKey.Number1 or VirtualKey.NumberPad1 => 0,
+                VirtualKey.Number2 or VirtualKey.NumberPad2 => 1,
+                VirtualKey.Number3 or VirtualKey.NumberPad3 => 2,
+                VirtualKey.Number4 or VirtualKey.NumberPad4 => 3,
+                _ => -1
+            };
 
-        if (selectedIndex >= 0 && SelectOptionByIndex(selectedIndex))
-        {
-            e.Handled = true;
+            if (selectedIndex >= 0 && SelectOptionByIndex(selectedIndex))
+            {
+                e.Handled = true;
+            }
         }
     }
 

@@ -8,7 +8,7 @@
 
 ## 1. Visión General y Arquitectura de la Solución
 
-**MathTutor Accesible** es una plataforma educativa e inclusiva desarrollada en **C# (.NET 10 / WinUI 3)**, 100% conforme a **WCAG 2.2 (Niveles AA y AAA)** y **Diseño Universal para el Aprendizaje (DUA)**. Cubre un currículo completo de **54 estaciones de aprendizaje (16 objetivos pedagógicos)** desde **Jardín de Niños (3 años)**, **Primaria (1º a 6º)**, **Secundaria (1º a 3º)** y **Preparatoria / Bachillerato (1º a 3º)** hasta **Pensamiento Computacional y Programación Inclusiva (Módulos 1, 2 y 3)**.
+**MathTutor Accesible** es una plataforma educativa e inclusiva desarrollada en **C# (.NET 10 / WinUI 3)**, 100% conforme a **WCAG 2.2 (Niveles AA y AAA)** y **Diseño Universal para el Aprendizaje (DUA)**. Cubre un currículo completo de **74 estaciones de aprendizaje (16 objetivos pedagógicos)** desde **Jardín de Niños (3 años)**, **Primaria (1º a 6º)**, **Secundaria (1º a 3º)** y **Preparatoria / Bachillerato (1º a 3º)** hasta **Pensamiento Computacional y Programación Inclusiva (Módulos 1, 2 y 3)**.
 
 ### Diagrama de Arquitectura Modular
 
@@ -19,19 +19,19 @@ MathTutor.slnx
 │   ├── Models/
 │   │   ├── Enums.cs               (DisabilityType, AutismSupportLevel, AdhdPresentation, IntellectualSupportLevel, AcademicLevel, RegionalContext, HighContrastTheme, FontSizeLevel, AnswerResult)
 │   │   ├── UserProfile.cs         (AccessibilityPreferences + UserProfile + propiedades culturales LATAM + ApplyRecommendedAccessibilityDefaults)
-│   │   ├── Exercise.cs            (GamePlayType [52 mecánicas], ManipulableItem, ExerciseOption, Exercise)
+│   │   ├── Exercise.cs            (GamePlayType [69 mecánicas], ManipulableItem, ExerciseOption, Exercise)
 │   │   ├── PedagogicalTopic.cs    (Modelo de lección: narrativa, concepto, principios, lista de ejercicios)
 │   │   └── Badge.cs               (Badge y RealmStation para el Mapa del Reino Matemático)
 │   ├── Engine/
 │   │   ├── AdaptiveEngine.cs      (Validación Edad vs. Nivel Escolar, adaptación de lenguaje, reducción cognitiva y estrellas/racha)
-│   │   ├── CurriculumService.cs   (Catálogo de las 54 lecciones, filtrado por edad GetTopicsForAge, GetNextTopic y generación adaptativa)
-│   │   ├── ExerciseGenerator.cs   (Generador procedimental parametrizado para las 54 estaciones con distractores diagnósticos)
+│   │   ├── CurriculumService.cs   (Catálogo de las 74 lecciones, filtrado por edad GetTopicsForAge, GetNextTopic y generación adaptativa)
+│   │   ├── ExerciseGenerator.cs   (Generador procedimental parametrizado para las 74 estaciones con distractores diagnósticos)
 │   │   ├── KindergartenCurriculum.cs (10 temas de jardín de niños y 45 ejercicios curados)
 │   │   └── SimplifiedHintCatalog.cs (Pistas 1/2 y éxito en lenguaje simple para cada GamePlayType)
 │   └── Services/
 │       ├── ProfileStorageService.cs (Persistencia JSON atómica en %LocalAppData%/MathTutor/user_profile.json)
 │       ├── AudioSynthesizer.cs    (Síntesis procedural WAV PCM determinista con caché acotada)
-│       └── RewardService.cs       (55 insignias y 54 estaciones conectadas al progreso del alumno)
+│       └── RewardService.cs       (55 insignias y 74 estaciones conectadas al progreso del alumno)
 │
 ├── MathTutor.WinUI (net10.0-windows10.0.19041.0 - Cliente Escritorio WinUI 3 Accesible)
 │   ├── App.xaml / App.xaml.cs     (Diccionario de recursos dinámicos WCAG, estilos de foco, botones y controles accesibles)
@@ -49,11 +49,11 @@ MathTutor.slnx
 │       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo con celdas de 170 px, pistas, respuestas con ↑/↓ y retroalimentación)
 │       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 209 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 231 pruebas)
     ├── ExerciseGeneratorTests.cs         (66 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
     ├── PedagogyAndAccessibilityTests.cs  (71 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
     ├── ProfileStorageTests.cs            (21 pruebas de serialización, migración, concurrencia, exportación y borrado)
-    ├── RewardServiceTests.cs             (5 pruebas integrales de las 54 estaciones y desbloqueo de las 55 insignias)
+    ├── RewardServiceTests.cs             (5 pruebas integrales de las 74 estaciones y desbloqueo de las 55 insignias)
     ├── AudioSynthesizerTests.cs          (6 pruebas de síntesis WAV determinista y caché)
     └── ThemeContrastTests.cs             (40 casos de contraste WCAG en los cuatro temas)
 ```
@@ -68,7 +68,7 @@ MathTutor.slnx
 │   ├── MathTutor.Core/       Biblioteca de dominio, currículo, motor adaptativo y almacenamiento
 │   └── MathTutor.WinUI/      Aplicación WinUI 3, navegación, servicios y vistas
 ├── tests/
-│   └── MathTutor.Tests/      Suite xUnit de 209 pruebas
+│   └── MathTutor.Tests/      Suite xUnit de 231 pruebas
 ├── scripts/
 │   └── publish-winui.ps1     Publicación y empaquetado de la release
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
@@ -577,8 +577,32 @@ Segunda revisión con ojo fresco (Core, WinUI y documentación). Cambios de esta
   (66/71/21/5/6 + 40 casos); `GamePlayType` unificado en 52; `ProfileVersion` v3;
   eliminada la dependencia inexistente de WebView2; enlaces `file:///` de máquinas
   ajenas convertidos a rutas relativas; fragmentos corruptos reescritos.
-- **Suite:** 209/209 pruebas, build Release 0 advertencias / 0 errores.
+- **Suite:** 231/231 pruebas, build Release 0 advertencias / 0 errores.
 - **Limitaciones aceptadas:** el "flip" transitorio de tema en `RefreshThemeResources`
   se conserva (fuerza la re-evaluación de `ThemeResource`; su alternativa requiere
   prueba visual en dispositivo); las preferencias de tema/fuente elegidas antes de
   crear el perfil no se persisten (guardarlas antes del onboarding lo saltaría).
+
+
+## 8. Ampliación Curricular y Tercera Auditoría Integral (Release 1.11, oct 2026)
+
+Tercera fase de auditoría e implementación integral de la Hoja de Ruta Curricular (Fases 1 a 5) basada en los programas oficiales de estudio SEP y NCTM. Se amplió el currículo de 54 a 74 estaciones continuas del Reino del Conocimiento, con soporte DUA completo y 231 pruebas unitarias automatizadas.
+
+- **Fases Curriculares 1 a 5:**
+  - **Fase 1 (Primaria Temprana y Magnitudes):** Monedas y vuelto (`elem_money_currency_01`), Regla y longitud en cm (`elem_measurement_ruler_01`), Reloj analógico/digital (`elem_time_clock_01`), Perímetro regular/irregular (`elem_geometry_perimeter_01`).
+  - **Fase 2 (Primaria Superior, Aritmética y Estadística):** División entera con residuo explícito (`elem_division_remainder_01`), Recta numérica de fracciones (`elem_fractions_numberline_01`), Tablas y barras (`elem_data_barcharts_01`), Tendencia central (`elem_stats_central_tendency_01`).
+  - **Fase 3 (Secundaria Inicial y Racionales):** Circunferencia y $\pi$ (`sec_circle_geometry_01`), Factores primos MCM y MCD (`sec_factors_multiples_mcm_mcd_01`), Racionales negativos (`sec_negative_rational_numbers_01`).
+  - **Fase 4 (Secundaria Avanzada y Probabilidad):** Factorización algebraica (`sec_algebra_factoring_01`), Ángulos entre paralelas y secantes (`sec_parallel_lines_angles_01`), Probabilidad clásica y de eventos compuestos (`sec_probability_compound_01`).
+  - **Fase 5 (Preparatoria, Geometría Analítica y Cálculo):** Parábola y elipse analíticas (`prep_conics_parabola_ellipse_01`), Límites y continuidad (`prep_calculus_limits_01`), Reglas de derivación operativa (`prep_calculus_derivative_rules_01`).
+- **Motor Adaptativo y Arquitectura:**
+  - Tipado de resultados exactos mediante enteros escalados (`ExpectedResult` y `Value` como `int`), eliminando imprecisiones de punto flotante en cálculo y geometría.
+  - Orden correlativo estricto en `CurriculumService.cs`: bloques contiguos de Secundaria 1º a 3º para garantizar el desbloqueo progresivo en cascada (`GetTopicsForAge`).
+  - Catálogo DUA universal en `SimplifiedHintCatalog.cs`: soporte para las 74 estaciones y 69 tipos de `GamePlayType`.
+  - Estaciones del Reino en `RewardService.cs` sincronizadas con `OrderIndex` 1 a 74.
+- **Accesibilidad y Usabilidad de Teclado (WinUI 3):**
+  - Reflujo multilínea dinámico con `WrapPanel` en las opciones de `GamePage.xaml` (WCAG 1.4.10).
+  - Eliminación de truncamiento (`CharacterEllipsis`) por ajuste natural de palabras (`TextWrapping="WrapWholeWords"`).
+  - Suspensión inteligente de atajos numéricos en `MainWindow.xaml.cs` cuando el elemento activo es un `TextBox`.
+- **Suite Automatizada:**
+  - 231/231 pruebas en Release, 0 advertencias, 0 errores.
+  - Versión general del sistema elevada a `1.11.0`.

@@ -38,7 +38,7 @@ public class RewardServiceTests
         profile.CompletedLessonIds.Add("kinder_counting_01");
 
         var stations = _rewards.GetRealmStations(profile);
-        Assert.Equal(54, stations.Count);
+        Assert.Equal(74, stations.Count);
         Assert.Equal(stations.Count, stations.Select(s => s.Id).Distinct().Count());
         Assert.All(stations, s => Assert.Equal(s.OrderIndex, stations.IndexOf(s) + 1));
 

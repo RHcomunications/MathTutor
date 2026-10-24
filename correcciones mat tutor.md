@@ -788,3 +788,64 @@ Revisión posterior con ojo fresco sobre Core, WinUI y documentación. Suite: 19
 > se conserva (fuerza la re-evaluación de `ThemeResource`; su alternativa requiere
 > prueba visual en dispositivo); las preferencias de tema/fuente elegidas antes de
 > crear el perfil no se persisten (guardarlas antes del onboarding lo saltaría).
+
+---
+
+## 📌 Remediaciones y Ampliación Curricular Integral (Release 1.11 - Octubre 2026)
+
+Implementación integral de la Hoja de Ruta Curricular Oficial (Fases 1 a 5), incorporando los 17 temas y estaciones faltantes identificados en la investigación curricular oficial (SEP / NCTM), alcanzando 74 estaciones consecutivas del Reino y 231 pruebas unitarias automatizadas.
+
+### Fase 1 - Primaria Temprana y Magnitudes Físicas
+- **Corrección / Ampliación:** Implementación curricular y procedimental de:
+  - Sistema monetario, denominaciones y vuelto (`elem_money_currency_01`).
+  - Medición con regla, longitudes y distancias en centímetros (`elem_measurement_ruler_01`).
+  - Lectura de tiempo en reloj analógico y digital en horas y medias horas (`elem_time_clock_01`).
+  - Cálculo de perímetro en polígonos regulares y rectángulos (`elem_geometry_perimeter_01`).
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `ExerciseGenerator.cs`, `SimplifiedHintCatalog.cs`, `RewardService.cs`.
+- **Criterio de verificación:** Pruebas unitarias dedicadas en `ExerciseGeneratorTests.cs`, `CurriculumServiceTests.cs` y `RewardServiceTests.cs`.
+
+### Fase 2 - Primaria Superior, Aritmética y Estadística
+- **Corrección / Ampliación:** Implementación curricular y procedimental de:
+  - División entera con residuo explícito ($D = d \times q + r$) (`elem_division_remainder_01`).
+  - Ubicación de fracciones propias e impropias en la recta numérica (`elem_fractions_numberline_01`).
+  - Interpretación y lectura de gráficas de barras y tablas de frecuencias (`elem_data_barcharts_01`).
+  - Medidas de tendencia central (media aritmética, mediana y moda) (`elem_stats_central_tendency_01`).
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `ExerciseGenerator.cs`, `SimplifiedHintCatalog.cs`, `RewardService.cs`.
+- **Criterio de verificación:** Pruebas unitarias de cálculo estadístico exacto y validación de enteros.
+
+### Fase 3 - Secundaria Inicial, Álgebra y Geometría Plana
+- **Corrección / Ampliación:** Implementación curricular y procedimental de:
+  - Círculo, diámetro, radio y longitud de circunferencia con aproximación de $\pi$ (`sec_circle_geometry_01`).
+  - Descomposición en factores primos, Mínimo Común Múltiplo (MCM) y Máximo Común Divisor (MCD) (`sec_factors_multiples_mcm_mcd_01`).
+  - Números racionales negativos, sumas y comparaciones con signo (`sec_negative_rational_numbers_01`).
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `ExerciseGenerator.cs`, `SimplifiedHintCatalog.cs`, `RewardService.cs`.
+- **Criterio de verificación:** Escalamiento entero de $C = 314$ cm ($r=50$ cm) y pruebas de divisibilidad.
+
+### Fase 4 - Secundaria Avanzada y Álgebra Rigurosa
+- **Corrección / Ampliación:** Implementación curricular y procedimental de:
+  - Factorización algebraica (factor común y diferencia de cuadrados) (`sec_algebra_factoring_01`).
+  - Ángulos entre paralelas cortadas por una secante (alternos internos, correspondientes, opuestos) (`sec_parallel_lines_angles_01`).
+  - Probabilidad clásica y de eventos compuestos (regla del producto con monedas y dados) (`sec_probability_compound_01`).
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `ExerciseGenerator.cs`, `SimplifiedHintCatalog.cs`, `RewardService.cs`.
+- **Criterio de verificación:** Preservación de la contigüidad de Secundaria 1º a 3º en `GetTopicsForAge` evitando saltos en el desbloqueo en cascada.
+
+### Fase 5 - Preparatoria, Geometría Analítica y Cálculo
+- **Corrección / Ampliación:** Implementación curricular y procedimental de:
+  - Secciones cónicas analíticas: parábola y elipse con vértice/centro en el origen (`prep_conics_parabola_ellipse_01`).
+  - Límites de funciones y noción de continuidad por sustitución y factorización (`prep_calculus_limits_01`).
+  - Reglas de derivación operativa: regla de la potencia y suma/constante ($f'(x) = n \cdot c \cdot x^{n-1}$) (`prep_calculus_derivative_rules_01`).
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `ExerciseGenerator.cs`, `SimplifiedHintCatalog.cs`, `RewardService.cs`.
+- **Criterio de verificación:** Generación robusta sin división por cero y pruebas de derivadas exactas.
+
+### Fase 6 - Accesibilidad de UI y Usabilidad de Teclado (WinUI 3)
+- **Corrección:**
+  - En `GamePage.xaml`, el panel de opciones de respuesta implementa `WrapPanel` en lugar de una disposición rígida en una sola columna/fila, evitando solapamientos y scroll horizontal forzado (WCAG 1.4.10 Reflow).
+  - En enunciados extensos de problemas matemáticos se sustituyó el corte con puntos suspensivos (`TextTrimming="CharacterEllipsis"`) por salto de línea natural (`TextWrapping="WrapWholeWords"`), garantizando la visibilidad completa del problema.
+  - En `MainWindow.xaml.cs`, los aceleradores numéricos globales (`1-4` / `NumPad1-NumPad4`) se deshabilitan si el foco actual reside en un `TextBox`, evitando que escribir un número en una entrada de texto active accidentalmente una opción del juego.
+- **Ubicación:** `src/MathTutor.WinUI/Views/GamePage.xaml`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`, `src/MathTutor.WinUI/MainWindow.xaml.cs`.
+- **Criterio de verificación:** Pruebas unitarias de accesibilidad y foco en `PedagogyAndAccessibilityTests.cs`.
+
+### Fase 7 - Suite de Pruebas Automatizadas y Release 1.11
+- **Resultado:**
+  - De 209 a 231 pruebas unitarias automáticas aprobadas al 100% (231 passed, 0 failed, 0 warnings).
+  - Versionamiento sincronizado en `1.11.0` en `MathTutor.Core.csproj`, `MathTutor.WinUI.csproj` y scripts de empaquetado.

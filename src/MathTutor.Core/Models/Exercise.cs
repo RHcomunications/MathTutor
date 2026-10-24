@@ -28,6 +28,32 @@ public enum GamePlayType
     DirectProportion,         // Proporcionalidad directa y regla de tres (a/b = c/d)
     AlgebraicBalance,         // Balanza de incógnitas y ecuaciones lineales simples (x + a = b)
     SquareRootPerfect,        // Raíz cuadrada de cuadrados perfectos (lado de un área cuadrada)
+    GeometryAnglesClassification, // Clasificación y medición de ángulos (recto 90°, agudo <90°, obtuso >90°, llano 180°)
+    GeometryArea2D,               // Cálculo de áreas de figuras bidimensionales (cuadrículas, rectángulos y triángulos)
+    GeometryVolume3D,             // Cálculo de volumen en cuerpos tridimensionales (cubos y prismas en unidades cúbicas)
+    GeometryPerimeter,            // Cálculo de perímetro sumando los lados exteriores de polígonos
+    TimeClockReading,             // Lectura del reloj analógico y digital: horas, medias horas y minutos
+    MoneyCurrencyCounting,        // Conteo de monedas y billetes para compras cotidianas y cambio
+    MeasurementRulerLength,       // Medición con regla métrica graduada desde el cero en centímetros
+    DivisionWithRemainder,        // División no exacta con cociente y residuo (D = d · q + r)
+    FractionsNumberLine,          // Ubicación y comparación de fracciones propias e impropias en la recta numérica
+    DataBarChartsAndTables,       // Lectura e interpretación de tablas de frecuencia y gráficas de barras
+    StatisticsCentralTendency,
+
+    // --- FASE 3: Geometría de Curvas y Aritmética Pre-Álgebra ---
+    CircleGeometryPi,
+    FactorsMcmMcd,
+    NegativeRationalNumbers,
+
+    // --- FASE 4: Álgebra y Geometría Euclidiana de Secundaria ---
+    AlgebraFactoring,
+    ParallelLinesAngles,
+    ProbabilityCompoundEvents,
+
+    // --- FASE 5: Bachillerato y Pre-Cálculo Avanzado ---
+    ConicsParabolaEllipse,
+    CalculusLimits,
+    CalculusDerivativeRules,
     CartesianCoordinates,     // Coordenadas cartesianas en el plano (X, Y)
     SignedNumbersAddition,    // Números enteros con signo (positivos y negativos, deudas y saldo)
     OrderOfOperationsPEMDAS,  // Jerarquía de operaciones y signos de agrupación (PEMDAS)

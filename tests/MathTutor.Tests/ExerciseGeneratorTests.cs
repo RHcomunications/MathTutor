@@ -863,7 +863,7 @@ public class ExerciseGeneratorTests
     {
         var curriculum = new CurriculumService();
         var allTopics = curriculum.GetAllTopics();
-        Assert.Equal(54, allTopics.Count);
+        Assert.Equal(74, allTopics.Count);
 
         foreach (var topic in allTopics)
         {
@@ -880,6 +880,43 @@ public class ExerciseGeneratorTests
                 }
             });
         }
+    }
+
+    [Fact]
+    public void KindergartenTopics_GenerateProceduralExercises_WithIntellectualDisability_GeneratesTopicSpecificMechanics()
+    {
+        var curriculum = new CurriculumService();
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile
+        {
+            CurrentLevel = AcademicLevel.Kindergarten,
+            Age = 4,
+            Disability = DisabilityType.Intellectual,
+            Support = { IntellectualSupport = IntellectualSupportLevel.Extensive }
+        };
+
+        var kinderTopics = curriculum.GetAllTopics().Where(t => t.Level == AcademicLevel.Kindergarten).ToList();
+        Assert.Equal(10, kinderTopics.Count);
+
+        foreach (var topic in kinderTopics)
+        {
+            var exercises = generator.GenerateExercisesForTopic(topic.Id, profile, count: 2);
+            Assert.Equal(2, exercises.Count);
+            Assert.All(exercises, ex =>
+            {
+                Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+                Assert.True(ex.ExpectedResult >= 1);
+            });
+        }
+
+        var patternEx = generator.GenerateExercisesForTopic("kinder_patterns_01", profile, count: 1).First();
+        Assert.Equal(GamePlayType.OrderSequence, patternEx.GameType);
+
+        var measureEx = generator.GenerateExercisesForTopic("kinder_measure_01", profile, count: 1).First();
+        Assert.Equal(GamePlayType.Comparison, measureEx.GameType);
+
+        var addSubEx = generator.GenerateExercisesForTopic("kinder_add_sub_01", profile, count: 1).First();
+        Assert.True(addSubEx.GameType is GamePlayType.AdditionCombine or GamePlayType.SubtractionTakeAway);
     }
 
     [Fact]
@@ -921,8 +958,8 @@ public class ExerciseGeneratorTests
         var stations = rewards.GetRealmStations(profile);
         var badges = rewards.GetAllBadges(profile);
 
-        Assert.Equal(54, allTopics.Count);
-        Assert.Equal(54, stations.Count);
+        Assert.Equal(74, allTopics.Count);
+        Assert.Equal(74, stations.Count);
 
         var topicIds = allTopics.Select(t => t.Id).ToHashSet();
         var stationTopicIds = stations.Select(s => s.TopicId).ToHashSet();
@@ -1227,5 +1264,345 @@ public class ExerciseGeneratorTests
             Assert.Equal(SimplifiedHintCatalog.GetSimpleSuccess(exercise.GameType), success);
         }
     }
-}
+    [Fact]
+    public void GenerateAnglesExercise_GeneratesAccurateAngleClassification()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 9, CurrentLevel = AcademicLevel.MiddleElementary };
 
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateAnglesExercise(profile);
+            Assert.Equal(GamePlayType.GeometryAnglesClassification, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult is 30 or 45 or 60 or 75 or 90 or 105 or 120 or 135 or 150 or 180);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateAreaExercise_ComputesAreaAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 10, CurrentLevel = AcademicLevel.UpperElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateAreaExercise(profile);
+            Assert.Equal(GamePlayType.GeometryArea2D, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 4);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateVolumeExercise_ComputesVolumeAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 11, CurrentLevel = AcademicLevel.UpperElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateVolumeExercise(profile);
+            Assert.Equal(GamePlayType.GeometryVolume3D, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 8);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+    [Fact]
+    public void GenerateMoneyCurrencyExercise_CalculatesCoinAndBillTotalsAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 7, CurrentLevel = AcademicLevel.EarlyElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateMoneyCurrencyExercise(profile);
+            Assert.Equal(GamePlayType.MoneyCurrencyCounting, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateMeasurementRulerExercise_MeasuresCentimetersAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 7, CurrentLevel = AcademicLevel.EarlyElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateMeasurementRulerExercise(profile);
+            Assert.Equal(GamePlayType.MeasurementRulerLength, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateTimeClockExercise_ReadsHoursAndMinutesAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 8, CurrentLevel = AcademicLevel.EarlyElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateTimeClockExercise(profile);
+            Assert.Equal(GamePlayType.TimeClockReading, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult is >= 1 and <= 60);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GeneratePerimeterExercise_ComputesPerimeterAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 9, CurrentLevel = AcademicLevel.MiddleElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GeneratePerimeterExercise(profile);
+            Assert.Equal(GamePlayType.GeometryPerimeter, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 6);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateDivisionRemainderExercise_SolvesRemainderAndCocienteAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 9, CurrentLevel = AcademicLevel.MiddleElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateDivisionRemainderExercise(profile);
+            Assert.Equal(GamePlayType.DivisionWithRemainder, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateFractionsNumberLineExercise_PositionsFraccionAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 10, CurrentLevel = AcademicLevel.MiddleElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateFractionsNumberLineExercise(profile);
+            Assert.Equal(GamePlayType.FractionsNumberLine, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateDataBarChartsExercise_CalculatesFrequenciesAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 9, CurrentLevel = AcademicLevel.MiddleElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateDataBarChartsExercise(profile);
+            Assert.Equal(GamePlayType.DataBarChartsAndTables, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateStatisticsCentralTendencyExercise_CalculatesMeanModeMedianAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 11, CurrentLevel = AcademicLevel.UpperElementary };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateStatisticsCentralTendencyExercise(profile);
+            Assert.Equal(GamePlayType.StatisticsCentralTendency, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+
+    [Fact]
+    public void GenerateCircleGeometryExercise_ComputesDimensionsAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 12, CurrentLevel = AcademicLevel.SecondaryFirstGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateCircleGeometryExercise(profile);
+            Assert.Equal(GamePlayType.CircleGeometryPi, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 2);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateFactorsMcmMcdExercise_CalculatesMcmAndMcdAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 12, CurrentLevel = AcademicLevel.SecondaryFirstGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateFactorsMcmMcdExercise(profile);
+            Assert.Equal(GamePlayType.FactorsMcmMcd, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 2);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateNegativeRationalNumbersExercise_OperatesUnderZeroAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 12, CurrentLevel = AcademicLevel.SecondaryFirstGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateNegativeRationalNumbersExercise(profile);
+            Assert.Equal(GamePlayType.NegativeRationalNumbers, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+
+    [Fact]
+    public void GenerateAlgebraFactoringExercise_FactorsAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 14, CurrentLevel = AcademicLevel.SecondarySecondGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateAlgebraFactoringExercise(profile);
+            Assert.Equal(GamePlayType.AlgebraFactoring, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateParallelLinesAnglesExercise_ComputesAnglesAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 14, CurrentLevel = AcademicLevel.SecondarySecondGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateParallelLinesAnglesExercise(profile);
+            Assert.Equal(GamePlayType.ParallelLinesAngles, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 20);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateProbabilityCompoundEventsExercise_CalculatesProbabilityAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 15, CurrentLevel = AcademicLevel.SecondaryThirdGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateProbabilityCompoundEventsExercise(profile);
+            Assert.Equal(GamePlayType.ProbabilityCompoundEvents, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 0);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+
+    [Fact]
+    public void GenerateConicsParabolaEllipseExercise_CalculatesDimensionsAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 16, CurrentLevel = AcademicLevel.HighSchoolSecondGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateConicsParabolaEllipseExercise(profile);
+            Assert.Equal(GamePlayType.ConicsParabolaEllipse, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateCalculusLimitsExercise_EvaluatesLimitsAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 17, CurrentLevel = AcademicLevel.HighSchoolThirdGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateCalculusLimitsExercise(profile);
+            Assert.Equal(GamePlayType.CalculusLimits, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 1);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+    [Fact]
+    public void GenerateCalculusDerivativeRulesExercise_AppliesRulesAccurately()
+    {
+        var generator = new ExerciseGenerator();
+        var profile = new UserProfile { Age = 17, CurrentLevel = AcademicLevel.HighSchoolThirdGrade };
+
+        for (int i = 0; i < 20; i++)
+        {
+            var ex = generator.GenerateCalculusDerivativeRulesExercise(profile);
+            Assert.Equal(GamePlayType.CalculusDerivativeRules, ex.GameType);
+            Assert.Contains(ex.Options, o => o.IsCorrect && o.Value == ex.ExpectedResult);
+            Assert.True(ex.ExpectedResult >= 0);
+            Assert.False(string.IsNullOrWhiteSpace(ex.StandardInstruction));
+            Assert.False(string.IsNullOrWhiteSpace(ex.ExplanationOfSuccess));
+        }
+    }
+
+}

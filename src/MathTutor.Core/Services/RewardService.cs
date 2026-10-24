@@ -142,6 +142,43 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_division_remainder",
+                Title = "Maestro del Residuo",
+                Description = "Repartiste con precisión calculando sobrantes exactos.",
+                IconEmoji = "🍪",
+                AssociatedTopicId = "elem_division_remainder_01",
+                RequiredStars = 3
+            },
+
+            new()
+            {
+                Id = "badge_money_currency",
+                Title = "Comerciante Experto",
+                Description = "Contaste monedas y billetes para compras y cambio exacto en el mercado.",
+                IconEmoji = "🪙",
+                AssociatedTopicId = "elem_money_currency_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_measurement_ruler",
+                Title = "Maestro Carpintero",
+                Description = "Mediste longitudes en centímetros con la regla graduada desde el cero.",
+                IconEmoji = "📏",
+                AssociatedTopicId = "elem_measurement_ruler_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_time_clock",
+                Title = "Amo del Tiempo",
+                Description = "Leíste horas en punto, medias horas y minutos en la torre del reloj.",
+                IconEmoji = "⏰",
+                AssociatedTopicId = "elem_time_clock_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_fractions",
                 Title = "Maestro de las Fracciones",
                 Description = "Comprendiste partes iguales, numeradores y fracciones equivalentes.",
@@ -151,11 +188,39 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_fractions_numberline",
+                Title = "Guía de la Recta",
+                Description = "Ubicaste y comparaste fracciones con exactitud en la recta numérica.",
+                IconEmoji = "📍",
+                AssociatedTopicId = "elem_fractions_numberline_01",
+                RequiredStars = 3
+            },
+
+            new()
+            {
                 Id = "badge_distributive",
                 Title = "Estratega de la Descomposición",
                 Description = "Multiplicaste cantidades mayores rompiéndolas en decenas y unidades.",
                 IconEmoji = "🧩",
                 AssociatedTopicId = "elem_distributive_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_geometry_angles",
+                Title = "Vigía de los Ángulos",
+                Description = "Reconociste y clasificaste esquinas rectas de 90°, ángulos agudos, obtusos y llanos.",
+                IconEmoji = "📐",
+                AssociatedTopicId = "elem_geometry_angles_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_geometry_perimeter",
+                Title = "Guardián de las Fronteras",
+                Description = "Calculaste el perímetro exterior sumando todos los lados de figuras planas.",
+                IconEmoji = "🛡️",
+                AssociatedTopicId = "elem_geometry_perimeter_01",
                 RequiredStars = 3
             },
             new()
@@ -174,6 +239,25 @@ public class RewardService
                 Description = "Manejaste monedas de centavos y el valor de los números decimales.",
                 IconEmoji = "🪙",
                 AssociatedTopicId = "elem_decimals_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_data_barcharts",
+                Title = "Analista de Datos",
+                Description = "Interpretaste tablas de frecuencia y gráficas de barras.",
+                IconEmoji = "📊",
+                AssociatedTopicId = "elem_data_barcharts_01",
+                RequiredStars = 3
+            },
+
+            new()
+            {
+                Id = "badge_geometry_area",
+                Title = "Maestro de las Superficies",
+                Description = "Calculaste el área de rectángulos, cuadrados y triángulos en unidades cuadradas.",
+                IconEmoji = "🟩",
+                AssociatedTopicId = "elem_geometry_area_01",
                 RequiredStars = 3
             },
             new()
@@ -205,6 +289,25 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_stats_central_tendency",
+                Title = "Científico Central",
+                Description = "Calculaste media, mediana y moda con maestría.",
+                IconEmoji = "🎯",
+                AssociatedTopicId = "elem_stats_central_tendency_01",
+                RequiredStars = 3
+            },
+
+            new()
+            {
+                Id = "badge_geometry_volume",
+                Title = "Arquitecto Tridimensional",
+                Description = "Calculaste volúmenes de cubos y prismas en unidades cúbicas piso por piso.",
+                IconEmoji = "📦",
+                AssociatedTopicId = "elem_geometry_volume_01",
+                RequiredStars = 3
+            },
+            new()
+            {
                 Id = "badge_square_root",
                 Title = "Maestro de la Raíz Cuadrada",
                 Description = "Descubriste el lado exacto de los templos de cuadrados perfectos.",
@@ -230,6 +333,62 @@ public class RewardService
                 AssociatedTopicId = "sec_signed_numbers_01",
                 RequiredStars = 3
             },
+            new()
+            {
+                Id = "badge_circle_geometry",
+                Title = "Maestro de las Curvas",
+                Description = "Calculaste radio, diámetro y circunferencia con pi.",
+                IconEmoji = "⭕",
+                AssociatedTopicId = "sec_circle_geometry_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_factors_mcm_mcd",
+                Title = "Relojero de Factores",
+                Description = "Resolviste problemas de coincidencia y empaque con MCM y MCD.",
+                IconEmoji = "💡",
+                AssociatedTopicId = "sec_factors_multiples_mcm_mcd_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_negative_rationals",
+                Title = "Explorador Polar",
+                Description = "Operaste y ubicaste racionales negativos con destreza bajo cero.",
+                IconEmoji = "❄️",
+                AssociatedTopicId = "sec_negative_rational_numbers_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_algebra_factoring",
+                Title = "Arquitecto de Factores",
+                Description = "Descompusiste expresiones algebraicas en factores comunes y binomios conjugados.",
+                IconEmoji = "🧩",
+                AssociatedTopicId = "sec_algebra_factoring_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_parallel_angles",
+                Title = "Cartógrafo de Paralelas",
+                Description = "Identificaste ángulos alternos internos, correspondientes y suplementarios.",
+                IconEmoji = "📐",
+                AssociatedTopicId = "sec_parallel_lines_angles_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_prob_compound",
+                Title = "Oráculo de Laplace",
+                Description = "Calculaste probabilidades clásicas y construiste espacios muestrales compuestos.",
+                IconEmoji = "🎲",
+                AssociatedTopicId = "sec_probability_compound_01",
+                RequiredStars = 3
+            },
+
+
             new()
             {
                 Id = "badge_order_operations",
@@ -275,6 +434,7 @@ public class RewardService
                 AssociatedTopicId = "sec_polynomials_like_terms_01",
                 RequiredStars = 3
             },
+
             new()
             {
                 Id = "badge_linear_systems_2x2",
@@ -320,6 +480,7 @@ public class RewardService
                 AssociatedTopicId = "sec_trigonometry_ratios_01",
                 RequiredStars = 3
             },
+
             new()
             {
                 Id = "badge_parabola",
@@ -367,6 +528,16 @@ public class RewardService
             },
             new()
             {
+                Id = "badge_conics_parabola_ellipse",
+                Title = "Arquitecto de Órbitas",
+                Description = "Dominaste focos parabólicos y semiejes elípticos interplanetarios.",
+                IconEmoji = "📡",
+                AssociatedTopicId = "prep_conics_parabola_ellipse_01",
+                RequiredStars = 3
+            },
+
+            new()
+            {
                 Id = "badge_sine_wave",
                 Title = "Maestro de las Ondas",
                 Description = "Modelaste señales acústicas y amplitud pico en funciones armónicas y = A · sen(x).",
@@ -392,6 +563,25 @@ public class RewardService
                 AssociatedTopicId = "prep_calculus_derivative_01",
                 RequiredStars = 3
             },
+            new()
+            {
+                Id = "badge_calculus_limits",
+                Title = "Guardián del Infinito",
+                Description = "Calculaste límites continuos y cancelaste indeterminaciones con maestría.",
+                IconEmoji = "🎯",
+                AssociatedTopicId = "prep_calculus_limits_01",
+                RequiredStars = 3
+            },
+            new()
+            {
+                Id = "badge_calculus_derivative_rules",
+                Title = "Maestro de la Potencia",
+                Description = "Aplicaste las reglas operativas de derivación instantánea del cálculo superior.",
+                IconEmoji = "⚡",
+                AssociatedTopicId = "prep_calculus_derivative_rules_01",
+                RequiredStars = 3
+            },
+
             new()
             {
                 Id = "badge_calculus_integral",
@@ -664,6 +854,43 @@ public class RewardService
             },
             new()
             {
+                Id = "station_division_remainder",
+                Name = "El Banquete de los Sobrantes",
+                Description = "El festín donde repartimos cantidades justas y medimos los sobrantes exactos.",
+                LandmarkEmoji = "🍪",
+                TopicId = "elem_division_remainder_01",
+                OrderIndex = 6
+            },
+
+            new()
+            {
+                Id = "station_money_currency",
+                Name = "El Mercado del Reino",
+                Description = "El concurrido bazar donde compramos con monedas y calculamos cambio.",
+                LandmarkEmoji = "🪙",
+                TopicId = "elem_money_currency_01",
+                OrderIndex = 6
+            },
+            new()
+            {
+                Id = "station_measurement_ruler",
+                Name = "El Taller de Medición",
+                Description = "El taller de artesanías donde medimos madera en centímetros exactos.",
+                LandmarkEmoji = "📏",
+                TopicId = "elem_measurement_ruler_01",
+                OrderIndex = 7
+            },
+            new()
+            {
+                Id = "station_time_clock",
+                Name = "La Torre del Gran Reloj",
+                Description = "El campanario donde sincronizamos horas, medias horas y minutos.",
+                LandmarkEmoji = "⏰",
+                TopicId = "elem_time_clock_01",
+                OrderIndex = 8
+            },
+            new()
+            {
                 Id = "station_6",
                 Name = "La Pastelería de las Fracciones",
                 Description = "El taller donde los pasteles se dividen en partes mágicamente iguales.",
@@ -673,12 +900,40 @@ public class RewardService
             },
             new()
             {
+                Id = "station_fractions_numberline",
+                Name = "El Sendero de la Recta Numérica",
+                Description = "El camino graduado donde las fracciones avanzan paso a paso entre enteros.",
+                LandmarkEmoji = "📍",
+                TopicId = "elem_fractions_numberline_01",
+                OrderIndex = 10
+            },
+
+            new()
+            {
                 Id = "station_7",
                 Name = "El Taller de los Bloques Multiplicadores",
                 Description = "El laboratorio donde los números se descomponen para multiplicar con maestría.",
                 LandmarkEmoji = "🧩",
                 TopicId = "elem_distributive_01",
                 OrderIndex = 7
+            },
+            new()
+            {
+                Id = "station_geometry_angles",
+                Name = "El Radar de los Ángulos",
+                Description = "La torre de observación donde medimos giros y esquinas del cosmos.",
+                LandmarkEmoji = "📐",
+                TopicId = "elem_geometry_angles_01",
+                OrderIndex = 8
+            },
+            new()
+            {
+                Id = "station_geometry_perimeter",
+                Name = "El Sendero del Perímetro",
+                Description = "La muralla exterior donde sumamos los bordes de cada castillo.",
+                LandmarkEmoji = "🛡️",
+                TopicId = "elem_geometry_perimeter_01",
+                OrderIndex = 9
             },
             new()
             {
@@ -697,6 +952,25 @@ public class RewardService
                 LandmarkEmoji = "🪙",
                 TopicId = "elem_decimals_01",
                 OrderIndex = 9
+            },
+            new()
+            {
+                Id = "station_data_barcharts",
+                Name = "El Observatorio de Datos",
+                Description = "La cúpula de observación donde contamos frecuencias y levantamos gráficas de barras.",
+                LandmarkEmoji = "📊",
+                TopicId = "elem_data_barcharts_01",
+                OrderIndex = 14
+            },
+
+            new()
+            {
+                Id = "station_geometry_area",
+                Name = "El Taller de los Mosaicos",
+                Description = "El obrador de baldosas donde cubrimos pisos y calculamos superficies.",
+                LandmarkEmoji = "🟩",
+                TopicId = "elem_geometry_area_01",
+                OrderIndex = 10
             },
             new()
             {
@@ -727,6 +1001,25 @@ public class RewardService
             },
             new()
             {
+                Id = "station_stats_central_tendency",
+                Name = "El Centro de Mando Estadístico",
+                Description = "La sala de control donde calculamos la media, mediana y moda para comprender la galaxia.",
+                LandmarkEmoji = "🎯",
+                TopicId = "elem_stats_central_tendency_01",
+                OrderIndex = 18
+            },
+
+            new()
+            {
+                Id = "station_geometry_volume",
+                Name = "La Fábrica de Prismas Tridimensionales",
+                Description = "La nave de ensamble donde construimos contenedores cúbicos para el viaje espacial.",
+                LandmarkEmoji = "📦",
+                TopicId = "elem_geometry_volume_01",
+                OrderIndex = 13
+            },
+            new()
+            {
                 Id = "station_13",
                 Name = "El Laberinto de los Cuadrados Perfectos",
                 Description = "El laberinto donde la raíz cuadrada revela el lado del templo.",
@@ -752,6 +1045,35 @@ public class RewardService
                 TopicId = "sec_signed_numbers_01",
                 OrderIndex = 15
             },
+            new()
+            {
+                Id = "station_circle_geometry",
+                Name = "El Templo del Círculo y Pi",
+                Description = "La cúpula geométrica donde el radio, diámetro y pi revelan la circunferencia.",
+                LandmarkEmoji = "⭕",
+                TopicId = "sec_circle_geometry_01",
+                OrderIndex = 25
+            },
+            new()
+            {
+                Id = "station_factors_mcm_mcd",
+                Name = "El Reloj de los Encuentros",
+                Description = "La torre de engranajes donde sincronizamos periodos y trozamos sin sobrantes.",
+                LandmarkEmoji = "💡",
+                TopicId = "sec_factors_multiples_mcm_mcd_01",
+                OrderIndex = 26
+            },
+            new()
+            {
+                Id = "station_negative_rationals",
+                Name = "El Sendero Bajo Cero",
+                Description = "El glaciar matemático donde las fracciones y decimales viven a la izquierda del cero.",
+                LandmarkEmoji = "❄️",
+                TopicId = "sec_negative_rational_numbers_01",
+                OrderIndex = 27
+            },
+
+
             new()
             {
                 Id = "station_16",
@@ -799,6 +1121,25 @@ public class RewardService
             },
             new()
             {
+                Id = "station_algebra_factoring",
+                Name = "El Taller de los Factores",
+                Description = "El laboratorio donde desarmamos polinomios en factores modulares.",
+                LandmarkEmoji = "🧩",
+                TopicId = "sec_algebra_factoring_01",
+                OrderIndex = 35
+            },
+            new()
+            {
+                Id = "station_parallel_angles",
+                Name = "El Cruce de las Rutas Cósmicas",
+                Description = "La encrucijada donde las vías paralelas y secantes forman ángulos gemelos.",
+                LandmarkEmoji = "📐",
+                TopicId = "sec_parallel_lines_angles_01",
+                OrderIndex = 36
+            },
+
+            new()
+            {
                 Id = "station_21",
                 Name = "El Centro de Mando 2x2",
                 Description = "La estación donde dos radares resuelven pares ordenados (x, y).",
@@ -842,6 +1183,16 @@ public class RewardService
                 TopicId = "sec_trigonometry_ratios_01",
                 OrderIndex = 25
             },
+            new()
+            {
+                Id = "station_prob_compound",
+                Name = "El Oráculo del Azar",
+                Description = "El templo matemático donde predecimos probabilidades exactas con la Regla de Laplace.",
+                LandmarkEmoji = "🎲",
+                TopicId = "sec_probability_compound_01",
+                OrderIndex = 37
+            },
+
             new()
             {
                 Id = "station_26",
@@ -889,6 +1240,16 @@ public class RewardService
             },
             new()
             {
+                Id = "station_conics_parabola_ellipse",
+                Name = "El Observatorio de Antenas y Órbitas",
+                Description = "El radiotelescopio donde las parábolas concentran señales y las elipses trazan órbitas.",
+                LandmarkEmoji = "📡",
+                TopicId = "prep_conics_parabola_ellipse_01",
+                OrderIndex = 48
+            },
+
+            new()
+            {
                 Id = "station_31",
                 Name = "El Laboratorio de Ondas Sonoras",
                 Description = "La sala de audio digital donde estudiamos la amplitud y cresta en y = A · sen(x).",
@@ -905,7 +1266,16 @@ public class RewardService
                 TopicId = "prep_logarithm_binary_01",
                 OrderIndex = 32
             },
-            new()
+                        new()
+            {
+                Id = "station_calculus_limits",
+                Name = "La Puerta del Infinito",
+                Description = "El portal donde la aproximación infinitesimal y los límites revelan la continuidad del universo.",
+                LandmarkEmoji = "🎯",
+                TopicId = "prep_calculus_limits_01",
+                OrderIndex = 51
+            },
+new()
             {
                 Id = "station_33",
                 Name = "La Pista del Velocímetro Diferencial",
@@ -914,6 +1284,16 @@ public class RewardService
                 TopicId = "prep_calculus_derivative_01",
                 OrderIndex = 33
             },
+            new()
+            {
+                Id = "station_calculus_derivative_rules",
+                Name = "El Motor del Cambio Instantáneo",
+                Description = "El reactor donde las reglas de la potencia y la diferenciación impulsan la física superior.",
+                LandmarkEmoji = "⚡",
+                TopicId = "prep_calculus_derivative_rules_01",
+                OrderIndex = 53
+            },
+
             new()
             {
                 Id = "station_34",

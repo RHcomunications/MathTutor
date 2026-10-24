@@ -219,7 +219,8 @@ public sealed partial class MainWindow : Window
         if (topic is null)
             return;
 
-        var dynamicExercises = _curriculum.GenerateAdaptiveExercises(topic, _acc.CurrentProfile);
+        int targetCount = GetTargetExerciseCount(topic, _acc.CurrentProfile);
+        var dynamicExercises = _curriculum.GenerateAdaptiveExercises(topic, _acc.CurrentProfile, targetCount);
         if (dynamicExercises.Count > 0)
         {
             topic.Exercises = dynamicExercises;
@@ -227,6 +228,17 @@ public sealed partial class MainWindow : Window
 
         _currentTopic = topic;
         Navigation.Navigate(typeof(LessonPage), new LessonNavigationArgs(topic));
+    }
+
+    private static int GetTargetExerciseCount(PedagogicalTopic topic, UserProfile profile)
+    {
+        if (topic.Level == AcademicLevel.Kindergarten)
+        {
+            int matchingCurated = topic.Exercises.Count(e => profile.Age >= e.TargetAgeMin && profile.Age <= e.TargetAgeMax);
+            return matchingCurated > 0 ? Math.Max(3, matchingCurated) : Math.Max(3, topic.Exercises.Count);
+        }
+
+        return Math.Max(3, topic.Exercises.Count);
     }
 
     private void OpenGame(PedagogicalTopic topic)

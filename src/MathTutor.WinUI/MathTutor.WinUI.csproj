@@ -17,9 +17,9 @@
     <EnableWinAppRunSupport>false</EnableWinAppRunSupport>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.10.0</Version>
-    <FileVersion>1.10.0.0</FileVersion>
-    <AssemblyVersion>1.10.0.0</AssemblyVersion>
+    <Version>1.11.0</Version>
+    <FileVersion>1.11.0.0</FileVersion>
+    <AssemblyVersion>1.11.0.0</AssemblyVersion>
     <Product>MathTutor - Tutor de Matematicas y Programacion Inclusiva</Product>
     <Description>Tutor interactivo 100% accesible (WCAG 2.2 AA/AAA y DUA) desde Preescolar hasta Preparatoria y Programacion Inclusiva.</Description>
   </PropertyGroup>

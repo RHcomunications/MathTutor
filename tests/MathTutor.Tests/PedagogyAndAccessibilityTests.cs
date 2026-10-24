@@ -724,6 +724,18 @@ public class PedagogyAndAccessibilityTests
         Assert.Equal(topic.Exercises.Take(3).Select(e => e.Id), exercises.Select(e => e.Id));
     }
 
+    [Fact]
+    public void GenerateAdaptiveExercises_IncludesAllCuratedPrinciplesWhenCountMatches()
+    {
+        var topic = _curriculum.GetAllTopics().First(t => t.Id == "elem_addition_01");
+        var profile = new UserProfile { Age = 7, CurrentLevel = AcademicLevel.EarlyElementary };
+
+        var exercises = _curriculum.GenerateAdaptiveExercises(topic, profile, count: topic.Exercises.Count);
+
+        Assert.Equal(4, exercises.Count);
+        Assert.Contains(exercises, e => e.Id == "add_ex_04" && e.GameType == GamePlayType.AssociativePropertyDemo);
+    }
+
 
     [Fact]
     public void UserProfile_VisualDisability_EnablesVoiceAndScreenReaderDefaults()
@@ -994,7 +1006,7 @@ public class PedagogyAndAccessibilityTests
     public void AllCurriculumTopics_SupportStepByStepInteractiveLessonStructure_WithNarrativeConceptAndGuidedExample()
     {
         var topics = _curriculum.GetAllTopics();
-        Assert.Equal(54, topics.Count);
+        Assert.Equal(74, topics.Count);
 
         foreach (var topic in topics)
         {

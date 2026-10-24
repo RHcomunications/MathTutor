@@ -100,6 +100,86 @@ public static class SimplifiedHintCatalog
             "Busca un número que multiplicado por sí mismo dé el área total.",
             "El área son los cuadritos de un cuadrado. La respuesta es el lado del cuadrado.",
             "¡Perfecto! La raíz cuadrada regresa el lado del cuadrado perfecto."),
+        [GamePlayType.GeometryAnglesClassification] = new(
+            "90 grados es una esquina recta como un libro. Menos de 90 es agudo y más de 90 es obtuso.",
+            "Una esquina cuadrada mide 90 grados. Si es afilada es aguda; si es abierta es obtusa.",
+            "¡Exacto! Reconociste la abertura del ángulo: 90° es recto, menos es agudo y más es obtuso."),
+        [GamePlayType.GeometryArea2D] = new(
+            "El área es cuántos cuadritos llenan el piso. Multiplica base por altura.",
+            "En un rectángulo multiplica base por altura. En un triángulo calcula la mitad de ese resultado.",
+            "¡Excelente! Calculaste el área contando las unidades cuadradas de la superficie."),
+        [GamePlayType.GeometryVolume3D] = new(
+            "El volumen es cuánto espacio hay adentro de una caja 3D. Multiplica largo por ancho por alto.",
+            "Cuenta los cubitos de la base y multiplícalos por la cantidad de pisos de alto.",
+            "¡Brillante! Calculaste el volumen multiplicando las tres dimensiones en metros cúbicos."),
+        [GamePlayType.GeometryPerimeter] = new(
+            "El perímetro es la cerca de afuera. Suma todos los lados del borde.",
+            "Camina alrededor de la figura y suma la medida de cada lado: lado + lado + lado.",
+            "¡Excelente! El perímetro es la suma de todas las orillas exteriores de la figura."),
+        [GamePlayType.TimeClockReading] = new(
+            "La manecilla corta marca la hora; la manecilla larga marca los minutos.",
+            "Mira la aguja corta para saber la hora. La aguja larga cuenta minutos de 5 en 5.",
+            "¡Genial! Leíste la hora y los minutos con gran precisión."),
+        [GamePlayType.MoneyCurrencyCounting] = new(
+            "Cuenta el valor de las monedas y billetes para saber cuánto dinero tienes.",
+            "Suma primero los billetes grandes y luego las monedas para pagar o dar cambio.",
+            "¡Muy bien! Calculaste el total de dinero exacto para la compra."),
+        [GamePlayType.MeasurementRulerLength] = new(
+            "Pon la regla empezando en el cero (0) y mira hasta qué número llega el objeto.",
+            "Asegúrate de que la punta empiece en el 0. El número final son los centímetros.",
+            "¡Exacto! Mediste la longitud en centímetros desde el cero de la regla."),
+        [GamePlayType.DivisionWithRemainder] = new(
+            "Reparte en partes iguales. Lo que no alcanza para todos es lo que sobra (residuo).",
+            "Divide hasta donde se pueda de forma exacta. Cuenta cuántas piezas quedaron sin repartir.",
+            "¡Excelente! Encontraste cuántas tocan a cada uno y cuánto sobra de residuo."),
+        [GamePlayType.FractionsNumberLine] = new(
+            "Corta el camino de 0 a 1 en partes iguales y da los saltos que dice el número de arriba.",
+            "El número de abajo dice los cortes entre enteros; el de arriba dice cuántos saltos avanzas.",
+            "¡Brillante! Ubicaste la fracción en su lugar exacto de la recta numérica."),
+        [GamePlayType.DataBarChartsAndTables] = new(
+            "La barra más alta es la que tiene más cantidad. Mira el número donde llega el tope.",
+            "Compara las alturas de las barras o lee la tabla para encontrar la categoría mayor o menor.",
+            "¡Muy bien! Leíste los datos de la gráfica de barras correctamente."),
+        [GamePlayType.StatisticsCentralTendency] = new(
+            "El promedio se saca sumando todo y dividiendo entre cuántos son. La moda es la que más se repite.",
+            "Suma los números y divide entre el total de datos para la media; la mediana es el dato del centro.",
+            "¡Extraordinario! Calculaste la medida estadística exacta del conjunto de datos."),
+        [GamePlayType.CircleGeometryPi] = new(
+            "El diámetro es el doble del radio (d = 2r). El perímetro es pi por diámetro (C = π × d).",
+            "Multiplica el diámetro por pi (3.14) para el contorno del círculo, o pi por radio al cuadrado para el área.",
+            "¡Excelente! Calculaste las medidas circulares con el poder de pi."),
+        [GamePlayType.FactorsMcmMcd] = new(
+            "MCM es el múltiplo común más pequeño donde coinciden; MCD es el divisor común más grande que cabe en ambos.",
+            "Para coincidencias de tiempo usa el MCM; para cortar en trozos iguales sin que sobre usa el MCD.",
+            "¡Brillante! Encontraste el factor común exacto entre los números."),
+        [GamePlayType.NegativeRationalNumbers] = new(
+            "En la recta numérica, los números negativos van a la izquierda del cero. Menos por menos da más.",
+            "Ubica la fracción o decimal a la izquierda del 0 si es negativo; más a la izquierda significa menor valor.",
+            "¡Extraordinario! Dominas los números racionales positivos y negativos en la recta."),
+        [GamePlayType.AlgebraFactoring] = new(
+            "Factorizar es desarmar en una multiplicación. Saca lo que se repite afuera del paréntesis.",
+            "Para factor común busca el término compartido: 3x + 6 = 3(x + 2). Para diferencia de cuadrados: x² - 9 = (x - 3)(x + 3).",
+            "¡Brillante! Descompusiste la expresión algebraica en sus factores primos exactos."),
+        [GamePlayType.ParallelLinesAngles] = new(
+            "Las paralelas cortadas por una secante forman ángulos iguales: los opuestos y los alternos son gemelos.",
+            "Si dos líneas son paralelas, los ángulos alternos internos son iguales; los suplementarios suman 180°.",
+            "¡Excelente! Descifraste la geometría de las paralelas y secantes cósmicas."),
+        [GamePlayType.ProbabilityCompoundEvents] = new(
+            "La probabilidad es casos favorables entre casos posibles totales (Regla de Laplace).",
+            "Cuenta cuántos resultados cumplen la condición y divide entre todos los resultados que pueden salir.",
+            "¡Extraordinario! Calculaste la probabilidad matemática exacta del suceso."),
+        [GamePlayType.ConicsParabolaEllipse] = new(
+            "En la parábola y² = 4px, la distancia al foco es p. En la elipse x²/a² + y²/b² = 1, a es el semieje mayor.",
+            "Para la parábola divide el coeficiente entre 4 (4p => p). Para la elipse extrae la raíz cuadrada de a².",
+            "¡Extraordinario! Dominas las curvas cónicas analíticas de la astronomía y el diseño."),
+        [GamePlayType.CalculusLimits] = new(
+            "Un límite es el valor al que se acerca la función cuando x se aproxima a un número.",
+            "Sustituye el valor de x en la función; si da un número directo, ese es el valor del límite.",
+            "¡Brillante! Calculaste el límite y demostraste la continuidad matemática."),
+        [GamePlayType.CalculusDerivativeRules] = new(
+            "Regla de la potencia: baja el exponente multiplicando y réstale 1 al exponente (d/dx xⁿ = n·xⁿ⁻¹).",
+            "Multiplica el coeficiente por el exponente y baja en uno la potencia; la derivada de un número suelto es 0.",
+            "¡Extraordinario! Dominas las reglas operativas de derivación del cálculo diferencial."),
         [GamePlayType.CartesianCoordinates] = new(
             "En el par (X, Y): primero horizontal (X), después vertical (Y).",
             "El primer número del par señala X y el segundo señala Y. Localiza la coordenada pedida.",

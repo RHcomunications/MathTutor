@@ -2463,6 +2463,623 @@ public class ExerciseGenerator
     }
 
     /// <summary>
+    /// Genera un ejercicio interactivo de formas geométricas y tamaños para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenShapesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        var (min, max) = GetTargetRange(profile);
+        int count = rng.Next(min, max + 1);
+
+        var shapes = new[]
+        {
+            ("círculo", "círculos", "🔵", "Un círculo azul redondo", 262),
+            ("cuadrado", "cuadrados", "🟦", "Un cuadrado azul de 4 lados", 330),
+            ("triángulo", "triángulos", "🔺", "Un triángulo rojo de 3 lados", 392)
+        };
+
+        var target = shapes[rng.Next(shapes.Length)];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kshape_{Guid.NewGuid():N}",
+            Title = $"El Jardín de las Formas: {target.Item2}",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 3,
+            TargetAgeMax = 4,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = count,
+            StandardInstruction = $"En el jardín aparecieron formas geométricas. Toca solo los {target.Item2} para contarlos. ¿Cuántos hay en total?",
+            SimplifiedInstruction = $"Toca solo los {target.Item2}. ¿Cuántos hay?",
+            ScreenReaderDescription = $"Hay varias formas geométricas en el jardín. Explora y cuenta solo los {target.Item2}.",
+            FirstHint = $"Busca la forma que es un {target.Item1} y tócala.",
+            SecondHintDetailed = $"Cuenta despacio: uno, dos... el último número es la cantidad de {target.Item2}.",
+            ExplanationOfSuccess = $"¡Excelente! Hay {count} {target.Item2} en el jardín.",
+            SimplifiedFirstHint = $"Toca cada {target.Item1}.",
+            SimplifiedSecondHint = $"Cuenta: uno, dos... di el último número.",
+            SimplifiedExplanationOfSuccess = $"¡Muy bien! Hay {count} {target.Item2}."
+        };
+
+        for (int i = 0; i < count; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_shape_{i + 1}",
+                Name = $"{target.Item1} {i + 1}",
+                EmojiSymbol = target.Item3,
+                AccessibleDescription = $"{target.Item4} número {i + 1}",
+                OrderIndex = i + 1,
+                MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, count, min: 1, max: max + 2, unitLabel: target.Item2, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de posiciones espaciales (arriba/abajo, dentro/fuera) para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenPositionsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        var (min, max) = GetTargetRange(profile);
+        int count = rng.Next(min, max + 1);
+
+        bool isUp = rng.Next(2) == 0;
+        string positionName = isUp ? "arriba" : "abajo";
+        string locationName = isUp ? "arriba en el árbol" : "abajo en el pasto";
+        string itemNoun = isUp ? "pájaro" : "conejo";
+        string itemPlural = isUp ? "pájaros" : "conejos";
+        string emoji = isUp ? "🐦" : "🐰";
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kpos_{Guid.NewGuid():N}",
+            Title = $"¿Dónde Está?: {itemPlural.Substring(0, 1).ToUpper() + itemPlural.Substring(1)} {positionName}",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 3,
+            TargetAgeMax = 4,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = count,
+            StandardInstruction = $"Los {itemPlural} están jugando. Cuenta únicamente los que están {locationName}. ¿Cuántos hay?",
+            SimplifiedInstruction = $"Cuenta los {itemPlural} que están {positionName}. ¿Cuántos hay?",
+            ScreenReaderDescription = $"Nico el Conejo observa los {itemPlural} {locationName}. Explora y cuenta los de esa posición.",
+            FirstHint = $"Mira con atención la parte de {positionName}.",
+            SecondHintDetailed = $"Cuenta uno a uno los {itemPlural} que están {positionName}.",
+            ExplanationOfSuccess = $"¡Muy bien! Hay {count} {itemPlural} {positionName}.",
+            SimplifiedFirstHint = $"Mira {positionName}.",
+            SimplifiedSecondHint = $"Cuenta: uno, dos... los que están {positionName}.",
+            SimplifiedExplanationOfSuccess = $"¡Bien! Hay {count} {itemPlural} {positionName}."
+        };
+
+        for (int i = 0; i < count; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_pos_{i + 1}",
+                Name = $"{itemNoun} {i + 1}",
+                EmojiSymbol = emoji,
+                AccessibleDescription = $"Un {itemNoun} {locationName} número {i + 1}",
+                OrderIndex = i + 1,
+                MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, count, min: 1, max: max + 2, unitLabel: itemPlural, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de cuentos con números para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenStoriesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        var (min, max) = GetTargetRange(profile);
+        int count = rng.Next(min, max + 1);
+
+        var stories = new[]
+        {
+            ("cerdito", "cerditos", "🐷", "cerditos caminando a su casa", "Los Cerditos del Bosque"),
+            ("patito", "patitos", "🦆", "patitos nadando en el estanque", "Los Patitos Nadadores"),
+            ("oveja", "ovejas", "🐑", "ovejitas en la colina verde", "Las Ovejitas Traviesas")
+        };
+        var st = stories[rng.Next(stories.Length)];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kstory_{Guid.NewGuid():N}",
+            Title = $"Cuentos con Números: {st.Item5}",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 3,
+            TargetAgeMax = 5,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = count,
+            StandardInstruction = $"En el cuento de Luna, hay {st.Item4}. Toca cada uno para contar. ¿Cuántos {st.Item2} hay?",
+            SimplifiedInstruction = $"Cuenta los {st.Item2} del cuento. ¿Cuántos hay?",
+            ScreenReaderDescription = $"Cuento de Luna: hay varios {st.Item4}. Explora y cuenta cada uno.",
+            FirstHint = $"Toca cada {st.Item1} una sola vez.",
+            SecondHintDetailed = $"Cuenta despacito: uno, dos... hasta el último {st.Item1}.",
+            ExplanationOfSuccess = $"¡Grandioso! El cuento tiene {count} {st.Item2}.",
+            SimplifiedFirstHint = $"Toca cada {st.Item1}.",
+            SimplifiedSecondHint = $"Cuenta: uno, dos...",
+            SimplifiedExplanationOfSuccess = $"¡Muy bien! Hay {count} {st.Item2}."
+        };
+
+        for (int i = 0; i < count; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_story_{i + 1}",
+                Name = $"{st.Item1} {i + 1}",
+                EmojiSymbol = st.Item3,
+                AccessibleDescription = $"Un {st.Item1} del cuento número {i + 1}",
+                OrderIndex = i + 1,
+                MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, count, min: 1, max: max + 2, unitLabel: st.Item2, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de secuencias y patrones rítmicos para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenPatternsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+
+        var patterns = new[]
+        {
+            (
+                "Rojo y Azul",
+                new[] { ("Rojo 1", "🔴", "Un círculo rojo", 262), ("Azul 1", "🔵", "Un círculo azul", 330), ("Rojo 2", "🔴", "Otro círculo rojo", 262), ("Azul 2", "🔵", "Otro círculo azul", 330) },
+                "Mira la serie: rojo, azul, rojo, azul... ¿Qué color sigue ahora?",
+                "Rojo, azul, rojo, azul... ¿Qué sigue?",
+                "Secuencia rítmica de círculos rojos y azules.",
+                "Rojo", 1, ("Rojo", 1), ("Azul", 2), ("Verde", 3)
+            ),
+            (
+                "Círculo y Cuadrado",
+                new[] { ("Círculo 1", "🔵", "Un círculo azul", 262), ("Cuadrado 1", "🟦", "Un cuadrado azul", 392), ("Círculo 2", "🔵", "Otro círculo azul", 262), ("Cuadrado 2", "🟦", "Otro cuadrado azul", 392) },
+                "Mira la serie: círculo, cuadrado, círculo, cuadrado... ¿Qué forma sigue?",
+                "Círculo, cuadrado, círculo, cuadrado... ¿Qué sigue?",
+                "Secuencia rítmica de círculos y cuadrados.",
+                "Círculo", 1, ("Círculo", 1), ("Cuadrado", 2), ("Triángulo", 3)
+            ),
+            (
+                "Tambor y Palmas",
+                new[] { ("Tambor 1", "🥁", "Un tambor sonoro", 220), ("Palmas 1", "👏", "Una palmada", 440), ("Tambor 2", "🥁", "Otro tambor sonoro", 220), ("Palmas 2", "👏", "Otra palmada", 440) },
+                "Escucha el ritmo: tambor, palmas, tambor, palmas... ¿Qué sonido viene después?",
+                "Tambor, palmas, tambor, palmas... ¿Qué sigue?",
+                "Secuencia rítmica sonora de tambores y palmadas.",
+                "Tambor", 1, ("Tambor", 1), ("Palmas", 2), ("Campana", 3)
+            )
+        };
+
+        var p = patterns[rng.Next(patterns.Length)];
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kpattern_{Guid.NewGuid():N}",
+            Title = $"Sigue el Ritmo: {p.Item1}",
+            GameType = GamePlayType.OrderSequence,
+            TargetAgeMin = 4,
+            TargetAgeMax = 5,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = p.Item7,
+            StandardInstruction = p.Item3,
+            SimplifiedInstruction = p.Item4,
+            ScreenReaderDescription = p.Item5,
+            FirstHint = "Mira o escucha el elemento que se va alternando en la fila.",
+            SecondHintDetailed = $"La fila termina en el segundo elemento; después vuelve a empezar el {p.Item6.ToLower()}.",
+            ExplanationOfSuccess = $"¡Fantástico! Después del ciclo viene el {p.Item6.ToLower()}.",
+            SimplifiedFirstHint = "Mira lo que se repite.",
+            SimplifiedSecondHint = $"Sigue el {p.Item6.ToLower()}.",
+            SimplifiedExplanationOfSuccess = $"¡Bien! Sigue el {p.Item6.ToLower()}."
+        };
+
+        for (int i = 0; i < p.Item2.Length; i++)
+        {
+            var item = p.Item2[i];
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_pat_{i + 1}",
+                Name = item.Item1,
+                EmojiSymbol = item.Item2,
+                AccessibleDescription = item.Item3,
+                OrderIndex = i + 1,
+                MusicalPitchHz = item.Item4
+            });
+        }
+
+        var optDefs = new[] { p.Item8, p.Item9, p.Item10 };
+        for (int i = 0; i < optDefs.Length; i++)
+        {
+            var def = optDefs[i];
+            bool isCorrect = (def.Item2 == p.Item7);
+            ex.Options.Add(new ExerciseOption
+            {
+                Id = $"opt_kpat_{i + 1}",
+                Label = def.Item1,
+                Value = def.Item2,
+                IsCorrect = isCorrect,
+                AccessibleKeyShortcut = (i + 1).ToString(),
+                SpeechFeedback = isCorrect
+                    ? $"¡Muy bien! {def.Item1} es la opción correcta."
+                    : $"Elegiste {def.Item1}. Observa el orden repetido del patrón."
+            });
+        }
+
+        ShuffleOptions(ex, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de clasificación por atributo para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenSortingExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        var (min, max) = GetTargetRange(profile);
+        int redCount = rng.Next(min, max + 1);
+        int greenCount = rng.Next(min, max + 1);
+        while (greenCount == redCount)
+        {
+            greenCount = rng.Next(min, max + 1);
+        }
+
+        bool askRed = rng.Next(2) == 0;
+        int expected = askRed ? redCount : greenCount;
+        string targetColor = askRed ? "rojas" : "verdes";
+        string targetEmoji = askRed ? "🍎" : "🍏";
+
+        var ex = new Exercise
+        {
+            Id = $"gen_ksort_{Guid.NewGuid():N}",
+            Title = $"Pon Cada Cosa en su Lugar: Manzanas {targetColor}",
+            GameType = GamePlayType.Comparison,
+            TargetAgeMin = 4,
+            TargetAgeMax = 5,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = expected,
+            StandardInstruction = $"Mateo el Oso clasificó manzanas en dos canastas: rojas y verdes. Cuenta solo las manzanas {targetColor}. ¿Cuántas hay?",
+            SimplifiedInstruction = $"Cuenta las manzanas {targetColor}. ¿Cuántas hay?",
+            ScreenReaderDescription = $"Hay manzanas rojas y manzanas verdes separadas por color. Explora y cuenta las {targetColor}.",
+            FirstHint = $"Busca las manzanas con el emoji {targetEmoji} y cuéntalas.",
+            SecondHintDetailed = $"Cuenta despacio solo las manzanas {targetColor}.",
+            ExplanationOfSuccess = $"¡Excelente! Hay {expected} manzanas {targetColor}.",
+            SimplifiedFirstHint = $"Busca las {targetColor}.",
+            SimplifiedSecondHint = $"Cuenta solo las {targetColor}.",
+            SimplifiedExplanationOfSuccess = $"¡Bien! Hay {expected} manzanas {targetColor}."
+        };
+
+        int order = 1;
+        for (int i = 0; i < redCount; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_red_{i + 1}",
+                Name = $"Manzana roja {i + 1}",
+                EmojiSymbol = "🍎",
+                AccessibleDescription = $"Una manzana roja número {i + 1}",
+                OrderIndex = order++,
+                MusicalPitchHz = PentatonicScaleHz[0]
+            });
+        }
+        for (int i = 0; i < greenCount; i++)
+        {
+            ex.ItemsGroupB.Add(new ManipulableItem
+            {
+                Id = $"item_green_{i + 1}",
+                Name = $"Manzana verde {i + 1}",
+                EmojiSymbol = "🍏",
+                AccessibleDescription = $"Una manzana verde número {i + 1}",
+                OrderIndex = order++,
+                MusicalPitchHz = PentatonicScaleHz[2]
+            });
+        }
+
+        BuildOptions(ex, expected, min: 1, max: max + 2, unitLabel: $"manzanas {targetColor}", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de música y conteo sonoro para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenMusicExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        var (min, max) = GetTargetRange(profile);
+        int noteCount = rng.Next(Math.Max(2, min), max + 1);
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kmusic_{Guid.NewGuid():N}",
+            Title = "Música y Conteo con Bipo",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 4,
+            TargetAgeMax = 5,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = noteCount,
+            StandardInstruction = $"Bipo el Pájaro Cantor toca campanas doradas. Toca cada campana para escuchar su tono musical y contarla. ¿Cuántas notas hay en total?",
+            SimplifiedInstruction = $"Toca cada campana para contar. ¿Cuántas hay?",
+            ScreenReaderDescription = $"Campanas musicales afinadas en notas pentatónicas. Explora y cuenta cada una.",
+            FirstHint = "Toca la primera campana y escucha su sonido.",
+            SecondHintDetailed = "Sigue tocando cada campana hacia la derecha y cuenta en voz alta.",
+            ExplanationOfSuccess = $"¡Maravilloso! Sonaron {noteCount} notas musicales.",
+            SimplifiedFirstHint = "Toca la primera campana.",
+            SimplifiedSecondHint = "Cuenta: una, dos... campanas.",
+            SimplifiedExplanationOfSuccess = $"¡Muy bien! Hay {noteCount} campanas."
+        };
+
+        for (int i = 0; i < noteCount; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_bell_{i + 1}",
+                Name = $"Campana {i + 1}",
+                EmojiSymbol = "🔔",
+                AccessibleDescription = $"Campana sonora dorada número {i + 1}",
+                OrderIndex = i + 1,
+                MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length],
+                SoundKind = ManipulableSoundKind.Bell
+            });
+        }
+
+        BuildOptions(ex, noteCount, min: 1, max: max + 2, unitLabel: "campanas", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de conteo extendido hasta diez para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenCountToTenExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        int min = profile.HasDisability(DisabilityType.Intellectual) ? 3 : 5;
+        int max = profile.HasDisability(DisabilityType.Intellectual) ? 5 : 10;
+        int count = rng.Next(min, max + 1);
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kcount10_{Guid.NewGuid():N}",
+            Title = "Cuenta hasta Diez con Cosmo",
+            GameType = GamePlayType.InteractiveCounting,
+            TargetAgeMin = 5,
+            TargetAgeMax = 6,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = count,
+            StandardInstruction = $"Cosmo ha reunido estrellas mágicas en el cielo nocturno. Toca cada estrella para contarla. ¿Cuántas estrellas hay en total?",
+            SimplifiedInstruction = $"Toca cada estrella para contar. ¿Cuántas hay?",
+            ScreenReaderDescription = $"Cielo nocturno con estrellas brillantes. Explora y cuenta una por una.",
+            FirstHint = "Empieza desde la primera estrella y sigue contando en orden.",
+            SecondHintDetailed = "Cuenta despacio: uno, dos, tres... el último número que digas es el total.",
+            ExplanationOfSuccess = $"¡Brillante! Hay {count} estrellas en el cielo.",
+            SimplifiedFirstHint = "Toca la primera estrella.",
+            SimplifiedSecondHint = "Cuenta despacito: uno, dos, tres...",
+            SimplifiedExplanationOfSuccess = $"¡Bien hecho! Hay {count} estrellas."
+        };
+
+        for (int i = 0; i < count; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"item_star_{i + 1}",
+                Name = $"Estrella {i + 1}",
+                EmojiSymbol = "⭐",
+                AccessibleDescription = $"Estrella dorada brillante número {i + 1}",
+                OrderIndex = i + 1,
+                MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+            });
+        }
+
+        BuildOptions(ex, count, min: Math.Max(1, count - 3), max: count + 3, unitLabel: "estrellas", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de adición o sustracción concreta para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenAddSubExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isAdd = rng.Next(2) == 0;
+
+        if (isAdd)
+        {
+            int a = rng.Next(1, 3);
+            int b = rng.Next(1, 4);
+            int total = a + b;
+
+            var ex = new Exercise
+            {
+                Id = $"gen_kadd_{Guid.NewGuid():N}",
+                Title = "Junto y Quito: Tito Junta Amigos",
+                GameType = GamePlayType.AdditionCombine,
+                TargetAgeMin = 5,
+                TargetAgeMax = 6,
+                Level = AcademicLevel.Kindergarten,
+                ExpectedResult = total,
+                StandardInstruction = $"Tito el Castor tiene {a} peces en un charco y agrega {b} peces más. ¿Cuántos peces hay en total?",
+                SimplifiedInstruction = $"Hay {a} peces y llegan {b} más. ¿Cuántos hay en total?",
+                ScreenReaderDescription = $"Tito tiene dos grupos de peces: un grupo con {a} y otro con {b}. Júntalos y cuéntalos todos.",
+                FirstHint = $"Cuenta primero los {a} peces y luego sigue con los otros {b}.",
+                SecondHintDetailed = $"Junta ambos grupos: {a} más {b} es igual a {total}.",
+                ExplanationOfSuccess = $"¡Excelente! {a} y {b} juntos dan {total} peces.",
+                SimplifiedFirstHint = "Junta todos los peces.",
+                SimplifiedSecondHint = $"{a} más {b} son {total}.",
+                SimplifiedExplanationOfSuccess = $"¡Muy bien! Hay {total} peces."
+            };
+
+            int order = 1;
+            for (int i = 0; i < a; i++)
+            {
+                ex.ItemsGroupA.Add(new ManipulableItem
+                {
+                    Id = $"fish_a_{i + 1}",
+                    Name = $"Pez {i + 1}",
+                    EmojiSymbol = "🐟",
+                    AccessibleDescription = $"Un pez del primer grupo número {i + 1}",
+                    OrderIndex = order++,
+                    MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+                });
+            }
+            for (int i = 0; i < b; i++)
+            {
+                ex.ItemsGroupB.Add(new ManipulableItem
+                {
+                    Id = $"fish_b_{i + 1}",
+                    Name = $"Pez {a + i + 1}",
+                    EmojiSymbol = "🐠",
+                    AccessibleDescription = $"Un pez del segundo grupo número {a + i + 1}",
+                    OrderIndex = order++,
+                    MusicalPitchHz = PentatonicScaleHz[(a + i) % PentatonicScaleHz.Length]
+                });
+            }
+
+            BuildOptions(ex, total, min: 1, max: total + 3, unitLabel: "peces", rng);
+            return ex;
+        }
+        else
+        {
+            int total = rng.Next(3, 6);
+            int take = rng.Next(1, total - 1);
+            int remainder = total - take;
+
+            var ex = new Exercise
+            {
+                Id = $"gen_ksub_{Guid.NewGuid():N}",
+                Title = "Junto y Quito: Peces que Nadan Lejos",
+                GameType = GamePlayType.SubtractionTakeAway,
+                TargetAgeMin = 5,
+                TargetAgeMax = 6,
+                Level = AcademicLevel.Kindergarten,
+                ExpectedResult = remainder,
+                StandardInstruction = $"Había {total} bellotas en el árbol. Una ardilla se llevó {take} bellotas. ¿Cuántas bellotas quedan?",
+                SimplifiedInstruction = $"Había {total} bellotas y se llevaron {take}. ¿Cuántas quedan?",
+                ScreenReaderDescription = $"Había {total} bellotas y se retiran {take}. Cuenta cuántas bellotas quedan.",
+                FirstHint = $"Quita {take} bellotas del total de {total}.",
+                SecondHintDetailed = $"Cuenta solo las que quedaron: {total} menos {take} es igual a {remainder}.",
+                ExplanationOfSuccess = $"¡Perfecto! Quedan {remainder} bellotas.",
+                SimplifiedFirstHint = "Quita las que se fueron.",
+                SimplifiedSecondHint = $"{total} menos {take} son {remainder}.",
+                SimplifiedExplanationOfSuccess = $"¡Bien! Quedan {remainder} bellotas."
+            };
+
+            for (int i = 0; i < remainder; i++)
+            {
+                ex.ItemsGroupA.Add(new ManipulableItem
+                {
+                    Id = $"acorn_rem_{i + 1}",
+                    Name = $"Bellota {i + 1}",
+                    EmojiSymbol = "🌰",
+                    AccessibleDescription = $"Bellota que quedó número {i + 1}",
+                    OrderIndex = i + 1,
+                    MusicalPitchHz = PentatonicScaleHz[i % PentatonicScaleHz.Length]
+                });
+            }
+
+            BuildOptions(ex, remainder, min: 1, max: total + 1, unitLabel: "bellotas", rng);
+            return ex;
+        }
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de medición y comparación de tamaño para jardín de niños.
+    /// </summary>
+    public Exercise GenerateKindergartenMeasureExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        int a = rng.Next(2, 5);
+        int b = rng.Next(2, 5);
+        while (b == a)
+        {
+            b = rng.Next(2, 5);
+        }
+
+        bool askTaller = rng.Next(2) == 0;
+        int expectedOption = (askTaller ? (a > b ? 1 : 2) : (a < b ? 1 : 2));
+        string questionAttr = askTaller ? "más alta" : "más baja";
+
+        var ex = new Exercise
+        {
+            Id = $"gen_kmeasure_{Guid.NewGuid():N}",
+            Title = $"Mido y Ordeno: Torres de Bloques",
+            GameType = GamePlayType.Comparison,
+            TargetAgeMin = 5,
+            TargetAgeMax = 6,
+            Level = AcademicLevel.Kindergarten,
+            ExpectedResult = expectedOption,
+            StandardInstruction = $"Dino el Dinosaurio construyó dos torres de bloques: la Torre Azul tiene {a} bloques y la Torre Roja tiene {b} bloques. ¿Cuál torre es {questionAttr}?",
+            SimplifiedInstruction = $"¿Cuál torre es {questionAttr}? La azul de {a} o la roja de {b}.",
+            ScreenReaderDescription = $"Dos torres de bloques: Torre Azul con {a} bloques y Torre Roja con {b} bloques. Compara cuál es {questionAttr}.",
+            FirstHint = $"Cuenta los bloques de cada torre: {a} bloques y {b} bloques.",
+            SecondHintDetailed = askTaller
+                ? $"La torre con más bloques ({Math.Max(a, b)}) es la más alta."
+                : $"La torre con menos bloques ({Math.Min(a, b)}) es la más baja.",
+            ExplanationOfSuccess = $"¡Muy bien! La torre {(expectedOption == 1 ? "Azul" : "Roja")} es la {questionAttr}.",
+            SimplifiedFirstHint = "Mira cuál tiene más o menos bloques.",
+            SimplifiedSecondHint = $"La que tiene {(askTaller ? Math.Max(a, b) : Math.Min(a, b))} bloques es {questionAttr}.",
+            SimplifiedExplanationOfSuccess = $"¡Bien! La torre {(expectedOption == 1 ? "Azul" : "Roja")} es {questionAttr}."
+        };
+
+        int order = 1;
+        for (int i = 0; i < a; i++)
+        {
+            ex.ItemsGroupA.Add(new ManipulableItem
+            {
+                Id = $"block_blue_{i + 1}",
+                Name = $"Bloque azul {i + 1}",
+                EmojiSymbol = "🟦",
+                AccessibleDescription = $"Bloque azul número {i + 1} de la Torre Azul",
+                OrderIndex = order++,
+                MusicalPitchHz = PentatonicScaleHz[0]
+            });
+        }
+        for (int i = 0; i < b; i++)
+        {
+            ex.ItemsGroupB.Add(new ManipulableItem
+            {
+                Id = $"block_red_{i + 1}",
+                Name = $"Bloque rojo {i + 1}",
+                EmojiSymbol = "🟥",
+                AccessibleDescription = $"Bloque rojo número {i + 1} de la Torre Roja",
+                OrderIndex = order++,
+                MusicalPitchHz = PentatonicScaleHz[3]
+            });
+        }
+
+        ex.Options.Add(new ExerciseOption
+        {
+            Id = "opt_kmeas_1",
+            Label = $"Torre Azul ({a} bloques)",
+            Value = 1,
+            IsCorrect = (expectedOption == 1),
+            AccessibleKeyShortcut = "1",
+            SpeechFeedback = (expectedOption == 1)
+                ? $"¡Correcto! La Torre Azul con {a} bloques es {questionAttr}."
+                : $"La Torre Azul tiene {a} bloques. Compara con la Torre Roja de {b} bloques."
+        });
+        ex.Options.Add(new ExerciseOption
+        {
+            Id = "opt_kmeas_2",
+            Label = $"Torre Roja ({b} bloques)",
+            Value = 2,
+            IsCorrect = (expectedOption == 2),
+            AccessibleKeyShortcut = "2",
+            SpeechFeedback = (expectedOption == 2)
+                ? $"¡Correcto! La Torre Roja con {b} bloques es {questionAttr}."
+                : $"La Torre Roja tiene {b} bloques. Compara con la Torre Azul de {a} bloques."
+        });
+
+        ShuffleOptions(ex, rng);
+        return ex;
+    }
+
+    /// <summary>
     /// Genera una lista completa de ejercicios procedimentales adaptados para cualquier tema solicitado.
     /// </summary>
     public List<Exercise> GenerateExercisesForTopic(string topicId, UserProfile profile, int count = 3, Random? rng = null)
@@ -2478,6 +3095,16 @@ public class ExerciseGenerator
                     ? GenerateCountingExercise(profile, rng)
                     : GenerateStableOrderExercise(profile, rng),
 
+                "kinder_shapes_01" => GenerateKindergartenShapesExercise(profile, rng),
+                "kinder_positions_01" => GenerateKindergartenPositionsExercise(profile, rng),
+                "kinder_stories_01" => GenerateKindergartenStoriesExercise(profile, rng),
+                "kinder_patterns_01" => GenerateKindergartenPatternsExercise(profile, rng),
+                "kinder_sorting_01" => GenerateKindergartenSortingExercise(profile, rng),
+                "kinder_music_01" => GenerateKindergartenMusicExercise(profile, rng),
+                "kinder_count_to_10_01" => GenerateKindergartenCountToTenExercise(profile, rng),
+                "kinder_add_sub_01" => GenerateKindergartenAddSubExercise(profile, rng),
+                "kinder_measure_01" => GenerateKindergartenMeasureExercise(profile, rng),
+
                 "elem_addition_01" => (i % 3) switch
                 {
                     0 => GenerateAdditionCombineExercise(profile, rng),
@@ -2491,21 +3118,61 @@ public class ExerciseGenerator
 
                 "elem_division_01" => GenerateDivisionFairSharingExercise(profile, rng),
 
+                "elem_money_currency_01" => GenerateMoneyCurrencyExercise(profile, rng),
+
+                "elem_measurement_ruler_01" => GenerateMeasurementRulerExercise(profile, rng),
+
+                "elem_time_clock_01" => GenerateTimeClockExercise(profile, rng),
+
                 "elem_fractions_01" => (i % 2 == 0)
                     ? GenerateFractionPartsExercise(profile, rng)
                     : GenerateFractionEquivalenceExercise(profile, rng),
 
                 "elem_distributive_01" => GenerateMultiplicationDistributiveExercise(profile, rng),
 
+                "elem_geometry_angles_01" => GenerateAnglesExercise(profile, rng),
+
+                "elem_geometry_perimeter_01" => GeneratePerimeterExercise(profile, rng),
+
+                "elem_division_remainder_01" => GenerateDivisionRemainderExercise(profile, rng),
+
+                "elem_fractions_numberline_01" => GenerateFractionsNumberLineExercise(profile, rng),
+
+                "elem_data_barcharts_01" => GenerateDataBarChartsExercise(profile, rng),
+
+                "elem_stats_central_tendency_01" => GenerateStatisticsCentralTendencyExercise(profile, rng),
+
+                "sec_circle_geometry_01" => GenerateCircleGeometryExercise(profile, rng),
+
+                "sec_factors_multiples_mcm_mcd_01" => GenerateFactorsMcmMcdExercise(profile, rng),
+
+                "sec_negative_rational_numbers_01" => GenerateNegativeRationalNumbersExercise(profile, rng),
+
+                "sec_algebra_factoring_01" => GenerateAlgebraFactoringExercise(profile, rng),
+
+                "sec_parallel_lines_angles_01" => GenerateParallelLinesAnglesExercise(profile, rng),
+
+                "sec_probability_compound_01" => GenerateProbabilityCompoundEventsExercise(profile, rng),
+
+                "prep_conics_parabola_ellipse_01" => GenerateConicsParabolaEllipseExercise(profile, rng),
+
+                "prep_calculus_limits_01" => GenerateCalculusLimitsExercise(profile, rng),
+
+                "prep_calculus_derivative_rules_01" => GenerateCalculusDerivativeRulesExercise(profile, rng),
+
                 "elem_mixed_fractions_01" => GenerateMixedFractionsExercise(profile, rng),
 
                 "elem_decimals_01" => GenerateDecimalsMoneyExercise(profile, rng),
+
+                "elem_geometry_area_01" => GenerateAreaExercise(profile, rng),
 
                 "elem_powers_01" => GeneratePowersExercise(profile, rng),
 
                 "elem_proportion_01" => GenerateDirectProportionExercise(profile, rng),
 
                 "elem_algebra_balance_01" => GenerateAlgebraicBalanceExercise(profile, rng),
+
+                "elem_geometry_volume_01" => GenerateVolumeExercise(profile, rng),
 
                 "elem_square_root_01" => GenerateSquareRootExercise(profile, rng),
 
@@ -2691,6 +3358,7 @@ public class ExerciseGenerator
 
         string conceptGuidance = ex.GameType switch
         {
+            GamePlayType.Comparison => "Compara con atención las cantidades o tamaños de ambos grupos.",
             GamePlayType.InteractiveCounting => "Asegúrate de contar cada objeto una sola vez hasta llegar al último.",
             GamePlayType.OrderSequence => "Recuerda seguir el orden fijo de la serie numérica paso a paso.",
             GamePlayType.AdditionCombine => "Une los dos grupos y cuenta todos los elementos juntos.",
@@ -2745,5 +3413,1945 @@ public class ExerciseGenerator
         };
 
         return $"{directionHint} {conceptGuidance}";
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo y adaptativo de ángulos (recto, agudo, obtuso, llano).
+    /// </summary>
+    public Exercise GenerateAnglesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        // Modos: 0 = Angulo Recto (90°), 1 = Angulo Agudo (<90°), 2 = Angulo Obtuso (>90°), 3 = Angulo Llano (180°)
+        int mode = rng.Next(4);
+
+        int expected;
+        string typeLabel;
+        string standardDesc;
+        string simplifiedDesc;
+        string emoji;
+        string screenDesc;
+        string firstHint;
+        string secondHint;
+        string successMsg;
+
+        switch (mode)
+        {
+            case 0: // Recto
+                expected = 90;
+                typeLabel = "Ángulo Recto";
+                emoji = "📐";
+                standardDesc = "Observa la esquina del marco en forma de L perfecta (un cuarto de vuelta). ¿Cuántos grados mide un ángulo recto?";
+                simplifiedDesc = "¿Cuántos grados mide una esquina recta en L?";
+                screenDesc = "Una esquina cuadrada perpendicular que mide exactamente 90 grados.";
+                firstHint = "Un ángulo recto es un cuarto de giro completo.";
+                secondHint = "La esquina de un cuadrado o una hoja mide 90 grados.";
+                successMsg = "¡Correcto! El ángulo recto mide exactamente 90 grados.";
+                break;
+
+            case 1: // Agudo
+                int[] acuteValues = isSimplified ? new[] { 45, 60 } : new[] { 30, 45, 60, 75 };
+                expected = acuteValues[rng.Next(acuteValues.Length)];
+                typeLabel = "Ángulo Agudo";
+                emoji = "🔺";
+                standardDesc = $"Un haz de luz estelar forma una abertura cerrada y afilada de {expected} grados. Como mide menos de 90°, ¿cuántos grados mide esta abertura?";
+                simplifiedDesc = $"El haz de luz mide {expected} grados (es menor a 90 grados). ¿Cuánto mide?";
+                screenDesc = $"Una abertura aguda de {expected} grados en punta.";
+                firstHint = "Es un ángulo agudo porque mide menos de 90 grados.";
+                secondHint = $"La abertura afilada mide {expected} grados.";
+                successMsg = $"¡Exacto! Mide {expected} grados y es un ángulo agudo menor a 90°.";
+                break;
+
+            case 2: // Obtuso
+                int[] obtuseValues = isSimplified ? new[] { 120, 135 } : new[] { 105, 120, 135, 150 };
+                expected = obtuseValues[rng.Next(obtuseValues.Length)];
+                typeLabel = "Ángulo Obtuso";
+                emoji = "🪭";
+                standardDesc = $"Un alerón solar se abrió ampliamente formando una abertura de {expected} grados. Como es mayor a 90° pero menor a 180°, ¿cuántos grados mide este ángulo obtuso?";
+                simplifiedDesc = $"El alerón está muy abierto y mide {expected} grados. ¿Cuánto mide?";
+                screenDesc = $"Una abertura obtusa amplia de {expected} grados.";
+                firstHint = "Es un ángulo obtuso porque supera los 90 grados de una esquina recta.";
+                secondHint = $"El ángulo abierto mide {expected} grados.";
+                successMsg = $"¡Muy bien! Mide {expected} grados y es un ángulo obtuso.";
+                break;
+
+            default: // Llano
+                expected = 180;
+                typeLabel = "Ángulo Llano";
+                emoji = "🔭";
+                standardDesc = "La antena espacial giró media vuelta completa formando una línea recta horizontal. ¿Cuántos grados mide este ángulo llano?";
+                simplifiedDesc = "¿Cuántos grados mide media vuelta recta completa?";
+                screenDesc = "Una línea recta horizontal que representa media vuelta de 180 grados.";
+                firstHint = "Una vuelta entera son 360 grados; media vuelta es su mitad.";
+                secondHint = "Dos ángulos rectos juntos (90° + 90°) suman 180 grados.";
+                successMsg = "¡Brillante! Una línea recta completa de media vuelta mide 180 grados.";
+                break;
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_angle_{Guid.NewGuid():N}",
+            Title = $"Radar de Giros: {typeLabel}",
+            GameType = GamePlayType.GeometryAnglesClassification,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = expected,
+            StandardInstruction = standardDesc,
+            SimplifiedInstruction = simplifiedDesc,
+            ScreenReaderDescription = screenDesc,
+            FirstHint = firstHint,
+            SecondHintDetailed = secondHint,
+            ExplanationOfSuccess = successMsg,
+            SimplifiedFirstHint = firstHint,
+            SimplifiedSecondHint = secondHint,
+            SimplifiedExplanationOfSuccess = successMsg
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = $"item_ang_1",
+            Name = typeLabel,
+            EmojiSymbol = emoji,
+            AccessibleDescription = screenDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(30, expected - 45), max: Math.Min(180, expected + 45), unitLabel: "°", rng);
+
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de área en 2D (rectángulo, cuadrado, triángulo).
+    /// </summary>
+    public Exercise GenerateAreaExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 9);
+
+        // Modos: 0 = Rectángulo (b × h), 1 = Cuadrado (l × l), 2 = Triángulo ((b × h) / 2)
+        int mode = rng.Next(3);
+
+        int expected;
+        string title;
+        string standardDesc;
+        string simplifiedDesc;
+        string screenDesc;
+        string firstHint;
+        string secondHint;
+        string successMsg;
+        string emoji;
+
+        if (mode == 0) // Rectángulo
+        {
+            int b = isSimplified ? rng.Next(3, 6) : rng.Next(4, 9);
+            int h = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+            expected = b * h;
+            title = $"Área del Rectángulo ({b} × {h})";
+            emoji = "🟩";
+            standardDesc = $"Un piso rectangular mide {b} metros de base y {h} metros de altura. Aplicando Área = Base × Altura ({b} × {h}), ¿cuál es el área en metros cuadrados (m²)?";
+            simplifiedDesc = $"El piso mide {b} de base y {h} de alto. Multiplica {b} × {h}. ¿Cuál es el área?";
+            screenDesc = $"Un rectángulo de {b} metros de base por {h} metros de altura con {expected} cuadritos interiores.";
+            firstHint = $"Multiplica la base por la altura: {b} × {h}.";
+            secondHint = $"{b} × {h} = {expected} metros cuadrados.";
+            successMsg = $"¡Excelente! {b} × {h} = {expected} m² de área.";
+        }
+        else if (mode == 1) // Cuadrado
+        {
+            int l = isSimplified ? rng.Next(3, 6) : rng.Next(4, 8);
+            expected = l * l;
+            title = $"Área del Cuadrado ({l} × {l})";
+            emoji = "🟦";
+            standardDesc = $"Una plataforma cuadrada tiene lados de {l} metros. Aplicando Área = Lado × Lado ({l} × {l}), ¿cuál es su área total en m²?";
+            simplifiedDesc = $"Un cuadrado de {l} por {l}. Multiplica {l} × {l}.";
+            screenDesc = $"Un cuadrado de {l} metros de lado con {expected} unidades cuadradas.";
+            firstHint = $"Multiplica el lado por sí mismo: {l} × {l}.";
+            secondHint = $"{l} × {l} = {expected} metros cuadrados.";
+            successMsg = $"¡Brillante! {l} × {l} = {expected} m² de área.";
+        }
+        else // Triángulo
+        {
+            int[] evenBases = isSimplified ? new[] { 4, 6 } : new[] { 4, 6, 8, 10 };
+            int b = evenBases[rng.Next(evenBases.Length)];
+            int h = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+            expected = (b * h) / 2;
+            title = $"Área del Triángulo (({b} × {h}) / 2)";
+            emoji = "🔺";
+            standardDesc = $"Una vela triangular tiene una base de {b} metros y una altura de {h} metros. Recuerda que el área de un triángulo es la mitad de un rectángulo: ({b} × {h}) / 2. ¿Cuál es su área en m²?";
+            simplifiedDesc = $"Multiplica {b} × {h} = {b * h}, y luego sácale la mitad (divide entre 2). ¿Cuánto da?";
+            screenDesc = $"Un triángulo de base {b} y altura {h}, equivalente a la mitad de un rectángulo de {b * h} m².";
+            firstHint = $"Primero multiplica {b} × {h} = {b * h}, y luego divide entre 2.";
+            secondHint = $"{b * h} dividido entre 2 = {expected} metros cuadrados.";
+            successMsg = $"¡Exacto! ({b} × {h}) / 2 = {expected} m².";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_area_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.GeometryArea2D,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = expected,
+            StandardInstruction = standardDesc,
+            SimplifiedInstruction = simplifiedDesc,
+            ScreenReaderDescription = screenDesc,
+            FirstHint = firstHint,
+            SecondHintDetailed = secondHint,
+            ExplanationOfSuccess = successMsg,
+            SimplifiedFirstHint = firstHint,
+            SimplifiedSecondHint = secondHint,
+            SimplifiedExplanationOfSuccess = successMsg
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = $"item_area_1",
+            Name = title,
+            EmojiSymbol = emoji,
+            AccessibleDescription = screenDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(4, expected - 10), max: expected + 15, unitLabel: "m²", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de volumen tridimensional (cubo y prisma rectangular).
+    /// </summary>
+    public Exercise GenerateVolumeExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 10);
+
+        // Modos: 0 = Prisma rectangular (l × w × h), 1 = Cubo (l³), 2 = Base Area × Altura
+        int mode = rng.Next(3);
+
+        int expected;
+        string title;
+        string standardDesc;
+        string simplifiedDesc;
+        string screenDesc;
+        string firstHint;
+        string secondHint;
+        string successMsg;
+        string emoji;
+
+        if (mode == 0) // Prisma
+        {
+            int l = isSimplified ? rng.Next(2, 5) : rng.Next(3, 6);
+            int w = isSimplified ? rng.Next(2, 4) : rng.Next(2, 5);
+            int h = isSimplified ? rng.Next(2, 4) : rng.Next(2, 4);
+            expected = l * w * h;
+            title = $"Volumen del Prisma ({l} × {w} × {h})";
+            emoji = "📦";
+            standardDesc = $"Una caja prismática tiene {l} metros de largo, {w} metros de ancho y {h} metros de alto. Aplicando Volumen = largo × ancho × alto ({l} × {w} × {h}), ¿cuál es su volumen en metros cúbicos (m³)?";
+            simplifiedDesc = $"Multiplica largo por ancho por alto: {l} × {w} = {l * w}, y luego {l * w} × {h}. ¿Cuánto da el volumen?";
+            screenDesc = $"Un prisma rectangular de {l} por {w} por {h} metros con {expected} cubos interiores.";
+            firstHint = $"Multiplica las tres dimensiones: primero {l} × {w} = {l * w}, y luego {l * w} × {h}.";
+            secondHint = $"{l * w} × {h} = {expected} metros cúbicos.";
+            successMsg = $"¡Excelente! {l} × {w} × {h} = {expected} m³ de volumen.";
+        }
+        else if (mode == 1) // Cubo
+        {
+            int s = isSimplified ? rng.Next(2, 4) : rng.Next(2, 5);
+            expected = s * s * s;
+            title = $"Volumen del Cubo ({s} × {s} × {s})";
+            emoji = "🧊";
+            standardDesc = $"Un contenedor cúbico tiene aristas iguales de {s} metros. Aplicando la fórmula del cubo (Lado³ = {s} × {s} × {s}), ¿cuál es su volumen total en m³?";
+            simplifiedDesc = $"Un cubo de {s} por {s} por {s}. Multiplica {s} × {s} = {s * s}, y luego {s * s} × {s}.";
+            screenDesc = $"Un cubo perfecto de {s} metros de arista con {expected} unidades cúbicas.";
+            firstHint = $"Multiplica {s} por sí mismo tres veces: {s} × {s} × {s}.";
+            secondHint = $"{s * s} × {s} = {expected} metros cúbicos.";
+            successMsg = $"¡Brillante! {s}³ = {expected} m³ de volumen.";
+        }
+        else // Base × Altura
+        {
+            int[] baseAreas = isSimplified ? new[] { 6, 8, 10 } : new[] { 8, 10, 12, 15 };
+            int bArea = baseAreas[rng.Next(baseAreas.Length)];
+            int h = isSimplified ? rng.Next(2, 4) : rng.Next(2, 5);
+            expected = bArea * h;
+            title = $"Volumen: Área Base × Altura ({bArea} m² × {h} m)";
+            emoji = "💧";
+            standardDesc = $"Un depósito de almacenamiento tiene un área de base de {bArea} metros cuadrados (m²) y una altura de {h} metros. ¿Cuál es su capacidad volumétrica total ({bArea} × {h})?";
+            simplifiedDesc = $"El depósito tiene {bArea} en la base y {h} pisos de alto. Multiplica {bArea} × {h}.";
+            screenDesc = $"Un depósito con base de {bArea} m² y {h} metros de altura.";
+            firstHint = $"Multiplica el área de la base por la altura: {bArea} × {h}.";
+            secondHint = $"{bArea} × {h} = {expected} metros cúbicos.";
+            successMsg = $"¡Exacto! {bArea} m² × {h} m = {expected} m³ de volumen.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_vol_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.GeometryVolume3D,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = expected,
+            StandardInstruction = standardDesc,
+            SimplifiedInstruction = simplifiedDesc,
+            ScreenReaderDescription = screenDesc,
+            FirstHint = firstHint,
+            SecondHintDetailed = secondHint,
+            ExplanationOfSuccess = successMsg,
+            SimplifiedFirstHint = firstHint,
+            SimplifiedSecondHint = secondHint,
+            SimplifiedExplanationOfSuccess = successMsg
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = $"item_vol_1",
+            Name = title,
+            EmojiSymbol = emoji,
+            AccessibleDescription = screenDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(4, expected - 15), max: expected + 20, unitLabel: "m³", rng);
+        return ex;
+    }
+
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de conteo de monedas y cálculo de cambio.
+    /// </summary>
+    public Exercise GenerateMoneyCurrencyExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 7);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Suma de monedas
+        {
+            int c5 = rng.Next(1, isSimplified ? 3 : 4);
+            int c1 = rng.Next(1, isSimplified ? 4 : 6);
+            expected = (c5 * 5) + c1;
+            title = $"Contando Monedas: {c5} de $5 y {c1} de $1";
+            stdDesc = $"En el monedero hay {c5} moneda(s) de $5 pesos y {c1} moneda(s) de $1 peso. ¿Cuánto dinero hay en total en pesos?";
+            simDesc = $"Tienes {c5} moneda(s) de $5 y {c1} de $1. ¿Cuánto dinero suma en total?";
+            scrDesc = $"{c5} monedas de 5 pesos y {c1} monedas de 1 peso sobre el mostrador.";
+            hint1 = $"Primero multiplica las de $5: {c5} × 5 = {c5 * 5}.";
+            hint2 = $"Luego suma las de $1: {c5 * 5} + {c1} = {expected} pesos.";
+            success = $"¡Excelente! Tienes exactamente {expected} pesos.";
+        }
+        else if (mode == 1) // Cambio
+        {
+            int price = isSimplified ? rng.Next(4, 9) : rng.Next(6, 17);
+            int payment = price <= 10 ? 10 : 20;
+            expected = payment - price;
+            title = $"Calculando Cambio de una Compra de ${price}";
+            stdDesc = $"Compras un producto que cuesta ${price} pesos y pagas con una denominación de ${payment} pesos. ¿Cuánto te deben devolver de cambio?";
+            simDesc = $"Cuesta ${price} y pagas con ${payment}. Resta {payment} menos {price}. ¿Cuánto sobra?";
+            scrDesc = $"Un objeto con precio de {price} pesos y un pago de {payment} pesos.";
+            hint1 = $"Resta el costo del dinero entregado: {payment} - {price}.";
+            hint2 = $"{payment} menos {price} da {expected} pesos de cambio.";
+            success = $"¡Muy bien! Te deben devolver {expected} pesos de cambio.";
+        }
+        else // Cuánto falta
+        {
+            int total = isSimplified ? rng.Next(8, 15) : rng.Next(12, 25);
+            int have = isSimplified ? rng.Next(3, 7) : rng.Next(5, 12);
+            expected = total - have;
+            title = $"¿Cuánto Falta para Alcanzar ${total}?";
+            stdDesc = $"Deseas comprar un artículo de ${total} pesos y tienes ahorrados ${have} pesos. ¿Cuántos pesos te faltan para poder comprarlo?";
+            simDesc = $"Cuesta ${total} y tienes ${have}. Resta {total} menos {have}. ¿Cuánto te falta?";
+            scrDesc = $"Meta de ahorro de {total} pesos con {have} pesos reunidos.";
+            hint1 = $"Resta lo que tienes de lo que cuesta: {total} - {have}.";
+            hint2 = $"{total} menos {have} son {expected} pesos.";
+            success = $"¡Exacto! Te faltan {expected} pesos para completar la compra.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_money_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.MoneyCurrencyCounting,
+            TargetAgeMin = 6,
+            TargetAgeMax = 8,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_money_1",
+            Name = title,
+            EmojiSymbol = "🪙",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 5), max: expected + 8, unitLabel: "pesos", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de medición de longitud con regla métrica.
+    /// </summary>
+    public Exercise GenerateMeasurementRulerExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 7);
+
+        int mode = rng.Next(2);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Medición directa desde el cero
+        {
+            int length = isSimplified ? rng.Next(3, 8) : rng.Next(4, 15);
+            expected = length;
+            title = $"Midiendo Longitud: {length} cm";
+            stdDesc = $"Un objeto está alineado sobre la regla desde la marca 0 hasta la marca del {length}. ¿Cuántos centímetros (cm) mide el objeto?";
+            simDesc = $"El objeto empieza en el 0 y termina en el {length}. ¿Cuántos centímetros mide?";
+            scrDesc = $"Un objeto colocado sobre una regla milimétrica alineado de 0 a {length} cm.";
+            hint1 = "Mira el número en el que termina el objeto.";
+            hint2 = $"El objeto termina exactamente en el {length}, por lo que mide {length} cm.";
+            success = $"¡Exacto! El objeto mide {length} centímetros (cm).";
+        }
+        else // Diferencia de longitud
+        {
+            int l1 = isSimplified ? rng.Next(6, 10) : rng.Next(8, 16);
+            int l2 = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+            expected = l1 - l2;
+            title = $"Diferencia de Longitud ({l1} cm vs {l2} cm)";
+            stdDesc = $"Una pieza de madera mide {l1} cm y otra mide {l2} cm. ¿Cuántos centímetros más larga es la primera pieza que la segunda?";
+            simDesc = $"Una mide {l1} cm y la otra mide {l2} cm. Resta {l1} menos {l2}. ¿Por cuánto le gana?";
+            scrDesc = $"Dos listones comparados: uno de {l1} cm y otro de {l2} cm.";
+            hint1 = $"Resta la pieza corta de la pieza larga: {l1} - {l2}.";
+            hint2 = $"{l1} menos {l2} da {expected} cm de diferencia.";
+            success = $"¡Brillante! La diferencia es de {expected} centímetros.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_ruler_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.MeasurementRulerLength,
+            TargetAgeMin = 6,
+            TargetAgeMax = 8,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_ruler_1",
+            Name = title,
+            EmojiSymbol = "📏",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 4), max: expected + 6, unitLabel: "cm", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de lectura del reloj (horas y minutos).
+    /// </summary>
+    public Exercise GenerateTimeClockExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+        string unit;
+
+        if (mode == 0) // Hora en punto
+        {
+            int hour = rng.Next(1, 13);
+            expected = hour;
+            unit = "en punto";
+            title = $"Reloj: Las {hour}:00 en Punto";
+            stdDesc = $"La manecilla corta señala el número {hour} y el minutero largo señala exactamente el 12 (:00). ¿Qué hora marca el reloj?";
+            simDesc = $"La aguja corta marca el {hour} y la larga está en el 12. ¿Qué hora es?";
+            scrDesc = $"Un reloj analógico con la aguja corta en el {hour} y el minutero en el 12.";
+            hint1 = "La aguja corta indica la hora. Mira qué número señala.";
+            hint2 = $"La aguja corta está en el {hour}, por lo que son las {hour} en punto.";
+            success = $"¡Exacto! Son las {hour} en punto (las {hour}:00).";
+        }
+        else if (mode == 1) // Media hora (:30)
+        {
+            int hour = rng.Next(1, 13);
+            expected = 30;
+            unit = "minutos";
+            title = $"Reloj: Media Hora Pasada las {hour}";
+            stdDesc = $"La manecilla horaria ha pasado las {hour} y el minutero largo apunta hacia abajo al número 6. ¿Cuántos minutos han transcurrido en esa media hora?";
+            simDesc = $"El minutero largo apunta al 6 (media hora). ¿Cuántos minutos son?";
+            scrDesc = $"Un reloj marcando las {hour} y media con el minutero en el 6.";
+            hint1 = "Cada número en el reloj equivale a 5 minutos. El 6 es la mitad de 60.";
+            hint2 = "El minutero en el 6 indica exactamente 30 minutos.";
+            success = "¡Brillante! Apuntar al 6 indica 30 minutos (media hora).";
+        }
+        else // Cuarto de hora (:15) o Minutos en 1 hora
+        {
+            if (isSimplified || rng.Next(2) == 0)
+            {
+                expected = 15;
+                unit = "minutos";
+                title = "Reloj: Un Cuarto de Hora";
+                stdDesc = "El minutero largo apunta hacia la derecha al número 3 (un cuarto de vuelta). ¿Cuántos minutos representa el número 3?";
+                simDesc = "El minutero apunta al 3. Multiplica 3 × 5 minutos. ¿Cuántos minutos son?";
+                scrDesc = "Un reloj con la manecilla de minutos en el 3.";
+                hint1 = "Multiplica el número 3 por 5 minutos: 3 × 5.";
+                hint2 = "3 × 5 = 15 minutos (un cuarto de hora).";
+                success = "¡Excelente! Al apuntar al 3 han pasado 15 minutos.";
+            }
+            else
+            {
+                expected = 60;
+                unit = "minutos";
+                title = "Reloj: Vuelta Completa de 1 Hora";
+                stdDesc = "El minutero largo recorre los 12 números de la esfera dando una vuelta completa. ¿Cuántos minutos tiene 1 hora entera?";
+                simDesc = "Una hora completa, ¿cuántos minutos tiene en total?";
+                scrDesc = "Un reloj mostrando el recorrido de una hora completa de 60 minutos.";
+                hint1 = "Multiplica los 12 números por 5 minutos: 12 × 5.";
+                hint2 = "Una hora completa tiene 60 minutos.";
+                success = "¡Extraordinario! 1 hora equivale a 60 minutos completos.";
+            }
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_clock_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.TimeClockReading,
+            TargetAgeMin = 7,
+            TargetAgeMax = 9,
+            Level = AcademicLevel.EarlyElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_clock_1",
+            Name = title,
+            EmojiSymbol = "⏰",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 10), max: expected + 15, unitLabel: unit, rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera un ejercicio interactivo de perímetro de polígonos (triángulo, rectángulo, cuadrado).
+    /// </summary>
+    public Exercise GeneratePerimeterExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Triángulo
+        {
+            int side = isSimplified ? rng.Next(3, 7) : rng.Next(4, 9);
+            expected = side * 3;
+            title = $"Perímetro de Triángulo Equilátero ({side} m)";
+            stdDesc = $"Un parque triangular tiene 3 lados iguales que miden {side} metros cada uno. ¿Cuál es su perímetro total sumando los tres lados ({side} + {side} + {side})?";
+            simDesc = $"Un triángulo con 3 lados de {side} metros. Suma {side} + {side} + {side}. ¿Cuánto da?";
+            scrDesc = $"Un triángulo con tres lados iguales de {side} metros cada uno.";
+            hint1 = $"Suma los tres lados: {side} + {side} + {side}.";
+            hint2 = $"3 lados de {side} m suman {expected} metros de perímetro.";
+            success = $"¡Excelente! El perímetro del triángulo es {expected} metros.";
+        }
+        else if (mode == 1) // Rectángulo
+        {
+            int b = isSimplified ? rng.Next(4, 8) : rng.Next(5, 10);
+            int h = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+            expected = (2 * b) + (2 * h);
+            title = $"Perímetro del Rectángulo ({b} m × {h} m)";
+            stdDesc = $"Un terreno rectangular tiene dos lados de {b} metros y dos lados de {h} metros. ¿Cuál es su perímetro exterior ({b} + {h} + {b} + {h})?";
+            simDesc = $"Suma los 4 lados del rectángulo: {b} + {h} + {b} + {h}. ¿Cuánto da?";
+            scrDesc = $"Un rectángulo con dos lados largos de {b} m y dos lados cortos de {h} m.";
+            hint1 = $"Suma los 4 lados: {b} + {h} + {b} + {h}.";
+            hint2 = $"2 lados de {b} ({2 * b}) más 2 lados de {h} ({2 * h}) suman {expected} m.";
+            success = $"¡Exacto! El perímetro del rectángulo es {expected} metros.";
+        }
+        else // Cuadrado
+        {
+            int s = isSimplified ? rng.Next(3, 7) : rng.Next(4, 9);
+            expected = s * 4;
+            title = $"Perímetro del Cuadrado ({s} m por lado)";
+            stdDesc = $"Un patio cuadrado tiene 4 lados iguales que miden {s} metros cada uno. ¿Cuántos metros de cerca se necesitan para rodear todo su perímetro (4 × {s})?";
+            simDesc = $"Un cuadrado tiene 4 lados de {s} metros. Multiplica 4 × {s}. ¿Cuál es el perímetro?";
+            scrDesc = $"Un cuadrado con cuatro lados iguales de {s} metros cada uno.";
+            hint1 = $"Multiplica los 4 lados por {s}: 4 × {s}.";
+            hint2 = $"4 lados de {s} metros suman {expected} metros de cerca.";
+            success = $"¡Brillante! 4 × {s} = {expected} metros de perímetro.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_perim_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.GeometryPerimeter,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_perim_1",
+            Name = title,
+            EmojiSymbol = "📐",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(4, expected - 8), max: expected + 12, unitLabel: "m", rng);
+        return ex;
+    }
+
+
+    /// <summary>
+    /// Genera ejercicios de división con residuo (inexacta) D = d * q + r.
+    /// </summary>
+    public Exercise GenerateDivisionRemainderExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        int divisor = isSimplified ? rng.Next(3, 6) : rng.Next(3, 8);
+        int quotient = isSimplified ? rng.Next(2, 5) : rng.Next(2, 7);
+        int remainder = rng.Next(1, divisor); // Siempre 1 <= r < divisor
+        int dividend = (divisor * quotient) + remainder;
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Preguntar por el Residuo
+        {
+            expected = remainder;
+            title = $"Reparto de {dividend} Galletas entre {divisor} Amigos";
+            stdDesc = $"Cosmo tiene {dividend} galletas y las reparte en partes iguales entre {divisor} amigos. A cada amigo le tocan {quotient} galletas ({divisor} × {quotient} = {divisor * quotient}). ¿Cuántas galletas sobran de residuo?";
+            simDesc = $"Tienes {dividend} galletas y diste {divisor * quotient}. Resta {dividend} menos {divisor * quotient}. ¿Cuántas sobran?";
+            scrDesc = $"{dividend} galletas para repartir equitativamente entre {divisor} amigos; sobran galletas.";
+            hint1 = $"Multiplica lo repartido: {divisor} × {quotient} = {divisor * quotient}.";
+            hint2 = $"Resta del total: {dividend} - {divisor * quotient} = {remainder} galletas de residuo.";
+            success = $"¡Correcto! Sobran {remainder} galletas de residuo.";
+        }
+        else if (mode == 1) // Preguntar por el Cociente
+        {
+            expected = quotient;
+            title = $"Reparto Justo: {dividend} Monedas entre {divisor} Exploradores";
+            stdDesc = $"Repartes {dividend} monedas entre {divisor} exploradores de forma justa y sobran {remainder} monedas. ¿Cuántas monedas completas le tocan a cada explorador ({divisor} × ? se acerca a {dividend - remainder})?";
+            simDesc = $"Repartes {dividend} monedas entre {divisor} amigos y sobran {remainder}. ¿Cuántas monedas le tocan a cada amigo?";
+            scrDesc = $"{dividend} monedas repartidas entre {divisor} exploradores; quedan {remainder} sobrantes.";
+            hint1 = $"Resta lo que sobra: {dividend} - {remainder} = {dividend - remainder}.";
+            hint2 = $"Divide lo que se repartió: {dividend - remainder} entre {divisor} = {quotient} monedas.";
+            success = $"¡Exacto! A cada explorador le tocan {quotient} monedas completas.";
+        }
+        else // Comprobación: D = d * q + r
+        {
+            expected = dividend;
+            title = $"Comprobando la División: (Divisor × Cociente) + Residuo";
+            stdDesc = $"Al repartir manzanas entre {divisor} cestas, cupieron {quotient} en cada una y sobraron {remainder}. Usando la fórmula ({divisor} × {quotient}) + {remainder}, ¿cuántas manzanas había en total?";
+            simDesc = $"Multiplica {divisor} × {quotient} = {divisor * quotient}, y súmale lo que sobró (+ {remainder}). ¿Cuánto da?";
+            scrDesc = $"Comprobación de división: {divisor} por {quotient} más residuo de {remainder}.";
+            hint1 = $"Multiplica {divisor} × {quotient} = {divisor * quotient}.";
+            hint2 = $"Suma el residuo {remainder}: {divisor * quotient} + {remainder} = {dividend}.";
+            success = $"¡Extraordinario! ({divisor} × {quotient}) + {remainder} = {dividend}.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_divrem_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.DivisionWithRemainder,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_divrem_1",
+            Name = title,
+            EmojiSymbol = "🍪",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 3), max: expected + 4, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de fracciones en la recta numérica.
+    /// </summary>
+    public Exercise GenerateFractionsNumberLineExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        int[] possibleDenoms = isSimplified ? new[] { 2, 4 } : new[] { 2, 3, 4, 5, 6 };
+        int denominator = possibleDenoms[rng.Next(possibleDenoms.Length)];
+        int numerator = rng.Next(1, denominator);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Saltos en la recta
+        {
+            expected = numerator;
+            title = $"Saltos en la Recta: Fracción {numerator}/{denominator}";
+            stdDesc = $"El camino de 0 a 1 está dividido en {denominator} partes iguales de 1/{denominator} cada una. Si das {numerator} saltos desde el 0, ¿cuántos pasos fraccionarios avanzaste en el numerador de la fracción ?/{denominator}?";
+            simDesc = $"El camino tiene {denominator} partes iguales. Das {numerator} saltos. ¿Cuál es el número de saltos dados?";
+            scrDesc = $"Una recta numérica de 0 a 1 con divisiones de 1/{denominator} y una marca a los {numerator} saltos.";
+            hint1 = $"Cada salto cuenta una parte del camino (1/{denominator}).";
+            hint2 = $"Diste {numerator} saltos, por lo que avanzaste {numerator}/{denominator}.";
+            success = $"¡Exacto! Llegaste a la marca de {numerator}/{denominator} dando {numerator} saltos.";
+        }
+        else if (mode == 1) // Comparación con la mitad (o posición)
+        {
+            expected = numerator;
+            title = $"Ubicación de {numerator}/{denominator} en la Recta";
+            stdDesc = $"En una pista graduada de 0 a 1 con marcas cada 1/{denominator}, una nave recorre {numerator} partes de {denominator}. ¿Qué numerador marca la posición del vehículo en la pista?";
+            simDesc = $"La nave avanzó {numerator} de las {denominator} partes de la pista. ¿Cuál es el número de partes recorridas?";
+            scrDesc = $"Pista numérica con {denominator} segmentos iguales y la nave en la marca {numerator}.";
+            hint1 = $"Cuenta los segmentos recorridos desde la línea de salida (el 0).";
+            hint2 = $"La nave se encuentra en la posición {numerator}/{denominator}.";
+            success = $"¡Brillante! La posición correcta es {numerator}/{denominator}.";
+        }
+        else // Partes totales de la unidad
+        {
+            expected = denominator;
+            title = $"Partes del Camino Completo (1/{denominator})";
+            stdDesc = $"Un sendero completo de 0 a 1 se corta en partes iguales para colocar marcas de fracción. Si cada paso mide 1/{denominator}, ¿en cuántas partes iguales en total está dividida la unidad?";
+            simDesc = $"Cada parte mide 1/{denominator}. ¿En cuántas partes iguales se cortó todo el camino?";
+            scrDesc = $"Una recta unitaria cortada en {denominator} segmentos de igual longitud.";
+            hint1 = $"El denominador (número inferior) indica las partes totales en que se divide el entero.";
+            hint2 = $"Como la fracción es 1/{denominator}, el camino se dividió en {denominator} partes.";
+            success = $"¡Excelente! El denominador {denominator} indica que la recta se dividió en {denominator} partes.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_fracline_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.FractionsNumberLine,
+            TargetAgeMin = 9,
+            TargetAgeMax = 12,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_fracline_1",
+            Name = title,
+            EmojiSymbol = "📍",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 3), max: expected + 3, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de lectura de tablas de frecuencia y gráficas de barras.
+    /// </summary>
+    public Exercise GenerateDataBarChartsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        int v1 = isSimplified ? rng.Next(3, 7) : rng.Next(3, 9);
+        int v2 = isSimplified ? rng.Next(6, 10) : rng.Next(7, 12);
+        int v3 = isSimplified ? rng.Next(2, 5) : rng.Next(2, 6);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Lectura directa del valor mayor
+        {
+            expected = v2;
+            title = $"Lectura de Barra: La Mayor Frecuencia ({v2} votos)";
+            stdDesc = $"En una encuesta escolar: Robótica = {v1} votos, Astronomía = {v2} votos, Música = {v3} votos. En la gráfica de barras, ¿cuál es la altura (número de votos) alcanzada por la barra más alta (Astronomía)?";
+            simDesc = $"Astronomía tiene {v2} votos y es la barra más alta. ¿Hasta qué número llega su barra?";
+            scrDesc = $"Gráfica de barras: Robótica {v1}, Astronomía {v2}, Música {v3}.";
+            hint1 = $"Observa la columna de Astronomía en el eje horizontal.";
+            hint2 = $"La altura de la barra de Astronomía llega exactamente al número {v2}.";
+            success = $"¡Correcto! La barra más alta alcanza una frecuencia de {v2} votos.";
+        }
+        else if (mode == 1) // Diferencia entre barra mayor y menor
+        {
+            expected = v2 - v3;
+            title = $"Comparación de Barras: Diferencia entre Mayor y Menor";
+            stdDesc = $"La barra más alta tiene {v2} votos (Astronomía) y la más baja tiene {v3} votos (Música). ¿Cuántos votos más obtuvo la actividad más popular que la menos popular ({v2} - {v3})?";
+            simDesc = $"Resta la barra alta ({v2}) menos la barra baja ({v3}). ¿Cuánto da {v2} - {v3}?";
+            scrDesc = $"Comparación de barras: columna de {v2} frente a columna de {v3}.";
+            hint1 = $"Resta la menor de la mayor: {v2} - {v3}.";
+            hint2 = $"{v2} menos {v3} da una diferencia de {expected} votos.";
+            success = $"¡Exacto! {v2} - {v3} = {expected} votos de diferencia.";
+        }
+        else // Total de datos encuestados
+        {
+            expected = v1 + v2 + v3;
+            title = $"Total de Participantes en la Tabla de Frecuencias";
+            stdDesc = $"Una tabla registra las respuestas de los estudiantes: Robótica = {v1}, Astronomía = {v2}, Música = {v3}. ¿Cuántos estudiantes participaron en total sumando las tres categorías ({v1} + {v2} + {v3})?";
+            simDesc = $"Suma todos los votos: {v1} + {v2} + {v3}. ¿Cuántos son en total?";
+            scrDesc = $"Tabla de conteo con {v1}, {v2} y {v3} participantes por categoría.";
+            hint1 = $"Suma los tres valores: primero {v1} + {v2} = {v1 + v2}, y luego añade {v3}.";
+            hint2 = $"{v1} + {v2} + {v3} = {expected} participantes en total.";
+            success = $"¡Extraordinario! Participaron {expected} estudiantes en la encuesta.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_barchart_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.DataBarChartsAndTables,
+            TargetAgeMin = 8,
+            TargetAgeMax = 11,
+            Level = AcademicLevel.MiddleElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_barchart_1",
+            Name = title,
+            EmojiSymbol = "📊",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 4), max: expected + 5, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de medidas de tendencia central (media, mediana, moda).
+    /// </summary>
+    public Exercise GenerateStatisticsCentralTendencyExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 8);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Media aritmética (promedio de 3 números con suma múltiplo de 3)
+        {
+            int meanVal = isSimplified ? rng.Next(5, 9) : rng.Next(6, 12);
+            int diff = rng.Next(1, 4);
+            int n1 = meanVal - diff;
+            int n2 = meanVal;
+            int n3 = meanVal + diff;
+            int sum = n1 + n2 + n3;
+
+            expected = meanVal;
+            title = $"Cálculo de la Media Aritmética (Promedio)";
+            stdDesc = $"Las calificaciones obtenidas en tres misiones son: {n1}, {n2} y {n3}. La suma total es {sum} ({n1} + {n2} + {n3} = {sum}). Para encontrar la Media (promedio), divide {sum} entre 3. ¿Cuál es el promedio?";
+            simDesc = $"Suma {n1} + {n2} + {n3} = {sum}. Divide {sum} entre 3. ¿Cuánto da el promedio?";
+            scrDesc = $"Tres calificaciones: {n1}, {n2} y {n3} cuya suma es {sum}.";
+            hint1 = $"Divide la suma total entre la cantidad de datos: {sum} / 3.";
+            hint2 = $"{sum} dividido entre 3 es igual a {meanVal}.";
+            success = $"¡Excelente! El promedio (media) es {meanVal}.";
+        }
+        else if (mode == 1) // Moda (el valor más repetido)
+        {
+            int modeVal = isSimplified ? rng.Next(3, 8) : rng.Next(4, 11);
+            int other1 = (modeVal > 5) ? modeVal - 2 : modeVal + 2;
+            int other2 = (modeVal > 5) ? modeVal - 1 : modeVal + 3;
+
+            expected = modeVal;
+            title = $"Identificación de la Moda en el Conjunto de Datos";
+            stdDesc = $"En una competencia se registraron los siguientes puntajes: [{other1}, {modeVal}, {modeVal}, {modeVal}, {other2}]. La Moda es el valor que aparece con mayor frecuencia. ¿Cuál es la moda?";
+            simDesc = $"En la lista [{other1}, {modeVal}, {modeVal}, {modeVal}, {other2}], ¿cuál es el número que más veces se repite?";
+            scrDesc = $"Lista de números con {modeVal} repetido 3 veces y otros valores con 1 repetición.";
+            hint1 = $"Cuenta cuántas veces aparece cada número en la lista.";
+            hint2 = $"El número {modeVal} aparece 3 veces, superando a todos los demás.";
+            success = $"¡Brillante! La moda es {modeVal} porque es el número más repetido.";
+        }
+        else // Mediana (el valor central de 5 datos ordenados)
+        {
+            int start = isSimplified ? rng.Next(2, 6) : rng.Next(2, 8);
+            int step = rng.Next(1, 3);
+            int m1 = start;
+            int m2 = m1 + step;
+            int m3 = m2 + step;
+            int m4 = m3 + step;
+            int m5 = m4 + step;
+
+            expected = m3;
+            title = $"Localización de la Mediana en Datos Ordenados";
+            stdDesc = $"Cinco datos están ordenados de menor a mayor: [{m1}, {m2}, {m3}, {m4}, {m5}]. La Mediana es el número que ocupa exactamente la posición del medio. ¿Cuál es la mediana?";
+            simDesc = $"En la fila [{m1}, {m2}, {m3}, {m4}, {m5}], ¿cuál número está exactamente en el centro?";
+            scrDesc = $"Cinco datos ordenados en fila; el tercer valor está en la posición central.";
+            hint1 = $"Hay 5 números ordenados. El dato central es el que ocupa el tercer lugar.";
+            hint2 = $"El número en la tercera posición es {m3}, con dos datos a su izquierda y dos a su derecha.";
+            success = $"¡Extraordinario! La mediana es {m3} porque está justo al centro.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_statscen_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.StatisticsCentralTendency,
+            TargetAgeMin = 10,
+            TargetAgeMax = 13,
+            Level = AcademicLevel.UpperElementary,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_statscen_1",
+            Name = title,
+            EmojiSymbol = "🎯",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 3), max: expected + 4, unitLabel: "", rng);
+        return ex;
+    }
+
+
+    /// <summary>
+    /// Genera ejercicios de geometría del círculo, radio, diámetro y constante pi.
+    /// </summary>
+    public Exercise GenerateCircleGeometryExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 11);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Diámetro desde Radio: d = 2r
+        {
+            int r = isSimplified ? rng.Next(3, 8) : rng.Next(4, 12);
+            expected = 2 * r;
+            title = $"Diámetro de una Rueda Circular (Radio {r} m)";
+            stdDesc = $"Una compuerta circular tiene un radio de {r} metros del centro al borde. Sabiendo que el diámetro cruza completo de lado a lado pasando por el centro (d = 2 × r), ¿cuánto mide el diámetro?";
+            simDesc = $"El radio mide {r} metros. El diámetro es el doble (2 × {r}). ¿Cuánto mide el diámetro?";
+            scrDesc = $"Círculo con radio de {r} metros y diámetro horizontal.";
+            hint1 = $"El diámetro es el doble del radio: d = 2 × {r}.";
+            hint2 = $"2 por {r} es igual a {expected} metros de diámetro.";
+            success = $"¡Correcto! Diámetro = 2 × {r} m = {expected} metros.";
+        }
+        else if (mode == 1) // Circunferencia en cm: C = 3.14 × d_cm (d = 100 cm -> C = 314 cm, o d = 50 -> 157, etc.)
+        {
+            int factor = isSimplified ? rng.Next(1, 3) * 100 : rng.Next(1, 5) * 100; // 100, 200, 300 cm
+            expected = (int)(3.14 * factor); // 314, 628, 942
+            title = $"Circunferencia con Diámetro {factor} cm (C = π × d)";
+            stdDesc = $"Una rueda circular tiene un diámetro de {factor} centímetros. Usando la aproximación π ≈ 3.14 en la fórmula de la circunferencia C = π × d, ¿cuántos centímetros mide todo el contorno (3.14 × {factor} cm)?";
+            simDesc = $"Multiplica 3.14 por {factor} para medir el contorno de la rueda en centímetros. ¿Cuánto da?";
+            scrDesc = $"Pista circular de {factor} centímetros de diámetro y perímetro resaltado.";
+            hint1 = $"Multiplica pi por el diámetro: 3.14 × {factor}.";
+            hint2 = $"3.14 × {factor} = {expected} centímetros de circunferencia.";
+            success = $"¡Exacto! C = 3.14 × {factor} = {expected} centímetros de contorno.";
+        }
+        else // Radio desde Diámetro: r = d / 2
+        {
+            int r = isSimplified ? rng.Next(3, 8) : rng.Next(4, 14);
+            int d = 2 * r;
+            expected = r;
+            title = $"Radio del Domo Circular (Diámetro {d} m)";
+            stdDesc = $"Un domo espacial tiene un diámetro exterior de {d} metros. Sabiendo que el radio va del centro al borde y mide la mitad exacta (r = d / 2), ¿cuál es el radio?";
+            simDesc = $"El diámetro mide {d} metros. Divide {d} entre 2 para hallar el radio. ¿Cuánto da?";
+            scrDesc = $"Domo circular con diámetro de {d} metros; se pide la mitad.";
+            hint1 = $"El radio es la mitad del diámetro: {d} / 2.";
+            hint2 = $"{d} dividido entre 2 es igual a {expected} metros.";
+            success = $"¡Brillante! Radio = {d} / 2 = {expected} metros.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_circle_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.CircleGeometryPi,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_circle_1",
+            Name = title,
+            EmojiSymbol = "⭕",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        if (mode == 1)
+        {
+            ex.Options.Add(new ExerciseOption { Id = "opt_gc_1", Label = $"{expected - 100} cm", Value = expected - 100, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "1" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_gc_2", Label = $"{expected} cm", Value = expected, IsCorrect = true, SpeechFeedback = $"¡Correcto! {expected} centímetros.", AccessibleKeyShortcut = "2" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_gc_3", Label = $"{expected + 100} cm", Value = expected + 100, IsCorrect = false, SpeechFeedback = "Demasiado grande.", AccessibleKeyShortcut = "3" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_gc_4", Label = $"{expected * 2} cm", Value = expected * 2, IsCorrect = false, SpeechFeedback = "Ese es el doble.", AccessibleKeyShortcut = "4" });
+        }
+        else
+        {
+            BuildOptions(ex, expected, min: Math.Max(2, expected - 4), max: expected + 5, unitLabel: "m", rng);
+        }
+
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de Mínimo Común Múltiplo (MCM) y Máximo Común Divisor (MCD).
+    /// </summary>
+    public Exercise GenerateFactorsMcmMcdExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 11);
+
+        int mode = rng.Next(2); // 0 = MCM, 1 = MCD
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // MCM
+        {
+            var pairs = new (int a, int b, int mcm)[]
+            {
+                (4, 6, 12),
+                (3, 5, 15),
+                (6, 8, 24),
+                (4, 10, 20),
+                (3, 4, 12),
+                (6, 9, 18)
+            };
+            var p = pairs[rng.Next(pairs.Length)];
+            expected = p.mcm;
+            title = $"Mínimo Común Múltiplo (MCM) de {p.a} y {p.b}";
+            stdDesc = $"Dos faros espaciales emiten destellos con periodos distintos: el faro A cada {p.a} minutos y el faro B cada {p.b} minutos. ¿En qué minuto exacto coincidirán ambos por primera vez (MCM de {p.a} y {p.b})?";
+            simDesc = $"El faro A parpadea cada {p.a} min y el B cada {p.b} min. ¿En qué número coinciden primero las tablas de multiplicar?";
+            scrDesc = $"Secuencias de múltiplos de {p.a} y {p.b} coincidiendo en {p.mcm}.";
+            hint1 = $"Escribe los múltiplos de {p.a} y los de {p.b}.";
+            hint2 = $"El menor múltiplo común a ambos es {expected}.";
+            success = $"¡Exacto! El MCM({p.a}, {p.b}) es {expected}.";
+        }
+        else // MCD
+        {
+            var pairs = new (int a, int b, int mcd)[]
+            {
+                (12, 18, 6),
+                (20, 30, 10),
+                (16, 24, 8),
+                (15, 25, 5),
+                (14, 21, 7),
+                (18, 27, 9)
+            };
+            var p = pairs[rng.Next(pairs.Length)];
+            expected = p.mcd;
+            title = $"Máximo Común Divisor (MCD) de {p.a} y {p.b}";
+            stdDesc = $"Queremos empaquetar {p.a} cristales azules y {p.b} cristales rojos en cajas iguales con la mayor cantidad posible sin que sobre ninguno. ¿Cuántos cristales debe llevar cada caja (MCD de {p.a} y {p.b})?";
+            simDesc = $"¿Cuál es el número más grande que divide exactamente a {p.a} y a {p.b} sin que sobre nada?";
+            scrDesc = $"Divisores de {p.a} y {p.b} destacando el divisor común máximo {p.mcd}.";
+            hint1 = $"Busca los divisores comunes de {p.a} y {p.b}.";
+            hint2 = $"El divisor común más grande es {expected}.";
+            success = $"¡Brillante! El MCD({p.a}, {p.b}) es {expected}.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_mcmmcd_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.FactorsMcmMcd,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_mcmmcd_1",
+            Name = title,
+            EmojiSymbol = "💡",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(2, expected - 4), max: expected + 6, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de números racionales con signo (fracciones y decimales negativos).
+    /// </summary>
+    public Exercise GenerateNegativeRationalNumbersExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 11);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Centésimos bajo cero: -1/2 = -50, -1/4 = -25, -3/4 = -75
+        {
+            var fracs = new (string frac, int cents, string dec)[]
+            {
+                ("-1/2", -50, "-0.50"),
+                ("-1/4", -25, "-0.25"),
+                ("-3/4", -75, "-0.75"),
+                ("-1/5", -20, "-0.20")
+            };
+            var f = fracs[rng.Next(fracs.Length)];
+            expected = f.cents;
+            title = $"Equivalencia en Centésimos de {f.frac}";
+            stdDesc = $"En la escala bajo cero, 1 grado son 100 centésimos. ¿A cuántos centésimos bajo cero ({f.dec}) equivale la fracción {f.frac}?";
+            simDesc = $"¿A cuántos centésimos bajo cero con signo menos equivale {f.frac}?";
+            scrDesc = $"Recta numérica con la fracción {f.frac} a la izquierda del cero marcando {f.dec}.";
+            hint1 = $"Divide 100 entre el denominador y coloca signo negativo.";
+            hint2 = $"{f.frac} equivale exactamente a {expected} centésimos ({f.dec}).";
+            success = $"¡Exacto! {f.frac} = {expected} centésimos ({f.dec}).";
+        }
+        else if (mode == 1) // Ley de signos en multiplicación: (-2) × (-d) = +(2 × d)
+        {
+            int a = rng.Next(2, 6);
+            int b = rng.Next(2, 6);
+            expected = a * b;
+            title = $"Multiplicación con Ley de Signos: (-{a}) × (-{b})";
+            stdDesc = $"Aplica la ley de los signos: Menos por menos da más ((-) × (-) = (+)). ¿Cuál es el resultado de multiplicar (-{a}) × (-{b})?";
+            simDesc = $"Menos por menos da más. Multiplica {a} × {b}. ¿Cuánto da positivo?";
+            scrDesc = $"Operación (-{a}) × (-{b}) cancelando signos negativos.";
+            hint1 = $"El signo final es positivo: menos por menos es más (+).";
+            hint2 = $"{a} × {b} = {expected}.";
+            success = $"¡Brillante! (-{a}) × (-{b}) = +{expected}.";
+        }
+        else // Suma con signos opuestos
+        {
+            int neg = rng.Next(1, 4);
+            int pos = rng.Next(neg + 1, neg + 5);
+            expected = pos - neg;
+            title = $"Suma de Racionales con Signos Opuestos: (-{neg}/2) + ({pos}/2)";
+            stdDesc = $"Calcula la suma de fracciones con signos opuestos: (-{neg}/2) + ({pos}/2). Restamos los numeradores ({pos} - {neg} = {pos - neg}). ¿A cuántos medios ({pos - neg}/2) equivale el resultado?";
+            simDesc = $"Debes {neg} medios y pagas {pos} medios. ¿Cuántos medios te quedan a favor?";
+            scrDesc = $"Operación (-{neg}/2) + ({pos}/2) = +{pos - neg}/2.";
+            hint1 = $"Conserva el denominador 2 y suma los numeradores: -{neg} + {pos} = {pos - neg}.";
+            hint2 = $"El resultado es {pos - neg} medios.";
+            success = $"¡Extraordinario! (-{neg}/2) + ({pos}/2) = +{pos - neg}/2.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_negrat_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.NegativeRationalNumbers,
+            TargetAgeMin = 11,
+            TargetAgeMax = 14,
+            Level = AcademicLevel.SecondaryFirstGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_negrat_1",
+            Name = title,
+            EmojiSymbol = "❄️",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        if (mode == 0)
+        {
+            ex.Options.Add(new ExerciseOption { Id = "opt_nr_1", Label = $"{expected - 25} centésimos", Value = expected - 25, IsCorrect = false, SpeechFeedback = "Demasiado negativo.", AccessibleKeyShortcut = "1" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_nr_2", Label = $"{expected} centésimos", Value = expected, IsCorrect = true, SpeechFeedback = $"¡Correcto! {expected} centésimos.", AccessibleKeyShortcut = "2" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_nr_3", Label = $"{Math.Abs(expected)} centésimos (+)", Value = Math.Abs(expected), IsCorrect = false, SpeechFeedback = "Ese es positivo, pero la fracción era negativa.", AccessibleKeyShortcut = "3" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_nr_4", Label = $"{expected + 25} centésimos", Value = expected + 25, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "4" });
+        }
+        else
+        {
+            BuildOptions(ex, expected, min: Math.Max(1, expected - 3), max: expected + 4, unitLabel: "", rng);
+        }
+
+        return ex;
+    }
+
+/// <summary>
+    /// Genera ejercicios de factorización algebraica (factor común y diferencia de cuadrados).
+    /// </summary>
+    public Exercise GenerateAlgebraFactoringExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 12);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Factor común numérico: k*x + k*b = k(x + b)
+        {
+            int k = isSimplified ? rng.Next(2, 5) : rng.Next(2, 8);
+            int b = isSimplified ? rng.Next(2, 5) : rng.Next(2, 6);
+            int kb = k * b;
+            expected = k;
+            title = $"Factor Común Monomio en {k}x + {kb}";
+            stdDesc = $"En la expresión algebraica {k}x + {kb}, ambos términos se pueden dividir de forma exacta entre el mismo número. ¿Cuál es el factor común que se coloca fuera del paréntesis en ?(x + {b})?";
+            simDesc = $"¿Qué número divide a {k} y a {kb} para ponerlo afuera del paréntesis?";
+            scrDesc = $"Expresión {k}x + {kb} factorizada como ?(x + {b}).";
+            hint1 = $"Busca el Máximo Común Divisor entre {k} y {kb}.";
+            hint2 = $"{k} divide a {k}x y a {kb} ({kb} / {k} = {b}). El factor común es {k}.";
+            success = $"¡Correcto! {k}x + {kb} = {k}(x + {b}). El factor común es {k}.";
+        }
+        else if (mode == 1) // Diferencia de cuadrados: x^2 - a^2 = (x - a)(x + a)
+        {
+            int a = isSimplified ? rng.Next(2, 6) : rng.Next(2, 10);
+            int a2 = a * a;
+            expected = a;
+            title = $"Diferencia de Cuadrados: x² - {a2}";
+            stdDesc = $"La expresión x² - {a2} es una diferencia de cuadrados que se factoriza como (x - ?)(x + ?). Sabiendo que la raíz cuadrada de {a2} es √{a2}, ¿qué número completa los binomios conjugados?";
+            simDesc = $"Calcula la raíz cuadrada de {a2} (¿qué número por sí mismo da {a2}?).";
+            scrDesc = $"Diferencia de cuadrados x² - {a2} = (x - ?)(x + ?).";
+            hint1 = $"Calcula la raíz cuadrada de {a2}: √{a2}.";
+            hint2 = $"{a} × {a} = {a2}, por lo que la factorización es (x - {a})(x + {a}).";
+            success = $"¡Exacto! x² - {a2} = (x - {a})(x + {a}). La raíz es {a}.";
+        }
+        else // Término interior: k*x + k*b = k(x + ?)
+        {
+            int k = isSimplified ? rng.Next(2, 5) : rng.Next(3, 7);
+            int b = isSimplified ? rng.Next(2, 5) : rng.Next(2, 7);
+            int kb = k * b;
+            expected = b;
+            title = $"Término Interior del Paréntesis: {k}x + {kb} = {k}(x + ?)";
+            stdDesc = $"Al extraer el factor común {k} de la expresión {k}x + {kb}, dividimos el segundo término entre {k} ({kb} / {k}). ¿Qué número queda dentro del paréntesis en {k}(x + ?)?";
+            simDesc = $"Divide {kb} entre {k}. ¿Qué número queda dentro del paréntesis?";
+            scrDesc = $"Expresión {k}x + {kb} = {k}(x + ?).";
+            hint1 = $"Divide el segundo término entre el factor común: {kb} / {k}.";
+            hint2 = $"{kb} dividido entre {k} es igual a {b}.";
+            success = $"¡Brillante! {k}x + {kb} = {k}(x + {b}). Queda el número {b}.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_fact_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.AlgebraFactoring,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_fact_1",
+            Name = title,
+            EmojiSymbol = "🧩",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 3), max: expected + 4, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de ángulos entre paralelas cortadas por una secante.
+    /// </summary>
+    public Exercise GenerateParallelLinesAnglesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 12);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Ángulos alternos internos (iguales)
+        {
+            int ang = isSimplified ? rng.Next(4, 8) * 10 : rng.Next(7, 15) * 5; // e.g. 40, 50, 65, 70...
+            expected = ang;
+            title = $"Ángulo Alterno Interno ({ang}°)";
+            stdDesc = $"Dos rectas paralelas son cortadas por una secante transversal. Si uno de los ángulos alternos internos mide {ang}°, por propiedad de paralelismo, ¿cuánto mide el otro ángulo alterno interno?";
+            simDesc = $"Los ángulos alternos son gemelos idénticos. Si uno mide {ang} grados, ¿cuánto mide el otro?";
+            scrDesc = $"Líneas paralelas cortadas por una secante con ángulos alternos de {ang} grados.";
+            hint1 = $"Los ángulos alternos internos son congruentes (miden exactamente lo mismo).";
+            hint2 = $"Mide exactamente {ang}°.";
+            success = $"¡Correcto! Los ángulos alternos internos son congruentes y miden {ang}°.";
+        }
+        else if (mode == 1) // Ángulos conjugados suplementarios (suman 180°)
+        {
+            int ang = isSimplified ? rng.Next(5, 9) * 10 : rng.Next(8, 15) * 5; // e.g. 60, 70, 75...
+            expected = 180 - ang;
+            title = $"Ángulo Suplementario Conjugado ({ang}° + ? = 180°)";
+            stdDesc = $"En una intersección de paralelas, un ángulo interno mide {ang}°. El ángulo conjugado interno situado de su mismo lado es suplementario y debe sumar 180° ({ang}° + ? = 180°). ¿Cuánto mide?";
+            simDesc = $"Resta 180 menos {ang} para hallar el ángulo que falta. ¿Cuánto da?";
+            scrDesc = $"Dos ángulos conjugados sobre paralelas que suman 180 grados.";
+            hint1 = $"Resta el ángulo conocido de 180°: 180 - {ang}.";
+            hint2 = $"180 - {ang} = {expected}°.";
+            success = $"¡Exacto! {ang}° + {expected}° = 180° de suma suplementaria.";
+        }
+        else // Opuestos por el vértice (iguales)
+        {
+            int ang = isSimplified ? rng.Next(3, 8) * 10 : rng.Next(6, 16) * 5; // e.g. 45, 55, 60...
+            expected = ang;
+            title = $"Ángulo Opuesto por el Vértice ({ang}°)";
+            stdDesc = $"Dos rectas se cortan en un vértice formando cuatro ángulos. Si uno de los ángulos mide {ang}°, ¿cuánto mide el ángulo que se encuentra justo frente a él cruzando el vértice?";
+            simDesc = $"Los ángulos opuestos frente a frente miden lo mismo. Si uno mide {ang}°, ¿cuánto mide el de enfrente?";
+            scrDesc = $"Cruce de dos rectas con dos ángulos opuestos por el vértice de {ang} grados.";
+            hint1 = $"Los ángulos opuestos por el vértice son congruentes.";
+            hint2 = $"Mide exactamente lo mismo: {ang}°.";
+            success = $"¡Brillante! Los ángulos opuestos por el vértice miden {ang}°.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_parall_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.ParallelLinesAngles,
+            TargetAgeMin = 12,
+            TargetAgeMax = 15,
+            Level = AcademicLevel.SecondarySecondGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_parall_1",
+            Name = title,
+            EmojiSymbol = "📐",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(15, expected - 25), max: expected + 30, unitLabel: "°", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de probabilidad clásica y eventos compuestos.
+    /// </summary>
+    public Exercise GenerateProbabilityCompoundEventsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 12);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Probabilidad clásica en porcentaje (Laplace): Urna con rojas y azules
+        {
+            var cases = new (int rojas, int azules, int pct)[]
+            {
+                (4, 6, 40),
+                (2, 8, 20),
+                (5, 5, 50),
+                (3, 7, 30),
+                (7, 3, 70),
+                (1, 9, 10)
+            };
+            var c = cases[rng.Next(cases.Length)];
+            int total = c.rojas + c.azules;
+            expected = c.pct;
+            title = $"Probabilidad de Extraer Gema Roja ({c.rojas} de {total})";
+            stdDesc = $"En una urna hay {c.rojas} gemas rojas y {c.azules} gemas azules ({total} gemas en total). Si se extrae una gema al azar, ¿cuál es el porcentaje de probabilidad de que sea roja (({c.rojas} / {total}) × 100)?";
+            simDesc = $"Hay {c.rojas} gemas rojas de {total} en total. ¿Qué porcentaje es: {c.pct}%?";
+            scrDesc = $"Urna con {c.rojas} gemas rojas y {c.azules} azules sumando {total}.";
+            hint1 = $"Aplica la Regla de Laplace: Casos favorables ({c.rojas}) / Casos posibles ({total}).";
+            hint2 = $"({c.rojas} / {total}) × 100 = {expected}%.";
+            success = $"¡Exacto! La probabilidad de sacar gema roja es del {expected}%.";
+        }
+        else if (mode == 1) // Espacio muestral de monedas: 2^n
+        {
+            int nCoins = isSimplified ? 2 : rng.Next(2, 4); // 2 o 3 monedas
+            expected = (int)Math.Pow(2, nCoins); // 4 u 8
+            title = $"Espacio Muestral: Lanzamiento de {nCoins} Monedas";
+            stdDesc = $"Al lanzar {nCoins} monedas al aire al mismo tiempo, cada moneda tiene 2 resultados posibles. Sabiendo que los casos posibles se calculan como 2 elevado a la {nCoins} (2^{nCoins}), ¿cuántas combinaciones posibles forman el espacio muestral?";
+            simDesc = $"Cada moneda tiene 2 caras. Multiplica {string.Join(" × ", Enumerable.Repeat("2", nCoins))}. ¿Cuántas combinaciones son?";
+            scrDesc = $"Diagrama de combinaciones posibles para {nCoins} monedas.";
+            hint1 = $"Eleva 2 al número de monedas ({nCoins}): 2^{nCoins}.";
+            hint2 = $"Hay {expected} combinaciones posibles en total.";
+            success = $"¡Brillante! El espacio muestral tiene {expected} combinaciones posibles.";
+        }
+        else // Evento imposible (0%) o evento seguro (100%)
+        {
+            bool isSure = rng.Next(2) == 0;
+            expected = isSure ? 100 : 0;
+            string eventName = isSure ? "evento seguro (certeza absoluta de que ocurrirá)" : "evento imposible (nunca puede ocurrir)";
+            title = isSure ? "Probabilidad de un Evento Seguro" : "Probabilidad de un Evento Imposible";
+            stdDesc = $"En la teoría clásica de la probabilidad, ¿cuál es el porcentaje exacto que representa a un {eventName}?";
+            simDesc = isSure ? "¿Qué porcentaje representa algo que siempre ocurre (100%)?" : "¿Qué porcentaje representa algo imposible que nunca ocurre (0%)?";
+            scrDesc = $"Escala de probabilidad destacando el valor extremo del {expected}%.";
+            hint1 = isSure ? "Un evento seguro abarca el 100% de los casos." : "Un evento imposible tiene 0 casos favorables.";
+            hint2 = $"La respuesta es {expected}%.";
+            success = $"¡Extraordinario! La probabilidad es exactamente {expected}%.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_prob_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.ProbabilityCompoundEvents,
+            TargetAgeMin = 13,
+            TargetAgeMax = 16,
+            Level = AcademicLevel.SecondaryThirdGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_prob_1",
+            Name = title,
+            EmojiSymbol = "🎲",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        if (mode == 2)
+        {
+            ex.Options.Add(new ExerciseOption { Id = "opt_p_1", Label = "0%", Value = 0, IsCorrect = (expected == 0), SpeechFeedback = (expected == 0) ? "¡Correcto!" : "Incorrecto.", AccessibleKeyShortcut = "1" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_p_2", Label = "25%", Value = 25, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "2" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_p_3", Label = "50%", Value = 50, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "3" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_p_4", Label = "100%", Value = 100, IsCorrect = (expected == 100), SpeechFeedback = (expected == 100) ? "¡Correcto!" : "Incorrecto.", AccessibleKeyShortcut = "4" });
+        }
+        else
+        {
+            BuildOptions(ex, expected, min: Math.Max(2, expected - 20), max: expected + 25, unitLabel: (mode == 0 ? "%" : ""), rng);
+        }
+
+        return ex;
+    }
+
+/// <summary>
+    /// Genera ejercicios de cónicas analíticas (parábolas y elipses).
+    /// </summary>
+    public Exercise GenerateConicsParabolaEllipseExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 14);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Parábola y² = 4px => foco p
+        {
+            int p = isSimplified ? rng.Next(2, 6) : rng.Next(2, 9);
+            int fourP = 4 * p;
+            expected = p;
+            title = $"Foco de la Parábola y² = {fourP}x";
+            stdDesc = $"Una antena reflectora tiene la sección parabólica y² = {fourP}x. Con la forma ordinaria y² = 4px, donde 4p = {fourP}, ¿a qué distancia focal p ({fourP} / 4) se debe colocar el receptor?";
+            simDesc = $"Divide {fourP} entre 4 para hallar la distancia al foco. ¿Cuánto da {fourP} / 4?";
+            scrDesc = $"Parábola horizontal con ecuación y² = {fourP}x y foco en el eje x.";
+            hint1 = $"Divide el coeficiente de x entre 4: {fourP} / 4.";
+            hint2 = $"{fourP} / 4 = {expected}. La distancia focal es {expected} metros.";
+            success = $"¡Correcto! 4p = {fourP} => p = {expected} unidades.";
+        }
+        else if (mode == 1) // Elipse x²/a² + y²/b² = 1 => semieje a
+        {
+            int a = isSimplified ? rng.Next(3, 7) : rng.Next(4, 10);
+            int a2 = a * a;
+            int b = a - 1;
+            int b2 = b * b;
+            expected = a;
+            title = $"Semieje Mayor de la Elipse x²/{a2} + y²/{b2} = 1";
+            stdDesc = $"Una trayectoria orbital elíptica cumple x²/{a2} + y²/{b2} = 1. Sabiendo que a² = {a2} define el semieje mayor, ¿cuánto mide el semieje mayor a (√{a2})?";
+            simDesc = $"Calcula la raíz cuadrada de {a2} (¿qué número multiplicado por sí mismo da {a2}?).";
+            scrDesc = $"Elipse horizontal con semieje mayor a² = {a2}.";
+            hint1 = $"Calcula la raíz cuadrada de {a2}: √{a2}.";
+            hint2 = $"{a} × {a} = {a2}, por lo que el semieje mayor es {expected}.";
+            success = $"¡Exacto! a = √{a2} = {expected} unidades.";
+        }
+        else // Eje mayor completo = 2a
+        {
+            int a = isSimplified ? rng.Next(3, 7) : rng.Next(4, 9);
+            expected = 2 * a;
+            title = $"Eje Mayor Completo de la Órbita (2a)";
+            stdDesc = $"En una elipse planetaria, la distancia del centro al vértice (semieje mayor) mide a = {a} unidades astronómicas. ¿Cuánto mide el eje mayor completo de extremo a extremo (2 × {a})?";
+            simDesc = $"Multiplica el semieje {a} por 2 para hallar el eje completo. ¿Cuánto da?";
+            scrDesc = $"Eje mayor de la elipse midiendo 2a con a = {a}.";
+            hint1 = $"Multiplica el semieje por 2: 2 × {a}.";
+            hint2 = $"2 × {a} = {expected} unidades.";
+            success = $"¡Brillante! Longitud del eje mayor = 2a = {expected} unidades astronómicas.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_conic_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.ConicsParabolaEllipse,
+            TargetAgeMin = 15,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolSecondGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_conic_1",
+            Name = title,
+            EmojiSymbol = "📡",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 3), max: expected + 4, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de límites y continuidad analítica.
+    /// </summary>
+    public Exercise GenerateCalculusLimitsExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 15);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Sustitución lineal lim_{x -> a} (m*x + c)
+        {
+            int m = isSimplified ? rng.Next(2, 4) : rng.Next(2, 6);
+            int a = isSimplified ? rng.Next(2, 5) : rng.Next(2, 6);
+            int c = rng.Next(1, 7);
+            expected = (m * a) + c;
+            title = $"Límite Lineal: lim_{{x -> {a}}} ({m}x + {c})";
+            stdDesc = $"Evalúa el límite continuo por sustitución directa: lim_{{x -> {a}}} ({m}x + {c}). Sustituyendo x = {a} ({m} × {a} + {c}), ¿cuál es el valor del límite?";
+            simDesc = $"Sustituye x por {a}: multiplica {m} × {a} = {m * a}, y suma {c}. ¿Cuánto da?";
+            scrDesc = $"Límite de {m}x + {c} cuando x tiende a {a}.";
+            hint1 = $"Sustituye x = {a}: {m}({a}) + {c}.";
+            hint2 = $"{m * a} + {c} = {expected}.";
+            success = $"¡Correcto! lim_{{x -> {a}}} ({m}x + {c}) = {expected}.";
+        }
+        else if (mode == 1) // Sustitución cuadrática lim_{x -> a} (x² + c)
+        {
+            int a = isSimplified ? rng.Next(2, 5) : rng.Next(2, 6);
+            int c = rng.Next(1, 8);
+            expected = (a * a) + c;
+            title = $"Límite Cuadrático: lim_{{x -> {a}}} (x² + {c})";
+            stdDesc = $"Calcula el límite por sustitución directa: lim_{{x -> {a}}} (x² + {c}). Elevando {a}² = {a * a} y sumando {c} ({a * a} + {c}), ¿cuánto vale el límite?";
+            simDesc = $"Eleva {a} al cuadrado ({a} × {a} = {a * a}) y suma {c}. ¿Cuánto da?";
+            scrDesc = $"Límite cuadrático de x² + {c} cuando x tiende a {a}.";
+            hint1 = $"Sustituye x = {a}: {a}² + {c}.";
+            hint2 = $"{a * a} + {c} = {expected}.";
+            success = $"¡Exacto! lim_{{x -> {a}}} (x² + {c}) = {expected}.";
+        }
+        else // Límite de constante lim_{x -> a} (c) = c
+        {
+            int a = rng.Next(3, 9);
+            int c = rng.Next(10, 25);
+            expected = c;
+            title = $"Límite de una Constante: lim_{{x -> {a}}} ({c})";
+            stdDesc = $"Por el teorema del límite de una constante, lim_{{x -> a}} c = c. ¿Cuál es el resultado de lim_{{x -> {a}}} ({c})?";
+            simDesc = $"La función siempre vale {c} fijo. ¿Cuánto vale su límite?";
+            scrDesc = $"Límite de la constante {c} cuando x tiende a {a}.";
+            hint1 = $"El límite de una constante es la misma constante.";
+            hint2 = $"El valor no depende de x: el límite es {expected}.";
+            success = $"¡Brillante! lim_{{x -> {a}}} ({c}) = {expected}. Las constantes nunca cambian.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_limit_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.CalculusLimits,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_limit_1",
+            Name = title,
+            EmojiSymbol = "🎯",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        BuildOptions(ex, expected, min: Math.Max(1, expected - 4), max: expected + 5, unitLabel: "", rng);
+        return ex;
+    }
+
+    /// <summary>
+    /// Genera ejercicios de reglas operativas de derivación (potencia, lineales, constantes).
+    /// </summary>
+    public Exercise GenerateCalculusDerivativeRulesExercise(UserProfile profile, Random? rng = null)
+    {
+        rng ??= Random.Shared;
+        bool isSimplified = (profile.HasDisability(DisabilityType.Intellectual) || profile.Age <= 15);
+
+        int mode = rng.Next(3);
+        int expected;
+        string title;
+        string stdDesc;
+        string simDesc;
+        string scrDesc;
+        string hint1;
+        string hint2;
+        string success;
+
+        if (mode == 0) // Regla de potencia: d/dx(x^n) evaluada en x = a
+        {
+            int n = isSimplified ? 2 : 3;
+            int a = isSimplified ? rng.Next(2, 5) : rng.Next(2, 4);
+            int powVal = (int)Math.Pow(a, n - 1);
+            expected = n * powVal;
+            title = $"Regla de la Potencia: Derivada de x^{n} en x = {a}";
+            stdDesc = $"Aplicando la regla de la potencia d/dx(xⁿ) = n·xⁿ⁻¹, la derivada de f(x) = x^{n} es f'(x) = {n}x^{n-1}. Al evaluarla en x = {a}: {n} × ({a}^{n-1} = {powVal}), ¿cuál es la tasa de cambio ({n} × {powVal})?";
+            simDesc = $"La derivada es {n}x^{n-1}. Si x vale {a}, multiplica {n} × {powVal}. ¿Cuánto da?";
+            scrDesc = $"Derivada de x^{n} evaluada en x = {a}.";
+            hint1 = $"Aplica la regla de la potencia: f'(x) = {n}x^{n-1}.";
+            hint2 = $"Sustituye x = {a}: {n} × {powVal} = {expected}.";
+            success = $"¡Correcto! f'({a}) = {expected} unidades por segundo.";
+        }
+        else if (mode == 1) // Derivada de función lineal: f(x) = m*x + b => f'(x) = m
+        {
+            int m = rng.Next(3, 10);
+            int b = rng.Next(1, 15);
+            expected = m;
+            title = $"Derivada Lineal: f(x) = {m}x + {b}";
+            stdDesc = $"En la función de posición lineal f(x) = {m}x + {b}, la derivada de {m}x es la constante {m} y la de {b} es 0. ¿Cuál es el valor exacto de la derivada f'(x)?";
+            simDesc = $"La derivada de {m}x + {b} es el número que acompaña a la x ({m}). ¿Cuánto vale?";
+            scrDesc = $"Derivada de una función lineal f(x) = {m}x + {b}.";
+            hint1 = $"La derivada de m·x + b es simplemente la constante m.";
+            hint2 = $"f'(x) = {m}.";
+            success = $"¡Exacto! La derivada de {m}x + {b} es su pendiente constante: {expected}.";
+        }
+        else // Derivada de una constante: d/dx(c) = 0
+        {
+            int c = rng.Next(15, 60);
+            expected = 0;
+            title = $"Derivada de una Magnitud Constante: f(x) = {c}";
+            stdDesc = $"Una nave espacial se encuentra en reposo estacionario con posición fija f(x) = {c}. Sabiendo que la derivada mide la velocidad de cambio de posición, ¿cuál es su derivada f'(x)?";
+            simDesc = $"Si la nave no se mueve nada y su posición es fija en {c}, ¿cuál es su velocidad (derivada)?";
+            scrDesc = $"Función constante f(x) = {c} con tasa de cambio cero.";
+            hint1 = $"La derivada de cualquier constante es siempre 0.";
+            hint2 = $"f'(x) = 0.";
+            success = $"¡Extraordinario! d/dx({c}) = 0. Lo que no cambia tiene derivada cero.";
+        }
+
+        var ex = new Exercise
+        {
+            Id = $"gen_deriv_{Guid.NewGuid():N}",
+            Title = title,
+            GameType = GamePlayType.CalculusDerivativeRules,
+            TargetAgeMin = 16,
+            TargetAgeMax = 18,
+            Level = AcademicLevel.HighSchoolThirdGrade,
+            ExpectedResult = expected,
+            StandardInstruction = stdDesc,
+            SimplifiedInstruction = simDesc,
+            ScreenReaderDescription = scrDesc,
+            FirstHint = hint1,
+            SecondHintDetailed = hint2,
+            ExplanationOfSuccess = success,
+            SimplifiedFirstHint = hint1,
+            SimplifiedSecondHint = hint2,
+            SimplifiedExplanationOfSuccess = success
+        };
+
+        ex.ItemsGroupA.Add(new ManipulableItem
+        {
+            Id = "item_deriv_1",
+            Name = title,
+            EmojiSymbol = "⚡",
+            AccessibleDescription = scrDesc,
+            OrderIndex = 1,
+            MusicalPitchHz = PentatonicScaleHz[mode % PentatonicScaleHz.Length]
+        });
+
+        if (mode == 2)
+        {
+            ex.Options.Add(new ExerciseOption { Id = "opt_dr_1", Label = "0", Value = 0, IsCorrect = true, SpeechFeedback = "¡Correcto! La derivada de una constante es 0.", AccessibleKeyShortcut = "1" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_dr_2", Label = "1", Value = 1, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "2" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_dr_3", Label = "10", Value = 10, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "3" });
+            ex.Options.Add(new ExerciseOption { Id = "opt_dr_4", Label = "100", Value = 100, IsCorrect = false, SpeechFeedback = "Incorrecto.", AccessibleKeyShortcut = "4" });
+        }
+        else
+        {
+            BuildOptions(ex, expected, min: Math.Max(1, expected - 4), max: expected + 5, unitLabel: "", rng);
+        }
+
+        return ex;
     }
 }
