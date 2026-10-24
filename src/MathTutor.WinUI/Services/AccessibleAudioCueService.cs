@@ -162,6 +162,10 @@ public class AccessibleAudioCueService
                 };
                 worker.Start();
             }
+            else
+            {
+                Monitor.Pulse(ChannelGate);
+            }
         }
     }
 

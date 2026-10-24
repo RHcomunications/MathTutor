@@ -10,11 +10,21 @@ public class CurriculumService
 {
     // Escala musical pentatónica y diatónica (C4 a C5) para conteo sensorial
     private static readonly int[] Frequencies = { 262, 294, 330, 349, 392, 440, 494, 523 };
+    private static readonly object TopicsGate = new();
+    private static List<PedagogicalTopic>? _cachedTopics;
     private readonly ExerciseGenerator _generator = new();
 
     public List<PedagogicalTopic> GetAllTopics()
     {
-        var topics = new List<PedagogicalTopic>
+        if (_cachedTopics is not null)
+            return _cachedTopics;
+
+        lock (TopicsGate)
+        {
+            if (_cachedTopics is not null)
+                return _cachedTopics;
+
+            var topics = new List<PedagogicalTopic>
         {
             BuildKindergartenCountingTopic(),
             BuildAdditionAndPropertiesTopic(),
@@ -84,7 +94,9 @@ public class CurriculumService
         };
 
         topics.InsertRange(1, KindergartenCurriculum.BuildTopics());
-        return topics;
+        _cachedTopics = topics;
+        return _cachedTopics;
+        }
     }
 
     /// <summary>

@@ -49,7 +49,7 @@ MathTutor.slnx
 │       ├── GamePage.xaml / .cs          (Motor interactivo de ejercicios, conteo con celdas de 170 px, pistas, respuestas con ↑/↓ y retroalimentación)
 │       └── MapPage.xaml / .cs           (Mapa del Reino con estaciones y sala de trofeos TreeView agrupada por nivel)
 │
-└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 231 pruebas)
+└── MathTutor.Tests (net10.0 - Suite Automatizada xUnit con 234 pruebas)
     ├── ExerciseGeneratorTests.cs         (66 pruebas de generación procedimental, aleatorización de opciones y no-colisión)
     ├── PedagogyAndAccessibilityTests.cs  (71 pruebas de cobertura curricular, comorbilidad, stepper de lección y formato de anuncios)
     ├── ProfileStorageTests.cs            (21 pruebas de serialización, migración, concurrencia, exportación y borrado)
@@ -68,7 +68,7 @@ MathTutor.slnx
 │   ├── MathTutor.Core/       Biblioteca de dominio, currículo, motor adaptativo y almacenamiento
 │   └── MathTutor.WinUI/      Aplicación WinUI 3, navegación, servicios y vistas
 ├── tests/
-│   └── MathTutor.Tests/      Suite xUnit de 231 pruebas
+│   └── MathTutor.Tests/      Suite xUnit de 234 pruebas
 ├── scripts/
 │   └── publish-winui.ps1     Publicación y empaquetado de la release
 ├── artifacts/                Salidas de compilación y releases (ignorado por Git)
@@ -604,5 +604,6 @@ Tercera fase de auditoría e implementación integral de la Hoja de Ruta Curricu
   - Eliminación de truncamiento (`CharacterEllipsis`) por ajuste natural de palabras (`TextWrapping="WrapWholeWords"`).
   - Suspensión inteligente de atajos numéricos en `MainWindow.xaml.cs` cuando el elemento activo es un `TextBox`.
 - **Suite Automatizada:**
-  - 231/231 pruebas en Release, 0 advertencias, 0 errores.
+  - 234/234 pruebas en Release, 0 advertencias, 0 errores.
+  - Se agregaron pruebas de rendimiento y carga en `LoadAndPerformanceTests.cs` validando latencia sub-milisegundo de audio y arranque instantáneo con caché de 74 temas.
   - Versión general del sistema elevada a `1.11.0`.

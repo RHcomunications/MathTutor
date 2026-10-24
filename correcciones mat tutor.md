@@ -849,3 +849,15 @@ Implementación integral de la Hoja de Ruta Curricular Oficial (Fases 1 a 5), in
 - **Resultado:**
   - De 209 a 231 pruebas unitarias automáticas aprobadas al 100% (231 passed, 0 failed, 0 warnings).
   - Versionamiento sincronizado en `1.11.0` en `MathTutor.Core.csproj`, `MathTutor.WinUI.csproj` y scripts de empaquetado.
+
+
+### Fase 8 - Optimización de Arranque, Caché de Currículo y Latencia Cero de Audio
+- **Problema diagnosticado:**
+  1. *Latencia de audio:* En `AccessibleAudioCueService.cs`, el método `Enqueue()` no llamaba a `Monitor.Pulse(ChannelGate)` cuando el hilo de reproducción `PlaybackLoop` ya estaba en ejecución. Si el hilo entraba en `Monitor.Wait(ChannelGate, 15000)`, las pistas subsecuentes no se despertaban de inmediato, generando un retraso audible o aparente latencia de hardware.
+  2. *Retraso al abrir la app:* `CurriculumService.GetAllTopics()` reconstruía manualmente los 74 temas curriculares y sus más de 350 ejercicios en cada llamada (en el menú, mapa, navegación y recompensas), saturando el hilo de UI y el Garbage Collector.
+- **Corrección aplicada:**
+  1. En `AccessibleAudioCueService.cs`, se añadió `Monitor.Pulse(ChannelGate)` en el bloque `Enqueue`, garantizando que cualquier pista despierte inmediatamente el hilo de fondo sin esperar timeout.
+  2. En `CurriculumService.cs`, se implementó una caché estática de lectura única (`_cachedTopics` con bloqueo thread-safe de inicialización diferida), reduciendo el tiempo de acceso de $O(N)$ repetido a $O(1)$ instantáneo.
+  3. Se crearon pruebas automatizadas de rendimiento y carga en `tests/MathTutor.Tests/LoadAndPerformanceTests.cs` (234 pruebas en total).
+- **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `src/MathTutor.WinUI/Services/AccessibleAudioCueService.cs`, `tests/MathTutor.Tests/LoadAndPerformanceTests.cs`.
+- **Criterio de verificación:** Latencia de caché de audio $< 1$ ms, carga de temas $< 500$ ms, y suite completa 234/234 passed.
