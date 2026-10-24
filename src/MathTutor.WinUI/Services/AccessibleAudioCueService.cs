@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Threading;
 using MathTutor.Core.Models;
@@ -11,9 +12,11 @@ namespace MathTutor.WinUI.Services;
 /// <summary>
 /// Reproductor de pistas sonoras accesibles generadas proceduralmente por
 /// <see cref="AudioSynthesizer"/> (Core). Todas las señales pasan por un único
-/// canal de reproducción serializado: las señales jamás se interrumpen entre sí,
-/// los streams se liberan solo después de terminar de sonar y los buffers WAV
-/// idénticos se sirven de una caché compartida sin regenerarse.
+/// canal de reproducción serializado de latencia cero:
+/// - Reutiliza una instancia única de SoundPlayer para no reiniciar el driver de audio en cada nota.
+/// - Cancela y purga el audio activo al cambiar de pantalla o lección.
+/// - Deduplica sonidos de navegación para evitar colas rezagadas al pulsar flechas rápidamente.
+/// - Despierta al hilo de fondo de inmediato con Monitor.Pulse.
 /// </summary>
 public class AccessibleAudioCueService
 {
@@ -21,6 +24,7 @@ public class AccessibleAudioCueService
 
     private static readonly object ChannelGate = new();
     private static readonly Queue<CueSpec> Channel = new();
+    private static readonly SoundPlayer ReusablePlayer = new();
     private static bool _workerRunning;
 
     private bool _enabled = true;
@@ -39,14 +43,21 @@ public class AccessibleAudioCueService
     }
 
     /// <summary>
-    /// Descarta las pistas aún no reproducidas (p. ej. al cambiar de pantalla).
-    /// La pista en curso termina de sonar; no se interrumpe a mitad de nota.
+    /// Descarta las pistas aún no reproducidas e interrumpe de inmediato cualquier nota
+    /// en curso (p. ej. al cambiar de pantalla o volver al menú).
     /// </summary>
     public void ClearPendingCues()
     {
         lock (ChannelGate)
         {
             Channel.Clear();
+            try
+            {
+                ReusablePlayer.Stop();
+            }
+            catch
+            {
+            }
         }
     }
 
@@ -77,8 +88,6 @@ public class AccessibleAudioCueService
     {
         if (!_enabled || !_musicEnabled || items is null || items.Count == 0) return;
 
-        // Una secuencia debe escucharse completa: se descarta lo encolado antes
-        // (incluida una secuencia previa) para no desincronizar el patrón.
         ClearPendingCues();
 
         if (startDelayMs > 0)
@@ -88,12 +97,12 @@ public class AccessibleAudioCueService
 
         foreach (var item in items)
         {
-            Enqueue(new CueSpec(AudioSynthesizer.GetItemCueWav(item), gapMs: 60));
+            Enqueue(new CueSpec(AudioSynthesizer.GetItemCueWav(item), gapMs: 30));
         }
     }
 
     /// <summary>
-    /// Reproduce acorde armónico de felicitación (Do-Mi-Sol-Do ascendente rápido).
+    /// Reproduce acorde armónico de felicitación (Do-Mi-Sol-Do ascendente ágil y sin demoras).
     /// </summary>
     public void PlaySuccessChord()
     {
@@ -101,7 +110,7 @@ public class AccessibleAudioCueService
         int[] chordNotes = { 523, 659, 784, 1046 }; // C5, E5, G5, C6
         foreach (var note in chordNotes)
         {
-            Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(note, 130, 0.45), gapMs: 90));
+            Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(note, 80, 0.45), gapMs: 25));
         }
     }
 
@@ -114,30 +123,38 @@ public class AccessibleAudioCueService
         int[] hintNotes = { 440, 554 }; // A4, C#5
         foreach (var note in hintNotes)
         {
-            Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(note, 160, 0.35), gapMs: 110));
+            Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(note, 90, 0.35), gapMs: 30));
         }
     }
 
     /// <summary>
-    /// Reproduce un acorde diagnóstico descendente suave cuando una respuesta es incorrecta (Tarea 4).
+    /// Reproduce un acorde diagnóstico descendente suave cuando una respuesta es incorrecta.
     /// </summary>
     public void PlayErrorChord()
     {
         if (!_enabled || !_musicEnabled) return;
-        int[] errorNotes = { 392, 330 }; // G4 -> E4 (intervalo diagnóstico descendente)
+        int[] errorNotes = { 392, 330 }; // G4 -> E4
         foreach (var note in errorNotes)
         {
-            Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(note, 170, 0.38), gapMs: 120));
+            Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(note, 100, 0.38), gapMs: 35));
         }
     }
 
     /// <summary>
     /// Sonido sutil al mover el foco de teclado para orientación espacial.
+    /// Deduplica clics si el usuario navega rápidamente con las flechas.
     /// </summary>
     public void PlayNavigationClick()
     {
         if (!_enabled) return;
-        Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(880, 35, 0.15), gapMs: 0));
+        lock (ChannelGate)
+        {
+            // Si ya hay un clic de navegación pendiente, no acumular más
+            if (Channel.Any(c => c.IsNavigation))
+                return;
+        }
+
+        Enqueue(new CueSpec(AudioSynthesizer.GetNoteWav(880, 25, 0.15), gapMs: 0, isNavigation: true));
     }
 
     private static void Enqueue(CueSpec cue)
@@ -146,15 +163,13 @@ public class AccessibleAudioCueService
         {
             if (Channel.Count >= MaxQueuedCues)
             {
-                Channel.Dequeue(); // La pista pendiente más antigua se descarta antes de saturar
+                Channel.Dequeue();
             }
 
             Channel.Enqueue(cue);
             if (!_workerRunning)
             {
                 _workerRunning = true;
-                // Hilo de fondo dedicado: reproduce cada pista completa antes de la siguiente,
-                // evitando que señales concurrentes de winmm interrumpan su señal a mitad de nota.
                 var worker = new Thread(PlaybackLoop)
                 {
                     IsBackground = true,
@@ -178,7 +193,6 @@ public class AccessibleAudioCueService
             {
                 while (Channel.Count == 0)
                 {
-                    // Hibernación por inactividad; despierta con cualquier nueva señal.
                     Monitor.Wait(ChannelGate, 15000);
                     if (Channel.Count == 0)
                     {
@@ -198,12 +212,12 @@ public class AccessibleAudioCueService
                 }
 
                 using var wavStream = new MemoryStream(cue.WavBytes, writable: false);
-                using var player = new SoundPlayer(wavStream);
-                player.PlaySync();
+                ReusablePlayer.Stream = wavStream;
+                ReusablePlayer.PlaySync();
             }
             catch
             {
-                // Manejo seguro si no hay dispositivo de audio; la cola sigue avanzando
+                // Manejo seguro si no hay dispositivo de audio disponible
             }
         }
     }
@@ -211,7 +225,6 @@ public class AccessibleAudioCueService
     private static byte[] SilenceWav(int durationMs)
     {
         int numSamples = Math.Max(1, 44100 * durationMs / 1000);
-        var samples = new short[numSamples];
         using var memoryStream = new MemoryStream();
         using var writer = new BinaryWriter(memoryStream, System.Text.Encoding.UTF8, leaveOpen: false);
 
@@ -239,13 +252,15 @@ public class AccessibleAudioCueService
 
     private readonly struct CueSpec
     {
-        public CueSpec(byte[] wavBytes, int gapMs)
+        public CueSpec(byte[] wavBytes, int gapMs, bool isNavigation = false)
         {
             WavBytes = wavBytes;
             GapMs = gapMs;
+            IsNavigation = isNavigation;
         }
 
         public byte[] WavBytes { get; }
         public int GapMs { get; }
+        public bool IsNavigation { get; }
     }
 }

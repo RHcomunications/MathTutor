@@ -1,3 +1,4 @@
+using System;
 using MathTutor.Core.Models;
 using Microsoft.UI.Xaml.Controls;
 
@@ -6,6 +7,8 @@ namespace MathTutor.WinUI.Navigation;
 public sealed class NavigationService
 {
     private readonly Frame _frame;
+    private DateTime _lastNavigatedTime = DateTime.MinValue;
+    private Type? _lastNavigatedPageType;
 
     public NavigationService(Frame frame)
     {
@@ -26,8 +29,24 @@ public sealed class NavigationService
 
     public void Navigate(Type pageType, object? parameter = null)
     {
-        _frame.Navigate(pageType, parameter);
-        _frame.BackStack.Clear();
+        var now = DateTime.UtcNow;
+        if (_lastNavigatedPageType == pageType && (now - _lastNavigatedTime).TotalMilliseconds < 300)
+        {
+            return;
+        }
+
+        _lastNavigatedPageType = pageType;
+        _lastNavigatedTime = now;
+
+        try
+        {
+            _frame.Navigate(pageType, parameter);
+            _frame.BackStack.Clear();
+        }
+        catch
+        {
+            // Resguardo contra excepciones nativas de transición rápida
+        }
     }
 
     public void RequestTopic(string topicId) => TopicSelected?.Invoke(topicId);

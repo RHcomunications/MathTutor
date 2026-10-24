@@ -267,7 +267,7 @@ public sealed partial class MapPage : Page
                 ItemsStations.SelectedIndex = 0;
             }
 
-            ItemsStations.UpdateLayout();
+            // UpdateLayout omitido para prevenir ciclo de layout en navegación rápida
             if (ItemsStations.ContainerFromIndex(ItemsStations.SelectedIndex) is ListViewItem stationItem)
             {
                 stationItem.Focus(FocusState.Programmatic);

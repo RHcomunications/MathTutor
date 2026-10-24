@@ -172,7 +172,7 @@ public sealed partial class MenuPage : Page
             }
 
             ItemsTopics.ScrollIntoView(ItemsTopics.SelectedItem);
-            ItemsTopics.UpdateLayout();
+            // UpdateLayout omitido para prevenir ciclo de layout en navegación rápida
 
             if (ItemsTopics.ContainerFromIndex(ItemsTopics.SelectedIndex) is ListViewItem firstItem)
             {
