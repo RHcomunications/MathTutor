@@ -4797,9 +4797,9 @@ public class ExerciseGenerator
             int kb = k * b;
             expected = k;
             title = $"Factor Común Monomio en {k}x + {kb}";
-            stdDesc = $"En la expresión algebraica {k}x + {kb}, ambos términos se pueden dividir de forma exacta entre el mismo número. ¿Cuál es el factor común que se coloca fuera del paréntesis en ?(x + {b})?";
+            stdDesc = $"En la expresión algebraica {k}x + {kb}, ambos términos se pueden dividir de forma exacta entre el mismo número. ¿Cuál es el factor común que se coloca fuera del paréntesis para multiplicar a (x + {b})?";
             simDesc = $"¿Qué número divide a {k} y a {kb} para ponerlo afuera del paréntesis?";
-            scrDesc = $"Expresión {k}x + {kb} factorizada como ?(x + {b}).";
+            scrDesc = $"Expresión algebraica {k}x + {kb} factorizada con factor común que multiplica a x + {b}.";
             hint1 = $"Busca el Máximo Común Divisor entre {k} y {kb}.";
             hint2 = $"{k} divide a {k}x y a {kb} ({kb} / {k} = {b}). El factor común es {k}.";
             success = $"¡Correcto! {k}x + {kb} = {k}(x + {b}). El factor común es {k}.";
@@ -4810,9 +4810,9 @@ public class ExerciseGenerator
             int a2 = a * a;
             expected = a;
             title = $"Diferencia de Cuadrados: x² - {a2}";
-            stdDesc = $"La expresión x² - {a2} es una diferencia de cuadrados que se factoriza como (x - ?)(x + ?). Sabiendo que la raíz cuadrada de {a2} es √{a2}, ¿qué número completa los binomios conjugados?";
+            stdDesc = $"La expresión x² - {a2} es una diferencia de cuadrados que se factoriza en binomios conjugados (x - a)(x + a). Sabiendo que la raíz cuadrada de {a2} es √{a2}, ¿qué número completa ambos binomios?";
             simDesc = $"Calcula la raíz cuadrada de {a2} (¿qué número por sí mismo da {a2}?).";
-            scrDesc = $"Diferencia de cuadrados x² - {a2} = (x - ?)(x + ?).";
+            scrDesc = $"Diferencia de cuadrados x² - {a2} factorizada en binomios conjugados de x y término faltante.";
             hint1 = $"Calcula la raíz cuadrada de {a2}: √{a2}.";
             hint2 = $"{a} × {a} = {a2}, por lo que la factorización es (x - {a})(x + {a}).";
             success = $"¡Exacto! x² - {a2} = (x - {a})(x + {a}). La raíz es {a}.";
@@ -4824,9 +4824,9 @@ public class ExerciseGenerator
             int kb = k * b;
             expected = b;
             title = $"Término Interior del Paréntesis: {k}x + {kb} = {k}(x + ?)";
-            stdDesc = $"Al extraer el factor común {k} de la expresión {k}x + {kb}, dividimos el segundo término entre {k} ({kb} / {k}). ¿Qué número queda dentro del paréntesis en {k}(x + ?)?";
+            stdDesc = $"Al extraer el factor común {k} de la expresión {k}x + {kb}, dividimos el segundo término entre {k} ({kb} / {k}). ¿Qué número queda dentro del paréntesis en la forma {k}(x + término faltante)?";
             simDesc = $"Divide {kb} entre {k}. ¿Qué número queda dentro del paréntesis?";
-            scrDesc = $"Expresión {k}x + {kb} = {k}(x + ?).";
+            scrDesc = $"Expresión {k}x + {kb} factorizada extrayendo {k} para obtener {k} que multiplica a x más un término.";
             hint1 = $"Divide el segundo término entre el factor común: {kb} / {k}.";
             hint2 = $"{kb} dividido entre {k} es igual a {b}.";
             success = $"¡Brillante! {k}x + {kb} = {k}(x + {b}). Queda el número {b}.";
