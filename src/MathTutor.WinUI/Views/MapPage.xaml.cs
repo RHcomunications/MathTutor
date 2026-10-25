@@ -227,8 +227,8 @@ public sealed partial class MapPage : Page
                     var node = new TreeViewNode { Content = displayById[badge.Id] };
                     groupNode.Children.Add(node);
                 }
-                groupNode.IsExpanded = profile.Preferences.BadgeGroupExpansion.TryGetValue(group.Key, out bool expanded)
-                    && expanded;
+                groupNode.IsExpanded = !profile.Preferences.BadgeGroupExpansion.TryGetValue(group.Key, out bool expanded)
+                    || expanded;
                 ItemsBadges.RootNodes.Add(groupNode);
                 if (_isRepainting)
                 {
@@ -316,12 +316,27 @@ public sealed partial class MapPage : Page
         if (item is null)
             return;
 
+        AutomationProperties.SetName(element, item.AccessibleBadgeName);
+
         DependencyObject? ancestor = element;
         while (ancestor is not null and not TreeViewItem)
             ancestor = VisualTreeHelper.GetParent(ancestor);
 
         if (ancestor is TreeViewItem container)
+        {
             AutomationProperties.SetName(container, item.AccessibleBadgeName);
+        }
+        else
+        {
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                DependencyObject? p = element;
+                while (p is not null and not TreeViewItem)
+                    p = VisualTreeHelper.GetParent(p);
+                if (p is TreeViewItem c)
+                    AutomationProperties.SetName(c, item.AccessibleBadgeName);
+            });
+        }
     }
 
     private void ItemsStations_KeyDown(object sender, KeyRoutedEventArgs e)

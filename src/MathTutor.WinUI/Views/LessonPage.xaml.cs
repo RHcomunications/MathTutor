@@ -111,7 +111,7 @@ public sealed partial class LessonPage : Page
         {
             1 => $"Paso 1 de 3. Historia de la misión: {_topic.Title}. Cosmo dice: {TxtNarrativeStory.Text}. Presiona Enter o Espacio para continuar al Secreto Matemático.",
             2 => $"Paso 2 de 3. El Secreto Matemático: {TxtCoreConcept.Text}. Presiona Enter o Espacio para ver el ejemplo guiado, o Flecha arriba o Backspace para volver a la historia.",
-            3 => $"Paso 3 de 3. Ejemplo guiado con Cosmo: {TxtGuidedExample.Text}. ¡Explicación completada! Presiona Enter para comenzar el reto lúdico, o Flecha arriba o Backspace para repasar.",
+            3 => $"Paso 3 de 3. Ejemplo guiado con Cosmo: {TxtGuidedExample.Text}. ¡Ejemplo guiado completado! Presiona Enter para comenzar el reto lúdico, o Flecha arriba o Backspace para repasar.",
             _ => string.Empty
         };
 

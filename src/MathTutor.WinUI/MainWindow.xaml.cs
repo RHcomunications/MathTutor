@@ -86,7 +86,11 @@ public sealed partial class MainWindow : Window
         bool hasSavedProfile = _acc.LoadSavedProfile();
         if (!hasSavedProfile)
         {
-            _acc.ApplyProfile(_acc.CurrentProfile);
+            _acc.ApplyProfile(new UserProfile { Name = string.Empty });
+        }
+        else
+        {
+            _acc.CurrentProfile.RecalculateStars();
         }
 
         UpdateTopStatus();
@@ -185,6 +189,11 @@ public sealed partial class MainWindow : Window
 
     private void OnProfileCancelled()
     {
+        if (!_acc.Storage.Exists())
+        {
+            _acc.AnnounceAssertive("Debes completar la caracterización inicial para comenzar a explorar el Reino.");
+            return;
+        }
         UpdateTopStatus();
         OpenMenu();
     }
@@ -270,6 +279,7 @@ public sealed partial class MainWindow : Window
         // Calificación por lección persistente: se conserva la mejor racha de estrellas
         int previousBest = _acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id);
         _acc.CurrentProfile.LessonStarRatings[topic.Id] = Math.Max(previousBest, earnedStars);
+        _acc.CurrentProfile.RecalculateStars();
 
         _acc.SaveCurrentProfile();
         UpdateTopStatus();
@@ -286,11 +296,28 @@ public sealed partial class MainWindow : Window
         var subHeaderFontSize = (double)Application.Current.Resources["AppSubHeaderFontSize"];
         var headerFontSize = (double)Application.Current.Resources["AppHeaderFontSize"];
 
-        string congratulation = !string.IsNullOrWhiteSpace(topic.CongratulationMessage)
-            ? topic.CongratulationMessage
-            : "¡Excelente trabajo! Dominaste todos los principios de esta misión.";
+        bool isCycleTransition = nextTopic is not null && nextTopic.Level != topic.Level;
+        string currentLevelName = MenuPage.GetAcademicLevelName(topic.Level);
+        string nextLevelName = isCycleTransition ? MenuPage.GetAcademicLevelName(nextTopic!.Level) : string.Empty;
+
+        string congratulation;
+        if (isCycleTransition)
+        {
+            congratulation = $"¡Felicitaciones extraordinarias! Has concluido exitosamente todos los retos de {currentLevelName}. ¡Estás listo para dar el gran paso hacia {nextLevelName}!";
+        }
+        else if (!string.IsNullOrWhiteSpace(topic.CongratulationMessage))
+        {
+            congratulation = topic.CongratulationMessage;
+        }
+        else
+        {
+            congratulation = "¡Excelente trabajo! Dominaste todos los principios de esta misión.";
+        }
+
         string transition = nextTopic is not null
-            ? "Presiona Enter para jugar la siguiente misión o Escape para volver al Mapa del Reino."
+            ? isCycleTransition
+                ? $"¡Fin de etapa alcanzado! Presiona Enter para avanzar a {nextLevelName} o Escape para volver al Mapa del Reino."
+                : "Presiona Enter para jugar la siguiente misión o Escape para volver al Mapa del Reino."
             : "¡Completaste todas las misiones de esta etapa! Presiona Enter o Escape para volver al Mapa del Reino.";
 
         var titlePanel = new StackPanel
@@ -374,9 +401,11 @@ public sealed partial class MainWindow : Window
         };
 
         string spoken = nextTopic is not null
-            ? firstCompletion
-                ? $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
-                : $"¡Misión Superada: {topic.Title}! Tu mejor calificación es {_acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id)} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
+            ? isCycleTransition
+                ? $"¡Misión Superada! Has concluido con honores la etapa de {currentLevelName}. Ganaste {earnedStars} de 3 estrellas. ¡Próxima gran aventura: {nextLevelName}! Presiona Enter para comenzar {nextTopic.Title} o Escape para volver al mapa."
+                : (firstCompletion
+                    ? $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa."
+                    : $"¡Misión Superada: {topic.Title}! Tu mejor calificación es {_acc.CurrentProfile.LessonStarRatings.GetValueOrDefault(topic.Id)} de 3 estrellas. Siguiente misión: {nextTopic.Title}. Presiona Enter para jugar la siguiente misión o Escape para volver al mapa.")
             : $"¡Misión Superada: {topic.Title}! Ganaste {earnedStars} de 3 estrellas. Completaste todas las misiones de esta etapa. Presiona Enter o Escape para volver al mapa.";
         _missionDialogMessage = spoken;
 
@@ -393,7 +422,9 @@ public sealed partial class MainWindow : Window
             Background = backgroundBrush,
             BorderBrush = successBrush,
             BorderThickness = new Thickness(4),
-            PrimaryButtonText = nextTopic is not null ? $"Siguiente: {nextTopic.Title}" : "Ver mapa",
+            PrimaryButtonText = nextTopic is not null
+                ? (isCycleTransition ? $"Avanzar a {nextLevelName}" : $"Siguiente: {nextTopic.Title}")
+                : "Ver mapa",
             CloseButtonText = nextTopic is not null ? "Ver mapa" : "Cerrar",
             DefaultButton = ContentDialogButton.Primary
         };

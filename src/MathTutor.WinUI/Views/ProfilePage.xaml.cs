@@ -324,8 +324,10 @@ public sealed partial class ProfilePage : Page
         string selection = (sender as ComboBox)?.SelectedItem is ComboBoxItem item
             ? item.Content?.ToString() ?? string.Empty
             : string.Empty;
-        string detail = string.IsNullOrWhiteSpace(selection) ? string.Empty : $" {selection}.";
-        _acc.Announce($"Apoyos actualizados.{detail} Las preferencias que ajustaste manualmente se conservan.");
+        if (!string.IsNullOrWhiteSpace(selection))
+        {
+            _acc.Announce(selection);
+        }
     }
 
     private void CmbAge_SelectionChanged(object sender, SelectionChangedEventArgs e)

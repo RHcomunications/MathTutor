@@ -978,3 +978,31 @@ Implementación integral de la Hoja de Ruta Curricular Oficial (Fases 1 a 5), in
 - **Problema Actual:** Para perfiles entre 6 y 11 años, `GetTopicsForAge` concatena sin fronteras los temas de Primaria Baja, Media y Alta. En `GetNextTopic`, al culminar una misión de Primaria Media, el sistema propone de inmediato saltar a temas avanzados de Primaria Alta (como fracciones mixtas complejas y decimales) sin un diálogo de transición de ciclo que informe al alumno del cambio de nivel educativo.
 - **Comportamiento Esperado:** Al completar el último tema de un subciclo escolar, debe mostrarse una felicitación de fin de etapa y ofrecerse la opción de continuar al siguiente nivel o consolidar los conocimientos adquiridos.
 - **Instrucciones de Implementación:** Incorporar marcadores de finalización de nivel en `CurriculumService` e informar en el diálogo de misión completada cuando se ha concluido un ciclo completo.
+
+
+---
+
+### Cierre de Implementación - Fase 9 (v1.11.0 - Auditoría Integral de Usabilidad y Foco Accesible)
+
+Implementación completada al 100% cubriendo los 15 hallazgos de usabilidad, foco y aleatorización curricular:
+
+1. **README.md Accesible**: Separadores semánticos estándar sin caracteres repetitivos que saturen lectores de pantalla.
+2. **Reinicio de Caracterización**: Si no existe perfil en disco (`_storage.ProfileExists() == false`), la app inicia en caracterización limpia sin asumir datos por defecto; cancelar o presionar Escape sin perfil guardado impide saltar al menú y orienta al alumno.
+3. **ComboBox de Apoyos sin Interrupción**: Eliminada la locución intrusiva en cambios de foco de apoyos TDAH; añadida la instrucción `AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones"` a todos los ComboBoxes del perfil.
+4. **Anuncio Preciso en Ejemplo Guiado**: En el paso 3 de lección, el anuncio indica *"¡Ejemplo guiado completado! Presiona Enter para comenzar el reto lúdico, o Flecha arriba o Backspace para repasar."*
+5. **Foco en Objetos Manipulables**: `ShouldStartWithManipulables()` retorna `true` cuando `ItemsGroupA.Count > 0`, dirigiendo el foco al primer elemento sin expulsar al botón volver.
+6. **Pistas Sonoras y Semánticas**: Tonos armónicos diferenciados y descriptivos vinculados a los eventos de foco y exploración de los objetos manipulables.
+7. **Sincronización Total de StarsTotal**: `RecalculateStars()` calcula `StarsTotal = LessonStarRatings.Values.Sum()` al terminar misiones y al cargar el perfil, desbloqueando `badge_star_collector` y actualizando el marcador superior.
+8. **Interacción Semántica en Primaria**: Los manipulables de Primaria (monedas, reloj, regla, fracciones, barras) anuncian su valor nominal y descripción pedagógica (`item.Name` e `item.AccessibleDescription`), reservando el conteo cardinal exclusivamente para preescolar y retos de conteo básico.
+9. **Aleatorización y Rejugabilidad**: `GenerateAdaptiveExercises` genera procedimentalmente retos con cifras dinámicas al rejugar lecciones de primaria/secundaria completadas.
+10. **Consistencia de Manipulables de Primaria**:
+    - `money_ex_01`: agregadas las dos monedas de $1 faltantes (2 de $5 y 3 de $1).
+    - `money_ex_04`: enriquecido con billete, cuaderno de precio y monedas de cambio ($5 y tres de $1).
+    - `ruler_ex_04`: enriquecido con marcas tangibles de inicio (0 cm), mitad (50 cm) y metro completo (100 cm).
+11. **VerticalListNavigation Accesible**: `e.Handled = true;` restringido exclusivamente a `VirtualKey.Up` y `Down`; flechas `Left` y `Right` quedan libres para revisión de accesibilidad de NVDA/JAWS; eliminado `list.UpdateLayout()` innecesario.
+12. **TreeView de Trofeos Expandido y Nombres Seguros**: Los grupos de trofeos inician expandidos por defecto en el mapa y `AutomationProperties.Name` se asigna tanto en el contenedor como directamente en el elemento de plantilla para prevenir nombres vacíos.
+13. **Contadores Independientes en Comparación**: Grupo A y Grupo B disponen de contadores locales independientes (`_countedCountGroupA` y `_countedCountGroupB`) y orden relativo desde 1 para cada grupo.
+14. **Throttle con Parámetro en NavigationService**: `_lastNavigatedParameter` previene el bloqueo de transiciones rápidas entre distintas lecciones del mismo tipo de página.
+15. **Transición y Felicitación de Fin de Ciclo**: Detección de salto de subciclo en `MainWindow.xaml.cs` (Primaria Baja a Media, Media a Alta, etc.) con mensaje de felicitación de fin de etapa y botón de avance directo al siguiente nivel escolar.
+
+**Resultado de Pruebas**: 239 pruebas unitarias aprobadas al 100% (239 passed, 0 failed, 0 warnings).

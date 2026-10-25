@@ -181,6 +181,7 @@ public class ProfileStorageService
             }
         }
 
+        profile.RecalculateStars();
         return profile;
     }
 
@@ -338,4 +339,9 @@ public class ProfileStorageService
     {
         return File.Exists(DefaultFilePath);
     }
+
+    /// <summary>
+    /// Indica si ya existe un perfil guardado previamente en el equipo.
+    /// </summary>
+    public bool ProfileExists() => Exists();
 }

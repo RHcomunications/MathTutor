@@ -236,6 +236,18 @@ public class UserProfile
     public Dictionary<string, int> LessonStarRatings { get; set; } = new();
 
     /// <summary>
+    /// Recalcula el total de estrellas acumuladas a partir del mejor resultado de cada lección completada.
+    /// </summary>
+    public int RecalculateStars()
+    {
+        if (LessonStarRatings.Count > 0)
+        {
+            StarsTotal = LessonStarRatings.Values.Sum();
+        }
+        return StarsTotal;
+    }
+
+    /// <summary>
     /// Sugiere apoyos de accesibilidad según las condiciones y los apoyos
     /// declarados. Nunca sobrescribe una preferencia que el usuario ajustó a mano.
     /// </summary>

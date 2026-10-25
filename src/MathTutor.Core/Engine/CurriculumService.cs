@@ -186,6 +186,20 @@ public class CurriculumService
     /// Obtiene la siguiente misión recomendada tras completar <paramref name="currentTopicId"/> (Tarea 7 y Tarea 10).
     /// Busca dentro de los niveles permitidos para la edad del alumno y devuelve null si ya completó todas las misiones de su etapa.
     /// </summary>
+    /// <summary>
+    /// Determina si un tema específico es el último de su nivel o subciclo académico.
+    /// </summary>
+    public bool IsEndOfLevelTopic(string topicId)
+    {
+        var all = GetAllTopics();
+        int idx = all.FindIndex(t => t.Id == topicId);
+        if (idx < 0) return false;
+        var current = all[idx];
+        if (idx == all.Count - 1) return true;
+        var next = all[idx + 1];
+        return next.Level != current.Level;
+    }
+
     public PedagogicalTopic? GetNextTopic(string currentTopicId, UserProfile? profile = null)
     {
         var topics = profile != null
@@ -258,6 +272,7 @@ public class CurriculumService
 
         if (templateTopic != null && templateTopic.Exercises.Count > 0)
         {
+            bool isReplay = profile.CompletedLessonIds.Contains(topic.Id);
             IEnumerable<Exercise> curated = templateTopic.Exercises;
 
             // En jardín de niños, el tema contiene retos por banda de edad:
@@ -273,15 +288,42 @@ public class CurriculumService
                 {
                     curated = templateTopic.Exercises;
                 }
+                result.AddRange(curated.Take(count));
             }
-
-            result.AddRange(curated.Take(count));
+            else if (isReplay)
+            {
+                // En repetición de misión de Primaria o superior: generar procedimentalmente
+                // con nuevas cifras para asegurar rejugabilidad y evaluación genuina.
+                var procedural = _generator.GenerateExercisesForTopic(topic.Id, profile, count);
+                if (procedural.Count > 0)
+                {
+                    result.AddRange(procedural.Take(count));
+                }
+                else
+                {
+                    var shuffled = curated.OrderBy(_ => Random.Shared.Next()).Take(count);
+                    result.AddRange(shuffled);
+                }
+            }
+            else
+            {
+                // Primer intento: respetar los ejercicios curados y sus principios pedagógicos
+                result.AddRange(curated.Take(count));
+            }
         }
 
         int remaining = count - result.Count;
         if (remaining > 0)
         {
-            result.AddRange(_generator.GenerateExercisesForTopic(topic.Id, profile, remaining));
+            var more = _generator.GenerateExercisesForTopic(topic.Id, profile, remaining);
+            if (more.Count > 0)
+            {
+                result.AddRange(more);
+            }
+            else if (templateTopic != null)
+            {
+                result.AddRange(templateTopic.Exercises.Except(result).Take(remaining));
+            }
         }
 
         // Aleatorizar las opciones para eliminar el sesgo de posición en cada reto cargado
@@ -3645,7 +3687,9 @@ public class CurriculumService
         };
         ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_5_1", Name = "Moneda de $5", EmojiSymbol = "🪙", AccessibleDescription = "Moneda dorada de 5 pesos", OrderIndex = 1, MusicalPitchHz = 262 });
         ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_5_2", Name = "Moneda de $5", EmojiSymbol = "🪙", AccessibleDescription = "Segunda moneda de 5 pesos", OrderIndex = 2, MusicalPitchHz = 330 });
-        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_1_1", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Moneda de 1 peso", OrderIndex = 3, MusicalPitchHz = 392 });
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_1_1", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Primera moneda de 1 peso", OrderIndex = 3, MusicalPitchHz = 392 });
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_1_2", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Segunda moneda de 1 peso", OrderIndex = 4, MusicalPitchHz = 440 });
+        ex1.ItemsGroupA.Add(new ManipulableItem { Id = "coin_1_3", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Tercera moneda de 1 peso", OrderIndex = 5, MusicalPitchHz = 523 });
         ex1.Options.Add(new ExerciseOption { Id = "opt_m1", Label = "$10 pesos", Value = 10, IsCorrect = false, SpeechFeedback = "10 pesos solo serían las dos monedas de 5, faltan las de 1.", AccessibleKeyShortcut = "1" });
         ex1.Options.Add(new ExerciseOption { Id = "opt_m2", Label = "$13 pesos", Value = 13, IsCorrect = true, SpeechFeedback = "¡Correcto! 5 más 5 son 10, más 3 de a peso son 13 pesos.", AccessibleKeyShortcut = "2" });
         ex1.Options.Add(new ExerciseOption { Id = "opt_m3", Label = "$15 pesos", Value = 15, IsCorrect = false, SpeechFeedback = "15 pesos serían tres monedas de 5.", AccessibleKeyShortcut = "3" });
@@ -3723,7 +3767,12 @@ public class CurriculumService
             SimplifiedSecondHint = "20 menos 12 da 8.",
             SimplifiedExplanationOfSuccess = "¡Muy bien! Tu cambio son 8 pesos."
         };
-        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "bill_20", Name = "Billete de $20", EmojiSymbol = "💵", AccessibleDescription = "Billete de 20 pesos", OrderIndex = 1, MusicalPitchHz = 523 });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "bill_20", Name = "Billete de $20", EmojiSymbol = "💵", AccessibleDescription = "Billete de 20 pesos entregado para pagar", OrderIndex = 1, MusicalPitchHz = 523 });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "item_notebook", Name = "Cuaderno de $12", EmojiSymbol = "📓", AccessibleDescription = "Cuaderno que cuesta 12 pesos", OrderIndex = 2, MusicalPitchHz = 330 });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "change_5", Name = "Moneda de $5", EmojiSymbol = "🪙", AccessibleDescription = "Moneda de 5 pesos del cambio", OrderIndex = 1, MusicalPitchHz = 392 });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "change_1_1", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Primera moneda de 1 peso del cambio", OrderIndex = 2, MusicalPitchHz = 440 });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "change_1_2", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Segunda moneda de 1 peso del cambio", OrderIndex = 3, MusicalPitchHz = 494 });
+        ex4.ItemsGroupB.Add(new ManipulableItem { Id = "change_1_3", Name = "Moneda de $1", EmojiSymbol = "⚪", AccessibleDescription = "Tercera moneda de 1 peso del cambio", OrderIndex = 4, MusicalPitchHz = 523 });
         ex4.Options.Add(new ExerciseOption { Id = "opt_b20_1", Label = "$6 pesos", Value = 6, IsCorrect = false, SpeechFeedback = "12 más 6 son 18.", AccessibleKeyShortcut = "1" });
         ex4.Options.Add(new ExerciseOption { Id = "opt_b20_2", Label = "$8 pesos", Value = 8, IsCorrect = true, SpeechFeedback = "¡Correcto! 20 menos 12 son 8 pesos.", AccessibleKeyShortcut = "2" });
         ex4.Options.Add(new ExerciseOption { Id = "opt_b20_3", Label = "$10 pesos", Value = 10, IsCorrect = false, SpeechFeedback = "20 menos 10 serían 10.", AccessibleKeyShortcut = "3" });
@@ -3852,7 +3901,9 @@ public class CurriculumService
             SimplifiedSecondHint = "Son 100 centímetros.",
             SimplifiedExplanationOfSuccess = "¡Muy bien! 1 metro son 100 cm."
         };
-        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "meter_tape", Name = "Metro de 100 cm", EmojiSymbol = "📏", AccessibleDescription = "Cinta métrica de 1 metro", OrderIndex = 1, MusicalPitchHz = 523 });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "meter_start", Name = "Marca de Inicio: 0 cm", EmojiSymbol = "📏 0cm", AccessibleDescription = "Inicio de la cinta métrica en el centímetro cero", OrderIndex = 1, MusicalPitchHz = 262 });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "meter_mid", Name = "Marca Media: 50 cm", EmojiSymbol = "📏 50cm", AccessibleDescription = "Punto medio de la cinta métrica: cincuenta centímetros o medio metro", OrderIndex = 2, MusicalPitchHz = 392 });
+        ex4.ItemsGroupA.Add(new ManipulableItem { Id = "meter_end", Name = "Marca Final: 100 cm", EmojiSymbol = "📏 100cm", AccessibleDescription = "Final de la cinta métrica: cien centímetros equivalen a un metro completo", OrderIndex = 3, MusicalPitchHz = 523 });
         ex4.Options.Add(new ExerciseOption { Id = "opt_m100_1", Label = "10 cm", Value = 10, IsCorrect = false, SpeechFeedback = "10 cm es un decímetro, muy cortito.", AccessibleKeyShortcut = "1" });
         ex4.Options.Add(new ExerciseOption { Id = "opt_m100_2", Label = "50 cm", Value = 50, IsCorrect = false, SpeechFeedback = "50 cm es solo medio metro.", AccessibleKeyShortcut = "2" });
         ex4.Options.Add(new ExerciseOption { Id = "opt_m100_3", Label = "100 cm", Value = 100, IsCorrect = true, SpeechFeedback = "¡Correcto! Un metro tiene exactamente 100 centímetros.", AccessibleKeyShortcut = "3" });

@@ -9,6 +9,7 @@ public sealed class NavigationService
     private readonly Frame _frame;
     private DateTime _lastNavigatedTime = DateTime.MinValue;
     private Type? _lastNavigatedPageType;
+    private object? _lastNavigatedParameter;
 
     public NavigationService(Frame frame)
     {
@@ -30,12 +31,15 @@ public sealed class NavigationService
     public void Navigate(Type pageType, object? parameter = null)
     {
         var now = DateTime.UtcNow;
-        if (_lastNavigatedPageType == pageType && (now - _lastNavigatedTime).TotalMilliseconds < 300)
+        if (_lastNavigatedPageType == pageType &&
+            Equals(_lastNavigatedParameter, parameter) &&
+            (now - _lastNavigatedTime).TotalMilliseconds < 300)
         {
             return;
         }
 
         _lastNavigatedPageType = pageType;
+        _lastNavigatedParameter = parameter;
         _lastNavigatedTime = now;
 
         try

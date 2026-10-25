@@ -188,6 +188,7 @@
                     <DataTemplate>
                         <Border MinWidth="260"
                                 Loaded="BadgeItem_Loaded"
+                                AutomationProperties.Name="{Binding Content.AccessibleBadgeName}"
                                 Padding="16"
                                 CornerRadius="12"
                                 Background="{Binding Content.BadgeBackgroundBrush}"

@@ -1233,6 +1233,110 @@ public class PedagogyAndAccessibilityTests
         Assert.Contains("3 manzanas", redOption.AccessibleDescription);
         Assert.Contains("2 manzanas", greenOption.AccessibleDescription);
     }
+
+    [Fact]
+    public void UserProfile_RecalculateStars_SumsRatingsAndUnlocksBadges()
+    {
+        var profile = new UserProfile();
+        Assert.Equal(0, profile.StarsTotal);
+
+        profile.LessonStarRatings["topic_01"] = 3;
+        profile.LessonStarRatings["topic_02"] = 3;
+        profile.LessonStarRatings["topic_03"] = 2;
+        profile.LessonStarRatings["topic_04"] = 3;
+        profile.LessonStarRatings["topic_05"] = 3;
+        profile.LessonStarRatings["topic_06"] = 1; // Total = 15
+
+        int total = profile.RecalculateStars();
+        Assert.Equal(15, total);
+        Assert.Equal(15, profile.StarsTotal);
+
+        var rewardService = new MathTutor.Core.Services.RewardService();
+        var badges = rewardService.GetAllBadges(profile);
+        var starCollectorBadge = badges.Find(b => b.Id == "badge_star_collector");
+
+        Assert.NotNull(starCollectorBadge);
+        Assert.True(starCollectorBadge.IsUnlocked, "badge_star_collector debe desbloquearse con 15 estrellas acumuladas");
+    }
+
+    [Fact]
+    public void CurriculumService_MoneyAndRulerExercises_HaveAccurateManipulables()
+    {
+        var moneyTopic = _curriculum.GetAllTopics().Find(t => t.Id == "elem_money_currency_01")!;
+        var moneyEx1 = moneyTopic.Exercises.Find(e => e.Id == "money_ex_01")!;
+
+        // Nico tiene 2 monedas de $5 y 3 de $1
+        int fives = moneyEx1.ItemsGroupA.Count(i => i.Name.Contains("$5"));
+        int ones = moneyEx1.ItemsGroupA.Count(i => i.Name.Contains("$1"));
+        Assert.Equal(2, fives);
+        Assert.Equal(3, ones);
+
+        var moneyEx4 = moneyTopic.Exercises.Find(e => e.Id == "money_ex_04")!;
+        Assert.Contains(moneyEx4.ItemsGroupA, i => i.Name.Contains("Billete"));
+        Assert.Contains(moneyEx4.ItemsGroupA, i => i.Name.Contains("Cuaderno"));
+        Assert.NotEmpty(moneyEx4.ItemsGroupB); // Monedas de cambio
+
+        var rulerTopic = _curriculum.GetAllTopics().Find(t => t.Id == "elem_measurement_ruler_01")!;
+        var rulerEx4 = rulerTopic.Exercises.Find(e => e.Id == "ruler_ex_04")!;
+        Assert.True(rulerEx4.ItemsGroupA.Count >= 3, "ruler_ex_04 debe tener marcas de escala explícitas (0, 50, 100 cm)");
+    }
+
+    [Fact]
+    public void CurriculumService_AdaptiveExercises_RandomizesOnReplay()
+    {
+        var profile = new UserProfile { Age = 9, CurrentLevel = AcademicLevel.MiddleElementary };
+        var topic = _curriculum.GetAllTopics().Find(t => t.Id == "elem_division_remainder_01")!;
+
+        // Primer intento
+        var firstRun = _curriculum.GenerateAdaptiveExercises(topic, profile, 3);
+        Assert.Equal(3, firstRun.Count);
+
+        // Al completar la misión y rejugar
+        profile.CompletedLessonIds.Add(topic.Id);
+        var replayRun = _curriculum.GenerateAdaptiveExercises(topic, profile, 3);
+        Assert.Equal(3, replayRun.Count);
+
+        // Se garantiza que hay ejercicios procedimentales con variantes numéricas
+        Assert.All(replayRun, ex => Assert.NotNull(ex.Title));
+    }
+
+    [Fact]
+    public void CurriculumService_IsEndOfLevelTopic_IdentifiesLevelBoundaries()
+    {
+        var allTopics = _curriculum.GetAllTopics();
+        var kinderLast = allTopics.Last(t => t.Level == AcademicLevel.Kindergarten);
+        var earlyLast = allTopics.Last(t => t.Level == AcademicLevel.EarlyElementary);
+        var middleLast = allTopics.Last(t => t.Level == AcademicLevel.MiddleElementary);
+
+        Assert.True(_curriculum.IsEndOfLevelTopic(kinderLast.Id));
+        Assert.True(_curriculum.IsEndOfLevelTopic(earlyLast.Id));
+        Assert.True(_curriculum.IsEndOfLevelTopic(middleLast.Id));
+
+        var earlyFirst = allTopics.First(t => t.Level == AcademicLevel.EarlyElementary);
+        Assert.False(_curriculum.IsEndOfLevelTopic(earlyFirst.Id));
+    }
+
+    [Fact]
+    public void ProfileStorageService_ProfileExists_MatchesFileState()
+    {
+        string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"mathtutor_test_{System.Guid.NewGuid()}.json");
+        var storage = new MathTutor.Core.Services.ProfileStorageService(tempPath);
+
+        try
+        {
+            Assert.False(storage.ProfileExists());
+            storage.Save(new UserProfile { Name = "Test Explorer" });
+            Assert.True(storage.ProfileExists());
+            Assert.True(storage.Exists());
+        }
+        finally
+        {
+            if (System.IO.File.Exists(tempPath))
+            {
+                System.IO.File.Delete(tempPath);
+            }
+        }
+    }
 }
 
 

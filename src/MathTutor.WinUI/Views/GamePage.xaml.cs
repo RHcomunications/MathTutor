@@ -90,6 +90,8 @@ public sealed partial class GamePage : Page
     private int _exercisesStarted;
     private int _hintStep;
     private int _countedItemsCount;
+    private int _countedCountGroupA;
+    private int _countedCountGroupB;
     private List<ExerciseOption> _currentOptions = new();
     private readonly HashSet<string> _countedItemKeys = new();
     private readonly HashSet<ExerciseOption> _wrongOptions = new();
@@ -168,6 +170,8 @@ public sealed partial class GamePage : Page
         _attemptsCount = 0;
         _hintStep = 0;
         _countedItemsCount = 0;
+        _countedCountGroupA = 0;
+        _countedCountGroupB = 0;
         _answerLocked = false;
         _successVisible = false;
         _countedItemKeys.Clear();
@@ -232,9 +236,10 @@ public sealed partial class GamePage : Page
 
         BorderManipulables.Visibility = totalItems > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-        bool isSymbolicAdvanced = (_currentExercise.Level >= AcademicLevel.SecondaryFirstGrade ||
-                                   (_currentExercise.Level == AcademicLevel.ProgrammingFoundations && _currentExercise.GameType != GamePlayType.PatternAndLoopSeed)) &&
-                                  totalItems <= 2;
+        bool isCardinalCounting = (_currentExercise.Level == AcademicLevel.Kindergarten ||
+                                   _currentExercise.GameType == GamePlayType.InteractiveCounting) &&
+                                  _currentExercise.GameType != GamePlayType.PatternAndLoopSeed;
+        bool isSymbolicAdvanced = !isCardinalCounting;
 
         TxtManipulablesPrompt.Text = IsPatternExercise()
             ? "Escucha la secuencia y presiona R para repetirla. Recorre cada elemento con las flechas para oír su nota:"
@@ -243,7 +248,7 @@ public sealed partial class GamePage : Page
                 : "Toca o selecciona cada objeto para contarlo y escuchar su nota mágica:";
 
         _groupAViews = BuildItemViews(groupA, 1, "A", isSymbolicAdvanced);
-        _groupBViews = BuildItemViews(groupB, groupA.Count + 1, "B", isSymbolicAdvanced);
+        _groupBViews = BuildItemViews(groupB, 1, "B", isSymbolicAdvanced);
 
         ItemsGroupA.ItemsSource = _groupAViews;
         ItemsGroupB.ItemsSource = _groupBViews;
@@ -285,18 +290,53 @@ public sealed partial class GamePage : Page
         view.MarkCounted();
         PlayItemCueOnce(view);
 
+        bool isGroupA = view.Key.StartsWith("A:", StringComparison.Ordinal);
+        if (isGroupA)
+        {
+            _countedCountGroupA++;
+        }
+        else
+        {
+            _countedCountGroupB++;
+        }
+
         int totalItems = _currentExercise.ItemsGroupA.Count + _currentExercise.ItemsGroupB.Count;
         string speech;
         if (view.IsSymbolicAdvanced)
         {
-            speech = $"{view.Item.Name}: {view.Item.AccessibleDescription}.";
+            string desc = !string.IsNullOrWhiteSpace(view.Item.AccessibleDescription)
+                ? view.Item.AccessibleDescription
+                : view.Item.Name;
+            speech = $"{view.Item.Name}: {desc}.";
         }
         else
         {
-            speech = $"¡{view.DisplayOrder}!";
-            if (_countedItemsCount == totalItems)
+            if (_currentExercise.ItemsGroupB.Count > 0)
             {
-                speech += $" ¡Terminaste de contar todos! Hay {totalItems} en total. El último número es el total de la colección.";
+                if (isGroupA)
+                {
+                    speech = $"Grupo 1, objeto {view.DisplayOrder}.";
+                    if (_countedCountGroupA == _currentExercise.ItemsGroupA.Count)
+                    {
+                        speech += $" ¡Terminaste el primer grupo! Hay {_currentExercise.ItemsGroupA.Count} en total.";
+                    }
+                }
+                else
+                {
+                    speech = $"Grupo 2, objeto {view.DisplayOrder}.";
+                    if (_countedCountGroupB == _currentExercise.ItemsGroupB.Count)
+                    {
+                        speech += $" ¡Terminaste el segundo grupo! Hay {_currentExercise.ItemsGroupB.Count} en total.";
+                    }
+                }
+            }
+            else
+            {
+                speech = $"¡{view.DisplayOrder}!";
+                if (_countedItemsCount == totalItems)
+                {
+                    speech += $" ¡Terminaste de contar todos! Hay {totalItems} en total. El último número es el total de la colección.";
+                }
             }
         }
 
@@ -553,19 +593,20 @@ public sealed partial class GamePage : Page
             return;
         }
 
-        if (ItemsOptions.TryGetElement(0) is Button firstOption)
+        if (ItemsOptions.GetOrCreateElement(0) is Button firstOption)
         {
             firstOption.Focus(FocusState.Programmatic);
+            return;
         }
-        else
-        {
-            BtnBackToLesson.Focus(FocusState.Programmatic);
-        }
+
+        BtnBackToLesson.Focus(FocusState.Programmatic);
     }
 
     private bool ShouldStartWithManipulables() =>
         _currentExercise is not null &&
-        (_currentExercise.GameType == GamePlayType.InteractiveCounting || IsPatternExercise());
+        (_currentExercise.ItemsGroupA.Count > 0 ||
+         _currentExercise.GameType == GamePlayType.InteractiveCounting ||
+         IsPatternExercise());
 
     public bool SelectOptionByIndex(int index)
     {
