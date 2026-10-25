@@ -861,3 +861,120 @@ Implementación integral de la Hoja de Ruta Curricular Oficial (Fases 1 a 5), in
   3. Se crearon pruebas automatizadas de rendimiento y carga en `tests/MathTutor.Tests/LoadAndPerformanceTests.cs` (234 pruebas en total).
 - **Ubicación:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `src/MathTutor.WinUI/Services/AccessibleAudioCueService.cs`, `tests/MathTutor.Tests/LoadAndPerformanceTests.cs`.
 - **Criterio de verificación:** Latencia de caché de audio $< 1$ ms, carga de temas $< 500$ ms, y suite completa 234/234 passed.
+
+
+### Fase 9 - Auditoría Integral de Usabilidad, Foco Accesible, Gamificación y Aleatorización Curricular (v1.11.0)
+**Contexto:** Hallazgos consolidados de pruebas de usuario (Jardín y Primaria) y auditoría profunda de arquitectura de código (.Core y .WinUI).
+
+#### 1. README.md y documentación inicial inaccesible con lectores de pantalla
+- **Componente / Archivo:** `README.md`.
+- **Problema Actual:** Existen bloques con separadores excesivos de caracteres repetidos (`====================`, `--------------------`). Los lectores de pantalla (NVDA, JAWS, Narrador) anuncian cada signo individualmente o generan pausas prolongadas y saturación acústica ("igual igual igual..."), degradando la experiencia para usuarios con discapacidad visual.
+- **Comportamiento Esperado:** Reemplazar separadores visuales repetitivos por encabezados Markdown semánticos (`#`, `##`, `###`) y líneas divisorias estándar (`---`).
+- **Instrucciones de Implementación:** Limpiar `README.md` eliminando cadenas de símbolos iguales o guiones repetidos.
+
+#### 2. Reinicio y caracterización tras borrado de perfil
+- **Componente / Archivo:** `src/MathTutor.Core/Services/ProfileStorageService.cs`, `src/MathTutor.WinUI/App.xaml.cs`.
+- **Problema Actual:** Si el usuario elimina su archivo de perfil (`profile.json`) para realizar pruebas o reiniciar el aprendizaje, al iniciar la aplicación no se lanza el asistente de caracterización inicial. En su lugar, el sistema genera automáticamente un perfil por defecto con opciones predeterminadas sin consultar la edad, necesidades de apoyo ni accesibilidad del usuario.
+- **Comportamiento Esperado:** Si no se encuentra un perfil válido al iniciar, debe mostrarse obligatoriamente la pantalla de bienvenida y el asistente de caracterización/configuración inicial de perfil.
+- **Instrucciones de Implementación:** En `App.xaml.cs` (método de inicialización), verificar explícitamente `_profileService.ProfileExists()`. Si retorna falso, navegar a `CharacterizationPage` o abrir el diálogo de caracterización antes de inicializar `MainWindow` o `MenuPage`.
+
+#### 3. Interrupción de lectura y foco en ComboBox de apoyos TDAH
+- **Componente / Archivo:** `src/MathTutor.WinUI/Views/CharacterizationPage.xaml` / `CharacterizationPage.xaml.cs`.
+- **Problema Actual:** Al seleccionar apoyos de discapacidad visual y autismo, al llegar a "Presentación predominante del TDAH", el lector anuncia inmediatamente: *"Apoyos actualizados. Las preferencias que ajustaste manualmente se conservan"*, interrumpiendo la lectura de las opciones disponibles y sin instruir al usuario que debe presionar `Enter` o `Alt + Flecha Abajo` para desplegar el cuadro combinado.
+- **Comportamiento Esperado:** El anuncio de "Apoyos actualizados" no debe dispararse durante la exploración de los campos ni interrumpir la lectura del ComboBox. Las instrucciones de interacción ("Presiona Enter o Alt+Abajo para abrir las opciones") deben incluirse en `AutomationProperties.HelpText`.
+- **Instrucciones de Implementación:**
+  1. Mover el anuncio de confirmación al momento en que el usuario guarde el perfil o finalice la selección, o condicionar el live region para que no interrumpa el cambio de foco.
+  2. Agregar en `AutomationProperties.HelpText` de los `ComboBox` del asistente: `"Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones"`.
+
+#### 4. Anuncio prematuro de "Lección completada" en ejemplos guiados
+- **Componente / Archivo:** `src/MathTutor.WinUI/Views/LessonPage.xaml.cs` (paso de ejemplo guiado con Cosmo).
+- **Problema Actual:** En el paso 3 de los ejemplos guiados (ej. *"Situación: Las piedras dicen: 1, 2, 3, 4... ¿Qué número sigue?"*), el texto y el anuncio UIA dicen: *"¡Lección completada! Presiona Enter para comenzar el reto lúdico..."*. Esto genera confusión porque el usuario aún no ha realizado ningún ejercicio ni reto.
+- **Comportamiento Esperado:** El texto y anuncio deben indicar: *"¡Ejemplo guiado completado! Presiona Enter para comenzar el reto lúdico, o Flecha arriba para repasar"*.
+- **Instrucciones de Implementación:** Modificar la plantilla de texto en `LessonPage.xaml.cs` para distinguir entre la conclusión del ejemplo explicativo y la finalización total de la lección/misión.
+
+#### 5. Gestión del foco en ejercicios interactivos: Opciones vs Objetos manipulables
+- **Componente / Archivo:** `src/MathTutor.WinUI/Views/GamePage.xaml.cs` (`ShouldStartWithManipulables`, `FocusInitialElement`).
+- **Problema Actual:**
+  1. `ShouldStartWithManipulables` únicamente retorna `true` para `InteractiveCounting` y secuencias de jardín. Para más de 50 tipos de ejercicios (monedas/billetes, comparación de grupos, fracciones, regla, reloj, gráficos de barras), el foco inicial intenta dirigirse a las opciones de respuesta (`ItemsOptions[0]`). Si WinUI aún no ha renderizado los botones de opción, cae en el fallback `BtnBackToLesson.Focus()`, expulsando el lector de pantalla a la barra de herramientas superior.
+  2. Cuando el usuario está explorando o interactuando con los objetos contables (ej. "Siete Tesoros del Bosque"), al presionar `Tab` o tras pulsar `Enter` para contar, el foco salta arbitrariamente a las opciones de respuesta o se salta elementos (del 5 al 3), perdiendo la posición de los tesoros restantes.
+- **Comportamiento Esperado:**
+  1. En todo ejercicio que contenga objetos interactivos/manipulables (`ItemsGroupA.Count > 0` o `ItemsGroupB.Count > 0`), el foco inicial debe situarse en el primer objeto interactivo del lienzo.
+  2. La navegación con flechas dentro del contenedor de objetos manipulables debe ser bidireccional y continua (sin saltos arbitrarios).
+  3. Pulsar `Enter` sobre un objeto manipulable debe anunciar su conteo/estado sin provocar la pérdida de foco ni el salto hacia las opciones de respuesta.
+- **Instrucciones de Implementación:**
+  1. Ampliar `ShouldStartWithManipulables` para retornar `true` si `_currentExercise.ItemsGroupA?.Count > 0`.
+  2. Implementar `DispatcherQueue.TryEnqueue` con verificación de carga para asegurar que el primer elemento manipulable reciba el foco accesible.
+  3. Evitar que el evento `Click`/`Enter` del manipulable invoque re-enfoque al panel de opciones a menos que se hayan completado todos los elementos requeridos.
+
+#### 6. Adaptaciones auditivas y sensoriales para ceguera en Jardín (Patrones y Comparaciones)
+- **Componente / Archivo:** `src/MathTutor.Core/Engine/CurriculumService.cs`, `src/MathTutor.WinUI/Views/GamePage.xaml.cs`.
+- **Problema Actual:** Ejercicios basados en discriminación puramente visual (ej. *"Rojo, azul, rojo, azul... ¿Qué sigue?"* o *"Estrellas Amarillas y Azules. ¿Dónde hay más estrellas?"*) carecen de pistas sonoras distintivas. Un niño ciego depende únicamente de la lectura de texto plano, perdiendo la experiencia lúdica y multisensorial de la app.
+- **Comportamiento Esperado:**
+  1. Asignar frecuencias sonoras o notas musicales diferenciadas para cada color/categoría (ej. Rojo = Do / 261 Hz, Azul = Sol / 392 Hz, Amarillo = Mi / 329 Hz).
+  2. Al enfocar o seleccionar cada elemento del patrón o grupo, reproducir su nota distintiva para que la secuencia forme una melodía reproducible y comprensible por oído.
+- **Instrucciones de Implementación:** Integrar llamadas a `AccessibleAudioCueService` con tonos proporcionales en los eventos de foco y activación de los elementos del patrón.
+
+#### 7. Desincronización de `StarsTotal` (Trofeos congelados en 0 estrellas)
+- **Componente / Archivo:** `src/MathTutor.Core/Models/UserProfile.cs`, `src/MathTutor.WinUI/MainWindow.xaml.cs` (`OnMissionCompleted`).
+- **Problema Actual:** Al superar una misión, `OnMissionCompleted` actualiza el diccionario `profile.LessonStarRatings[lessonId] = stars`, pero nunca actualiza la propiedad `profile.StarsTotal`. Por ello, `StarsTotal` permanece siempre en 0, la barra superior de la ventana muestra "⭐ 0 estrellas", y los trofeos que requieren estrellas acumuladas (como `badge_star_collector` que pide 15) jamás se desbloquean.
+- **Comportamiento Esperado:** `StarsTotal` debe reflejar la suma real de las mejores estrellas obtenidas en todas las lecciones completadas, actualizándose inmediatamente al terminar cada misión y reflejándose en la barra de estado y en el sistema de trofeos.
+- **Instrucciones de Implementación:**
+  1. En `UserProfile.cs`, agregar un método `RecalculateStars()` que calcule `StarsTotal = LessonStarRatings.Values.Sum()`.
+  2. En `MainWindow.xaml.cs` (`OnMissionCompleted`), invocar `profile.RecalculateStars()` antes de evaluar los trofeos y antes de guardar el perfil en disco.
+
+#### 8. El tutor trata ejercicios de Primaria como conteo de preescolar
+- **Componente / Archivo:** `src/MathTutor.WinUI/Views/GamePage.xaml.cs` (líneas 180-200 y 285-305).
+- **Problema Actual:** La bandera `isSymbolicAdvanced` exige que el ejercicio sea de secundaria en adelante (`_currentExercise.Level >= AcademicLevel.SecondaryFirstGrade`). En consecuencia, en más de 35 ejercicios interactivos de Primaria (monedas, billetes, fracciones en recta, reloj, barras estadísticas, perímetros), al pulsar o interactuar con un elemento, el sistema ejecuta la lógica de conteo preescolar anunciando: *"¡1! ¡Terminaste de contar todos! Hay 1 en total. El último número es el total de la colección"*.
+- **Comportamiento Esperado:** En Primaria, la interacción con monedas, relojes, fracciones y barras debe anunciar el valor semántico del elemento (ej. *"Billete de $20 pesos"*, *"Fracción 3 cuartos"*, *"Hora: 4 y media"*), no el principio de cardinalidad de preescolar.
+- **Instrucciones de Implementación:**
+  1. Redefinir la condición de conteo preescolar para que aplique estrictamente cuando `_currentExercise.ExerciseType == ExerciseType.InteractiveCounting` o `_currentExercise.Level == AcademicLevel.Kindergarten`.
+  2. Para `MoneyCurrencyCounting`, `MeasurementRuler`, `TimeClockReading`, `FractionsNumberLine`, etc., proporcionar manejadores de anuncio contextual basados en `item.Label` y `item.Value`.
+
+#### 9. Ausencia de generación procedimental / aleatorización en Primaria
+- **Componente / Archivo:** `src/MathTutor.Core/Engine/CurriculumService.cs` (`GenerateAdaptiveExercises`).
+- **Problema Actual:** El método `GenerateAdaptiveExercises` toma primero todos los ejercicios estáticos creados a mano mediante `result.AddRange(curated.Take(count))`. Dado que cada tema de primaria contiene entre 3 y 4 ejercicios curados, la lista solicitada siempre se llena con ejercicios estáticos idénticos y nunca se invoca `_generator.GenerateExercisesForTopic`. Como resultado, ejercicios como el de residuo (`divrem_ex_04`: "Multiplica 6 × 4 = 24, y súmale el sobrante (+2)") se repiten exactamente iguales en cada intento sin variar números ni opciones.
+- **Comportamiento Esperado:** Los ejercicios deben aleatorizarse procedimentalmente para garantizar rejugabilidad y evaluar comprensión real. Si el usuario repite la misión o solicita nuevos ejercicios, deben generarse nuevas cifras y operaciones.
+- **Instrucciones de Implementación:**
+  1. En `GenerateAdaptiveExercises`, barajar los ejercicios curados (`Shuffle`) o combinar ejercicios procedimentales generados por `ExerciseGenerator` con los curados.
+  2. Alternativamente, integrar un selector procedimental dinámico cuando `curated` ya haya sido resuelto previamente por el perfil del usuario.
+
+#### 10. Inconsistencias en definición de objetos manipulables de Primaria
+- **Componente / Archivo:** `src/MathTutor.Core/Engine/CurriculumService.cs`.
+- **Problema Actual:**
+  1. En `money_ex_01`, el enunciado solicita contar 2 monedas de $5 y 3 monedas de $1, pero la lista `ItemsGroupA` solo define dos monedas de $5 y una sola moneda de $1 (faltan dos monedas de $1).
+  2. En `money_ex_04` ("El Mercado del Reino: Monedas y Billetes"), el ejercicio está tipificado como manipulable monetario, pero solo contiene un único billete de $20, imposibilitando realizar cálculos de compra o cambio interactivo.
+  3. En `ruler_ex_04`, se plantea una pregunta puramente memorística y abstracta ("¿Cuántos centímetros hay en un metro?") sin regla ni objetos interactivos de medición proporcional.
+- **Comportamiento Esperado:** Los elementos definidos en `ItemsGroupA` e `ItemsGroupB` deben coincidir exactamente con las cantidades descritas en el enunciado, y los ejercicios de medición deben incluir segmentos o marcas visuales y accesibles de escala.
+- **Instrucciones de Implementación:** Corregir las listas de manipulables en `CurriculumService.cs` para `money_ex_01` (añadir las dos monedas de $1 faltantes), enriquecer `money_ex_04` con monedas de cambio fraccionario, y añadir marcas de escala métrica a `ruler_ex_04`.
+
+#### 11. `VerticalListNavigation` bloquea y suprime flechas izquierda y derecha
+- **Componente / Archivo:** `src/MathTutor.WinUI/Navigation/VerticalListNavigation.cs`.
+- **Problema Actual:** Al capturar los eventos de teclado en listas verticales, se ejecuta `e.Handled = true;` antes de evaluar si la tecla presionada es `VirtualKey.Left` o `VirtualKey.Right`. Esto intercepta y anula las flechas horizontales, impidiendo que usuarios de lectores de pantalla naveguen carácter a carácter o palabra a palabra en textos de listas.
+- **Comportamiento Esperado:** `VerticalListNavigation` debe gestionar únicamente `VirtualKey.Up` y `VirtualKey.Down` (y `Home`/`End` si aplica), dejando `Left` y `Right` sin marcar (`e.Handled = false`) para permitir la revisión de accesibilidad de los lectores de pantalla.
+- **Instrucciones de Implementación:** Mover `e.Handled = true;` dentro de los bloques específicos de `case VirtualKey.Up:` y `case VirtualKey.Down:`.
+
+#### 12. Árbol de trofeos colapsado por defecto y accesibilidad de `TreeViewItem`
+- **Componente / Archivo:** `src/MathTutor.WinUI/Views/MapPage.xaml.cs` (`BadgeGroupExpansion`, `BadgeItem_Loaded`).
+- **Problema Actual:**
+  1. Los grupos de insignias en el `TreeView` inician colapsados (`IsExpanded = false`), lo que oculta los trofeos del lector de pantalla hasta que el usuario descubre que debe presionar `Flecha Derecha` en cada categoría.
+  2. `BadgeItem_Loaded` busca el `TreeViewItem` ancestro mediante el árbol visual; si se invoca antes de que el nodo esté completamente acoplado, no encuentra el padre y deja el contenedor con un nombre accesible vacío.
+- **Comportamiento Esperado:** Los grupos de insignias deben iniciar expandidos por defecto o anunciar su estado ("Grupo colapsado, presiona Flecha Derecha para expandir"). La asignación de nombres accesibles debe garantizarse mediante enlace de datos (`x:Bind`) o en el contenedor del item sin depender de la búsqueda en el árbol visual.
+- **Instrucciones de Implementación:** Establecer `IsExpanded = true` por defecto en las categorías del `TreeView` de insignias en `MapPage.xaml`, y enlazar `AutomationProperties.Name` directamente a las propiedades del modelo de datos de la insignia.
+
+#### 13. Conteo acumulado distorsionado en ejercicios de comparación
+- **Componente / Archivo:** `src/MathTutor.WinUI/Views/GamePage.xaml.cs`.
+- **Problema Actual:** En ejercicios de comparación de dos grupos (ej. manzanas rojas vs verdes), los elementos del Grupo B reciben `DisplayOrder = groupA.Count + 1 + i`. Al tocar la primera manzana verde del Grupo B, el sistema anuncia: *"¡4!"* y luego *"¡5! Hay 5 en total"*, en lugar de contar el Grupo B de forma independiente (1, 2).
+- **Comportamiento Esperado:** Cada grupo debe tener su propio contador de cardinalidad independiente (Grupo A: 1 a 3; Grupo B: 1 a 2) y anunciar claramente a qué grupo pertenece el objeto contado.
+- **Instrucciones de Implementación:** Mantener dos contadores locales separados (`_countGroupA` y `_countGroupB`) en `GamePage.xaml.cs` para ejercicios de comparación.
+
+#### 14. Filtro de throttle en `NavigationService.cs` ignora cambio de parámetro
+- **Componente / Archivo:** `src/MathTutor.WinUI/Navigation/NavigationService.cs`.
+- **Problema Actual:** La condición de prevención de doble navegación evalúa únicamente: `_lastNavigatedPageType == pageType && (now - _lastNavigatedTime).TotalMilliseconds < 300`. Si el usuario navega rápidamente de una lección a otra lección distinta (ambas usan `GamePage` o `LessonPage`), la navegación se ignora silenciosamente porque el tipo de página es el mismo y ocurrió en menos de 300 ms.
+- **Comportamiento Esperado:** La navegación debe permitirse si el parámetro de destino (el identificador de tema o ejercicio) es diferente al anterior, aun cuando se ejecute en menos de 300 ms.
+- **Instrucciones de Implementación:** Almacenar `_lastNavigatedParameter` y condicionar el descarte de navegación a que tanto el tipo de página como el parámetro coincidan exactamente: `_lastNavigatedPageType == pageType && Equals(_lastNavigatedParameter, parameter) && ...`.
+
+#### 15. Mezcla y continuidad curricular entre Primaria Baja, Media y Alta
+- **Componente / Archivo:** `src/MathTutor.Core/Engine/AdaptiveEngine.cs`, `CurriculumService.cs` (`GetNextTopic`).
+- **Problema Actual:** Para perfiles entre 6 y 11 años, `GetTopicsForAge` concatena sin fronteras los temas de Primaria Baja, Media y Alta. En `GetNextTopic`, al culminar una misión de Primaria Media, el sistema propone de inmediato saltar a temas avanzados de Primaria Alta (como fracciones mixtas complejas y decimales) sin un diálogo de transición de ciclo que informe al alumno del cambio de nivel educativo.
+- **Comportamiento Esperado:** Al completar el último tema de un subciclo escolar, debe mostrarse una felicitación de fin de etapa y ofrecerse la opción de continuar al siguiente nivel o consolidar los conocimientos adquiridos.
+- **Instrucciones de Implementación:** Incorporar marcadores de finalización de nivel en `CurriculumService` e informar en el diálogo de misión completada cuando se ha concluido un ciclo completo.
