@@ -104,7 +104,8 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ## 🔧 Calidad, licencia y accesibilidad
 
-- [CI](.github/workflows/ci.yml): compila en Release con advertencias como errores, ejecuta las 234 pruebas y permite empaquetar manualmente.
+- [CI](.github/workflows/ci.yml): compila en Release con advertencias como errores, ejecuta las 239 pruebas y permite empaquetar manualmente.
+- [Guía para contribuidores](CONTRIBUTING.md): estándares de código, accesibilidad, pruebas y cómo colaborar en el proyecto.
 - [Licencia propietaria](LICENSE) de Narayan Projects.
 - [Avisos de terceros](THIRD-PARTY-NOTICES.md).
 - [Borrador ACR/VPAT y matriz de lectores](ACCESIBILIDAD-ACR-VPAT.md).
