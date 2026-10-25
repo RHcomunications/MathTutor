@@ -863,7 +863,7 @@ Implementación integral de la Hoja de Ruta Curricular Oficial (Fases 1 a 5), in
 - **Criterio de verificación:** Latencia de caché de audio $< 1$ ms, carga de temas $< 500$ ms, y suite completa 234/234 passed.
 
 
-### Fase 9 - Auditoría Integral de Usabilidad, Foco Accesible, Gamificación y Aleatorización Curricular (v1.11.0)
+### Fase 9 - Auditoría Integral de Usabilidad, Foco Accesible, Gamificación y Aleatorización Curricular (v1.11.1)
 **Contexto:** Hallazgos consolidados de pruebas de usuario (Jardín y Primaria) y auditoría profunda de arquitectura de código (.Core y .WinUI).
 
 #### 1. README.md y documentación inicial inaccesible con lectores de pantalla
@@ -982,7 +982,7 @@ Implementación integral de la Hoja de Ruta Curricular Oficial (Fases 1 a 5), in
 
 ---
 
-### Cierre de Implementación - Fase 9 (v1.11.0 - Auditoría Integral de Usabilidad y Foco Accesible)
+### Cierre de Implementación - Fase 9 (v1.11.1 - Auditoría Integral de Usabilidad y Foco Accesible)
 
 Implementación completada al 100% cubriendo los 15 hallazgos de usabilidad, foco y aleatorización curricular:
 

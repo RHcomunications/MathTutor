@@ -1,6 +1,6 @@
-MATH TUTOR ACCESIBLE
+﻿MATH TUTOR ACCESIBLE
 Guía para familias, docentes y estudiantes
-Versión 1.10.0 - Octubre de 2026
+Versión 1.11.1 - Octubre de 2026
 
 QUÉ ES MATH TUTOR
 
@@ -35,7 +35,7 @@ nada para usar el programa.
 
 CÓMO ABRIRLO
 
-1. Descarga el archivo MathTutor-v1.10.0-Windows.zip
+1. Descarga el archivo MathTutor-v1.11.1-Windows.zip
    desde la página de esta versión.
 
 2. Haz clic derecho sobre el archivo descargado y elige
@@ -187,24 +187,14 @@ No sé qué hacer:
 - Presiona F1 para escuchar o leer la instrucción otra vez.
 - Consulta el secreto matemático que aparece en la pantalla.
 
-NOVEDADES DE ESTA VERSIÓN
+NOVEDADES DE ESTA VERSIÓN (v1.11.1)
 
-- Jardín de niños ahora tiene 10 temas organizados por edad:
-  formas, posiciones, cuentos, patrones, clasificación, música,
-  números hasta 10, suma/resta y medida.
-- El menú filtra los temas de jardín según la edad y desbloquea
-  el siguiente nivel solo cuando se completan todos los temas
-  disponibles para esa edad.
-- El perfil permite describir apoyos de autismo (niveles 1-3),
-  TDAH por presentación, apoyos intelectuales y necesidades
-  funcionales de visión, audición y motricidad, sin obligar a
-  declarar un diagnóstico.
-- Puedes exportar el perfil y el progreso, borrar el perfil del
-  equipo y leer el aviso de privacidad desde la misma pantalla.
-- Las preferencias ajustadas a mano ya no se sobrescriben
-  automáticamente al cambiar de condición.
-- El borde de foco de los temas claro y de baja estimulación
-  ahora tiene mayor contraste para ubicarlo con facilidad.
+- Expansión curricular oficial a 74 estaciones continuas del Reino del Conocimiento: desde preescolar y primaria hasta secundaria, preparatoria y programación inclusiva con DUA completo.
+- Foco y navegación accesible optimizados: compatibilidad total con lectores de pantalla (NVDA, JAWS y Narrador) sin trampas de teclado y foco inmediato en los manipulables de aprendizaje.
+- Manipulables didácticos enriquecidos: monedas, billetes, regla, reloj analógico, fracciones y gráficos con locución semántica y exploración no saturante.
+- Gamificación y estrellas sincronizadas: cálculo dinámico del total de estrellas y desbloqueo consistente de insignias.
+- Aleatorización y rejugabilidad: retos procedimentales al repetir misiones completadas para afianzar el dominio matemático.
+- Rendimiento ultra-rápido: arranque inmediato con caché curricular y latencia de audio de apoyos auditivos sub-milisegundo.
 
 GRACIAS
 
@@ -213,5 +203,5 @@ aprendizaje. Math Tutor busca que cada estudiante se sienta
 capaz, escuchado y libre de aprender a su manera.
 
 MathTutor Accesible
-Versión 1.10.0
+Versión 1.11.1
 Octubre de 2026

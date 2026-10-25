@@ -604,6 +604,26 @@ Tercera fase de auditoría e implementación integral de la Hoja de Ruta Curricu
   - Eliminación de truncamiento (`CharacterEllipsis`) por ajuste natural de palabras (`TextWrapping="WrapWholeWords"`).
   - Suspensión inteligente de atajos numéricos en `MainWindow.xaml.cs` cuando el elemento activo es un `TextBox`.
 - **Suite Automatizada:**
-  - 234/239 pruebas en Release, 0 advertencias, 0 errores.
+  - 234/234 pruebas en Release 1.11.0, 0 advertencias, 0 errores.
   - Se agregaron pruebas de rendimiento y carga en `LoadAndPerformanceTests.cs` validando latencia sub-milisegundo de audio y arranque instantáneo con caché de 74 temas.
   - Versión general del sistema elevada a `1.11.0`.
+
+## 9. Auditoría Integral de Usabilidad, Foco Accesible y Parche v1.11.1 (oct 2026)
+
+Release de parche correctivo y refinamiento de experiencia integral (Fase 9):
+- **Navegación e Interacción Accesible:**
+  - `VerticalListNavigation`: desacople de flechas izquierda/derecha para no interferir con la navegación del cursor virtual en lectores de pantalla (NVDA/JAWS).
+  - `NavigationService`: inclusión de tracking de parámetro para permitir volver a abrir lecciones consecutivas sin falso bloqueo de navegación.
+  - `GamePage`: foco inicial garantizado en manipulables didácticos (`ShouldStartWithManipulables`) y soporte semántico enriquecido en primaria (anuncio de nombres nominales y no mero conteo).
+  - `LessonPage`: corrección de texto accesible de paso 3 en ejemplo guiado.
+- **Gamificación y Perfil:**
+  - Sincronización íntegra de `StarsTotal` mediante `RecalculateStars()` basada en la suma de estrellas reales en `LessonStarRatings`, preservando consistencia en perfiles migrados y desbloqueo de insignias.
+  - Verificación estricta de existencia de perfil (`ProfileExists()`) en `ProfileStorageService` para evitar inicialización forzada con datos ficticios.
+  - Soporte de ayuda contextual `Alt + Abajo` en ComboBoxes del perfil sin interrupciones sonoras imprevistas.
+- **Currículo y Rejugabilidad:**
+  - Aleatorización procedimental en `GenerateAdaptiveExercises` al repetir retos de lecciones culminadas.
+  - Corrección de consistencia en manipulables de `money_ex_01`, `money_ex_04` y escala métrica de `ruler_ex_04`.
+  - Diálogos de finalización y consolidación de ciclo escolar (`IsEndOfLevelTopic`).
+- **Suite Automatizada:**
+  - 239/239 pruebas automatizadas superadas al 100% (añadidas 5 pruebas pedagógicas en `PedagogyAndAccessibilityTests.cs`).
+  - Versión general del sistema elevada a `1.11.1`.

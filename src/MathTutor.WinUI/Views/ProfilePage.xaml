@@ -70,8 +70,8 @@
                                   HorizontalAlignment="Stretch"
                                   AutomationProperties.Name="Edad del alumno en años"
                                   SelectionChanged="CmbAge_SelectionChanged"
-                                  GotFocus="Control_GotFocus" /
-                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones">
+                                  GotFocus="Control_GotFocus"
+                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="4">
@@ -88,8 +88,8 @@
                                   HorizontalAlignment="Stretch"
                                   AutomationProperties.Name="Nivel escolar inicial"
                                   SelectionChanged="CmbAcademicLevel_SelectionChanged"
-                                  GotFocus="Control_GotFocus" /
-                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones">
+                                  GotFocus="Control_GotFocus"
+                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones" />
                     </StackPanel>
                 </Grid>
 
@@ -107,8 +107,8 @@
                               HorizontalAlignment="Stretch"
                               AutomationProperties.Name="País y adaptación cultural de moneda y vocabulario"
                               SelectionChanged="CmbRegion_SelectionChanged"
-                              GotFocus="Control_GotFocus" /
-                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones">
+                              GotFocus="Control_GotFocus"
+                              AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones" />
                 </StackPanel>
 
                 <Border Background="{ThemeResource AppSurfaceBrush}"
@@ -411,8 +411,8 @@
                                   HorizontalAlignment="Stretch"
                                   AutomationProperties.Name="Esquema de contraste accesible"
                                   SelectionChanged="CmbTheme_SelectionChanged"
-                                  GotFocus="Control_GotFocus" /
-                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones">
+                                  GotFocus="Control_GotFocus"
+                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="4">
@@ -429,8 +429,8 @@
                                   HorizontalAlignment="Stretch"
                                   AutomationProperties.Name="Tamaño de letra del sistema"
                                   SelectionChanged="CmbFontSize_SelectionChanged"
-                                  GotFocus="Control_GotFocus" /
-                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones">
+                                  GotFocus="Control_GotFocus"
+                                  AutomationProperties.HelpText="Presiona Enter o Alt + Flecha Abajo para desplegar la lista de opciones" />
                     </StackPanel>
                 </Grid>
 

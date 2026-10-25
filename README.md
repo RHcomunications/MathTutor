@@ -112,7 +112,7 @@ El botón **Opciones del juego** abre un menú vertical: usa **↑ / ↓** para 
 
 ---
 
-## 🚀 Release `v1.11.0`
+## 🚀 Release `v1.11.1`
 
 Desde la terminal en esta carpeta:
 
@@ -120,17 +120,17 @@ Desde la terminal en esta carpeta:
 # Compilar la solución en modo Release
 dotnet build MathTutor.slnx -c Release
 
-# Ejecutar las 234 pruebas unitarias automatizadas
+# Ejecutar las 239 pruebas unitarias automatizadas
 dotnet test tests/MathTutor.Tests/MathTutor.Tests.csproj -c Release
 
 # Iniciar la aplicación WinUI 3
 dotnet run --project src/MathTutor.WinUI/MathTutor.WinUI.csproj -c Release
 
-# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.11.0-Windows.zip)
+# Publicar y empaquetar WinUI (genera artifacts/releases/MathTutor-v1.11.1-Windows.zip)
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-winui.ps1
 ```
 
-Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.11.0` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
+Las compilaciones y publicaciones se concentran en `artifacts/`; los proyectos ya no generan carpetas `bin/` ni `obj/` propias. La release se entrega como una carpeta `MathTutor-v1.11.1` con `MathTutor.exe` en la raíz, `LEEME.txt`, una carpeta `libs/` con la aplicación y sus bibliotecas, y una carpeta `modules/` con los módulos `.winmd`. El ejecutable de la raíz es un lanzador que inicia la aplicación real desde `libs/`.
 
 ```text
 src/MathTutor.Core/    Dominio, currículo y motor adaptativo
